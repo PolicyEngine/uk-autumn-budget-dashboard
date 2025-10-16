@@ -94,7 +94,10 @@ function App() {
 
   // Update URL when state changes
   useEffect(() => {
-    if (selectedPolicies.length === 0) return
+    if (selectedPolicies.length === 0) {
+      window.history.replaceState({}, '', window.location.pathname)
+      return
+    }
 
     const params = new URLSearchParams()
     params.set('policies', selectedPolicies.join(','))
