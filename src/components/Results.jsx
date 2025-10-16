@@ -279,13 +279,6 @@ function Results({ results, isLoading, selectedPolicies }) {
           </BarChart>
         </ResponsiveContainer>
       </section>
-
-      <section className="results-footer">
-        <p>
-          <strong>Note:</strong> These results are based on simulated data and placeholder PolicyEngine analysis.
-          Actual results will be computed once the Autumn Budget 2025 is announced.
-        </p>
-      </section>
     </div>
   )
 }

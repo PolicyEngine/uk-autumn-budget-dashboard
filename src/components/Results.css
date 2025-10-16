@@ -124,12 +124,7 @@
 }
 
 .results-intro {
-  background-color: white;
-  border-radius: 12px;
-  padding: 2rem;
   margin-bottom: 2rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  border: 1px solid var(--pe-gray-100);
 }
 
 .results-intro h2 {
@@ -142,7 +137,7 @@
   color: var(--pe-gray-600);
   font-size: 1rem;
   line-height: 1.7;
-  margin-bottom: 1.25rem;
+  margin-bottom: 0;
 }
 
 .download-button {
@@ -251,17 +246,17 @@
 }
 
 .chart-section {
-  background: white;
-  border: 1px solid var(--pe-gray-100);
-  border-radius: 12px;
-  padding: 2rem;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 0;
   margin-bottom: 3rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-  transition: all 0.3s ease;
+  box-shadow: none;
+  transition: none;
 }
 
 .chart-section:hover {
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  box-shadow: none;
 }
 
 .chart-section h2 {
@@ -313,25 +308,6 @@
 .toggle-button.active {
   background-color: var(--pe-teal);
   color: white;
-}
-
-.results-footer {
-  background-color: #fffbeb;
-  border: 1px solid #fbbf24;
-  border-radius: 8px;
-  padding: 16px 20px;
-  margin-top: 32px;
-}
-
-.results-footer p {
-  color: #92400e;
-  font-size: 0.9rem;
-  line-height: 1.5;
-  margin: 0;
-}
-
-.results-footer strong {
-  font-weight: 600;
 }
 
 /* Recharts customizations */
