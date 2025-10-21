@@ -11,7 +11,7 @@ function HouseholdImpactChart({ selectedPolicy }) {
   const [highTaxState, setHighTaxState] = useState('no')
 
   // Expandable state for each question
-  const [expandedQuestion, setExpandedQuestion] = useState('income')
+  const [expandedQuestion, setExpandedQuestion] = useState(null)
 
   // Placeholder: calculated impact based on user selections
   const calculatedImpact = 380 // This will be dynamic later

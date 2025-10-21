@@ -162,6 +162,20 @@ function Results({ results, isLoading, selectedPolicies }) {
     }
   ]
 
+  // Distributional analysis data - 10 deciles
+  const distributionalData = [
+    { decile: '1st', avgNetIncome: 125 },
+    { decile: '2nd', avgNetIncome: 142 },
+    { decile: '3rd', avgNetIncome: 158 },
+    { decile: '4th', avgNetIncome: 167 },
+    { decile: '5th', avgNetIncome: 173 },
+    { decile: '6th', avgNetIncome: 165 },
+    { decile: '7th', avgNetIncome: 152 },
+    { decile: '8th', avgNetIncome: 138 },
+    { decile: '9th', avgNetIncome: 121 },
+    { decile: '10th', avgNetIncome: 110 }
+  ]
+
   const policyColours = ['#319795', '#5A8FB8', '#B8875A', '#5FB88A', '#4A7BA7', '#C59A5A']
 
   const formatCurrency = (value) => `£${value.toFixed(2)}bn`
@@ -172,7 +186,7 @@ function Results({ results, isLoading, selectedPolicies }) {
     <div className="results">
       <section className="results-intro">
         <h2>Analysis overview</h2>
-        <p>
+        <p className="section-description">
           This dashboard analyses the potential impacts of selected budget policies on UK households and public finances.
           The analysis is powered by{' '}
           <a href="https://policyengine.org/uk" target="_blank" rel="noopener noreferrer">
@@ -182,21 +196,11 @@ function Results({ results, isLoading, selectedPolicies }) {
         </p>
       </section>
 
-      {/* Household-level impact visualization */}
-      <section className="household-impact-section">
-        <HouseholdImpactChart
-          selectedPolicy={selectedPolicies[0]}
-        />
-        <div className="household-explanation">
-          <p className="explanation-text">
-            Each dot represents one household. The chart shows how the selected policy would affect households across different income levels.
-            Use the questions on the left to find households similar to yours and see how they would be affected.
-          </p>
-        </div>
-      </section>
-
       <section className="results-section">
         <h2>Key impacts</h2>
+        <p className="section-description">
+          Summary of the main effects of selected policies on households, incomes, and poverty rates.
+        </p>
         <div className="impact-cards">
           <div className="impact-card">
             <div className="impact-label">Affected households</div>
@@ -225,6 +229,23 @@ function Results({ results, isLoading, selectedPolicies }) {
               />
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Household-level impact visualization */}
+      <section className="household-impact-section">
+        <h2>Household impact</h2>
+        <p className="section-description">
+          Explore how the selected policy affects individual households across different income levels.
+        </p>
+        <HouseholdImpactChart
+          selectedPolicy={selectedPolicies[0]}
+        />
+        <div className="household-explanation">
+          <p className="explanation-text">
+            Each dot represents one household. The chart shows how the selected policy would affect households across different income levels.
+            Use the questions on the left to find households similar to yours and see how they would be affected.
+          </p>
         </div>
       </section>
 
@@ -263,6 +284,36 @@ function Results({ results, isLoading, selectedPolicies }) {
                 name={policy.policy}
               />
             ))}
+          </BarChart>
+        </ResponsiveContainer>
+      </section>
+
+      <section className="chart-section">
+        <h2>Distributional analysis</h2>
+        <p className="chart-description">
+          Average net income change by income decile, showing how the selected policies affect households across the income distribution.
+        </p>
+        <ResponsiveContainer width="100%" height={350}>
+          <BarChart
+            data={distributionalData}
+            margin={{ top: 20, right: 30, left: 90, bottom: 20 }}
+          >
+            <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+            <XAxis dataKey="decile" />
+            <YAxis
+              label={{
+                value: 'Average net income change (£)',
+                angle: -90,
+                position: 'insideLeft',
+                dx: -30,
+                style: { textAnchor: 'middle' }
+              }}
+            />
+            <Tooltip
+              formatter={(value) => `£${value}`}
+              labelFormatter={(label) => `${label} decile`}
+            />
+            <Bar dataKey="avgNetIncome" fill="#319795" name="Average net income change" />
           </BarChart>
         </ResponsiveContainer>
       </section>
