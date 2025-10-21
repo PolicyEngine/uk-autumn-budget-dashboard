@@ -66,6 +66,7 @@ function App() {
   const [policyParams, setPolicyParams] = useState({})
   const [results, setResults] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(true)
 
   // Initialize state from URL on mount
   useEffect(() => {
@@ -167,7 +168,12 @@ function App() {
         const newParams = { ...policyParams }
         delete newParams[policyId]
         setPolicyParams(newParams)
-        return prev.filter(id => id !== policyId)
+        const newPolicies = prev.filter(id => id !== policyId)
+        // Close sidebar when no policies are selected
+        if (newPolicies.length === 0) {
+          setIsSidebarCollapsed(true)
+        }
+        return newPolicies
       } else {
         // Add policy with default parameters
         const policy = DEFAULT_POLICIES.find(p => p.id === policyId)
@@ -177,6 +183,10 @@ function App() {
             defaultParams[key] = config.default
           })
           setPolicyParams(prev => ({ ...prev, [policyId]: defaultParams }))
+        }
+        // Close sidebar when the first policy is selected
+        if (prev.length === 0) {
+          setIsSidebarCollapsed(true)
         }
         return [...prev, policyId]
       }
@@ -201,20 +211,22 @@ function App() {
         policyParams={policyParams}
         onPolicyToggle={handlePolicyToggle}
         onParamChange={handleParamChange}
+        isCollapsed={isSidebarCollapsed}
+        onToggleCollapse={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
       />
 
-      <main className="main-content">
+      <main className={`main-content ${isSidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
         <header className="header">
           <div>
-            <h1>UK Autumn Budget 2025 dashboard</h1>
+            <h1>UK Autumn Budget 2025</h1>
           </div>
           {results && (
             <div className="download-buttons-wrapper">
               <button
                 className="download-button-header"
                 onClick={() => window.dispatchEvent(new CustomEvent('downloadDataTxt'))}
-                title="Download as TXT"
-                aria-label="Download as TXT"
+                data-tooltip="Download results in TXT file"
+                aria-label="Download results in TXT file"
               >
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
@@ -227,8 +239,8 @@ function App() {
               <button
                 className="download-button-header"
                 onClick={() => window.dispatchEvent(new CustomEvent('downloadDataCsv'))}
-                title="Download as CSV"
-                aria-label="Download as CSV"
+                data-tooltip="Download results in CSV file"
+                aria-label="Download results in CSV file"
               >
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>

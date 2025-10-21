@@ -73,8 +73,8 @@
 
 .empty-state {
   text-align: center;
-  max-width: 550px;
-  padding: 4rem 2rem;
+  max-width: 800px;
+  padding: 4rem 3rem;
   background: white;
   border-radius: 16px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
@@ -92,6 +92,31 @@
   color: var(--pe-gray-600);
   font-size: 1.05rem;
   line-height: 1.7;
+  margin-bottom: 1.5rem;
+}
+
+.open-sidebar-button {
+  background: #1a3a3a;
+  color: white;
+  border: none;
+  padding: 14px 32px;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(26, 58, 58, 0.3);
+  font-family: 'Roboto', system-ui, sans-serif;
+}
+
+.open-sidebar-button:hover {
+  background: #234a4a;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(26, 58, 58, 0.4);
+}
+
+.open-sidebar-button:active {
+  transform: translateY(0);
 }
 
 .results-loading {

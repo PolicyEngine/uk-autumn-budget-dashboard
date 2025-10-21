@@ -1,12 +1,24 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import './Sidebar.css'
 
-function Sidebar({ policies, selectedPolicies, policyParams, onPolicyToggle, onParamChange }) {
+function Sidebar({ policies, selectedPolicies, policyParams, onPolicyToggle, onParamChange, isCollapsed, onToggleCollapse }) {
   const [expandedPolicy, setExpandedPolicy] = useState(null)
 
+  useEffect(() => {
+    const handleToggle = () => {
+      if (isCollapsed) {
+        onToggleCollapse()
+      }
+    }
+
+    window.addEventListener('toggleSidebar', handleToggle)
+    return () => window.removeEventListener('toggleSidebar', handleToggle)
+  }, [isCollapsed, onToggleCollapse])
+
   return (
-    <aside className="sidebar">
-      <div className="sidebar-content">
+    <>
+      <aside className={`sidebar ${isCollapsed ? 'collapsed' : ''}`}>
+        <div className="sidebar-content">
         <div className="sidebar-logo">
           <img src="/white.png" alt="PolicyEngine" className="logo" />
         </div>
@@ -66,7 +78,28 @@ function Sidebar({ policies, selectedPolicies, policyParams, onPolicyToggle, onP
           ))}
         </div>
       </div>
-    </aside>
+      </aside>
+
+      <button
+        className={`sidebar-toggle ${isCollapsed ? 'collapsed' : ''}`}
+        onClick={onToggleCollapse}
+        aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+      >
+        <div className="toggle-content">
+          <svg className="toggle-icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            {isCollapsed ? (
+              <path d="M9 18l6-6-6-6" />
+            ) : (
+              <path d="M15 18l-6-6 6-6" />
+            )}
+          </svg>
+          <span className="toggle-text">
+            <span className="toggle-line">Policy</span>
+            <span className="toggle-line">options</span>
+          </span>
+        </div>
+      </button>
+    </>
   )
 }
 

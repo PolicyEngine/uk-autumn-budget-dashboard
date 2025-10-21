@@ -108,11 +108,20 @@ function Results({ results, isLoading, selectedPolicies }) {
   }, [results])
 
   if (selectedPolicies.length === 0) {
+    const openSidebar = () => {
+      window.dispatchEvent(new CustomEvent('toggleSidebar'))
+    }
+
     return (
       <div className="results-empty">
         <div className="empty-state">
-          <h2>No policies selected</h2>
-          <p>Select one or more policies from the sidebar to see their projected impact on households and public finances.</p>
+          <h2>Welcome to the UK Autumn Budget 2025 dashboard</h2>
+          <p>
+            Analyse the potential impacts of budget policies on UK households and public finances.
+          </p>
+          <button className="open-sidebar-button" onClick={openSidebar}>
+            Open policy options
+          </button>
         </div>
       </div>
     )
