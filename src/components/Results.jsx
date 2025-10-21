@@ -3,6 +3,7 @@ import {
   BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid,
   Tooltip, Legend, ResponsiveContainer
 } from 'recharts'
+import HouseholdImpactChart from './HouseholdImpactChart'
 import './Results.css'
 
 // Animated number component
@@ -170,6 +171,19 @@ function Results({ results, isLoading, selectedPolicies }) {
           </a>
           , a free, open-source tool for computing the impact of public policy.
         </p>
+      </section>
+
+      {/* Household-level impact visualization */}
+      <section className="household-impact-section">
+        <HouseholdImpactChart
+          selectedPolicy={selectedPolicies[0]}
+        />
+        <div className="household-explanation">
+          <p className="explanation-text">
+            Each dot represents one household. The chart shows how the selected policy would affect households across different income levels.
+            Use the questions on the left to find households similar to yours and see how they would be affected.
+          </p>
+        </div>
       </section>
 
       <section className="results-section">

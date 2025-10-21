@@ -348,6 +348,26 @@
   font-size: 0.9rem !important;
 }
 
+.household-impact-section {
+  margin-bottom: 3rem;
+}
+
+.household-explanation {
+  padding: 1.5rem;
+  background: #fafafa;
+  border-radius: 0 0 8px 8px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.explanation-text {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: #666;
+  text-align: center;
+  font-style: italic;
+}
+
 @media (max-width: 768px) {
   .results {
     padding: 1rem;
@@ -371,6 +391,10 @@
   }
 
   .chart-section {
+    padding: 1rem;
+  }
+
+  .household-explanation {
     padding: 1rem;
   }
 }
