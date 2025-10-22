@@ -47,6 +47,7 @@ const POLICY_COLORS = ['#319795', '#5A8FB8', '#B8875A', '#5FB88A', '#4A7BA7', '#
 function App() {
   const [selectedPolicies, setSelectedPolicies] = useState([])
   const [results, setResults] = useState(null)
+  const [behavioralResponses, setBehavioralResponses] = useState(false)
 
   // Initialize from URL
   useEffect(() => {
@@ -70,7 +71,7 @@ function App() {
     }
   }, [selectedPolicies])
 
-  // Run analysis when policies change
+  // Run analysis when policies or behavioral responses change
   useEffect(() => {
     if (selectedPolicies.length === 0) {
       setResults(null)
@@ -78,7 +79,7 @@ function App() {
     }
 
     runAnalysis()
-  }, [selectedPolicies])
+  }, [selectedPolicies, behavioralResponses])
 
   const runAnalysis = async () => {
     // Simulate API call - in production, this would call PolicyEngine
@@ -172,12 +173,27 @@ function App() {
               selectedPolicies={selectedPolicies}
               onPolicyToggle={handlePolicyToggle}
             />
+            <div className="behavioral-switch-container">
+              <label className="switch-label">
+                <span className="switch-text">Behavioral responses</span>
+                <button
+                  className={`switch ${behavioralResponses ? 'active' : ''}`}
+                  onClick={() => setBehavioralResponses(!behavioralResponses)}
+                  role="switch"
+                  aria-checked={behavioralResponses}
+                  aria-label="Toggle behavioral responses"
+                >
+                  <span className="switch-slider"></span>
+                </button>
+              </label>
+            </div>
           </div>
           <div className="header-center">
             <h1>UK Autumn Budget 2025</h1>
-            <p className="subtitle">Policy impact analysis dashboard</p>
           </div>
-          <div className="header-right"></div>
+          <div className="header-right">
+            <img src="/white.png" alt="PolicyEngine" className="policyengine-logo" />
+          </div>
         </div>
       </header>
 
@@ -205,7 +221,6 @@ function App() {
                   <div className="key-metric highlighted">
                     <div className="metric-label-small">2026 budgetary impact</div>
                     <div className="metric-number">£{results.metrics.budgetaryImpact2026.toFixed(2)}bn</div>
-                    <div className="metric-text">Projected fiscal impact of selected policy reforms</div>
                   </div>
                   <div className="key-metric">
                     <div className="metric-number">{results.metrics.percentAffected.toFixed(1)}%</div>
@@ -227,8 +242,8 @@ function App() {
                   <p>Understanding which households experience gains or losses across the income distribution</p>
                 </div>
                 <div className="primary-charts">
-                  <WaterfallChart data={results.waterfallData} />
                   <HouseholdChart data={results.householdData} />
+                  <BudgetaryImpactChart data={results.budgetData} policyColors={POLICY_COLORS} />
                 </div>
 
                 {/* Section: Impact over time and distribution */}
@@ -237,8 +252,8 @@ function App() {
                   <p>Budget projections through 2029 and percentage change in net income by decile</p>
                 </div>
                 <div className="secondary-charts">
-                  <BudgetaryImpactChart data={results.budgetData} policyColors={POLICY_COLORS} />
                   <DistributionalChart data={results.distributionalData} />
+                  <WaterfallChart data={results.waterfallData} />
                 </div>
               </>
             )}

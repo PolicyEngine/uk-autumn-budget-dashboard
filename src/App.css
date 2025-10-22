@@ -11,13 +11,13 @@
 }
 
 .app-header {
-  background: white;
-  border-bottom: 1px solid #e5e7eb;
+  background: linear-gradient(135deg, #319795 0%, #2c8886 100%);
+  border-bottom: none;
   padding: 12px 24px;
   position: sticky;
   top: 0;
   z-index: 100;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 8px rgba(49, 151, 149, 0.2);
 }
 
 .header-content {
@@ -32,28 +32,135 @@
 .header-left {
   display: flex;
   align-items: center;
+  gap: 16px;
 }
 
 .header-center {
   text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.header-title-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.policyengine-logo-center {
+  height: 32px;
+  width: auto;
 }
 
 .header-center h1 {
   font-size: 1.4rem;
   font-weight: 600;
-  color: #374151;
-  margin: 0 0 2px 0;
+  color: white;
+  margin: 0;
 }
 
 .subtitle {
   font-size: 0.8rem;
-  color: #6b7280;
+  color: rgba(255, 255, 255, 0.85);
   margin: 0;
 }
 
 .header-right {
   display: flex;
   justify-content: flex-end;
+  align-items: center;
+}
+
+.policyengine-logo {
+  height: 32px;
+  width: auto;
+  opacity: 0.95;
+  transition: opacity 0.2s ease;
+}
+
+.policyengine-logo:hover {
+  opacity: 1;
+}
+
+/* Behavioral Switch */
+.behavioral-switch-container {
+  display: flex;
+  align-items: center;
+  background: white;
+  border: 1px solid #d1d5db;
+  border-radius: 5px;
+  padding: 4px 10px;
+  transition: all 0.2s ease;
+  min-width: 180px;
+  height: 30px;
+  box-sizing: border-box;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.behavioral-switch-container:hover {
+  border-color: #319795;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05), 0 0 0 2px rgba(49, 151, 149, 0.1);
+}
+
+.switch-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  cursor: pointer;
+  margin: 0;
+  width: 100%;
+}
+
+.switch-text {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #374151;
+  white-space: nowrap;
+  flex: 1;
+}
+
+.switch {
+  position: relative;
+  width: 32px;
+  height: 18px;
+  background: #d1d5db;
+  border: none;
+  border-radius: 9px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.switch:hover {
+  background: #9ca3af;
+}
+
+.switch.active {
+  background: #319795;
+}
+
+.switch:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(49, 151, 149, 0.2);
+}
+
+.switch-slider {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 14px;
+  height: 14px;
+  background: white;
+  border-radius: 50%;
+  transition: transform 0.3s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.switch.active .switch-slider {
+  transform: translateX(14px);
 }
 
 .main-content {
@@ -112,7 +219,7 @@
 
 .key-metric {
   background: white;
-  padding: 12px 14px;
+  padding: 10px 14px;
   border-radius: 6px;
   text-align: center;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
@@ -121,7 +228,7 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  min-height: 100px;
+  min-height: 70px;
 }
 
 .key-metric.highlighted {
