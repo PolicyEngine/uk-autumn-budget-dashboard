@@ -49,7 +49,7 @@ function App() {
   const [results, setResults] = useState(null)
   const [behavioralResponses, setBehavioralResponses] = useState(false)
 
-  // Initialize from URL
+  // Initialize from URL or select all policies by default
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
     const policiesParam = params.get('policies')
@@ -57,6 +57,10 @@ function App() {
     if (policiesParam) {
       const policies = policiesParam.split(',')
       setSelectedPolicies(policies)
+    } else {
+      // Select all policies by default
+      const allPolicyIds = DEFAULT_POLICIES.map(p => p.id)
+      setSelectedPolicies(allPolicyIds)
     }
   }, [])
 
@@ -189,7 +193,7 @@ function App() {
             </div>
           </div>
           <div className="header-center">
-            <h1>UK Autumn Budget 2025</h1>
+            <h1>UK Autumn Budget 2025 analysis</h1>
           </div>
           <div className="header-right">
             <img src="/white.png" alt="PolicyEngine" className="policyengine-logo" />
@@ -238,8 +242,8 @@ function App() {
 
                 {/* Section: Who is affected */}
                 <div className="section-header">
-                  <h2>Who is affected</h2>
-                  <p>Understanding which households experience gains or losses across the income distribution</p>
+                  <h2>Household and fiscal impacts</h2>
+                  <p>How selected policies affect individual households and government revenues over time</p>
                 </div>
                 <div className="primary-charts">
                   <HouseholdChart data={results.householdData} />
@@ -248,12 +252,32 @@ function App() {
 
                 {/* Section: Impact over time and distribution */}
                 <div className="section-header">
-                  <h2>Fiscal and distributional impact</h2>
-                  <p>Budget projections through 2029 and percentage change in net income by decile</p>
+                  <h2>Distributional analysis</h2>
+                  <p>Income changes across deciles and the proportion of winners and losers from policy reforms</p>
                 </div>
                 <div className="secondary-charts">
                   <DistributionalChart data={results.distributionalData} />
                   <WaterfallChart data={results.waterfallData} />
+                </div>
+
+                {/* Section: Breakdown of the effects */}
+                <div className="section-header">
+                  <h2>Geographic and demographic breakdown</h2>
+                  <p>Regional variation in policy impacts across Parliamentary constituencies and demographic groups</p>
+                </div>
+                <div className="secondary-charts">
+                  <div className="constituency-map-container">
+                    <h2>Impact by constituency</h2>
+                    <p className="chart-description">
+                      Average relative income change in each Parliamentary constituency, revealing geographic patterns in how policies affect different regions.
+                    </p>
+                    <img
+                      src="/Screenshot 2025-10-22 at 16.17.27.png"
+                      alt="Relative income changes by Parliamentary constituency"
+                      className="constituency-map"
+                    />
+                  </div>
+                  <div className="constituency-placeholder"></div>
                 </div>
               </>
             )}

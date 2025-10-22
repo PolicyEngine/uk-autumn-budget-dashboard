@@ -13,7 +13,7 @@
 .app-header {
   background: linear-gradient(135deg, #319795 0%, #2c8886 100%);
   border-bottom: none;
-  padding: 12px 24px;
+  padding: 8px 24px;
   position: sticky;
   top: 0;
   z-index: 100;
@@ -54,7 +54,7 @@
 }
 
 .header-center h1 {
-  font-size: 1.4rem;
+  font-size: 1.2rem;
   font-weight: 600;
   color: white;
   margin: 0;
@@ -73,7 +73,7 @@
 }
 
 .policyengine-logo {
-  height: 32px;
+  height: 24px;
   width: auto;
   opacity: 0.95;
   transition: opacity 0.2s ease;
@@ -298,6 +298,37 @@
   grid-template-columns: repeat(2, 1fr);
   gap: 16px;
   margin-bottom: 16px;
+}
+
+.constituency-map-container {
+  background: white;
+  padding: 16px;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  animation: fadeIn 0.4s ease 0.2s both;
+}
+
+.constituency-map-container h2 {
+  margin: 0 0 4px 0;
+  color: #374151;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.constituency-map {
+  width: 100%;
+  height: 300px;
+  object-fit: contain;
+  display: block;
+  margin-top: 8px;
+}
+
+.constituency-placeholder {
+  background: white;
+  padding: 16px;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  animation: fadeIn 0.4s ease 0.2s both;
 }
 
 .chart-description {

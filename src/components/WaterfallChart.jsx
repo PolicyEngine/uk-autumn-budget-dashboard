@@ -17,9 +17,9 @@ function WaterfallChart({ data }) {
 
   return (
     <div className="waterfall-chart">
-      <h2>Change in income</h2>
+      <h2>Winners and losers</h2>
       <p className="chart-description">
-        Distribution of income changes across the population, showing the share of people experiencing different levels of impact.
+        Proportion of the population experiencing income gains or losses, broken down by magnitude of change from the policy reforms.
       </p>
 
       <ResponsiveContainer width="100%" height={300}>

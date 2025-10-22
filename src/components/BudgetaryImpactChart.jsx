@@ -8,9 +8,9 @@ function BudgetaryImpactChart({ data, policyColors }) {
 
   return (
     <div className="budgetary-impact-chart">
-      <h2>Budgetary impact through years</h2>
+      <h2>Fiscal impact over time</h2>
       <p className="chart-description">
-        Projected revenue or expenditure impact of selected policies from 2026 to 2029, measured in billions of pounds.
+        Annual budgetary impact of selected policies from 2026 to 2029. Positive values indicate revenue gains; negative values indicate revenue losses.
       </p>
 
       <ResponsiveContainer width="100%" height={300}>

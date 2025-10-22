@@ -8,9 +8,9 @@ function DistributionalChart({ data }) {
 
   return (
     <div className="distributional-chart">
-      <h2>Distributional impact by income decile</h2>
+      <h2>Impact by income decile</h2>
       <p className="chart-description">
-        Percentage change in net income by income decile, showing how selected policies affect households across the income distribution.
+        Average percentage change in net income for each income decile, from the poorest 10% (1st) to the richest 10% (10th) of households.
       </p>
 
       <ResponsiveContainer width="100%" height={300}>

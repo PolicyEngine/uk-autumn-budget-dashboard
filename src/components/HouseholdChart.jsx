@@ -6,9 +6,9 @@ function HouseholdChart({ data }) {
 
   return (
     <div className="household-chart">
-      <h2>Household income impact</h2>
+      <h2>Income changes by household</h2>
       <p className="chart-description">
-        Distribution of household income changes across different income levels. Each dot represents a household.
+        Net income change for each household plotted against their baseline income. Points above zero represent gains; points below represent losses.
       </p>
 
       <ResponsiveContainer width="100%" height={300}>
