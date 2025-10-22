@@ -200,11 +200,44 @@ function App() {
           <div className="results-container">
             {results && (
               <>
-                <MetricsBar metrics={results.metrics} />
-                <div className="charts-grid">
-                  <HouseholdChart data={results.householdData} />
-                  <BudgetaryImpactChart data={results.budgetData} policyColors={POLICY_COLORS} />
+                {/* Key Metrics Row */}
+                <div className="key-metrics-row">
+                  <div className="key-metric highlighted">
+                    <div className="metric-label-small">2026 budgetary impact</div>
+                    <div className="metric-number">£{results.metrics.budgetaryImpact2026.toFixed(2)}bn</div>
+                    <div className="metric-text">Projected fiscal impact of selected policy reforms</div>
+                  </div>
+                  <div className="key-metric">
+                    <div className="metric-number">{results.metrics.percentAffected.toFixed(1)}%</div>
+                    <div className="metric-text">of people affected</div>
+                  </div>
+                  <div className="key-metric">
+                    <div className="metric-number">{results.metrics.giniChange.toFixed(2)}pp</div>
+                    <div className="metric-text">change in inequality (Gini)</div>
+                  </div>
+                  <div className="key-metric">
+                    <div className="metric-number">{results.metrics.povertyRateChange.toFixed(2)}pp</div>
+                    <div className="metric-text">change in poverty rate</div>
+                  </div>
+                </div>
+
+                {/* Section: Who is affected */}
+                <div className="section-header">
+                  <h2>Who is affected</h2>
+                  <p>Understanding which households experience gains or losses across the income distribution</p>
+                </div>
+                <div className="primary-charts">
                   <WaterfallChart data={results.waterfallData} />
+                  <HouseholdChart data={results.householdData} />
+                </div>
+
+                {/* Section: Impact over time and distribution */}
+                <div className="section-header">
+                  <h2>Fiscal and distributional impact</h2>
+                  <p>Budget projections through 2029 and percentage change in net income by decile</p>
+                </div>
+                <div className="secondary-charts">
+                  <BudgetaryImpactChart data={results.budgetData} policyColors={POLICY_COLORS} />
                   <DistributionalChart data={results.distributionalData} />
                 </div>
               </>

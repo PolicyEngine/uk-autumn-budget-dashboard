@@ -102,11 +102,95 @@
   animation: fadeIn 0.4s ease;
 }
 
-.charts-grid {
+/* Key Metrics Row */
+.key-metrics-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.key-metric {
+  background: white;
+  padding: 12px 14px;
+  border-radius: 6px;
+  text-align: center;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border-top: 3px solid #319795;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100px;
+}
+
+.key-metric.highlighted {
+  background: linear-gradient(135deg, #319795 0%, #2c8886 100%);
+  border-top: 3px solid #277674;
+  box-shadow: 0 2px 8px rgba(49, 151, 149, 0.25);
+}
+
+.key-metric.highlighted .metric-number {
+  color: white;
+}
+
+.key-metric.highlighted .metric-text {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.metric-label-small {
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.9);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+}
+
+.metric-number {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #319795;
+  line-height: 1.1;
+  margin-bottom: 4px;
+  font-variant-numeric: tabular-nums;
+}
+
+.metric-text {
+  font-size: 0.75rem;
+  color: #6b7280;
+  font-weight: 500;
+  line-height: 1.25;
+}
+
+/* Section Headers */
+.section-header {
+  margin: 24px 0 12px 0;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #319795;
+}
+
+.section-header h2 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #374151;
+  margin: 0 0 4px 0;
+}
+
+.section-header p {
+  font-size: 0.85rem;
+  color: #6b7280;
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* Chart Grids */
+.primary-charts,
+.secondary-charts {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 16px;
-  margin-top: 0;
+  margin-bottom: 16px;
 }
 
 .chart-description {
@@ -127,9 +211,18 @@
 
 /* Responsive design */
 @media (max-width: 1200px) {
-  .charts-grid {
+  .primary-charts,
+  .secondary-charts {
     grid-template-columns: 1fr;
-    gap: 20px;
+    gap: 16px;
+  }
+
+  .key-metrics-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .metric-number {
+    font-size: 1.6rem;
   }
 }
 
@@ -146,6 +239,13 @@
 
   .header-center {
     order: -1;
+  }
+}
+
+@media (max-width: 768px) {
+  .key-metrics-row {
+    grid-template-columns: 1fr;
+    gap: 12px;
   }
 }
 
@@ -167,6 +267,10 @@
   }
 
   .empty-state h2 {
+    font-size: 1.4rem;
+  }
+
+  .metric-number {
     font-size: 1.4rem;
   }
 }
