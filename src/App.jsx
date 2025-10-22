@@ -1,74 +1,54 @@
 import { useState, useEffect, useMemo } from 'react'
-import Sidebar from './components/Sidebar'
-import Results from './components/Results'
+import PolicySelector from './components/PolicySelector'
+import MetricsBar from './components/MetricsBar'
+import HouseholdChart from './components/HouseholdChart'
+import BudgetaryImpactChart from './components/BudgetaryImpactChart'
+import DistributionalChart from './components/DistributionalChart'
+import WaterfallChart from './components/WaterfallChart'
 import './App.css'
 
-// Default policy options for UK Autumn Budget analysis
+// Policy definitions
 const DEFAULT_POLICIES = [
   {
     id: 'income_tax_threshold',
     name: 'Personal allowance freeze extension',
-    description: 'Extend the freeze on income tax thresholds beyond 2028',
-    hasParams: true,
-    params: {
-      extensionYears: { min: 1, max: 5, default: 2, label: 'Extension years' }
-    }
+    description: 'Extend the freeze on income tax thresholds beyond 2028'
   },
   {
     id: 'ni_rates',
     name: 'National Insurance rate changes',
-    description: 'Adjust National Insurance contribution rates',
-    hasParams: true,
-    params: {
-      rateChange: { min: -2, max: 2, default: 0.5, step: 0.1, label: 'Rate change (pp)' }
-    }
+    description: 'Adjust National Insurance contribution rates'
   },
   {
     id: 'vat_standard',
     name: 'VAT rate adjustment',
-    description: 'Change the standard rate of VAT',
-    hasParams: true,
-    params: {
-      newRate: { min: 15, max: 25, default: 20, step: 0.5, label: 'New rate (%)' }
-    }
+    description: 'Change the standard rate of VAT'
   },
   {
     id: 'corp_tax',
     name: 'Corporation tax changes',
-    description: 'Adjust the main rate of corporation tax',
-    hasParams: true,
-    params: {
-      newRate: { min: 19, max: 30, default: 25, label: 'New rate (%)' }
-    }
+    description: 'Adjust the main rate of corporation tax'
   },
   {
     id: 'fuel_duty',
     name: 'Fuel duty changes',
-    description: 'End or modify the fuel duty freeze',
-    hasParams: true,
-    params: {
-      increase: { min: 0, max: 10, default: 5, step: 0.5, label: 'Increase (p/litre)' }
-    }
+    description: 'End or modify the fuel duty freeze'
   },
   {
     id: 'pension_relief',
     name: 'Pension tax relief reform',
-    description: 'Modify the rate of pension contribution tax relief',
-    hasParams: true,
-    params: {
-      reliefRate: { min: 20, max: 40, default: 30, label: 'Relief rate (%)' }
-    }
+    description: 'Modify the rate of pension contribution tax relief'
   }
 ]
 
+// Policy colors for charts
+const POLICY_COLORS = ['#319795', '#5A8FB8', '#B8875A', '#5FB88A', '#4A7BA7', '#C59A5A']
+
 function App() {
   const [selectedPolicies, setSelectedPolicies] = useState([])
-  const [policyParams, setPolicyParams] = useState({})
   const [results, setResults] = useState(null)
-  const [isLoading, setIsLoading] = useState(false)
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(true)
 
-  // Initialize state from URL on mount
+  // Initialize from URL
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
     const policiesParam = params.get('policies')
@@ -76,46 +56,21 @@ function App() {
     if (policiesParam) {
       const policies = policiesParam.split(',')
       setSelectedPolicies(policies)
-
-      // Initialize parameters for selected policies
-      const initialParams = {}
-      policies.forEach(policyId => {
-        const policy = DEFAULT_POLICIES.find(p => p.id === policyId)
-        if (policy && policy.hasParams) {
-          initialParams[policyId] = {}
-          Object.entries(policy.params).forEach(([key, config]) => {
-            const urlValue = params.get(`${policyId}_${key}`)
-            initialParams[policyId][key] = urlValue ? parseFloat(urlValue) : config.default
-          })
-        }
-      })
-      setPolicyParams(initialParams)
     }
   }, [])
 
-  // Update URL when state changes
+  // Update URL when policies change
   useEffect(() => {
     if (selectedPolicies.length === 0) {
       window.history.replaceState({}, '', window.location.pathname)
-      return
+    } else {
+      const params = new URLSearchParams()
+      params.set('policies', selectedPolicies.join(','))
+      window.history.replaceState({}, '', `?${params.toString()}`)
     }
+  }, [selectedPolicies])
 
-    const params = new URLSearchParams()
-    params.set('policies', selectedPolicies.join(','))
-
-    // Add policy parameters to URL
-    selectedPolicies.forEach(policyId => {
-      if (policyParams[policyId]) {
-        Object.entries(policyParams[policyId]).forEach(([key, value]) => {
-          params.set(`${policyId}_${key}`, value)
-        })
-      }
-    })
-
-    window.history.replaceState({}, '', `?${params.toString()}`)
-  }, [selectedPolicies, policyParams])
-
-  // Auto-run analysis when policies or parameters change
+  // Run analysis when policies change
   useEffect(() => {
     if (selectedPolicies.length === 0) {
       setResults(null)
@@ -123,142 +78,139 @@ function App() {
     }
 
     runAnalysis()
-  }, [selectedPolicies, policyParams])
+  }, [selectedPolicies])
 
   const runAnalysis = async () => {
-    setIsLoading(true)
+    // Simulate API call - in production, this would call PolicyEngine
+    await new Promise(resolve => setTimeout(resolve, 500))
 
-    // Simulate PolicyEngine analysis - replace with actual API call
-    // when the budget is announced and PolicyEngine integration is ready
-    await new Promise(resolve => setTimeout(resolve, 1000))
+    // Generate mock data based on selected policies
+    const numPolicies = selectedPolicies.length
 
-    // Mock results data
-    const mockResults = {
-      policies: selectedPolicies.map(id => {
-        const policy = DEFAULT_POLICIES.find(p => p.id === id)
-        return {
-          id,
-          name: policy.name,
-          params: policyParams[id] || {}
-        }
-      }),
-      budgetaryImpact: {
-        years: [2025, 2026, 2027, 2028, 2029, 2030],
-        data: selectedPolicies.map((id, idx) => ({
-          policy: DEFAULT_POLICIES.find(p => p.id === id).name,
-          values: [2.1 + idx, 2.3 + idx, 2.5 + idx, 2.7 + idx, 2.9 + idx, 3.1 + idx]
-        }))
-      },
-      povertyImpact: {
-        absolute: { baseline: 14.2, withPolicies: 13.8 },
-        relative: { baseline: 22.1, withPolicies: 21.5 }
-      },
-      affectedHouseholds: 5200000,
-      averageImpact: 425
+    // Mock metrics for 2026
+    const mockMetrics = {
+      budgetaryImpact2026: 2.5 + (numPolicies * 0.8),
+      percentAffected: 35.2 + (numPolicies * 5.3),
+      giniChange: -0.15 - (numPolicies * 0.05),
+      povertyRateChange: -0.42 - (numPolicies * 0.12)
     }
 
-    setResults(mockResults)
-    setIsLoading(false)
+    // Mock budgetary impact data (only 2026-2029)
+    const years = [2026, 2027, 2028, 2029]
+    const budgetData = years.map((year, idx) => {
+      const dataPoint = { year }
+      selectedPolicies.forEach((policyId, pIdx) => {
+        const policy = DEFAULT_POLICIES.find(p => p.id === policyId)
+        dataPoint[policy.name] = 2.1 + (pIdx * 0.5) + (idx * 0.3)
+      })
+      return dataPoint
+    })
+
+    // Mock distributional data (percentage changes)
+    const distributionalData = [
+      { decile: '1st', percentChange: 2.1 + (numPolicies * 0.3) },
+      { decile: '2nd', percentChange: 1.8 + (numPolicies * 0.25) },
+      { decile: '3rd', percentChange: 1.5 + (numPolicies * 0.2) },
+      { decile: '4th', percentChange: 1.2 + (numPolicies * 0.15) },
+      { decile: '5th', percentChange: 0.9 + (numPolicies * 0.1) },
+      { decile: '6th', percentChange: 0.6 + (numPolicies * 0.05) },
+      { decile: '7th', percentChange: 0.3 },
+      { decile: '8th', percentChange: 0.0 - (numPolicies * 0.05) },
+      { decile: '9th', percentChange: -0.3 - (numPolicies * 0.1) },
+      { decile: '10th', percentChange: -0.6 - (numPolicies * 0.15) }
+    ]
+
+    // Mock household scatter data
+    const householdData = []
+    for (let i = 0; i < 500; i++) {
+      const income = Math.exp(Math.random() * 5.5 + 9.5) // Log-normal distribution
+      const impact = (Math.random() - 0.5) * 8000 + (numPolicies * 200)
+      householdData.push({ x: impact, y: income })
+    }
+
+    // Mock waterfall data (income change distribution)
+    const waterfallData = [
+      { category: 'All', value: 4, percentLabel: '96%' },
+      { category: '10', value: 100, percentLabel: '100%' },
+      { category: '9', value: 100, percentLabel: '100%' },
+      { category: '8', value: 100, percentLabel: '100%' },
+      { category: '7', value: 100, percentLabel: '100%' },
+      { category: '6', value: 99, percentLabel: '99%' },
+      { category: '5', value: 99, percentLabel: '99%' },
+      { category: '4', value: 93, percentLabel: '93%' },
+      { category: '3', value: 92, percentLabel: '92%' },
+      { category: '2', value: 84, percentLabel: '84%' },
+      { category: '1', value: 89, percentLabel: '89%' }
+    ]
+
+    setResults({
+      metrics: mockMetrics,
+      budgetData,
+      distributionalData,
+      householdData,
+      waterfallData
+    })
   }
 
   const handlePolicyToggle = (policyId) => {
     setSelectedPolicies(prev => {
       if (prev.includes(policyId)) {
-        // Remove policy
-        const newParams = { ...policyParams }
-        delete newParams[policyId]
-        setPolicyParams(newParams)
-        const newPolicies = prev.filter(id => id !== policyId)
-        // Close sidebar when no policies are selected
-        if (newPolicies.length === 0) {
-          setIsSidebarCollapsed(true)
-        }
-        return newPolicies
+        return prev.filter(id => id !== policyId)
       } else {
-        // Add policy with default parameters
-        const policy = DEFAULT_POLICIES.find(p => p.id === policyId)
-        if (policy.hasParams) {
-          const defaultParams = {}
-          Object.entries(policy.params).forEach(([key, config]) => {
-            defaultParams[key] = config.default
-          })
-          setPolicyParams(prev => ({ ...prev, [policyId]: defaultParams }))
-        }
-        // Close sidebar when the first policy is selected
-        if (prev.length === 0) {
-          setIsSidebarCollapsed(true)
-        }
         return [...prev, policyId]
       }
     })
   }
 
-  const handleParamChange = (policyId, paramKey, value) => {
-    setPolicyParams(prev => ({
-      ...prev,
-      [policyId]: {
-        ...prev[policyId],
-        [paramKey]: value
-      }
-    }))
-  }
-
   return (
     <div className="app">
-      <Sidebar
-        policies={DEFAULT_POLICIES}
-        selectedPolicies={selectedPolicies}
-        policyParams={policyParams}
-        onPolicyToggle={handlePolicyToggle}
-        onParamChange={handleParamChange}
-        isCollapsed={isSidebarCollapsed}
-        onToggleCollapse={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
-      />
-
-      <main className={`main-content ${isSidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
-        <header className="header">
-          <div>
-            <h1>UK Autumn Budget 2025</h1>
+      <header className="app-header">
+        <div className="header-content">
+          <div className="header-left">
+            <PolicySelector
+              policies={DEFAULT_POLICIES}
+              selectedPolicies={selectedPolicies}
+              onPolicyToggle={handlePolicyToggle}
+            />
           </div>
-          {results && (
-            <div className="download-buttons-wrapper">
-              <button
-                className="download-button-header"
-                onClick={() => window.dispatchEvent(new CustomEvent('downloadDataTxt'))}
-                data-tooltip="Download results in TXT file"
-                aria-label="Download results in TXT file"
-              >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                  <polyline points="14 2 14 8 20 8"></polyline>
-                  <line x1="16" y1="13" x2="8" y2="13"></line>
-                  <line x1="16" y1="17" x2="8" y2="17"></line>
-                  <polyline points="10 9 9 9 8 9"></polyline>
-                </svg>
-              </button>
-              <button
-                className="download-button-header"
-                onClick={() => window.dispatchEvent(new CustomEvent('downloadDataCsv'))}
-                data-tooltip="Download results in CSV file"
-                aria-label="Download results in CSV file"
-              >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                  <polyline points="14 2 14 8 20 8"></polyline>
-                  <rect x="8" y="12" width="8" height="8" rx="1"></rect>
-                  <line x1="12" y1="12" x2="12" y2="20"></line>
-                  <line x1="8" y1="16" x2="16" y2="16"></line>
-                </svg>
-              </button>
-            </div>
-          )}
-        </header>
+          <div className="header-center">
+            <h1>UK Autumn Budget 2025</h1>
+            <p className="subtitle">Policy impact analysis dashboard</p>
+          </div>
+          <div className="header-right"></div>
+        </div>
+      </header>
 
-        <Results
-          results={results}
-          isLoading={isLoading}
-          selectedPolicies={selectedPolicies}
-        />
+      <main className="main-content">
+        {selectedPolicies.length === 0 ? (
+          <div className="empty-state">
+            <h2>Welcome to the UK Autumn Budget 2025 dashboard</h2>
+            <p>
+              Select one or more policies from the dropdown above to analyse their potential impacts on UK households and public finances.
+            </p>
+            <p className="help-text">
+              This dashboard is powered by{' '}
+              <a href="https://policyengine.org/uk" target="_blank" rel="noopener noreferrer">
+                PolicyEngine UK
+              </a>
+              , a free, open-source tool for computing the impact of public policy.
+            </p>
+          </div>
+        ) : (
+          <div className="results-container">
+            {results && (
+              <>
+                <MetricsBar metrics={results.metrics} />
+                <div className="charts-grid">
+                  <HouseholdChart data={results.householdData} />
+                  <BudgetaryImpactChart data={results.budgetData} policyColors={POLICY_COLORS} />
+                  <WaterfallChart data={results.waterfallData} />
+                  <DistributionalChart data={results.distributionalData} />
+                </div>
+              </>
+            )}
+          </div>
+        )}
       </main>
     </div>
   )
