@@ -212,7 +212,7 @@
 /* Key Metrics Row */
 .key-metrics-row {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: 16px;
   margin-bottom: 20px;
 }
@@ -248,10 +248,13 @@
 .metric-label-small {
   font-size: 0.7rem;
   font-weight: 500;
-  color: rgba(255, 255, 255, 0.9);
-  text-transform: uppercase;
+  color: #6b7280;
   letter-spacing: 0.5px;
   margin-bottom: 6px;
+}
+
+.key-metric.highlighted .metric-label-small {
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .metric-number {
@@ -297,6 +300,10 @@
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 16px;
+  margin-bottom: 16px;
+}
+
+.full-width-section {
   margin-bottom: 16px;
 }
 

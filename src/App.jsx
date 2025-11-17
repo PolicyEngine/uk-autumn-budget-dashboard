@@ -5,39 +5,40 @@ import HouseholdChart from './components/HouseholdChart'
 import BudgetaryImpactChart from './components/BudgetaryImpactChart'
 import DistributionalChart from './components/DistributionalChart'
 import WaterfallChart from './components/WaterfallChart'
+import ConstituencyMap from './components/ConstituencyMap'
 import './App.css'
 
 // Policy definitions
 const DEFAULT_POLICIES = [
   {
-    id: 'income_tax_threshold',
-    name: 'Personal allowance freeze extension',
-    description: 'Extend the freeze on income tax thresholds beyond 2028'
+    id: 'two_child_limit',
+    name: '2 child limit reforms',
+    description: 'Reform the two-child limit on benefits'
   },
   {
-    id: 'ni_rates',
-    name: 'National Insurance rate changes',
-    description: 'Adjust National Insurance contribution rates'
+    id: 'vat_changes',
+    name: 'VAT changes',
+    description: 'Adjust VAT rates and exemptions'
   },
   {
-    id: 'vat_standard',
-    name: 'VAT rate adjustment',
-    description: 'Change the standard rate of VAT'
-  },
-  {
-    id: 'corp_tax',
-    name: 'Corporation tax changes',
-    description: 'Adjust the main rate of corporation tax'
+    id: 'freezing_thresholds',
+    name: 'Freezing thresholds',
+    description: 'Freeze income tax and National Insurance thresholds'
   },
   {
     id: 'fuel_duty',
-    name: 'Fuel duty changes',
-    description: 'End or modify the fuel duty freeze'
+    name: 'Raising fuel duty',
+    description: 'Increase fuel duty rates'
   },
   {
-    id: 'pension_relief',
-    name: 'Pension tax relief reform',
-    description: 'Modify the rate of pension contribution tax relief'
+    id: 'ni_rates',
+    name: 'Adjusting NI rates',
+    description: 'Change National Insurance contribution rates'
+  },
+  {
+    id: 'income_tax_rates',
+    name: 'Adjusting income tax rates',
+    description: 'Modify income tax rate bands'
   }
 ]
 
@@ -94,6 +95,7 @@ function App() {
 
     // Mock metrics for 2026
     const mockMetrics = {
+      fiscalHeadroom2029: 15.3 - (numPolicies * 1.2), // Fiscal headroom in 2029/30
       budgetaryImpact2026: 2.5 + (numPolicies * 0.8),
       percentAffected: 35.2 + (numPolicies * 5.3),
       giniChange: -0.15 - (numPolicies * 0.05),
@@ -223,7 +225,11 @@ function App() {
                 {/* Key Metrics Row */}
                 <div className="key-metrics-row">
                   <div className="key-metric highlighted">
-                    <div className="metric-label-small">2026 budgetary impact</div>
+                    <div className="metric-label-small">Fiscal headroom in 2029/30</div>
+                    <div className="metric-number">£{results.metrics.fiscalHeadroom2029.toFixed(1)}bn</div>
+                  </div>
+                  <div className="key-metric">
+                    <div className="metric-label-small">Budgetary impact in 2026</div>
                     <div className="metric-number">£{results.metrics.budgetaryImpact2026.toFixed(2)}bn</div>
                   </div>
                   <div className="key-metric">
@@ -231,11 +237,11 @@ function App() {
                     <div className="metric-text">of people affected</div>
                   </div>
                   <div className="key-metric">
-                    <div className="metric-number">{results.metrics.giniChange.toFixed(2)}pp</div>
+                    <div className="metric-number">{results.metrics.giniChange.toFixed(2)}</div>
                     <div className="metric-text">change in inequality (Gini)</div>
                   </div>
                   <div className="key-metric">
-                    <div className="metric-number">{results.metrics.povertyRateChange.toFixed(2)}pp</div>
+                    <div className="metric-number">{results.metrics.povertyRateChange.toFixed(2)}</div>
                     <div className="metric-text">change in poverty rate</div>
                   </div>
                 </div>
@@ -266,17 +272,7 @@ function App() {
                   <p>Regional variation in policy impacts across Parliamentary constituencies and demographic groups</p>
                 </div>
                 <div className="secondary-charts">
-                  <div className="constituency-map-container">
-                    <h2>Impact by constituency</h2>
-                    <p className="chart-description">
-                      Average relative income change in each Parliamentary constituency, revealing geographic patterns in how policies affect different regions.
-                    </p>
-                    <img
-                      src="/Screenshot 2025-10-22 at 16.17.27.png"
-                      alt="Relative income changes by Parliamentary constituency"
-                      className="constituency-map"
-                    />
-                  </div>
+                  <ConstituencyMap />
                   <div className="constituency-placeholder"></div>
                 </div>
               </>

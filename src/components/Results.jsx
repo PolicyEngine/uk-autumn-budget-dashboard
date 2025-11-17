@@ -57,7 +57,7 @@ function Results({ results, isLoading, selectedPolicies }) {
     content += `\n\n`
     content += `Affected Households: ${results.affectedHouseholds.toLocaleString('en-GB')}\n`
     content += `Average Impact: £${results.averageImpact}\n`
-    content += `Absolute Poverty Reduction: ${(results.povertyImpact.absolute.baseline - results.povertyImpact.absolute.withPolicies).toFixed(2)}pp\n`
+    content += `Absolute Poverty Reduction: ${(results.povertyImpact.absolute.baseline - results.povertyImpact.absolute.withPolicies).toFixed(2)}\n`
 
     const blob = new Blob([content], { type: 'text/plain' })
     const url = URL.createObjectURL(blob)
@@ -225,7 +225,7 @@ function Results({ results, isLoading, selectedPolicies }) {
             <div className="impact-value">
               <AnimatedNumber
                 value={results.povertyImpact.absolute.baseline - results.povertyImpact.absolute.withPolicies}
-                format={(v) => `${v.toFixed(2)}pp`}
+                format={(v) => `${v.toFixed(2)}`}
               />
             </div>
           </div>
