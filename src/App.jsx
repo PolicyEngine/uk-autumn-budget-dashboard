@@ -222,6 +222,11 @@ function App() {
           <div className="results-container">
             {results && (
               <>
+                {/* Introduction Section */}
+                <div className="intro-section">
+                  <h2>Highlights and introduction</h2>
+                </div>
+
                 {/* Key Metrics Row */}
                 <div className="key-metrics-row">
                   <div className="key-metric highlighted">
@@ -244,6 +249,18 @@ function App() {
                     <div className="metric-number">{results.metrics.povertyRateChange.toFixed(2)}</div>
                     <div className="metric-text">change in poverty rate</div>
                   </div>
+                </div>
+
+                {/* Summary Paragraph */}
+                <div className="summary-paragraph">
+                  <p>
+                    Use the policy selector in the top left to choose which budget reforms to analyse.
+                    This dashboard provides a comprehensive analysis of the selected policy reforms.
+                    The metrics below show the immediate fiscal impact and long-term effects on government finances,
+                    alongside distributional outcomes including changes to inequality and poverty rates.
+                    Use the visualisations to explore how these policies affect different households across
+                    income levels, regions, and demographic groups.
+                  </p>
                 </div>
 
                 {/* Section: Who is affected */}

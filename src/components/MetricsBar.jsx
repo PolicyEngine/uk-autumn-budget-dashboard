@@ -45,7 +45,7 @@ function MetricsBar({ metrics }) {
 
   const formatBillions = (value) => `£${value.toFixed(2)}bn`
   const formatPercent = (value) => `${value.toFixed(1)}%`
-  const formatPercentagePoints = (value) => `${value.toFixed(2)}pp`
+  const formatNumber = (value) => `${value.toFixed(2)}`
 
   return (
     <div className="metrics-bar">
@@ -66,14 +66,14 @@ function MetricsBar({ metrics }) {
       <div className="metric-card">
         <div className="metric-label">Change in inequality</div>
         <div className="metric-value">
-          <AnimatedNumber value={metrics.giniChange} format={formatPercentagePoints} />
+          <AnimatedNumber value={metrics.giniChange} format={formatNumber} />
         </div>
       </div>
 
       <div className="metric-card">
         <div className="metric-label">Change in poverty rate</div>
         <div className="metric-value">
-          <AnimatedNumber value={metrics.povertyRateChange} format={formatPercentagePoints} />
+          <AnimatedNumber value={metrics.povertyRateChange} format={formatNumber} />
         </div>
       </div>
     </div>
