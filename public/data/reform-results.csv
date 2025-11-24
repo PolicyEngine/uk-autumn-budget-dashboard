@@ -1,75 +1,135 @@
-reform_id,reform_name,metric_type,year,value,unit,decile,category
-two_child_limit,2 child limit reforms,poverty_rate_change,2026,-8.617202758789062,percent,all,poverty_bhc
-two_child_limit,2 child limit reforms,budgetary_impact,2026,-2.816193254209347,GBP_billions,,
-two_child_limit,2 child limit reforms,budgetary_impact,2027,-3.018368956328293,GBP_billions,,
-two_child_limit,2 child limit reforms,budgetary_impact,2028,-3.269026401221238,GBP_billions,,
-two_child_limit,2 child limit reforms,budgetary_impact,2029,-3.3662672017927906,GBP_billions,,
-two_child_limit,2 child limit reforms,distributional_impact,2026,0.977251410484314,percent,1st,
-two_child_limit,2 child limit reforms,distributional_impact,2026,1.2458162307739258,percent,2nd,
-two_child_limit,2 child limit reforms,distributional_impact,2026,0.41301771998405457,percent,3rd,
-two_child_limit,2 child limit reforms,distributional_impact,2026,0.2611231505870819,percent,4th,
-two_child_limit,2 child limit reforms,distributional_impact,2026,0.1231355369091034,percent,5th,
-two_child_limit,2 child limit reforms,distributional_impact,2026,0.033640988171100616,percent,6th,
-two_child_limit,2 child limit reforms,distributional_impact,2026,8.934312063502148e-06,percent,7th,
-two_child_limit,2 child limit reforms,distributional_impact,2026,1.4526763152389321e-05,percent,8th,
-two_child_limit,2 child limit reforms,distributional_impact,2026,0.0,percent,9th,
-two_child_limit,2 child limit reforms,distributional_impact,2026,0.0004855747101828456,percent,10th,
-two_child_limit,2 child limit reforms,winners_losers,2026,0.0,percent,1,Lose more than 5%
-two_child_limit,2 child limit reforms,winners_losers,2026,0.0,percent,1,Lose less than 5%
-two_child_limit,2 child limit reforms,winners_losers,2026,88.87045989268483,percent,1,No change
-two_child_limit,2 child limit reforms,winners_losers,2026,1.2760800390690403,percent,1,Gain less than 5%
-two_child_limit,2 child limit reforms,winners_losers,2026,9.853460068246136,percent,1,Gain more than 5%
-two_child_limit,2 child limit reforms,winners_losers,2026,0.0,percent,2,Lose more than 5%
-two_child_limit,2 child limit reforms,winners_losers,2026,0.0,percent,2,Lose less than 5%
-two_child_limit,2 child limit reforms,winners_losers,2026,84.10170452338936,percent,2,No change
-two_child_limit,2 child limit reforms,winners_losers,2026,1.4777392223652484,percent,2,Gain less than 5%
-two_child_limit,2 child limit reforms,winners_losers,2026,14.420556254245396,percent,2,Gain more than 5%
-two_child_limit,2 child limit reforms,winners_losers,2026,0.0,percent,3,Lose more than 5%
-two_child_limit,2 child limit reforms,winners_losers,2026,0.0,percent,3,Lose less than 5%
-two_child_limit,2 child limit reforms,winners_losers,2026,91.93561579470543,percent,3,No change
-two_child_limit,2 child limit reforms,winners_losers,2026,0.525859156322133,percent,3,Gain less than 5%
-two_child_limit,2 child limit reforms,winners_losers,2026,7.538525048972435,percent,3,Gain more than 5%
-two_child_limit,2 child limit reforms,winners_losers,2026,0.0,percent,4,Lose more than 5%
-two_child_limit,2 child limit reforms,winners_losers,2026,0.0,percent,4,Lose less than 5%
-two_child_limit,2 child limit reforms,winners_losers,2026,94.61255334675356,percent,4,No change
-two_child_limit,2 child limit reforms,winners_losers,2026,0.01792599570478726,percent,4,Gain less than 5%
-two_child_limit,2 child limit reforms,winners_losers,2026,5.369520657541654,percent,4,Gain more than 5%
-two_child_limit,2 child limit reforms,winners_losers,2026,0.0,percent,5,Lose more than 5%
-two_child_limit,2 child limit reforms,winners_losers,2026,0.0,percent,5,Lose less than 5%
-two_child_limit,2 child limit reforms,winners_losers,2026,97.41914265733826,percent,5,No change
-two_child_limit,2 child limit reforms,winners_losers,2026,0.06443330404469813,percent,5,Gain less than 5%
-two_child_limit,2 child limit reforms,winners_losers,2026,2.516424038617052,percent,5,Gain more than 5%
-two_child_limit,2 child limit reforms,winners_losers,2026,0.0,percent,6,Lose more than 5%
-two_child_limit,2 child limit reforms,winners_losers,2026,0.0,percent,6,Lose less than 5%
-two_child_limit,2 child limit reforms,winners_losers,2026,98.2729126580514,percent,6,No change
-two_child_limit,2 child limit reforms,winners_losers,2026,1.0974844930435292,percent,6,Gain less than 5%
-two_child_limit,2 child limit reforms,winners_losers,2026,0.6296028489050799,percent,6,Gain more than 5%
-two_child_limit,2 child limit reforms,winners_losers,2026,0.0,percent,7,Lose more than 5%
-two_child_limit,2 child limit reforms,winners_losers,2026,0.0,percent,7,Lose less than 5%
-two_child_limit,2 child limit reforms,winners_losers,2026,99.99976084158976,percent,7,No change
-two_child_limit,2 child limit reforms,winners_losers,2026,3.537441932253659e-05,percent,7,Gain less than 5%
-two_child_limit,2 child limit reforms,winners_losers,2026,0.00020378399090714163,percent,7,Gain more than 5%
-two_child_limit,2 child limit reforms,winners_losers,2026,0.0,percent,8,Lose more than 5%
-two_child_limit,2 child limit reforms,winners_losers,2026,0.0,percent,8,Lose less than 5%
-two_child_limit,2 child limit reforms,winners_losers,2026,99.999471818466,percent,8,No change
-two_child_limit,2 child limit reforms,winners_losers,2026,0.0,percent,8,Gain less than 5%
-two_child_limit,2 child limit reforms,winners_losers,2026,0.0005281815339959299,percent,8,Gain more than 5%
-two_child_limit,2 child limit reforms,winners_losers,2026,0.0,percent,9,Lose more than 5%
-two_child_limit,2 child limit reforms,winners_losers,2026,0.0,percent,9,Lose less than 5%
-two_child_limit,2 child limit reforms,winners_losers,2026,100.0,percent,9,No change
-two_child_limit,2 child limit reforms,winners_losers,2026,0.0,percent,9,Gain less than 5%
-two_child_limit,2 child limit reforms,winners_losers,2026,0.0,percent,9,Gain more than 5%
-two_child_limit,2 child limit reforms,winners_losers,2026,0.0,percent,10,Lose more than 5%
-two_child_limit,2 child limit reforms,winners_losers,2026,0.0,percent,10,Lose less than 5%
-two_child_limit,2 child limit reforms,winners_losers,2026,99.94660932660187,percent,10,No change
-two_child_limit,2 child limit reforms,winners_losers,2026,0.05339067339812264,percent,10,Gain less than 5%
-two_child_limit,2 child limit reforms,winners_losers,2026,0.0,percent,10,Gain more than 5%
-two_child_limit,2 child limit reforms,winners_losers,2026,0.0,percent,All,Lose more than 5%
-two_child_limit,2 child limit reforms,winners_losers,2026,0.0,percent,All,Lose less than 5%
-two_child_limit,2 child limit reforms,winners_losers,2026,95.56198317660018,percent,All,No change
-two_child_limit,2 child limit reforms,winners_losers,2026,0.4460044104390283,percent,All,Gain less than 5%
-two_child_limit,2 child limit reforms,winners_losers,2026,3.992012412960798,percent,All,Gain more than 5%
-two_child_limit,2 child limit reforms,people_affected,2026,4.438016823399826,percent,all,affected
-two_child_limit,2 child limit reforms,gini_change,2026,0.00019693171693202505,coefficient,all,gini
-two_child_limit,2 child limit reforms,poverty_rate_change_pp,2026,-1.0115594863891602,percentage_points,all,poverty_bhc
-two_child_limit,2 child limit reforms,poverty_rate_change_pct,2026,-8.617202758789062,percent,all,poverty_bhc
+reform_id,reform_name,metric_type,year,value,unit,decile,category,employment_income
+two_child_limit,2 child limit reforms,poverty_rate_change,2026,-8.617202758789062,percent,all,poverty_bhc,
+two_child_limit,2 child limit reforms,budgetary_impact,2026,-2.816193254209347,GBP_billions,,,
+two_child_limit,2 child limit reforms,budgetary_impact,2027,-3.018368956328293,GBP_billions,,,
+two_child_limit,2 child limit reforms,budgetary_impact,2028,-3.269026401221238,GBP_billions,,,
+two_child_limit,2 child limit reforms,budgetary_impact,2029,-3.3662672017927906,GBP_billions,,,
+two_child_limit,2 child limit reforms,distributional_impact,2026,0.977251410484314,percent,1st,,
+two_child_limit,2 child limit reforms,distributional_impact,2026,1.2458162307739258,percent,2nd,,
+two_child_limit,2 child limit reforms,distributional_impact,2026,0.41301771998405457,percent,3rd,,
+two_child_limit,2 child limit reforms,distributional_impact,2026,0.2611231505870819,percent,4th,,
+two_child_limit,2 child limit reforms,distributional_impact,2026,0.1231355369091034,percent,5th,,
+two_child_limit,2 child limit reforms,distributional_impact,2026,0.033640988171100616,percent,6th,,
+two_child_limit,2 child limit reforms,distributional_impact,2026,8.934312063502148e-06,percent,7th,,
+two_child_limit,2 child limit reforms,distributional_impact,2026,1.4526763152389321e-05,percent,8th,,
+two_child_limit,2 child limit reforms,distributional_impact,2026,0.0,percent,9th,,
+two_child_limit,2 child limit reforms,distributional_impact,2026,0.0004855747101828456,percent,10th,,
+two_child_limit,2 child limit reforms,winners_losers,2026,0.0,percent,1,Lose more than 5%,
+two_child_limit,2 child limit reforms,winners_losers,2026,0.0,percent,1,Lose less than 5%,
+two_child_limit,2 child limit reforms,winners_losers,2026,88.87045989268483,percent,1,No change,
+two_child_limit,2 child limit reforms,winners_losers,2026,1.2760800390690403,percent,1,Gain less than 5%,
+two_child_limit,2 child limit reforms,winners_losers,2026,9.853460068246136,percent,1,Gain more than 5%,
+two_child_limit,2 child limit reforms,winners_losers,2026,0.0,percent,2,Lose more than 5%,
+two_child_limit,2 child limit reforms,winners_losers,2026,0.0,percent,2,Lose less than 5%,
+two_child_limit,2 child limit reforms,winners_losers,2026,84.10170452338936,percent,2,No change,
+two_child_limit,2 child limit reforms,winners_losers,2026,1.4777392223652484,percent,2,Gain less than 5%,
+two_child_limit,2 child limit reforms,winners_losers,2026,14.420556254245396,percent,2,Gain more than 5%,
+two_child_limit,2 child limit reforms,winners_losers,2026,0.0,percent,3,Lose more than 5%,
+two_child_limit,2 child limit reforms,winners_losers,2026,0.0,percent,3,Lose less than 5%,
+two_child_limit,2 child limit reforms,winners_losers,2026,91.93561579470543,percent,3,No change,
+two_child_limit,2 child limit reforms,winners_losers,2026,0.525859156322133,percent,3,Gain less than 5%,
+two_child_limit,2 child limit reforms,winners_losers,2026,7.538525048972435,percent,3,Gain more than 5%,
+two_child_limit,2 child limit reforms,winners_losers,2026,0.0,percent,4,Lose more than 5%,
+two_child_limit,2 child limit reforms,winners_losers,2026,0.0,percent,4,Lose less than 5%,
+two_child_limit,2 child limit reforms,winners_losers,2026,94.61255334675356,percent,4,No change,
+two_child_limit,2 child limit reforms,winners_losers,2026,0.01792599570478726,percent,4,Gain less than 5%,
+two_child_limit,2 child limit reforms,winners_losers,2026,5.369520657541654,percent,4,Gain more than 5%,
+two_child_limit,2 child limit reforms,winners_losers,2026,0.0,percent,5,Lose more than 5%,
+two_child_limit,2 child limit reforms,winners_losers,2026,0.0,percent,5,Lose less than 5%,
+two_child_limit,2 child limit reforms,winners_losers,2026,97.41914265733826,percent,5,No change,
+two_child_limit,2 child limit reforms,winners_losers,2026,0.06443330404469813,percent,5,Gain less than 5%,
+two_child_limit,2 child limit reforms,winners_losers,2026,2.516424038617052,percent,5,Gain more than 5%,
+two_child_limit,2 child limit reforms,winners_losers,2026,0.0,percent,6,Lose more than 5%,
+two_child_limit,2 child limit reforms,winners_losers,2026,0.0,percent,6,Lose less than 5%,
+two_child_limit,2 child limit reforms,winners_losers,2026,98.2729126580514,percent,6,No change,
+two_child_limit,2 child limit reforms,winners_losers,2026,1.0974844930435292,percent,6,Gain less than 5%,
+two_child_limit,2 child limit reforms,winners_losers,2026,0.6296028489050799,percent,6,Gain more than 5%,
+two_child_limit,2 child limit reforms,winners_losers,2026,0.0,percent,7,Lose more than 5%,
+two_child_limit,2 child limit reforms,winners_losers,2026,0.0,percent,7,Lose less than 5%,
+two_child_limit,2 child limit reforms,winners_losers,2026,99.99976084158976,percent,7,No change,
+two_child_limit,2 child limit reforms,winners_losers,2026,3.537441932253659e-05,percent,7,Gain less than 5%,
+two_child_limit,2 child limit reforms,winners_losers,2026,0.00020378399090714163,percent,7,Gain more than 5%,
+two_child_limit,2 child limit reforms,winners_losers,2026,0.0,percent,8,Lose more than 5%,
+two_child_limit,2 child limit reforms,winners_losers,2026,0.0,percent,8,Lose less than 5%,
+two_child_limit,2 child limit reforms,winners_losers,2026,99.999471818466,percent,8,No change,
+two_child_limit,2 child limit reforms,winners_losers,2026,0.0,percent,8,Gain less than 5%,
+two_child_limit,2 child limit reforms,winners_losers,2026,0.0005281815339959299,percent,8,Gain more than 5%,
+two_child_limit,2 child limit reforms,winners_losers,2026,0.0,percent,9,Lose more than 5%,
+two_child_limit,2 child limit reforms,winners_losers,2026,0.0,percent,9,Lose less than 5%,
+two_child_limit,2 child limit reforms,winners_losers,2026,100.0,percent,9,No change,
+two_child_limit,2 child limit reforms,winners_losers,2026,0.0,percent,9,Gain less than 5%,
+two_child_limit,2 child limit reforms,winners_losers,2026,0.0,percent,9,Gain more than 5%,
+two_child_limit,2 child limit reforms,winners_losers,2026,0.0,percent,10,Lose more than 5%,
+two_child_limit,2 child limit reforms,winners_losers,2026,0.0,percent,10,Lose less than 5%,
+two_child_limit,2 child limit reforms,winners_losers,2026,99.94660932660187,percent,10,No change,
+two_child_limit,2 child limit reforms,winners_losers,2026,0.05339067339812264,percent,10,Gain less than 5%,
+two_child_limit,2 child limit reforms,winners_losers,2026,0.0,percent,10,Gain more than 5%,
+two_child_limit,2 child limit reforms,winners_losers,2026,0.0,percent,All,Lose more than 5%,
+two_child_limit,2 child limit reforms,winners_losers,2026,0.0,percent,All,Lose less than 5%,
+two_child_limit,2 child limit reforms,winners_losers,2026,95.56198317660018,percent,All,No change,
+two_child_limit,2 child limit reforms,winners_losers,2026,0.4460044104390283,percent,All,Gain less than 5%,
+two_child_limit,2 child limit reforms,winners_losers,2026,3.992012412960798,percent,All,Gain more than 5%,
+two_child_limit,2 child limit reforms,people_affected,2026,4.438016823399826,percent,all,affected,
+two_child_limit,2 child limit reforms,gini_change,2026,0.00019693171693202505,coefficient,all,gini,
+two_child_limit,2 child limit reforms,poverty_rate_change_pp,2026,-1.0115594863891602,percentage_points,all,poverty_bhc,
+two_child_limit,2 child limit reforms,poverty_rate_change_pct,2026,-8.617202758789062,percent,all,poverty_bhc,
+two_child_limit,2 child limit reforms,income_curve,2026,21590.0,GBP,,baseline,0.0
+two_child_limit,2 child limit reforms,income_curve,2026,25215.0,GBP,,reform,0.0
+two_child_limit,2 child limit reforms,income_curve,2026,28486.0,GBP,,baseline,6896.551724137931
+two_child_limit,2 child limit reforms,income_curve,2026,32112.0,GBP,,reform,6896.551724137931
+two_child_limit,2 child limit reforms,income_curve,2026,32411.0,GBP,,baseline,13793.103448275862
+two_child_limit,2 child limit reforms,income_curve,2026,36036.0,GBP,,reform,13793.103448275862
+two_child_limit,2 child limit reforms,income_curve,2026,34649.0,GBP,,baseline,20689.655172413793
+two_child_limit,2 child limit reforms,income_curve,2026,38274.0,GBP,,reform,20689.655172413793
+two_child_limit,2 child limit reforms,income_curve,2026,36883.0,GBP,,baseline,27586.206896551725
+two_child_limit,2 child limit reforms,income_curve,2026,40508.0,GBP,,reform,27586.206896551725
+two_child_limit,2 child limit reforms,income_curve,2026,39117.0,GBP,,baseline,34482.75862068965
+two_child_limit,2 child limit reforms,income_curve,2026,42743.0,GBP,,reform,34482.75862068965
+two_child_limit,2 child limit reforms,income_curve,2026,41352.0,GBP,,baseline,41379.31034482759
+two_child_limit,2 child limit reforms,income_curve,2026,44977.0,GBP,,reform,41379.31034482759
+two_child_limit,2 child limit reforms,income_curve,2026,45159.0,GBP,,baseline,48275.86206896552
+two_child_limit,2 child limit reforms,income_curve,2026,47212.0,GBP,,reform,48275.86206896552
+two_child_limit,2 child limit reforms,income_curve,2026,49186.0,GBP,,baseline,55172.41379310345
+two_child_limit,2 child limit reforms,income_curve,2026,49186.0,GBP,,reform,55172.41379310345
+two_child_limit,2 child limit reforms,income_curve,2026,52850.0,GBP,,baseline,62068.96551724138
+two_child_limit,2 child limit reforms,income_curve,2026,52850.0,GBP,,reform,62068.96551724138
+two_child_limit,2 child limit reforms,income_curve,2026,55730.0,GBP,,baseline,68965.5172413793
+two_child_limit,2 child limit reforms,income_curve,2026,55730.0,GBP,,reform,68965.5172413793
+two_child_limit,2 child limit reforms,income_curve,2026,58609.0,GBP,,baseline,75862.06896551725
+two_child_limit,2 child limit reforms,income_curve,2026,58609.0,GBP,,reform,75862.06896551725
+two_child_limit,2 child limit reforms,income_curve,2026,61937.0,GBP,,baseline,82758.62068965517
+two_child_limit,2 child limit reforms,income_curve,2026,61937.0,GBP,,reform,82758.62068965517
+two_child_limit,2 child limit reforms,income_curve,2026,65937.0,GBP,,baseline,89655.1724137931
+two_child_limit,2 child limit reforms,income_curve,2026,65937.0,GBP,,reform,89655.1724137931
+two_child_limit,2 child limit reforms,income_curve,2026,69937.0,GBP,,baseline,96551.72413793104
+two_child_limit,2 child limit reforms,income_curve,2026,69937.0,GBP,,reform,96551.72413793104
+two_child_limit,2 child limit reforms,income_curve,2026,73247.0,GBP,,baseline,103448.27586206897
+two_child_limit,2 child limit reforms,income_curve,2026,73247.0,GBP,,reform,103448.27586206897
+two_child_limit,2 child limit reforms,income_curve,2026,75868.0,GBP,,baseline,110344.8275862069
+two_child_limit,2 child limit reforms,income_curve,2026,75868.0,GBP,,reform,110344.8275862069
+two_child_limit,2 child limit reforms,income_curve,2026,78489.0,GBP,,baseline,117241.37931034483
+two_child_limit,2 child limit reforms,income_curve,2026,78489.0,GBP,,reform,117241.37931034483
+two_child_limit,2 child limit reforms,income_curve,2026,81110.0,GBP,,baseline,124137.93103448275
+two_child_limit,2 child limit reforms,income_curve,2026,81110.0,GBP,,reform,124137.93103448275
+two_child_limit,2 child limit reforms,income_curve,2026,84614.0,GBP,,baseline,131034.4827586207
+two_child_limit,2 child limit reforms,income_curve,2026,84614.0,GBP,,reform,131034.4827586207
+two_child_limit,2 child limit reforms,income_curve,2026,88270.0,GBP,,baseline,137931.0344827586
+two_child_limit,2 child limit reforms,income_curve,2026,88270.0,GBP,,reform,137931.0344827586
+two_child_limit,2 child limit reforms,income_curve,2026,91925.0,GBP,,baseline,144827.58620689655
+two_child_limit,2 child limit reforms,income_curve,2026,91925.0,GBP,,reform,144827.58620689655
+two_child_limit,2 child limit reforms,income_curve,2026,95580.0,GBP,,baseline,151724.1379310345
+two_child_limit,2 child limit reforms,income_curve,2026,95580.0,GBP,,reform,151724.1379310345
+two_child_limit,2 child limit reforms,income_curve,2026,99235.0,GBP,,baseline,158620.6896551724
+two_child_limit,2 child limit reforms,income_curve,2026,99235.0,GBP,,reform,158620.6896551724
+two_child_limit,2 child limit reforms,income_curve,2026,102890.0,GBP,,baseline,165517.24137931035
+two_child_limit,2 child limit reforms,income_curve,2026,102890.0,GBP,,reform,165517.24137931035
+two_child_limit,2 child limit reforms,income_curve,2026,106545.0,GBP,,baseline,172413.7931034483
+two_child_limit,2 child limit reforms,income_curve,2026,106545.0,GBP,,reform,172413.7931034483
+two_child_limit,2 child limit reforms,income_curve,2026,110201.0,GBP,,baseline,179310.3448275862
+two_child_limit,2 child limit reforms,income_curve,2026,110201.0,GBP,,reform,179310.3448275862
+two_child_limit,2 child limit reforms,income_curve,2026,113856.0,GBP,,baseline,186206.89655172414
+two_child_limit,2 child limit reforms,income_curve,2026,113856.0,GBP,,reform,186206.89655172414
+two_child_limit,2 child limit reforms,income_curve,2026,117511.0,GBP,,baseline,193103.4482758621
+two_child_limit,2 child limit reforms,income_curve,2026,117511.0,GBP,,reform,193103.4482758621
+two_child_limit,2 child limit reforms,income_curve,2026,121166.0,GBP,,baseline,200000.0
+two_child_limit,2 child limit reforms,income_curve,2026,121166.0,GBP,,reform,200000.0

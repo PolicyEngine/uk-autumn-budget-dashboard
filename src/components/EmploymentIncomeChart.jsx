@@ -1,53 +1,84 @@
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
+import { useState, useEffect } from 'react'
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 import './EmploymentIncomeChart.css'
 
 function EmploymentIncomeChart() {
-  // Generate data showing relationship between employment income and net household income
-  // The curve reflects tax and benefit system effects
-  const generateData = () => {
-    const data = []
-    for (let employment = 0; employment <= 200000; employment += 5000) {
-      // Simplified model: net income is affected by taxes and benefits
-      let net
-      if (employment === 0) {
-        net = 5000 // Benefits only
-      } else if (employment <= 12570) {
-        net = employment + 3000 // Below personal allowance + some benefits
-      } else if (employment <= 50270) {
-        // Basic rate: 20% tax
-        const taxableIncome = employment - 12570
-        const tax = taxableIncome * 0.2
-        net = employment - tax
-      } else if (employment <= 125140) {
-        // Higher rate: 40% on income above 50270
-        const basicRateTax = (50270 - 12570) * 0.2
-        const higherRateIncome = employment - 50270
-        const higherRateTax = higherRateIncome * 0.4
-        net = employment - basicRateTax - higherRateTax
-      } else {
-        // Additional rate: 45% on income above 125140
-        const basicRateTax = (50270 - 12570) * 0.2
-        const higherRateTax = (125140 - 50270) * 0.4
-        const additionalRateIncome = employment - 125140
-        const additionalRateTax = additionalRateIncome * 0.45
-        net = employment - basicRateTax - higherRateTax - additionalRateTax
-      }
+  const [data, setData] = useState([])
+  const [loading, setLoading] = useState(true)
 
-      data.push({
-        employment,
-        net: Math.round(net)
+  useEffect(() => {
+    // Load income curve data from CSV
+    fetch('/data/reform-results.csv')
+      .then(response => response.text())
+      .then(csvText => {
+        const lines = csvText.trim().split('\n')
+        const headers = lines[0].split(',')
+
+        // Parse income curve data
+        const incomeCurveData = []
+
+        for (let i = 1; i < lines.length; i++) {
+          const values = lines[i].split(',')
+          const row = {}
+          headers.forEach((header, index) => {
+            row[header] = values[index]
+          })
+
+          // Filter for income_curve metric
+          if (row.metric_type === 'income_curve' && row.reform_id === 'two_child_limit') {
+            incomeCurveData.push({
+              employment_income: parseFloat(row.employment_income),
+              category: row.category,
+              net_income: parseFloat(row.value)
+            })
+          }
+        }
+
+        // Group by employment income
+        const groupedData = {}
+        incomeCurveData.forEach(item => {
+          const empIncome = item.employment_income
+          if (!groupedData[empIncome]) {
+            groupedData[empIncome] = { employment: empIncome }
+          }
+          if (item.category === 'baseline') {
+            groupedData[empIncome].baseline = item.net_income
+          } else if (item.category === 'reform') {
+            groupedData[empIncome].reform = item.net_income
+          }
+        })
+
+        // Convert to array and sort
+        const chartData = Object.values(groupedData).sort((a, b) => a.employment - b.employment)
+
+        setData(chartData)
+        setLoading(false)
       })
-    }
-    return data
-  }
-
-  const data = generateData()
+      .catch(error => {
+        console.error('Error loading income curve data:', error)
+        setLoading(false)
+      })
+  }, [])
 
   const formatCurrency = (value) => {
     if (value >= 1000) {
       return `£${(value / 1000).toFixed(0)}k`
     }
     return `£${value}`
+  }
+
+  if (loading) {
+    return (
+      <div className="employment-income-chart">
+        <h2>Employment income to net income</h2>
+        <p className="chart-description">
+          Relationship between household head employment income and total household net income
+        </p>
+        <div style={{ textAlign: 'center', padding: '40px', color: '#666' }}>
+          Loading income curve data...
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -57,7 +88,7 @@ function EmploymentIncomeChart() {
         Relationship between household head employment income and total household net income
       </p>
 
-      <ResponsiveContainer width="100%" height={300}>
+      <ResponsiveContainer width="100%" height={350}>
         <LineChart
           data={data}
           margin={{ top: 15, right: 20, left: 70, bottom: 15 }}
@@ -75,7 +106,6 @@ function EmploymentIncomeChart() {
             tick={{ fontSize: 11, fill: '#666' }}
           />
           <YAxis
-            dataKey="net"
             label={{
               value: 'Household net income',
               angle: -90,
@@ -91,13 +121,28 @@ function EmploymentIncomeChart() {
             labelFormatter={(label) => `Employment income: ${formatCurrency(label)}`}
             contentStyle={{ background: 'white', border: '1px solid #e5e7eb', borderRadius: '6px' }}
           />
+          <Legend
+            wrapperStyle={{ paddingTop: '20px' }}
+            iconType="line"
+          />
           <Line
             type="monotone"
-            dataKey="net"
-            stroke="#4A7BA7"
+            dataKey="baseline"
+            stroke="#9CA3AF"
             strokeWidth={2}
             dot={false}
-            name="Net income"
+            name="Baseline"
+            animationDuration={800}
+            animationBegin={0}
+          />
+          <Line
+            type="monotone"
+            dataKey="reform"
+            stroke="#4A7BA7"
+            strokeWidth={2}
+            strokeDasharray="5 5"
+            dot={false}
+            name="Reform"
             animationDuration={800}
             animationBegin={0}
           />

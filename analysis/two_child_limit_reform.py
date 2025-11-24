@@ -17,7 +17,8 @@ sys.path.insert(0, '/Users/janansadeqian/policyengine-uk')
 
 import numpy as np
 import pandas as pd
-from policyengine_uk import Microsimulation, Scenario
+import copy
+from policyengine_uk import Microsimulation, Scenario, Simulation
 from policyengine_uk.data import UKSingleYearDataset
 
 # Configuration
@@ -43,7 +44,8 @@ def load_or_create_results_csv(csv_path):
             'decile',
             'category',
             'value',
-            'unit'
+            'unit',
+            'employment_income'  # Optional: for income_curve metric
         ])
 
 def save_results(df, csv_path):
@@ -425,6 +427,125 @@ def main():
         'unit': 'percent'
     })
 
+    # 7d. Employment income to net income curve
+    print("\n   d) Calculating employment income to net income curve...")
+
+    # Define reform dict for Simulation API
+    reform_dict = {
+        "gov.dwp.tax_credits.child_tax_credit.limit.child_count": {
+            "2025-01-01.2100-12-31": 102
+        },
+        "gov.dwp.universal_credit.elements.child.limit.child_count": {
+            "2025-01-01.2100-12-31": 100
+        }
+    }
+
+    # Base situation: Family with 3 children (affected by two-child limit)
+    base_situation = {
+        "people": {
+            "you": {
+                "age": {"2026": 40},
+                "employment_income": {"2026": 0}  # Will vary this
+            },
+            "your partner": {
+                "age": {"2026": 40},
+                "employment_income": {"2026": 0}
+            },
+            "your first child": {
+                "age": {"2026": 7},
+                "employment_income": {"2026": 0}
+            },
+            "your second child": {
+                "age": {"2026": 5},
+                "employment_income": {"2026": 0}
+            },
+            "your third child": {
+                "age": {"2026": 3},
+                "employment_income": {"2026": 0}
+            }
+        },
+        "benunits": {
+            "your immediate family": {
+                "members": [
+                    "you",
+                    "your partner",
+                    "your first child",
+                    "your second child",
+                    "your third child"
+                ],
+                "would_claim_uc": {"2026": True}
+            }
+        },
+        "households": {
+            "your household": {
+                "brma": {"2026": "MAIDSTONE"},
+                "region": {"2026": "LONDON"},
+                "members": [
+                    "you",
+                    "your partner",
+                    "your first child",
+                    "your second child",
+                    "your third child"
+                ],
+                "local_authority": {"2026": "MAIDSTONE"}
+            }
+        }
+    }
+
+    # Employment income range: £0 to £200,000 with 30 points
+    employment_incomes = np.linspace(0, 200_000, 30)
+    income_curve_results = []
+
+    print(f"   Calculating {len(employment_incomes)} income points from £0 to £200,000...")
+
+    for emp_income in employment_incomes:
+        # Update employment income for household head
+        situation = copy.deepcopy(base_situation)
+        situation["people"]["you"]["employment_income"]["2026"] = float(emp_income)
+
+        # Baseline simulation (no reform)
+        baseline_sim_pe = Simulation(situation=situation)
+        baseline_net_income = baseline_sim_pe.calculate("household_net_income", 2026)[0]
+
+        # Reform simulation
+        reform_sim_pe = Simulation(reform=reform_dict, situation=situation)
+        reform_net_income = reform_sim_pe.calculate("household_net_income", 2026)[0]
+
+        # Store baseline result
+        income_curve_results.append({
+            'reform_id': REFORM_ID,
+            'reform_name': REFORM_NAME,
+            'metric_type': 'income_curve',
+            'year': 2026,
+            'decile': None,
+            'category': 'baseline',
+            'value': baseline_net_income,
+            'unit': 'GBP',
+            'employment_income': emp_income  # Extra field for reference
+        })
+
+        # Store reform result
+        income_curve_results.append({
+            'reform_id': REFORM_ID,
+            'reform_name': REFORM_NAME,
+            'metric_type': 'income_curve',
+            'year': 2026,
+            'decile': None,
+            'category': 'reform',
+            'value': reform_net_income,
+            'unit': 'GBP',
+            'employment_income': emp_income  # Extra field for reference
+        })
+
+    print(f"   ✓ Income curve calculated for {len(employment_incomes)} employment income levels")
+
+    # Calculate maximum benefit
+    baseline_values = [r['value'] for r in income_curve_results if r['category'] == 'baseline']
+    reform_values = [r['value'] for r in income_curve_results if r['category'] == 'reform']
+    benefits = [reform_values[i] - baseline_values[i] for i in range(len(baseline_values))]
+    max_benefit = max(benefits)
+    print(f"   Maximum household benefit: £{max_benefit:,.0f}")
+
     # Load existing results and update with new data
     print("\n8. Saving results to CSV...")
     results_df = load_or_create_results_csv(OUTPUT_CSV)
@@ -438,11 +559,12 @@ def main():
            (results_df['metric_type'] == 'people_affected') |
            (results_df['metric_type'] == 'gini_change') |
            (results_df['metric_type'] == 'poverty_rate_change_pp') |
-           (results_df['metric_type'] == 'poverty_rate_change_pct')))
+           (results_df['metric_type'] == 'poverty_rate_change_pct') |
+           (results_df['metric_type'] == 'income_curve')))
     ]
 
     # Combine all results
-    all_results = budgetary_results + distributional_results + winners_losers_results + additional_results
+    all_results = budgetary_results + distributional_results + winners_losers_results + additional_results + income_curve_results
     new_results_df = pd.DataFrame(all_results)
     results_df = pd.concat([results_df, new_results_df], ignore_index=True)
 
