@@ -345,7 +345,17 @@ function App() {
                         ? `${results.metrics.povertyRateChange.toFixed(1)}pp`
                         : 'No data'}
                     </div>
-                    <div className="metric-text">change in poverty rate (absolute BHC)</div>
+                    <div className="metric-text">
+                      change in poverty rate (absolute BHC)
+                      <span className="info-icon-wrapper">
+                        <svg className="info-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <circle cx="12" cy="12" r="10"></circle>
+                          <line x1="12" y1="16" x2="12" y2="12"></line>
+                          <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                        </svg>
+                        <span className="info-tooltip">BHC stands for Before Housing Costs. This measures poverty based on household income before deducting housing costs such as rent, mortgage payments, and other housing expenses. Absolute poverty is measured against a fixed threshold that doesn't change with median incomes.</span>
+                      </span>
+                    </div>
                   </div>
                 </div>
 
