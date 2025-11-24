@@ -1,4 +1,4 @@
-# UK Autumn Budget 2025 Dashboard
+# UK Autumn Budget 2025 Dashboard 
 
 A web application for analysing the impact of UK Autumn Budget 2025 policies on households and public finances, powered by [PolicyEngine UK](https://policyengine.org/uk).
 
