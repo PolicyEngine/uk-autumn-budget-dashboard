@@ -2,7 +2,19 @@ import { ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, ResponsiveContainer
 import './HouseholdChart.css'
 
 function HouseholdChart({ data }) {
-  if (!data || data.length === 0) return null
+  if (!data || data.length === 0) {
+    return (
+      <div className="household-chart">
+        <h2>Income changes by household</h2>
+        <p className="chart-description">
+          Net income change for each household plotted against their baseline income. Points above zero represent gains; points below represent losses.
+        </p>
+        <div style={{ padding: '60px 20px', textAlign: 'center', color: '#666', backgroundColor: '#f9f9f9', borderRadius: '8px' }}>
+          <p style={{ margin: 0, fontSize: '0.95rem' }}>No data available yet for this metric</p>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="household-chart">

@@ -57,7 +57,7 @@ function Results({ results, isLoading, selectedPolicies }) {
     content += `\n\n`
     content += `Affected Households: ${results.affectedHouseholds.toLocaleString('en-GB')}\n`
     content += `Average Impact: £${results.averageImpact}\n`
-    content += `Absolute Poverty Reduction: ${(results.povertyImpact.absolute.baseline - results.povertyImpact.absolute.withPolicies).toFixed(2)}\n`
+    content += `Absolute Poverty Reduction (AHC): ${(results.povertyImpact.absolute.baseline - results.povertyImpact.absolute.withPolicies).toFixed(2)}\n`
 
     const blob = new Blob([content], { type: 'text/plain' })
     const url = URL.createObjectURL(blob)
@@ -77,10 +77,10 @@ function Results({ results, isLoading, selectedPolicies }) {
     let content = `Metric,Value\n`
     content += `Affected Households,${results.affectedHouseholds}\n`
     content += `Average Impact,£${results.averageImpact}\n`
-    content += `Baseline Absolute Poverty,${results.povertyImpact.absolute.baseline}%\n`
-    content += `Reformed Absolute Poverty,${results.povertyImpact.absolute.withPolicies}%\n`
-    content += `Baseline Relative Poverty,${results.povertyImpact.relative.baseline}%\n`
-    content += `Reformed Relative Poverty,${results.povertyImpact.relative.withPolicies}%\n`
+    content += `Baseline Absolute Poverty (AHC),${results.povertyImpact.absolute.baseline}%\n`
+    content += `Reformed Absolute Poverty (AHC),${results.povertyImpact.absolute.withPolicies}%\n`
+    content += `Baseline Relative Poverty (AHC),${results.povertyImpact.relative.baseline}%\n`
+    content += `Reformed Relative Poverty (AHC),${results.povertyImpact.relative.withPolicies}%\n`
 
     const blob = new Blob([content], { type: 'text/csv' })
     const url = URL.createObjectURL(blob)
@@ -151,12 +151,12 @@ function Results({ results, isLoading, selectedPolicies }) {
 
   const povertyChartData = [
     {
-      metric: 'Absolute poverty',
+      metric: 'Absolute poverty (AHC)',
       Baseline: results.povertyImpact.absolute.baseline,
       'With policies': results.povertyImpact.absolute.withPolicies
     },
     {
-      metric: 'Relative poverty',
+      metric: 'Relative poverty (AHC)',
       Baseline: results.povertyImpact.relative.baseline,
       'With policies': results.povertyImpact.relative.withPolicies
     }
@@ -221,7 +221,7 @@ function Results({ results, isLoading, selectedPolicies }) {
             </div>
           </div>
           <div className="impact-card">
-            <div className="impact-label">Absolute poverty reduction</div>
+            <div className="impact-label">Absolute poverty reduction (AHC)</div>
             <div className="impact-value">
               <AnimatedNumber
                 value={results.povertyImpact.absolute.baseline - results.povertyImpact.absolute.withPolicies}
@@ -323,7 +323,7 @@ function Results({ results, isLoading, selectedPolicies }) {
           <div>
             <h2>Poverty impact</h2>
             <p className="chart-description">
-              Comparison of poverty rates before and after implementing selected policies.
+              Comparison of poverty rates (After Housing Costs) before and after implementing selected policies.
             </p>
           </div>
         </div>

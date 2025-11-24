@@ -6,6 +6,7 @@ import BudgetaryImpactChart from './components/BudgetaryImpactChart'
 import DistributionalChart from './components/DistributionalChart'
 import WaterfallChart from './components/WaterfallChart'
 import ConstituencyMap from './components/ConstituencyMap'
+import EmploymentIncomeChart from './components/EmploymentIncomeChart'
 import './App.css'
 
 // Policy definitions
@@ -48,7 +49,6 @@ const POLICY_COLORS = ['#319795', '#5A8FB8', '#B8875A', '#5FB88A', '#4A7BA7', '#
 function App() {
   const [selectedPolicies, setSelectedPolicies] = useState([])
   const [results, setResults] = useState(null)
-  const [behavioralResponses, setBehavioralResponses] = useState(false)
 
   // Initialize from URL or select all policies by default
   useEffect(() => {
@@ -76,7 +76,7 @@ function App() {
     }
   }, [selectedPolicies])
 
-  // Run analysis when policies or behavioral responses change
+  // Run analysis when policies change
   useEffect(() => {
     if (selectedPolicies.length === 0) {
       setResults(null)
@@ -84,79 +84,126 @@ function App() {
     }
 
     runAnalysis()
-  }, [selectedPolicies, behavioralResponses])
+  }, [selectedPolicies])
 
   const runAnalysis = async () => {
-    // Simulate API call - in production, this would call PolicyEngine
-    await new Promise(resolve => setTimeout(resolve, 500))
+    try {
+      // Fetch real data from CSV
+      const response = await fetch('/data/reform-results.csv')
+      const csvText = await response.text()
 
-    // Generate mock data based on selected policies
-    const numPolicies = selectedPolicies.length
+      // Parse CSV
+      const lines = csvText.trim().split('\n')
+      const headers = lines[0].split(',')
 
-    // Mock metrics for 2026
-    const mockMetrics = {
-      fiscalHeadroom2029: 15.3 - (numPolicies * 1.2), // Fiscal headroom in 2029/30
-      budgetaryImpact2026: 2.5 + (numPolicies * 0.8),
-      percentAffected: 35.2 + (numPolicies * 5.3),
-      giniChange: -0.15 - (numPolicies * 0.05),
-      povertyRateChange: -0.42 - (numPolicies * 0.12)
-    }
+      const csvData = []
+      for (let i = 1; i < lines.length; i++) {
+        const values = lines[i].split(',')
+        const row = {}
+        headers.forEach((header, idx) => {
+          row[header] = values[idx]
+        })
+        csvData.push(row)
+      }
 
-    // Mock budgetary impact data (only 2026-2029)
-    const years = [2026, 2027, 2028, 2029]
-    const budgetData = years.map((year, idx) => {
-      const dataPoint = { year }
-      selectedPolicies.forEach((policyId, pIdx) => {
-        const policy = DEFAULT_POLICIES.find(p => p.id === policyId)
-        dataPoint[policy.name] = 2.1 + (pIdx * 0.5) + (idx * 0.3)
+      // Filter data for selected policies
+      const filteredData = csvData.filter(row =>
+        selectedPolicies.includes(row.reform_id)
+      )
+
+      // Build budgetary impact data for chart (2026-2029)
+      const years = [2026, 2027, 2028, 2029]
+      const budgetData = years.map(year => {
+        const dataPoint = { year }
+        selectedPolicies.forEach(policyId => {
+          const policy = DEFAULT_POLICIES.find(p => p.id === policyId)
+          const dataRow = filteredData.find(row =>
+            row.reform_id === policyId &&
+            row.metric_type === 'budgetary_impact' &&
+            parseInt(row.year) === year
+          )
+          // Convert to absolute value and billions (data is already in billions)
+          // Negative values mean it costs money (reduces gov balance)
+          dataPoint[policy.name] = dataRow ? Math.abs(parseFloat(dataRow.value)) : 0
+        })
+        return dataPoint
       })
-      return dataPoint
-    })
 
-    // Mock distributional data (percentage changes)
-    const distributionalData = [
-      { decile: '1st', percentChange: 2.1 + (numPolicies * 0.3) },
-      { decile: '2nd', percentChange: 1.8 + (numPolicies * 0.25) },
-      { decile: '3rd', percentChange: 1.5 + (numPolicies * 0.2) },
-      { decile: '4th', percentChange: 1.2 + (numPolicies * 0.15) },
-      { decile: '5th', percentChange: 0.9 + (numPolicies * 0.1) },
-      { decile: '6th', percentChange: 0.6 + (numPolicies * 0.05) },
-      { decile: '7th', percentChange: 0.3 },
-      { decile: '8th', percentChange: 0.0 - (numPolicies * 0.05) },
-      { decile: '9th', percentChange: -0.3 - (numPolicies * 0.1) },
-      { decile: '10th', percentChange: -0.6 - (numPolicies * 0.15) }
-    ]
+      // Calculate metrics based on available data
+      const budgetaryImpact2026Data = filteredData.filter(row =>
+        row.metric_type === 'budgetary_impact' && parseInt(row.year) === 2026
+      )
+      const budgetaryImpact2026 = budgetaryImpact2026Data.reduce((sum, row) =>
+        sum + Math.abs(parseFloat(row.value)), 0
+      )
 
-    // Mock household scatter data
-    const householdData = []
-    for (let i = 0; i < 500; i++) {
-      const income = Math.exp(Math.random() * 5.5 + 9.5) // Log-normal distribution
-      const impact = (Math.random() - 0.5) * 8000 + (numPolicies * 200)
-      householdData.push({ x: impact, y: income })
+      // Build distributional data (by income decile)
+      const distributional2026Data = filteredData.filter(row =>
+        row.metric_type === 'distributional_impact' && parseInt(row.year) === 2026
+      )
+
+      let distributionalData = null
+      if (distributional2026Data.length > 0) {
+        // Sort by decile order
+        const decileOrder = ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th', '10th']
+        distributionalData = distributional2026Data
+          .map(row => ({
+            decile: row.decile,
+            percentChange: parseFloat(row.value)
+          }))
+          .sort((a, b) => decileOrder.indexOf(a.decile) - decileOrder.indexOf(b.decile))
+      }
+
+      // Build winners and losers data by decile (waterfall chart)
+      const winnersLosers2026Data = filteredData.filter(row =>
+        row.metric_type === 'winners_losers' && parseInt(row.year) === 2026
+      )
+
+      let waterfallData = null
+      if (winnersLosers2026Data.length > 0) {
+        // Transform data into format needed for stacked bar chart
+        // Group by decile, with each category as a separate field
+        const decileMap = {}
+
+        winnersLosers2026Data.forEach(row => {
+          const decile = row.decile
+          if (!decileMap[decile]) {
+            decileMap[decile] = { category: decile.toString() }
+          }
+          // Use category name as key, convert percentage to decimal for stacked chart
+          decileMap[decile][row.category] = parseFloat(row.value) / 100
+        })
+
+        // Convert to array and sort: "All" first, then deciles 1-10
+        waterfallData = Object.values(decileMap).sort((a, b) => {
+          if (a.category === 'All') return -1
+          if (b.category === 'All') return 1
+          const aNum = parseInt(a.category)
+          const bNum = parseInt(b.category)
+          return aNum - bNum
+        })
+      }
+
+      // For now, show null for metrics we don't have yet
+      const metrics = {
+        fiscalHeadroom2029: null, // Not yet available
+        budgetaryImpact2026: budgetaryImpact2026,
+        percentAffected: null, // Not yet available
+        giniChange: null, // Not yet available
+        povertyRateChange: null // Not yet available
+      }
+
+      setResults({
+        metrics,
+        budgetData,
+        distributionalData,
+        householdData: null, // Not yet available
+        waterfallData
+      })
+    } catch (error) {
+      console.error('Error loading results:', error)
+      setResults(null)
     }
-
-    // Mock waterfall data (income change distribution)
-    const waterfallData = [
-      { category: 'All', value: 4, percentLabel: '96%' },
-      { category: '10', value: 100, percentLabel: '100%' },
-      { category: '9', value: 100, percentLabel: '100%' },
-      { category: '8', value: 100, percentLabel: '100%' },
-      { category: '7', value: 100, percentLabel: '100%' },
-      { category: '6', value: 99, percentLabel: '99%' },
-      { category: '5', value: 99, percentLabel: '99%' },
-      { category: '4', value: 93, percentLabel: '93%' },
-      { category: '3', value: 92, percentLabel: '92%' },
-      { category: '2', value: 84, percentLabel: '84%' },
-      { category: '1', value: 89, percentLabel: '89%' }
-    ]
-
-    setResults({
-      metrics: mockMetrics,
-      budgetData,
-      distributionalData,
-      householdData,
-      waterfallData
-    })
   }
 
   const handlePolicyToggle = (policyId) => {
@@ -179,20 +226,6 @@ function App() {
               selectedPolicies={selectedPolicies}
               onPolicyToggle={handlePolicyToggle}
             />
-            <div className="behavioral-switch-container">
-              <label className="switch-label">
-                <span className="switch-text">Behavioral responses</span>
-                <button
-                  className={`switch ${behavioralResponses ? 'active' : ''}`}
-                  onClick={() => setBehavioralResponses(!behavioralResponses)}
-                  role="switch"
-                  aria-checked={behavioralResponses}
-                  aria-label="Toggle behavioral responses"
-                >
-                  <span className="switch-slider"></span>
-                </button>
-              </label>
-            </div>
           </div>
           <div className="header-center">
             <h1>UK Autumn Budget 2025 analysis</h1>
@@ -231,23 +264,43 @@ function App() {
                 <div className="key-metrics-row">
                   <div className="key-metric highlighted">
                     <div className="metric-label-small">Fiscal headroom in 2029/30</div>
-                    <div className="metric-number">£{results.metrics.fiscalHeadroom2029.toFixed(1)}bn</div>
+                    <div className="metric-number">
+                      {results.metrics.fiscalHeadroom2029 !== null
+                        ? `£${results.metrics.fiscalHeadroom2029.toFixed(1)}bn`
+                        : 'No data'}
+                    </div>
                   </div>
                   <div className="key-metric">
                     <div className="metric-label-small">Budgetary impact in 2026</div>
-                    <div className="metric-number">£{results.metrics.budgetaryImpact2026.toFixed(2)}bn</div>
+                    <div className="metric-number">
+                      {results.metrics.budgetaryImpact2026 !== null
+                        ? `£${results.metrics.budgetaryImpact2026.toFixed(2)}bn`
+                        : 'No data'}
+                    </div>
                   </div>
                   <div className="key-metric">
-                    <div className="metric-number">{results.metrics.percentAffected.toFixed(1)}%</div>
+                    <div className="metric-number">
+                      {results.metrics.percentAffected !== null
+                        ? `${results.metrics.percentAffected.toFixed(1)}%`
+                        : 'No data'}
+                    </div>
                     <div className="metric-text">of people affected</div>
                   </div>
                   <div className="key-metric">
-                    <div className="metric-number">{results.metrics.giniChange.toFixed(2)}</div>
+                    <div className="metric-number">
+                      {results.metrics.giniChange !== null
+                        ? results.metrics.giniChange.toFixed(2)
+                        : 'No data'}
+                    </div>
                     <div className="metric-text">change in inequality (Gini)</div>
                   </div>
                   <div className="key-metric">
-                    <div className="metric-number">{results.metrics.povertyRateChange.toFixed(2)}</div>
-                    <div className="metric-text">change in poverty rate</div>
+                    <div className="metric-number">
+                      {results.metrics.povertyRateChange !== null
+                        ? results.metrics.povertyRateChange.toFixed(2)
+                        : 'No data'}
+                    </div>
+                    <div className="metric-text">change in poverty rate (relative AHC)</div>
                   </div>
                 </div>
 
@@ -290,7 +343,7 @@ function App() {
                 </div>
                 <div className="secondary-charts">
                   <ConstituencyMap />
-                  <div className="constituency-placeholder"></div>
+                  <EmploymentIncomeChart />
                 </div>
               </>
             )}

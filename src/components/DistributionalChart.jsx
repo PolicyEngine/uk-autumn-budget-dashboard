@@ -2,9 +2,21 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import './DistributionalChart.css'
 
 function DistributionalChart({ data }) {
-  if (!data || data.length === 0) return null
-
   const formatPercent = (value) => `${value.toFixed(2)}%`
+
+  if (!data || data.length === 0) {
+    return (
+      <div className="distributional-chart">
+        <h2>Impact by income decile</h2>
+        <p className="chart-description">
+          Average percentage change in net income for each income decile, from the poorest 10% (1st) to the richest 10% (10th) of households.
+        </p>
+        <div style={{ padding: '60px 20px', textAlign: 'center', color: '#666', backgroundColor: '#f9f9f9', borderRadius: '8px' }}>
+          <p style={{ margin: 0, fontSize: '0.95rem' }}>No data available yet for this metric</p>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="distributional-chart">

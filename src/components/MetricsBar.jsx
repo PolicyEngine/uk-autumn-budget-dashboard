@@ -71,7 +71,7 @@ function MetricsBar({ metrics }) {
       </div>
 
       <div className="metric-card">
-        <div className="metric-label">Change in poverty rate</div>
+        <div className="metric-label">Change in poverty rate (relative AHC)</div>
         <div className="metric-value">
           <AnimatedNumber value={metrics.povertyRateChange} format={formatNumber} />
         </div>
