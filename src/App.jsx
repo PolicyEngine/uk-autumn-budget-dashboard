@@ -184,13 +184,35 @@ function App() {
         })
       }
 
-      // For now, show null for metrics we don't have yet
+      // Extract additional metrics from CSV
+      const peopleAffectedData = filteredData.filter(row =>
+        row.metric_type === 'people_affected' && parseInt(row.year) === 2026
+      )
+      const percentAffected = peopleAffectedData.length > 0
+        ? peopleAffectedData.reduce((sum, row) => sum + parseFloat(row.value), 0)
+        : null
+
+      const giniChangeData = filteredData.filter(row =>
+        row.metric_type === 'gini_change' && parseInt(row.year) === 2026
+      )
+      const giniChange = giniChangeData.length > 0
+        ? giniChangeData.reduce((sum, row) => sum + parseFloat(row.value), 0)
+        : null
+
+      // Get poverty rate change (percentage points)
+      const povertyRateChangeData = filteredData.filter(row =>
+        row.metric_type === 'poverty_rate_change_pp' && parseInt(row.year) === 2026
+      )
+      const povertyRateChange = povertyRateChangeData.length > 0
+        ? povertyRateChangeData.reduce((sum, row) => sum + parseFloat(row.value), 0)
+        : null
+
       const metrics = {
         fiscalHeadroom2029: null, // Not yet available
         budgetaryImpact2026: budgetaryImpact2026,
-        percentAffected: null, // Not yet available
-        giniChange: null, // Not yet available
-        povertyRateChange: null // Not yet available
+        percentAffected: percentAffected,
+        giniChange: giniChange,
+        povertyRateChange: povertyRateChange
       }
 
       setResults({
@@ -289,18 +311,18 @@ function App() {
                   <div className="key-metric">
                     <div className="metric-number">
                       {results.metrics.giniChange !== null
-                        ? results.metrics.giniChange.toFixed(2)
+                        ? results.metrics.giniChange.toFixed(4)
                         : 'No data'}
                     </div>
-                    <div className="metric-text">change in inequality (Gini)</div>
+                    <div className="metric-text">change in inequality (Gini coefficient)</div>
                   </div>
                   <div className="key-metric">
                     <div className="metric-number">
                       {results.metrics.povertyRateChange !== null
-                        ? results.metrics.povertyRateChange.toFixed(2)
+                        ? `${results.metrics.povertyRateChange.toFixed(1)}pp`
                         : 'No data'}
                     </div>
-                    <div className="metric-text">change in poverty rate (relative AHC)</div>
+                    <div className="metric-text">change in poverty rate (absolute BHC)</div>
                   </div>
                 </div>
 

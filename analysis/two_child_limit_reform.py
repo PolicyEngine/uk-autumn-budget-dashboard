@@ -333,30 +333,23 @@ def main():
     # 7b. Inequality impact (Gini coefficient)
     print("\n   b) Calculating Gini coefficient change...")
 
-    # Use the baseline_income and reform_income arrays already defined above
-    baseline_income_arr = baseline_income.values
-    reform_income_arr = reform_income.values
-    household_weight_arr = household_weight.values
+    # Calculate Gini using MicroSeries (household level)
+    from microdf import MicroSeries
+    baseline_hh_income = baseline.calculate("household_net_income", period=2026, map_to="household")
+    reformed_hh_income = reformed.calculate("household_net_income", period=2026, map_to="household")
+    hh_weight = baseline.calculate("household_weight", period=2026, map_to="household")
 
-    # Calculate Gini for baseline
-    baseline_income_sorted = np.sort(baseline_income_arr)
-    baseline_weights_sorted = household_weight_arr[np.argsort(baseline_income_arr)]
-    cumsum_baseline = np.cumsum(baseline_weights_sorted * baseline_income_sorted)
-    total_baseline = cumsum_baseline[-1]
-    gini_baseline = 1 - 2 * np.sum(cumsum_baseline * baseline_weights_sorted) / (total_baseline * np.sum(baseline_weights_sorted))
+    baseline_income_ms = MicroSeries(baseline_hh_income.values, weights=hh_weight.values)
+    reformed_income_ms = MicroSeries(reformed_hh_income.values, weights=hh_weight.values)
 
-    # Calculate Gini for reform
-    reformed_income_sorted = np.sort(reform_income_arr)
-    reformed_weights_sorted = household_weight_arr[np.argsort(reform_income_arr)]
-    cumsum_reformed = np.cumsum(reformed_weights_sorted * reformed_income_sorted)
-    total_reformed = cumsum_reformed[-1]
-    gini_reformed = 1 - 2 * np.sum(cumsum_reformed * reformed_weights_sorted) / (total_reformed * np.sum(reformed_weights_sorted))
+    baseline_gini = baseline_income_ms.gini()
+    reformed_gini = reformed_income_ms.gini()
 
-    gini_change = gini_reformed - gini_baseline
-    gini_change_pct = (gini_change / gini_baseline) * 100
+    gini_change = reformed_gini - baseline_gini
+    gini_change_pct = (gini_change / baseline_gini) * 100
 
-    print(f"   Baseline Gini: {gini_baseline:.4f}")
-    print(f"   Reformed Gini: {gini_reformed:.4f}")
+    print(f"   Baseline Gini: {baseline_gini:.4f}")
+    print(f"   Reformed Gini: {reformed_gini:.4f}")
     print(f"   Change: {gini_change:.4f} ({gini_change_pct:+.2f}%)")
 
     additional_results.append({
@@ -366,44 +359,70 @@ def main():
         'year': 2026,
         'decile': 'all',
         'category': 'gini',
-        'value': gini_change,
+        'value': gini_change,  # Store raw coefficient change
         'unit': 'coefficient'
     })
 
-    # 7c. Poverty rate change (relative BHC - Before Housing Costs)
+    # 7c. Poverty rate change (absolute BHC - Before Housing Costs)
     print("\n   c) Calculating poverty rate change...")
 
-    # Get poverty status from simulation (person-level, NOT mapped to household)
-    baseline_in_poverty_2026 = baseline.calculate('in_poverty_bhc', period=2026)
-    reformed_in_poverty_2026 = reformed.calculate('in_poverty_bhc', period=2026)
-    person_weight_2026 = baseline.calculate('person_weight', period=2026)
+    # Use WEIGHTED poverty calculation (matching poverty-analysis.ipynb)
+    # Get poverty status and person weights
+    baseline_in_poverty = baseline.calculate('in_poverty_bhc', period=2026, map_to="person").values
+    reformed_in_poverty = reformed.calculate('in_poverty_bhc', period=2026, map_to="person").values
+    person_weight_2026 = baseline.calculate('person_weight', period=2026, map_to="person").values
 
-    # Calculate poverty rates (weighted) - manual weighted average
-    # Poverty rate = sum(in_poverty * weight) / sum(weight)
-    baseline_poverty_count = (baseline_in_poverty_2026 * person_weight_2026).sum()
-    baseline_total_weight = person_weight_2026.sum()
-    baseline_poverty_rate = (baseline_poverty_count / baseline_total_weight) * 100
+    # Create DataFrame for weighted calculation
+    baseline_poverty_df = pd.DataFrame({
+        'in_poverty_bhc': baseline_in_poverty,
+        'person_weight': person_weight_2026
+    })
+    reformed_poverty_df = pd.DataFrame({
+        'in_poverty_bhc': reformed_in_poverty,
+        'person_weight': person_weight_2026
+    })
 
-    reformed_poverty_count = (reformed_in_poverty_2026 * person_weight_2026).sum()
-    reformed_total_weight = person_weight_2026.sum()
-    reformed_poverty_rate = (reformed_poverty_count / reformed_total_weight) * 100
+    # Calculate weighted poverty rate: sum(person_weight where in_poverty) / sum(all person_weight)
+    baseline_poverty_rate = (
+        baseline_poverty_df[baseline_poverty_df['in_poverty_bhc'] == True]['person_weight'].sum() /
+        baseline_poverty_df['person_weight'].sum()
+    ) * 100
 
-    poverty_rate_change = reformed_poverty_rate - baseline_poverty_rate
-    poverty_rate_change_pct = (poverty_rate_change / baseline_poverty_rate) * 100 if baseline_poverty_rate > 0 else 0
+    reformed_poverty_rate = (
+        reformed_poverty_df[reformed_poverty_df['in_poverty_bhc'] == True]['person_weight'].sum() /
+        reformed_poverty_df['person_weight'].sum()
+    ) * 100
+
+    # Calculate both pp and % change
+    poverty_rate_change_pp = reformed_poverty_rate - baseline_poverty_rate  # Percentage points
+    poverty_rate_change_pct = (poverty_rate_change_pp / baseline_poverty_rate) * 100 if baseline_poverty_rate > 0 else 0  # Percentage
 
     print(f"   Baseline poverty rate (BHC): {baseline_poverty_rate:.2f}%")
     print(f"   Reformed poverty rate (BHC): {reformed_poverty_rate:.2f}%")
-    print(f"   Change: {poverty_rate_change:+.2f}pp ({poverty_rate_change_pct:+.1f}%)")
+    print(f"   Change: {poverty_rate_change_pp:+.2f}pp ({poverty_rate_change_pct:+.1f}%)")
 
+    # Store percentage point change
     additional_results.append({
         'reform_id': REFORM_ID,
         'reform_name': REFORM_NAME,
-        'metric_type': 'poverty_rate_change',
+        'metric_type': 'poverty_rate_change_pp',
         'year': 2026,
         'decile': 'all',
         'category': 'poverty_bhc',
-        'value': poverty_rate_change,
+        'value': poverty_rate_change_pp,  # Store as percentage points (pp)
         'unit': 'percentage_points'
+    })
+
+    # Store percentage change
+    additional_results.append({
+        'reform_id': REFORM_ID,
+        'reform_name': REFORM_NAME,
+        'metric_type': 'poverty_rate_change_pct',
+        'year': 2026,
+        'decile': 'all',
+        'category': 'poverty_bhc',
+        'value': poverty_rate_change_pct,  # Store as percentage change (%)
+        'unit': 'percent'
     })
 
     # Load existing results and update with new data
@@ -418,7 +437,8 @@ def main():
            (results_df['metric_type'] == 'winners_losers') |
            (results_df['metric_type'] == 'people_affected') |
            (results_df['metric_type'] == 'gini_change') |
-           (results_df['metric_type'] == 'poverty_rate_change')))
+           (results_df['metric_type'] == 'poverty_rate_change_pp') |
+           (results_df['metric_type'] == 'poverty_rate_change_pct')))
     ]
 
     # Combine all results

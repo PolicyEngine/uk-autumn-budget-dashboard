@@ -1,4 +1,5 @@
 reform_id,reform_name,metric_type,year,value,unit,decile,category
+two_child_limit,2 child limit reforms,poverty_rate_change,2026,-8.617202758789062,percent,all,poverty_bhc
 two_child_limit,2 child limit reforms,budgetary_impact,2026,-2.816193254209347,GBP_billions,,
 two_child_limit,2 child limit reforms,budgetary_impact,2027,-3.018368956328293,GBP_billions,,
 two_child_limit,2 child limit reforms,budgetary_impact,2028,-3.269026401221238,GBP_billions,,
@@ -68,3 +69,7 @@ two_child_limit,2 child limit reforms,winners_losers,2026,0.0,percent,All,Lose l
 two_child_limit,2 child limit reforms,winners_losers,2026,95.56198317660018,percent,All,No change
 two_child_limit,2 child limit reforms,winners_losers,2026,0.4460044104390283,percent,All,Gain less than 5%
 two_child_limit,2 child limit reforms,winners_losers,2026,3.992012412960798,percent,All,Gain more than 5%
+two_child_limit,2 child limit reforms,people_affected,2026,4.438016823399826,percent,all,affected
+two_child_limit,2 child limit reforms,gini_change,2026,0.00019693171693202505,coefficient,all,gini
+two_child_limit,2 child limit reforms,poverty_rate_change_pp,2026,-1.0115594863891602,percentage_points,all,poverty_bhc
+two_child_limit,2 child limit reforms,poverty_rate_change_pct,2026,-8.617202758789062,percent,all,poverty_bhc
