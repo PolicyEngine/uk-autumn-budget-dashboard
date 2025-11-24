@@ -1,7 +1,80 @@
-import { ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, ResponsiveContainer, ReferenceLine } from 'recharts'
+import { useMemo } from 'react'
+import Plot from 'react-plotly.js'
 import './HouseholdChart.css'
 
 function HouseholdChart({ data }) {
+  // Process data for Plotly
+  const plotData = useMemo(() => {
+    if (!data || data.length === 0) return null
+
+    // Separate data into gains, losses, and no change
+    const gains = data.filter(d => d.income_change > 0.01)
+    const losses = data.filter(d => d.income_change < -0.01)
+    const noChange = data.filter(d => Math.abs(d.income_change) <= 0.01)
+
+    // Scale household weights for marker sizes (1-20 range)
+    const maxWeight = Math.max(...data.map(d => d.household_weight))
+    const scaleSize = (weight) => Math.max(1, Math.min(20, (weight / maxWeight) * 20))
+
+    const traces = []
+
+    // No change trace (grey)
+    if (noChange.length > 0) {
+      traces.push({
+        x: noChange.map(d => d.income_change),
+        y: noChange.map(d => d.baseline_income),
+        mode: 'markers',
+        type: 'scatter',
+        name: `No change (${noChange.length.toLocaleString()})`,
+        marker: {
+          size: noChange.map(d => scaleSize(d.household_weight)),
+          color: '#9CA3AF',
+          opacity: 0.7,
+          line: { width: 0.5, color: '#6B7280' }
+        },
+        hovertemplate: 'Income change: £%{x:,.0f}<br>Baseline income: £%{y:,.0f}<extra></extra>'
+      })
+    }
+
+    // Gains trace (teal)
+    if (gains.length > 0) {
+      traces.push({
+        x: gains.map(d => d.income_change),
+        y: gains.map(d => d.baseline_income),
+        mode: 'markers',
+        type: 'scatter',
+        name: `Gains (${gains.length.toLocaleString()})`,
+        marker: {
+          size: gains.map(d => scaleSize(d.household_weight)),
+          color: '#319795',
+          opacity: 0.75,
+          line: { width: 0.5, color: '#2C7A7B' }
+        },
+        hovertemplate: 'Income change: £%{x:,.0f}<br>Baseline income: £%{y:,.0f}<extra></extra>'
+      })
+    }
+
+    // Losses trace (red)
+    if (losses.length > 0) {
+      traces.push({
+        x: losses.map(d => d.income_change),
+        y: losses.map(d => d.baseline_income),
+        mode: 'markers',
+        type: 'scatter',
+        name: `Losses (${losses.length.toLocaleString()})`,
+        marker: {
+          size: losses.map(d => scaleSize(d.household_weight)),
+          color: '#E53E3E',
+          opacity: 0.75,
+          line: { width: 0.5, color: '#C53030' }
+        },
+        hovertemplate: 'Income change: £%{x:,.0f}<br>Baseline income: £%{y:,.0f}<extra></extra>'
+      })
+    }
+
+    return traces
+  }, [data])
+
   if (!data || data.length === 0) {
     return (
       <div className="household-chart">
@@ -20,65 +93,49 @@ function HouseholdChart({ data }) {
     <div className="household-chart">
       <h2>Income changes by household</h2>
       <p className="chart-description">
-        Net income change for each household plotted against their baseline income. Points above zero represent gains; points below represent losses.
+        Net income change for each household plotted against their baseline income. Points above zero represent gains; points below represent losses. Dot size represents household weight. Use mouse wheel to zoom in/out.
       </p>
 
-      <ResponsiveContainer width="100%" height={300}>
-        <ScatterChart margin={{ top: 15, right: 60, left: 70, bottom: 40 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" vertical={true} horizontal={true} />
-
-          <XAxis
-            type="number"
-            dataKey="x"
-            domain={[-5000, 5000]}
-            ticks={[-5000, -4000, -3000, -2000, -1000, 0, 1000, 2000, 3000, 4000, 5000]}
-            tickFormatter={(value) => `£${Math.abs(value / 1000)}k`}
-            tick={{ fontSize: 10, fill: '#666' }}
-            axisLine={{ stroke: '#333', strokeWidth: 1 }}
-            label={{
-              value: 'Tax change (£)',
-              position: 'insideBottom',
-              offset: -10,
-              style: { fill: '#374151', fontSize: 11, fontWeight: 500 }
-            }}
-          />
-
-          <YAxis
-            type="number"
-            dataKey="y"
-            scale="log"
-            domain={[10000, 500000]}
-            ticks={[10000, 25000, 50000, 75000, 100000, 150000, 200000, 300000, 500000]}
-            tickFormatter={(value) => {
-              if (value >= 100000) return `£${value / 1000}k`
-              return `£${(value / 1000).toFixed(0)}k`
-            }}
-            orientation="left"
-            tick={{ fontSize: 10, fill: '#666' }}
-            width={70}
-            label={{
-              value: 'Household income',
-              angle: -90,
-              position: 'insideLeft',
-              dx: -30,
-              style: { textAnchor: 'middle', fill: '#374151', fontSize: 11, fontWeight: 500 }
-            }}
-          />
-
-          <ReferenceLine x={0} stroke="#333" strokeWidth={2} />
-
-          <Scatter
-            name="Tax increases"
-            data={data.filter(d => d.x < 0)}
-            fill="rgba(184, 135, 90, 0.5)"
-          />
-          <Scatter
-            name="Tax cuts"
-            data={data.filter(d => d.x >= 0)}
-            fill="rgba(49, 151, 149, 0.5)"
-          />
-        </ScatterChart>
-      </ResponsiveContainer>
+      <div style={{ width: '100%', height: '500px' }}>
+        <Plot
+          data={plotData}
+          layout={{
+            autosize: true,
+            margin: { l: 80, r: 40, t: 20, b: 60 },
+            xaxis: {
+              title: {
+                text: 'Net income change (£)',
+                font: { size: 12, color: '#374151', family: 'Inter, sans-serif' }
+              },
+              gridcolor: '#e0e0e0',
+              zeroline: true,
+              zerolinecolor: '#666',
+              zerolinewidth: 2,
+              tickfont: { size: 10, color: '#666' }
+            },
+            yaxis: {
+              title: {
+                text: 'Baseline household net income (£)',
+                font: { size: 12, color: '#374151', family: 'Inter, sans-serif' }
+              },
+              gridcolor: '#e0e0e0',
+              tickfont: { size: 10, color: '#666' }
+            },
+            hovermode: 'closest',
+            showlegend: false,
+            plot_bgcolor: '#ffffff',
+            paper_bgcolor: '#ffffff'
+          }}
+          config={{
+            displayModeBar: true,
+            displaylogo: false,
+            modeBarButtonsToRemove: ['select2d', 'lasso2d'],
+            responsive: true
+          }}
+          style={{ width: '100%', height: '100%' }}
+          useResizeHandler={true}
+        />
+      </div>
     </div>
   )
 }

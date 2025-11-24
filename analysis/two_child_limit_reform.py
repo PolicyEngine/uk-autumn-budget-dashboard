@@ -52,7 +52,8 @@ def load_or_create_results_csv(csv_path):
             'category',
             'value',
             'unit',
-            'employment_income'  # Optional: for income_curve metric
+            'employment_income',  # Optional: for income_curve metric
+            'household_weight'  # Optional: for household_scatter metric
         ])
 
 def save_results(df, csv_path):
@@ -539,6 +540,36 @@ def main():
     max_benefit = max(benefits)
     print(f"   Maximum household benefit: £{max_benefit:,.0f}")
 
+    # 7e. Household income change scatter data
+    print("\n   e) Generating household scatter plot data...")
+
+    # Calculate income change for all households
+    hh_baseline_income = baseline_income.values  # Already calculated in section 5
+    hh_reform_income = reform_income.values
+    hh_income_change = hh_reform_income - hh_baseline_income
+    hh_weight = household_weight.values
+
+    # Filter to households with baseline income 0-150k for better visualization
+    mask = (hh_baseline_income >= 0) & (hh_baseline_income <= 150000)
+
+    scatter_results = []
+    for i in range(len(hh_baseline_income)):
+        if mask[i]:
+            scatter_results.append({
+                'reform_id': REFORM_ID,
+                'reform_name': REFORM_NAME,
+                'metric_type': 'household_scatter',
+                'year': 2026,
+                'decile': None,
+                'category': None,
+                'value': hh_baseline_income[i],  # Y-axis: baseline income
+                'unit': 'GBP',
+                'employment_income': hh_income_change[i],  # X-axis: income change (reusing this field)
+                'household_weight': hh_weight[i]  # For dot size
+            })
+
+    print(f"   ✓ Generated scatter data for {len(scatter_results):,} households")
+
     # Calculate constituency-level impacts
     print("\n8. Calculating constituency-level impacts...")
 
@@ -663,11 +694,12 @@ def main():
            (results_df['metric_type'] == 'gini_change') |
            (results_df['metric_type'] == 'poverty_rate_change_pp') |
            (results_df['metric_type'] == 'poverty_rate_change_pct') |
-           (results_df['metric_type'] == 'income_curve')))
+           (results_df['metric_type'] == 'income_curve') |
+           (results_df['metric_type'] == 'household_scatter')))
     ]
 
     # Combine all results
-    all_results = budgetary_results + distributional_results + winners_losers_results + additional_results + income_curve_results
+    all_results = budgetary_results + distributional_results + winners_losers_results + additional_results + income_curve_results + scatter_results
     new_results_df = pd.DataFrame(all_results)
     results_df = pd.concat([results_df, new_results_df], ignore_index=True)
 

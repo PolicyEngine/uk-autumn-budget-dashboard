@@ -207,11 +207,25 @@ function App() {
         povertyRateChange: povertyRateChange
       }
 
+      // Build household scatter data
+      const householdScatterData = filteredData.filter(row =>
+        row.metric_type === 'household_scatter' && parseInt(row.year) === 2026
+      )
+
+      let householdData = null
+      if (householdScatterData.length > 0) {
+        householdData = householdScatterData.map(row => ({
+          baseline_income: parseFloat(row.value),
+          income_change: parseFloat(row.employment_income), // Reusing this field for income_change
+          household_weight: parseFloat(row.household_weight || 1)
+        }))
+      }
+
       setResults({
         metrics,
         budgetData,
         distributionalData,
-        householdData: null, // Not yet available
+        householdData,
         waterfallData
       })
     } catch (error) {
@@ -355,7 +369,7 @@ function App() {
                   <p>How selected policies affect individual households and government revenues over time</p>
                 </div>
                 <div className="primary-charts">
-                  <HouseholdChart data={results.householdData} />
+                  <EmploymentIncomeChart />
                   <BudgetaryImpactChart data={results.budgetData} policyColors={POLICY_COLORS} />
                 </div>
 
@@ -376,7 +390,7 @@ function App() {
                 </div>
                 <div className="secondary-charts">
                   <ConstituencyMap selectedPolicies={selectedPolicies} />
-                  <EmploymentIncomeChart />
+                  <HouseholdChart data={results.householdData} />
                 </div>
               </>
             )}
