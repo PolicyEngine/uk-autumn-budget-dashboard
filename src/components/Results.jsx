@@ -250,7 +250,7 @@ function Results({ results, isLoading, selectedPolicies }) {
       </section>
 
       <section className="chart-section">
-        <h2>Budgetary impact over time</h2>
+        <h2>Revenue impact over time</h2>
         <p className="chart-description">
           Projected revenue or expenditure impact of selected policies from 2025 to 2030, measured in billions of pounds.
         </p>

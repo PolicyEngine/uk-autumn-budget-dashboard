@@ -1,12 +1,77 @@
 .constituency-map-wrapper {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
   background: white;
   padding: 16px;
   border-radius: 6px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   height: 100%;
+}
+
+/* Header section */
+.map-header {
+  padding-bottom: 12px;
+  border-bottom: 1px solid #e5e7eb;
+  margin-bottom: 4px;
+}
+
+.map-header h2 {
+  margin: 0 0 6px 0;
+  color: #374151;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.map-header .chart-description {
+  margin: 0;
+  color: #6b7280;
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+
+/* Policy indicator */
+.map-policy-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: #f0fdfa;
+  border-left: 3px solid #319795;
+  border-radius: 4px;
+  margin-bottom: 16px;
+}
+
+.policy-label {
+  font-size: 0.8125rem;
+  color: #4b5563;
+}
+
+.policy-name {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #319795;
+}
+
+/* No data message */
+.constituency-no-data {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+  text-align: center;
+}
+
+.constituency-no-data p {
+  margin: 0 0 8px 0;
+  color: #4b5563;
+  font-size: 0.9375rem;
+}
+
+.constituency-hint {
+  font-size: 0.8125rem;
+  color: #9ca3af;
 }
 
 /* Top bar with search and legend */
@@ -162,34 +227,112 @@
   display: block;
 }
 
-/* Zoom controls */
-.zoom-controls {
+/* Map controls container */
+.map-controls-container {
   position: absolute;
   top: 12px;
   right: 12px;
   display: flex;
-  flex-direction: column;
-  gap: 6px;
+  flex-direction: row;
+  gap: 12px;
   z-index: 10;
 }
 
-.zoom-control-btn {
-  width: 28px;
-  height: 28px;
+/* View mode toggle */
+.view-mode-toggle {
+  display: flex;
+  flex-direction: row;
+  gap: 4px;
+  background: white;
+  padding: 2px;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.view-mode-btn {
+  height: 24px;
+  padding: 0 10px;
   background: transparent;
   border: none;
+  border-radius: 3px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  color: #4b5563;
+  color: #6b7280;
+  font-size: 0.75rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  position: relative;
+}
+
+.view-mode-btn:hover {
+  background: #f3f4f6;
+  color: #319795;
+}
+
+.view-mode-btn.active {
+  background: #319795;
+  color: white;
+}
+
+.view-mode-btn::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: -32px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #1f2937;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  z-index: 1000;
+}
+
+.view-mode-btn:hover::after {
+  opacity: 1;
+}
+
+/* Zoom controls */
+.zoom-controls {
+  display: flex;
+  flex-direction: row;
+  gap: 4px;
+  background: white;
+  padding: 2px;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.zoom-control-btn {
+  width: 24px;
+  height: 24px;
+  background: transparent;
+  border: none;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #6b7280;
   transition: all 0.2s ease;
   padding: 0;
 }
 
 .zoom-control-btn:hover {
+  background: #f3f4f6;
   color: #319795;
-  transform: scale(1.1);
+}
+
+.zoom-control-btn svg {
+  width: 14px;
+  height: 14px;
 }
 
 .zoom-control-btn:active {
@@ -198,7 +341,6 @@
 
 .zoom-control-btn svg {
   pointer-events: none;
-  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
 }
 
 /* Tooltip */
@@ -298,20 +440,31 @@
     width: 100%;
   }
 
-  .zoom-controls {
+  .map-controls-container {
     top: 8px;
     right: 8px;
-    gap: 4px;
+    gap: 8px;
+  }
+
+  .view-mode-toggle,
+  .zoom-controls {
+    padding: 1px;
+  }
+
+  .view-mode-btn {
+    height: 22px;
+    padding: 0 8px;
+    font-size: 0.7rem;
   }
 
   .zoom-control-btn {
-    width: 24px;
-    height: 24px;
+    width: 22px;
+    height: 22px;
   }
 
   .zoom-control-btn svg {
-    width: 18px;
-    height: 18px;
+    width: 12px;
+    height: 12px;
   }
 
   .map-canvas svg {

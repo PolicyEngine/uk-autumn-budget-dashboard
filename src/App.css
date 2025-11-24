@@ -355,7 +355,6 @@
   font-weight: 700;
   color: #319795;
   line-height: 1.1;
-  margin-bottom: 4px;
   font-variant-numeric: tabular-nums;
 }
 
@@ -364,6 +363,7 @@
   color: #6b7280;
   font-weight: 500;
   line-height: 1.25;
+  margin-bottom: 6px;
 }
 
 /* Section Headers */
@@ -393,6 +393,7 @@
   grid-template-columns: repeat(2, 1fr);
   gap: 20px;
   margin-bottom: 32px;
+  align-items: stretch;
 }
 
 .full-width-section {

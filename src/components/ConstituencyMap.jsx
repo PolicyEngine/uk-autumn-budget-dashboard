@@ -2,16 +2,22 @@ import { useEffect, useRef, useState } from 'react'
 import * as d3 from 'd3'
 import './ConstituencyMap.css'
 
-const SCENARIOS = {
+// Mapping from main policy IDs to constituency scenario IDs
+const POLICY_TO_SCENARIO = {
+  'two_child_limit': 'remove_2_child_limit',
+  // Add more mappings as constituency data becomes available
+  // 'income_tax_rates': 'raise_basic_rate_1p',
+}
+
+const SCENARIO_NAMES = {
   'raise_basic_rate_1p': 'Raise basic rate by 1p',
   'raise_higher_rate_1p': 'Raise higher rate by 1p',
   'remove_2_child_limit': 'Remove 2-child limit',
 }
 
-export default function ConstituencyMap() {
+export default function ConstituencyMap({ selectedPolicies = [] }) {
   const svgRef = useRef(null)
   const tooltipRef = useRef(null)
-  const [selectedScenario, setSelectedScenario] = useState('raise_basic_rate_1p')
   const [selectedConstituency, setSelectedConstituency] = useState(null)
   const [tooltipData, setTooltipData] = useState(null)
   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 })
@@ -20,6 +26,11 @@ export default function ConstituencyMap() {
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
   const [searchResults, setSearchResults] = useState([])
+
+  // Determine which scenario to display based on selected policies
+  const selectedScenario = selectedPolicies
+    .map(policyId => POLICY_TO_SCENARIO[policyId])
+    .find(scenarioId => scenarioId !== undefined) || null
 
   // Load data
   useEffect(() => {
@@ -53,11 +64,15 @@ export default function ConstituencyMap() {
         .filter(line => line.trim())
         .map(line => {
           const values = parseCSVLine(line)
+          const avgGain = parseFloat(values[3])
+          const relChange = parseFloat(values[4])
+
           return {
             scenario: values[0]?.trim(),
             constituency_code: values[1]?.trim(),
             constituency_name: values[2]?.trim().replace(/^"|"$/g, ''),
-            average_gain: parseFloat(values[3]),
+            average_gain: avgGain,
+            relative_change: isNaN(relChange) ? 0 : relChange,
           }
         })
 
@@ -136,7 +151,9 @@ export default function ConstituencyMap() {
     const dataMap = new Map(scenarioData.map(d => [d.constituency_code, d]))
 
     // Color scale - diverging with white at 0, red for losses, green for gains
-    const extent = d3.extent(scenarioData, d => d.average_gain)
+    // Use relative_change (percentage of constituency's average income)
+    const getValue = (d) => d.relative_change
+    const extent = d3.extent(scenarioData, getValue)
     const maxAbsValue = Math.max(Math.abs(extent[0]), Math.abs(extent[1]))
 
     const colorScale = d3.scaleDiverging()
@@ -150,7 +167,7 @@ export default function ConstituencyMap() {
       .attr('d', path)
       .attr('fill', (d) => {
         const constData = dataMap.get(d.properties.GSScode)
-        return constData ? colorScale(constData.average_gain) : '#ddd'
+        return constData ? colorScale(getValue(constData)) : '#ddd'
       })
       .attr('stroke', '#fff')
       .attr('stroke-width', 0.05)
@@ -237,9 +254,11 @@ export default function ConstituencyMap() {
     const scenarioData = data.filter(d => d.scenario === selectedScenario)
     const dataMap = new Map(scenarioData.map(d => [d.constituency_code, d]))
 
-    // Color scale
-    const extent = d3.extent(scenarioData, d => d.average_gain)
+    // Color scale - use relative_change (percentage)
+    const getValue = (d) => d.relative_change
+    const extent = d3.extent(scenarioData, getValue)
     const maxAbsValue = Math.max(Math.abs(extent[0]), Math.abs(extent[1]))
+
     const colorScale = d3.scaleDiverging()
       .domain([-maxAbsValue, 0, maxAbsValue])
       .interpolator(d3.interpolateRdYlGn)
@@ -250,7 +269,8 @@ export default function ConstituencyMap() {
       .duration(500)
       .attr('fill', (d) => {
         const constData = dataMap.get(d.properties.GSScode)
-        return constData ? colorScale(constData.average_gain) : '#ddd'
+        const color = constData ? colorScale(getValue(constData)) : '#ddd'
+        return color
       })
   }, [selectedScenario, data, geoData])
 
@@ -369,8 +389,19 @@ export default function ConstituencyMap() {
     return <div className="constituency-loading">Loading map...</div>
   }
 
+  // Don't render if no supported policy is selected
+  if (!selectedScenario) {
+    return null
+  }
+
   return (
     <div className="constituency-map-wrapper">
+      {/* Header section */}
+      <div className="map-header">
+        <h2>Parliamentary constituencies analysis</h2>
+        <p className="chart-description">Geographic variation in household income impacts across all 650 UK constituencies</p>
+      </div>
+
       {/* Search and legend in top bar */}
       <div className="map-top-bar">
         <div className="map-search-section">
@@ -392,7 +423,9 @@ export default function ConstituencyMap() {
                     className="search-result-item"
                   >
                     <div className="result-name">{result.constituency_name}</div>
-                    <div className="result-value">£{result.average_gain.toFixed(2)}</div>
+                    <div className="result-value">
+                      {result.relative_change.toFixed(2)}%
+                    </div>
                   </button>
                 ))}
               </div>
@@ -405,7 +438,7 @@ export default function ConstituencyMap() {
             <div className="legend-gradient-horizontal" />
             <div className="legend-labels-horizontal">
               <span>Loss</span>
-              <span className="legend-zero">£0</span>
+              <span className="legend-zero">0%</span>
               <span>Gain</span>
             </div>
           </div>
@@ -432,43 +465,46 @@ export default function ConstituencyMap() {
             }}
           />
 
-          {/* Zoom controls */}
-          <div className="zoom-controls" onClick={(e) => e.stopPropagation()}>
-            <button
-              className="zoom-control-btn"
-              onClick={handleZoomIn}
-              title="Zoom in"
-              aria-label="Zoom in"
-            >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                <circle cx="10" cy="10" r="7" stroke="currentColor" strokeWidth="2"/>
-                <path d="M10 7V13M7 10H13" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                <path d="M15 15L20 20" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-              </svg>
-            </button>
-            <button
-              className="zoom-control-btn"
-              onClick={handleZoomOut}
-              title="Zoom out"
-              aria-label="Zoom out"
-            >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                <circle cx="10" cy="10" r="7" stroke="currentColor" strokeWidth="2"/>
-                <path d="M7 10H13" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                <path d="M15 15L20 20" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-              </svg>
-            </button>
-            <button
-              className="zoom-control-btn"
-              onClick={handleResetZoom}
-              title="Reset zoom"
-              aria-label="Reset zoom"
-            >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                <path d="M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C14.8273 3 17.35 4.30367 19 6.34267" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                <path d="M21 3V8H16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </button>
+          {/* Map controls */}
+          <div className="map-controls-container" onClick={(e) => e.stopPropagation()}>
+            {/* Zoom controls */}
+            <div className="zoom-controls">
+              <button
+                className="zoom-control-btn"
+                onClick={handleZoomIn}
+                title="Zoom in"
+                aria-label="Zoom in"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                  <circle cx="10" cy="10" r="7" stroke="currentColor" strokeWidth="2"/>
+                  <path d="M10 7V13M7 10H13" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                  <path d="M15 15L20 20" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                </svg>
+              </button>
+              <button
+                className="zoom-control-btn"
+                onClick={handleZoomOut}
+                title="Zoom out"
+                aria-label="Zoom out"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                  <circle cx="10" cy="10" r="7" stroke="currentColor" strokeWidth="2"/>
+                  <path d="M7 10H13" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                  <path d="M15 15L20 20" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                </svg>
+              </button>
+              <button
+                className="zoom-control-btn"
+                onClick={handleResetZoom}
+                title="Reset zoom"
+                aria-label="Reset zoom"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                  <path d="M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C14.8273 3 17.35 4.30367 19 6.34267" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                  <path d="M21 3V8H16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </button>
+            </div>
           </div>
 
           {/* Tooltip overlay */}
@@ -486,12 +522,14 @@ export default function ConstituencyMap() {
               <p
                 className="tooltip-value"
                 style={{
-                  color: tooltipData.average_gain >= 0 ? '#16a34a' : '#dc2626'
+                  color: tooltipData.relative_change >= 0 ? '#16a34a' : '#dc2626'
                 }}
               >
-                £{tooltipData.average_gain.toFixed(2)}
+                {tooltipData.relative_change.toFixed(2)}%
               </p>
-              <p className="tooltip-label">Average gain per household</p>
+              <p className="tooltip-label">
+                Relative change
+              </p>
             </div>
           )}
         </div>

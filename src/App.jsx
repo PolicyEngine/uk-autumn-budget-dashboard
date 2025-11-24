@@ -14,23 +14,13 @@ import './App.css'
 const DEFAULT_POLICIES = [
   {
     id: 'two_child_limit',
-    name: '2 child limit reforms',
-    description: 'Reform the two-child limit on benefits'
-  },
-  {
-    id: 'vat_changes',
-    name: 'VAT changes',
-    description: 'Adjust VAT rates and exemptions'
+    name: 'Repealing two child limit',
+    description: 'Repeal the two-child limit on benefits'
   },
   {
     id: 'freezing_thresholds',
     name: 'Freezing thresholds',
     description: 'Freeze income tax and National Insurance thresholds'
-  },
-  {
-    id: 'fuel_duty',
-    name: 'Raising fuel duty',
-    description: 'Increase fuel duty rates'
   },
   {
     id: 'ni_rates',
@@ -41,6 +31,11 @@ const DEFAULT_POLICIES = [
     id: 'income_tax_rates',
     name: 'Adjusting income tax rates',
     description: 'Modify income tax rate bands'
+  },
+  {
+    id: 'salary_sacrifice',
+    name: 'Salary sacrifice',
+    description: 'Adjust salary sacrifice schemes'
   }
 ]
 
@@ -60,9 +55,8 @@ function App() {
       const policies = policiesParam.split(',')
       setSelectedPolicies(policies)
     } else {
-      // Select all policies by default
-      const allPolicyIds = DEFAULT_POLICIES.map(p => p.id)
-      setSelectedPolicies(allPolicyIds)
+      // Select only two_child_limit by default (only policy with data)
+      setSelectedPolicies(['two_child_limit'])
     }
   }, [])
 
@@ -155,34 +149,18 @@ function App() {
           .sort((a, b) => decileOrder.indexOf(a.decile) - decileOrder.indexOf(b.decile))
       }
 
-      // Build winners and losers data by decile (waterfall chart)
+      // Build income change by decile data (simple bar chart)
       const winnersLosers2026Data = filteredData.filter(row =>
         row.metric_type === 'winners_losers' && parseInt(row.year) === 2026
       )
 
       let waterfallData = null
       if (winnersLosers2026Data.length > 0) {
-        // Transform data into format needed for stacked bar chart
-        // Group by decile, with each category as a separate field
-        const decileMap = {}
-
-        winnersLosers2026Data.forEach(row => {
-          const decile = row.decile
-          if (!decileMap[decile]) {
-            decileMap[decile] = { category: decile.toString() }
-          }
-          // Use category name as key, convert percentage to decimal for stacked chart
-          decileMap[decile][row.category] = parseFloat(row.value) / 100
-        })
-
-        // Convert to array and sort: "All" first, then deciles 1-10
-        waterfallData = Object.values(decileMap).sort((a, b) => {
-          if (a.category === 'All') return -1
-          if (b.category === 'All') return 1
-          const aNum = parseInt(a.category)
-          const bNum = parseInt(b.category)
-          return aNum - bNum
-        })
+        // Transform data into format: { decile: "1", avg_change: 123.45 }
+        waterfallData = winnersLosers2026Data.map(row => ({
+          decile: row.decile,
+          avg_change: parseFloat(row.value)
+        }))
       }
 
       // Extract additional metrics from CSV
@@ -299,14 +277,14 @@ function App() {
                 <div className="key-metrics-row">
                   <div className="key-metric highlighted">
                     <div className="metric-label-small">
-                      Fiscal headroom in 2029/30
+                      Fiscal headroom in 2029-30
                       <span className="info-icon-wrapper">
                         <svg className="info-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                           <circle cx="12" cy="12" r="10"></circle>
                           <line x1="12" y1="16" x2="12" y2="12"></line>
                           <line x1="12" y1="8" x2="12.01" y2="8"></line>
                         </svg>
-                        <span className="info-tooltip">Fiscal headroom is the gap between the forecast fiscal position and the point at which the Government would breach its fiscal rule. The budgetary impact of each reform is applied directly to the OBR's forecast current budget balance in 2029/30 to produce the updated headroom.</span>
+                        <span className="info-tooltip">Fiscal headroom is the gap between the forecast fiscal position and the point at which the Government would breach its fiscal rule. The budgetary impact of each reform is applied directly to the OBR's forecast current budget balance in 2029-30 to produce the updated headroom.</span>
                       </span>
                     </div>
                     <div className="metric-number">
@@ -316,7 +294,7 @@ function App() {
                     </div>
                   </div>
                   <div className="key-metric">
-                    <div className="metric-label-small">Budgetary impact in 2026</div>
+                    <div className="metric-label-small">Revenue impact in 2026-27</div>
                     <div className="metric-number">
                       {results.metrics.budgetaryImpact2026 !== null
                         ? `£${results.metrics.budgetaryImpact2026.toFixed(1)}bn`
@@ -324,29 +302,24 @@ function App() {
                     </div>
                   </div>
                   <div className="key-metric">
+                    <div className="metric-text">Share of people affected</div>
                     <div className="metric-number">
                       {results.metrics.percentAffected !== null
                         ? `${results.metrics.percentAffected.toFixed(1)}%`
                         : 'No data'}
                     </div>
-                    <div className="metric-text">of people affected</div>
                   </div>
                   <div className="key-metric">
+                    <div className="metric-text">Change in inequality (Gini coefficient)</div>
                     <div className="metric-number">
                       {results.metrics.giniChange !== null
                         ? `${(results.metrics.giniChange * 100).toFixed(1)}%`
                         : 'No data'}
                     </div>
-                    <div className="metric-text">change in inequality (Gini coefficient)</div>
                   </div>
                   <div className="key-metric">
-                    <div className="metric-number">
-                      {results.metrics.povertyRateChange !== null
-                        ? `${results.metrics.povertyRateChange.toFixed(1)}pp`
-                        : 'No data'}
-                    </div>
                     <div className="metric-text">
-                      change in poverty rate (absolute BHC)
+                      Change in poverty rate (absolute BHC)
                       <span className="info-icon-wrapper">
                         <svg className="info-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                           <circle cx="12" cy="12" r="10"></circle>
@@ -355,6 +328,11 @@ function App() {
                         </svg>
                         <span className="info-tooltip">BHC stands for Before Housing Costs. This measures poverty based on household income before deducting housing costs such as rent, mortgage payments, and other housing expenses. Absolute poverty is measured against a fixed threshold that doesn't change with median incomes.</span>
                       </span>
+                    </div>
+                    <div className="metric-number">
+                      {results.metrics.povertyRateChange !== null
+                        ? `${results.metrics.povertyRateChange.toFixed(1)}pp`
+                        : 'No data'}
                     </div>
                   </div>
                 </div>
@@ -397,7 +375,7 @@ function App() {
                   <p>Regional variation in policy impacts across Parliamentary constituencies and demographic groups</p>
                 </div>
                 <div className="secondary-charts">
-                  <ConstituencyMap />
+                  <ConstituencyMap selectedPolicies={selectedPolicies} />
                   <EmploymentIncomeChart />
                 </div>
               </>

@@ -6,7 +6,9 @@ The reform changes:
 - gov.dwp.tax_credits.child_tax_credit.limit.child_count: 102 (effectively unlimited)
 - gov.dwp.universal_credit.elements.child.limit.child_count: 100 (effectively unlimited)
 
-Results are saved to a unified CSV file for the dashboard.
+Results are saved to CSV files for the dashboard:
+- Reform-level metrics: public/data/reform-results.csv
+- Constituency-level impacts: public/data/scenario_gains_by_constituency.csv
 """
 
 import os
@@ -18,14 +20,19 @@ sys.path.insert(0, '/Users/janansadeqian/policyengine-uk')
 import numpy as np
 import pandas as pd
 import copy
+import h5py
 from policyengine_uk import Microsimulation, Scenario, Simulation
 from policyengine_uk.data import UKSingleYearDataset
+from microdf import MicroSeries
 
 # Configuration
 DATASET_PATH = "/Users/janansadeqian/policyengine-uk-data/policyengine_uk_data/storage/enhanced_frs_2023_24.h5"
 OUTPUT_CSV = "/Users/janansadeqian/uk-autumn-budget-dashbaord/public/data/reform-results.csv"
+CONSTITUENCY_CSV = "/Users/janansadeqian/uk-autumn-budget-dashbaord/public/data/scenario_gains_by_constituency.csv"
+CONSTITUENCY_WEIGHTS_PATH = "/Users/janansadeqian/uk-autumn-budget-dashbaord/data/parliamentary_constituency_weights.h5"
 REFORM_ID = "two_child_limit"
 REFORM_NAME = "2 child limit reforms"
+SCENARIO_ID = "remove_2_child_limit"
 
 # Years to analyze
 YEARS = [2026, 2027, 2028, 2029]
@@ -226,88 +233,65 @@ def main():
     # Weighted people count (people * household_weight)
     weighted_people = people * household_weights
 
-    # Define outcome categories
-    BOUNDS = [-np.inf, -0.05, -1e-3, 1e-3, 0.05, np.inf]
-    LABELS = [
-        "Lose more than 5%",
-        "Lose less than 5%",
-        "No change",
-        "Gain less than 5%",
-        "Gain more than 5%",
-    ]
-
+    # Calculate average absolute income change by decile
+    # Use the same DataFrame approach as distributional impact
     winners_losers_results = []
 
     print("\n   " + "="*70)
-    print(f"   {'Decile':<10} {'Gain >5%':>12} {'Gain <5%':>12} {'No change':>12} {'Lose <5%':>12} {'Lose >5%':>12}")
+    print(f"   {'Decile':<10} {'Average change (£)':>20}")
     print("   " + "="*70)
 
-    # Calculate for each decile
+    # Calculate for each decile using the same pattern as distributional impact
     for decile_num in range(1, 11):
-        in_decile = decile_values == decile_num
-        people_in_decile = weighted_people[in_decile].sum()
+        decile_data = decile_df[decile_df['household_income_decile'] == decile_num]
 
-        decile_stats = []
+        if len(decile_data) > 0:
+            # Calculate weighted income change (same as distributional section)
+            weighted_income_change = (decile_data['income_change'] * decile_data['household_weight']).sum()
+            total_households = decile_data['household_weight'].sum()
 
-        if people_in_decile > 0:
-            for lower, upper, label in zip(BOUNDS[:-1], BOUNDS[1:], LABELS):
-                # Find people in this decile AND category
-                in_category = (income_change_pct > lower) & (income_change_pct <= upper)
-                in_both = in_decile & in_category
+            # Average change per household
+            avg_change = weighted_income_change / total_households if total_households > 0 else 0
 
-                people_in_both = weighted_people[in_both].sum()
-                percentage = (people_in_both / people_in_decile) * 100
-
-                decile_stats.append(percentage)
-
-                # Store result
-                winners_losers_results.append({
-                    'reform_id': REFORM_ID,
-                    'reform_name': REFORM_NAME,
-                    'metric_type': 'winners_losers',
-                    'year': 2026,
-                    'decile': decile_num,
-                    'category': label,
-                    'value': percentage,
-                    'unit': 'percent'
-                })
-
-            # Print in reverse order (gains first)
-            print(f"   {decile_num:<10} {decile_stats[4]:>11,.1f}% {decile_stats[3]:>11,.1f}% {decile_stats[2]:>11,.1f}% {decile_stats[1]:>11,.1f}% {decile_stats[0]:>11,.1f}%")
-        else:
-            print(f"   {decile_num:<10} {'No data':>12}")
-
-    print("   " + "="*70)
-
-    # Calculate overall "All" statistics
-    print("\n   Calculating overall (All) statistics...")
-    total_people = weighted_people[decile_values >= 1].sum()
-    all_stats = []
-
-    if total_people > 0:
-        for lower, upper, label in zip(BOUNDS[:-1], BOUNDS[1:], LABELS):
-            # Find people in this category (across all deciles)
-            in_category = (income_change_pct > lower) & (income_change_pct <= upper) & (decile_values >= 1)
-            people_in_category = weighted_people[in_category].sum()
-            percentage = (people_in_category / total_people) * 100
-
-            all_stats.append(percentage)
-
-            # Store result with decile = 'All'
+            # Store result
             winners_losers_results.append({
                 'reform_id': REFORM_ID,
                 'reform_name': REFORM_NAME,
                 'metric_type': 'winners_losers',
                 'year': 2026,
-                'decile': 'All',
-                'category': label,
-                'value': percentage,
-                'unit': 'percent'
+                'decile': str(decile_num),
+                'category': 'avg_change',
+                'value': avg_change,
+                'unit': 'gbp'
             })
 
-        # Print in reverse order (gains first)
-        print(f"   {'All':<10} {all_stats[4]:>11,.1f}% {all_stats[3]:>11,.1f}% {all_stats[2]:>11,.1f}% {all_stats[1]:>11,.1f}% {all_stats[0]:>11,.1f}%")
-        print("   " + "="*70)
+            print(f"   {decile_num:<10} £{avg_change:>18,.2f}")
+        else:
+            print(f"   {decile_num:<10} {'No data':>20}")
+
+    print("   " + "="*70)
+
+    # Calculate overall average (all deciles)
+    print("\n   Calculating overall average...")
+
+    # Use entire DataFrame for overall calculation
+    overall_weighted_income_change = (decile_df['income_change'] * decile_df['household_weight']).sum()
+    overall_total_households = decile_df['household_weight'].sum()
+    overall_avg_change = overall_weighted_income_change / overall_total_households if overall_total_households > 0 else 0
+
+    winners_losers_results.append({
+        'reform_id': REFORM_ID,
+        'reform_name': REFORM_NAME,
+        'metric_type': 'winners_losers',
+        'year': 2026,
+        'decile': 'all',
+        'category': 'avg_change',
+        'value': overall_avg_change,
+        'unit': 'gbp'
+    })
+
+    print(f"   {'All':<10} £{overall_avg_change:>18,.2f}")
+    print("   " + "="*70)
 
     # Calculate additional metrics for 2026
     print("\n7. Calculating additional impact metrics for 2026...")
@@ -555,8 +539,118 @@ def main():
     max_benefit = max(benefits)
     print(f"   Maximum household benefit: £{max_benefit:,.0f}")
 
+    # Calculate constituency-level impacts
+    print("\n8. Calculating constituency-level impacts...")
+
+    # Check if constituency weights file exists
+    if not os.path.exists(CONSTITUENCY_WEIGHTS_PATH):
+        print(f"   ✗ Warning: Constituency weights file not found at {CONSTITUENCY_WEIGHTS_PATH}")
+        print("   Skipping constituency analysis...")
+        constituency_results = []
+    else:
+        print(f"   Loading constituency weights from: {CONSTITUENCY_WEIGHTS_PATH}")
+
+        try:
+            # Load constituency weights
+            with h5py.File(CONSTITUENCY_WEIGHTS_PATH, "r") as f:
+                weights = f["2025"][...]  # Shape: (650 constituencies, ~100k households)
+            print(f"   ✓ Loaded weights for {weights.shape[0]} constituencies")
+
+            # Download constituency metadata (names and codes)
+            from policyengine_core.tools.hugging_face import download_huggingface_dataset
+
+            try:
+                constituency_names_path = download_huggingface_dataset(
+                    repo="policyengine/policyengine-uk-data-public",
+                    repo_filename="constituencies_2024.csv",
+                )
+                constituency_df = pd.read_csv(constituency_names_path)
+                print(f"   ✓ Loaded metadata for {len(constituency_df)} constituencies")
+
+                # Calculate household net income for baseline and reform (year 2026)
+                baseline_hnet = baseline_income.values  # Already calculated in section 5
+                reform_hnet = reform_income.values
+
+                # Calculate impact for each constituency
+                constituency_results = []
+
+                print(f"   Calculating impacts for {len(constituency_df)} constituencies...")
+
+                for i in range(len(constituency_df)):
+                    name = constituency_df.iloc[i]["name"]
+                    code = constituency_df.iloc[i]["code"]
+                    weight = weights[i]
+
+                    # Calculate weighted income using MicroSeries
+                    baseline_income_const = MicroSeries(baseline_hnet, weights=weight)
+                    reform_income_const = MicroSeries(reform_hnet, weights=weight)
+
+                    # Average household income change (absolute)
+                    avg_change = (reform_income_const.sum() - baseline_income_const.sum()) / baseline_income_const.count()
+
+                    # Average household baseline income
+                    avg_baseline_income = baseline_income_const.sum() / baseline_income_const.count()
+
+                    # Relative change (percentage) - gain relative to constituency's average income
+                    rel_change = (avg_change / avg_baseline_income) * 100 if avg_baseline_income > 0 else 0
+
+                    # Store in dashboard format
+                    constituency_results.append({
+                        "scenario": SCENARIO_ID,
+                        "constituency_code": code,
+                        "constituency_name": name,
+                        "average_gain": avg_change,
+                        "relative_change": rel_change,
+                    })
+
+                print(f"   ✓ Calculated impacts for {len(constituency_results)} constituencies")
+
+                # Calculate summary statistics
+                constituency_results_df = pd.DataFrame(constituency_results)
+                print(f"\n   Summary statistics:")
+                print(f"   Mean gain: £{constituency_results_df['average_gain'].mean():,.2f}")
+                print(f"   Median gain: £{constituency_results_df['average_gain'].median():,.2f}")
+                print(f"   Min gain: £{constituency_results_df['average_gain'].min():,.2f}")
+                print(f"   Max gain: £{constituency_results_df['average_gain'].max():,.2f}")
+
+            except Exception as e:
+                print(f"   ✗ Error loading constituency metadata: {e}")
+                print("   Skipping constituency analysis...")
+                constituency_results = []
+
+        except Exception as e:
+            print(f"   ✗ Error loading constituency weights: {e}")
+            print("   Skipping constituency analysis...")
+            constituency_results = []
+
+    # Save constituency results to separate CSV
+    if constituency_results:
+        print("\n9. Saving constituency results to CSV...")
+
+        # Load existing constituency data if file exists
+        if os.path.exists(CONSTITUENCY_CSV):
+            print(f"   Loading existing data from {CONSTITUENCY_CSV}")
+            existing_const_df = pd.read_csv(CONSTITUENCY_CSV)
+            # Remove existing data for this scenario
+            existing_const_df = existing_const_df[existing_const_df['scenario'] != SCENARIO_ID]
+            print(f"   Removed existing '{SCENARIO_ID}' data")
+            # Combine with new data
+            combined_const_df = pd.concat([existing_const_df, pd.DataFrame(constituency_results)], ignore_index=True)
+        else:
+            print(f"   Creating new file at {CONSTITUENCY_CSV}")
+            combined_const_df = pd.DataFrame(constituency_results)
+
+        # Ensure only required columns in correct order
+        combined_const_df = combined_const_df[['scenario', 'constituency_code', 'constituency_name', 'average_gain', 'relative_change']]
+
+        # Save to CSV
+        os.makedirs(os.path.dirname(CONSTITUENCY_CSV), exist_ok=True)
+        combined_const_df.to_csv(CONSTITUENCY_CSV, index=False)
+        print(f"   ✓ Saved {len(constituency_results)} constituency records for scenario '{SCENARIO_ID}'")
+        print(f"   ✓ Total records in file: {len(combined_const_df)}")
+
     # Load existing results and update with new data
-    print("\n8. Saving results to CSV...")
+    print(f"\n{10 if constituency_results else 9}. Saving reform results to CSV...")
     results_df = load_or_create_results_csv(OUTPUT_CSV)
 
     # Remove existing data for this reform (all metric types)
@@ -583,10 +677,11 @@ def main():
     print("\n" + "="*70)
     print("Analysis complete!")
     print("="*70)
-    print("\nNext steps:")
-    print("1. The dashboard will now read these results from the CSV file")
-    print("2. Run additional analyses for other metrics (distributional, etc.)")
-    print("3. Repeat for other reform scenarios")
+    print("\nResults saved:")
+    print(f"1. Reform metrics: {OUTPUT_CSV}")
+    if constituency_results:
+        print(f"2. Constituency impacts: {CONSTITUENCY_CSV}")
+    print("\nThe dashboard will automatically read these results.")
 
 if __name__ == "__main__":
     main()
