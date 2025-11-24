@@ -62,9 +62,9 @@ function EmploymentIncomeChart() {
 
   const formatCurrency = (value) => {
     if (value >= 1000) {
-      return `£${(value / 1000).toFixed(0)}k`
+      return `£${(value / 1000).toFixed(1)}k`
     }
-    return `£${value}`
+    return `£${value.toFixed(1)}`
   }
 
   if (loading) {
@@ -88,48 +88,66 @@ function EmploymentIncomeChart() {
         Relationship between household head employment income and total household net income
       </p>
 
-      <ResponsiveContainer width="100%" height={350}>
+      <ResponsiveContainer width="100%" height={500}>
         <LineChart
           data={data}
-          margin={{ top: 15, right: 20, left: 70, bottom: 15 }}
+          margin={{ top: 25, right: 30, left: 20, bottom: 80 }}
         >
-          <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+          <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
           <XAxis
             dataKey="employment"
+            type="number"
             label={{
               value: 'Household head employment income',
               position: 'insideBottom',
-              offset: -10,
-              style: { textAnchor: 'middle', fill: '#374151', fontSize: 12, fontWeight: 500 }
+              offset: -5,
+              style: { textAnchor: 'middle', fill: '#374151', fontSize: 13, fontWeight: 500 }
             }}
             tickFormatter={formatCurrency}
-            tick={{ fontSize: 11, fill: '#666' }}
+            tick={{ fontSize: 12, fill: '#6b7280' }}
+            height={60}
+            ticks={[0, 20000, 40000, 60000, 80000, 100000, 120000, 140000, 160000, 180000, 200000]}
+            domain={[0, 200000]}
           />
           <YAxis
             label={{
               value: 'Household net income',
               angle: -90,
               position: 'insideLeft',
-              dx: -30,
-              style: { textAnchor: 'middle', fill: '#374151', fontSize: 12, fontWeight: 500 }
+              dx: 10,
+              style: { textAnchor: 'middle', fill: '#374151', fontSize: 13, fontWeight: 500 }
             }}
             tickFormatter={formatCurrency}
-            tick={{ fontSize: 11, fill: '#666' }}
+            tick={{ fontSize: 12, fill: '#6b7280' }}
+            width={80}
+            ticks={[0, 20000, 40000, 60000, 80000, 100000, 120000, 140000]}
+            domain={[0, 140000]}
           />
           <Tooltip
             formatter={(value) => formatCurrency(value)}
             labelFormatter={(label) => `Employment income: ${formatCurrency(label)}`}
-            contentStyle={{ background: 'white', border: '1px solid #e5e7eb', borderRadius: '6px' }}
+            contentStyle={{
+              background: 'white',
+              border: '1px solid #d1d5db',
+              borderRadius: '8px',
+              padding: '12px',
+              boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+            }}
+            labelStyle={{ fontWeight: 600, marginBottom: '4px' }}
           />
           <Legend
-            wrapperStyle={{ paddingTop: '20px' }}
+            wrapperStyle={{ paddingTop: '15px', paddingBottom: '0px' }}
             iconType="line"
+            iconSize={18}
+            formatter={(value) => <span style={{ fontSize: '13px', fontWeight: 500, color: '#374151' }}>{value}</span>}
+            verticalAlign="bottom"
+            align="center"
           />
           <Line
             type="monotone"
             dataKey="baseline"
             stroke="#9CA3AF"
-            strokeWidth={2}
+            strokeWidth={3}
             dot={false}
             name="Baseline"
             animationDuration={800}
@@ -139,12 +157,12 @@ function EmploymentIncomeChart() {
             type="monotone"
             dataKey="reform"
             stroke="#4A7BA7"
-            strokeWidth={2}
-            strokeDasharray="5 5"
+            strokeWidth={3}
+            strokeDasharray="8 4"
             dot={false}
             name="Reform"
             animationDuration={800}
-            animationBegin={0}
+            animationBegin={100}
           />
         </LineChart>
       </ResponsiveContainer>

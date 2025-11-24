@@ -7,6 +7,7 @@ import DistributionalChart from './components/DistributionalChart'
 import WaterfallChart from './components/WaterfallChart'
 import ConstituencyMap from './components/ConstituencyMap'
 import EmploymentIncomeChart from './components/EmploymentIncomeChart'
+import FiscalHeadroom from './components/FiscalHeadroom'
 import './App.css'
 
 // Policy definitions
@@ -207,8 +208,21 @@ function App() {
         ? povertyRateChangeData.reduce((sum, row) => sum + parseFloat(row.value), 0)
         : null
 
+      // Calculate fiscal headroom for 2029/30
+      const budgetaryImpact2029Data = filteredData.filter(row =>
+        row.metric_type === 'budgetary_impact' && parseInt(row.year) === 2029
+      )
+      const budgetaryImpact2029 = budgetaryImpact2029Data.length > 0
+        ? budgetaryImpact2029Data.reduce((sum, row) => sum + parseFloat(row.value), 0)
+        : 0
+
+      // OBR baseline headroom is £9.9bn, reform impact reduces it
+      // If impact is -3.37 (costs money), headroom = 9.9 + (-3.37) = 6.53
+      const obrBaselineHeadroom = 9.9
+      const fiscalHeadroom2029 = obrBaselineHeadroom + budgetaryImpact2029
+
       const metrics = {
-        fiscalHeadroom2029: null, // Not yet available
+        fiscalHeadroom2029: fiscalHeadroom2029,
         budgetaryImpact2026: budgetaryImpact2026,
         percentAffected: percentAffected,
         giniChange: giniChange,
@@ -253,7 +267,6 @@ function App() {
             <h1>UK Autumn Budget 2025 analysis</h1>
           </div>
           <div className="header-right">
-            <img src="/white.png" alt="PolicyEngine" className="policyengine-logo" />
           </div>
         </div>
       </header>
@@ -285,7 +298,17 @@ function App() {
                 {/* Key Metrics Row */}
                 <div className="key-metrics-row">
                   <div className="key-metric highlighted">
-                    <div className="metric-label-small">Fiscal headroom in 2029/30</div>
+                    <div className="metric-label-small">
+                      Fiscal headroom in 2029/30
+                      <span className="info-icon-wrapper">
+                        <svg className="info-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <circle cx="12" cy="12" r="10"></circle>
+                          <line x1="12" y1="16" x2="12" y2="12"></line>
+                          <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                        </svg>
+                        <span className="info-tooltip">Fiscal headroom is the gap between the forecast fiscal position and the point at which the Government would breach its fiscal rule. The budgetary impact of each reform is applied directly to the OBR's forecast current budget balance in 2029/30 to produce the updated headroom.</span>
+                      </span>
+                    </div>
                     <div className="metric-number">
                       {results.metrics.fiscalHeadroom2029 !== null
                         ? `£${results.metrics.fiscalHeadroom2029.toFixed(1)}bn`
@@ -296,7 +319,7 @@ function App() {
                     <div className="metric-label-small">Budgetary impact in 2026</div>
                     <div className="metric-number">
                       {results.metrics.budgetaryImpact2026 !== null
-                        ? `£${results.metrics.budgetaryImpact2026.toFixed(2)}bn`
+                        ? `£${results.metrics.budgetaryImpact2026.toFixed(1)}bn`
                         : 'No data'}
                     </div>
                   </div>

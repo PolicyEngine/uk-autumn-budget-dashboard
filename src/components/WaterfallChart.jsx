@@ -40,7 +40,7 @@ function WaterfallChart({ data }) {
 
       {/* All chart */}
       {allData.length > 0 && (
-        <div style={{ marginBottom: '16px' }}>
+        <div className="waterfall-all-chart" style={{ marginBottom: '16px' }}>
           <ResponsiveContainer width="100%" height={60}>
             <BarChart
               data={allData}
