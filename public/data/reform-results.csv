@@ -70,7 +70,7 @@ two_child_limit,2 child limit reforms,winners_losers,2026,95.56198317660018,perc
 two_child_limit,2 child limit reforms,winners_losers,2026,0.4460044104390283,percent,All,Gain less than 5%,
 two_child_limit,2 child limit reforms,winners_losers,2026,3.992012412960798,percent,All,Gain more than 5%,
 two_child_limit,2 child limit reforms,people_affected,2026,4.438016823399826,percent,all,affected,
-two_child_limit,2 child limit reforms,gini_change,2026,0.00019693171693202505,coefficient,all,gini,
+two_child_limit,2 child limit reforms,gini_change,2026,-0.003303392855016976,relative_change,all,gini,
 two_child_limit,2 child limit reforms,poverty_rate_change_pp,2026,-1.0115594863891602,percentage_points,all,poverty_bhc,
 two_child_limit,2 child limit reforms,poverty_rate_change_pct,2026,-8.617202758789062,percent,all,poverty_bhc,
 two_child_limit,2 child limit reforms,income_curve,2026,21590.0,GBP,,baseline,0.0

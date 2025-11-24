@@ -337,12 +337,21 @@ def main():
 
     # Calculate Gini using MicroSeries (household level)
     from microdf import MicroSeries
-    baseline_hh_income = baseline.calculate("household_net_income", period=2026, map_to="household")
-    reformed_hh_income = reformed.calculate("household_net_income", period=2026, map_to="household")
+    # Use equivalised household income with household count weighting (official method)
+    baseline_equiv_income = baseline.calculate("equiv_household_net_income", period=2026, map_to="household")
+    reformed_equiv_income = reformed.calculate("equiv_household_net_income", period=2026, map_to="household")
+    household_count = baseline.calculate("household_count_people", period=2026, map_to="household")
     hh_weight = baseline.calculate("household_weight", period=2026, map_to="household")
 
-    baseline_income_ms = MicroSeries(baseline_hh_income.values, weights=hh_weight.values)
-    reformed_income_ms = MicroSeries(reformed_hh_income.values, weights=hh_weight.values)
+    # Set negative incomes to zero
+    baseline_equiv_income_values = np.maximum(baseline_equiv_income.values, 0)
+    reformed_equiv_income_values = np.maximum(reformed_equiv_income.values, 0)
+
+    # Weight by household count people
+    adjusted_weights = hh_weight.values * household_count.values
+
+    baseline_income_ms = MicroSeries(baseline_equiv_income_values, weights=adjusted_weights)
+    reformed_income_ms = MicroSeries(reformed_equiv_income_values, weights=adjusted_weights)
 
     baseline_gini = baseline_income_ms.gini()
     reformed_gini = reformed_income_ms.gini()
@@ -361,8 +370,8 @@ def main():
         'year': 2026,
         'decile': 'all',
         'category': 'gini',
-        'value': gini_change,  # Store raw coefficient change
-        'unit': 'coefficient'
+        'value': gini_change_pct / 100,  # Store as decimal (e.g., -0.52% = -0.0052)
+        'unit': 'relative_change'
     })
 
     # 7c. Poverty rate change (absolute BHC - Before Housing Costs)

@@ -334,7 +334,7 @@ function App() {
                   <div className="key-metric">
                     <div className="metric-number">
                       {results.metrics.giniChange !== null
-                        ? results.metrics.giniChange.toFixed(4)
+                        ? `${(results.metrics.giniChange * 100).toFixed(1)}%`
                         : 'No data'}
                     </div>
                     <div className="metric-text">change in inequality (Gini coefficient)</div>
