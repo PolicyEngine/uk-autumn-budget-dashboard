@@ -7,19 +7,19 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 6px;
-  padding: 4px 10px;
+  gap: 8px;
+  padding: 6px 14px;
   background: white;
   border: 1px solid #d1d5db;
   border-radius: 5px;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
-  font-size: 0.75rem;
+  font-size: 0.9rem;
   font-weight: 500;
   color: #374151;
   cursor: pointer;
   transition: all 0.2s ease;
-  min-width: 180px;
-  height: 30px;
+  min-width: 240px;
+  height: 36px;
   box-sizing: border-box;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
@@ -37,13 +37,13 @@
 .policy-selector-label {
   flex: 1;
   text-align: left;
-  font-size: 0.75rem;
+  font-size: 0.9rem;
   font-weight: 500;
   color: #374151;
 }
 
 .policy-selector-icon {
-  font-size: 0.75rem;
+  font-size: 0.85rem;
   color: #319795;
   transition: transform 0.2s ease;
   flex-shrink: 0;
