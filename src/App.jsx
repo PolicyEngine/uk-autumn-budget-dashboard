@@ -320,16 +320,6 @@ function App() {
                     </div>
                   </div>
                   <div className="key-metric">
-                    <div className="metric-text">
-                      Share of people affected<br />in 2026-27
-                    </div>
-                    <div className="metric-number">
-                      {results.metrics.percentAffected !== null
-                        ? `${results.metrics.percentAffected.toFixed(1)}%`
-                        : 'No data'}
-                    </div>
-                  </div>
-                  <div className="key-metric">
                     <div className="metric-text">Change in inequality (Gini coefficient) in 2026-27</div>
                     <div className="metric-number">
                       {results.metrics.giniChange !== null

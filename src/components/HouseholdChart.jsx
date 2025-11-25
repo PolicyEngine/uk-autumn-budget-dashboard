@@ -434,15 +434,15 @@ function HouseholdChart({ rawData, selectedPolicies }) {
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <div style={{ width: '12px', height: '12px', backgroundColor: '#319795', borderRadius: '50%' }}></div>
-          <span style={{ color: '#374151' }}>Gains ({stats?.gains.toLocaleString('en-GB')})</span>
+          <span style={{ color: '#374151' }}>Gains</span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <div style={{ width: '12px', height: '12px', backgroundColor: '#E53E3E', borderRadius: '50%' }}></div>
-          <span style={{ color: '#374151' }}>Losses ({stats?.losses.toLocaleString('en-GB')})</span>
+          <span style={{ color: '#374151' }}>Losses</span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <div style={{ width: '12px', height: '12px', backgroundColor: '#9CA3AF', borderRadius: '50%' }}></div>
-          <span style={{ color: '#374151' }}>No change ({stats?.noChange.toLocaleString('en-GB')})</span>
+          <span style={{ color: '#374151' }}>No change</span>
         </div>
       </div>
 
