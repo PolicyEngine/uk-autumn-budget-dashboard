@@ -429,6 +429,7 @@ function HouseholdChart({ rawData, selectedPolicies }) {
         justifyContent: 'center',
         gap: '20px',
         marginTop: '20px',
+        marginBottom: '16px',
         fontSize: '0.9rem'
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
