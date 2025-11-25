@@ -219,7 +219,7 @@
 }
 
 .map-canvas svg {
-  background: #f9fafb;
+  background: white;
   border-radius: 4px;
   width: 100%;
   height: auto;
