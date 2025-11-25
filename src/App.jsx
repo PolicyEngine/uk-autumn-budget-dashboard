@@ -382,7 +382,7 @@ function App() {
 
                 {/* Section: Who is affected */}
                 <div className="section-header">
-                  <h2>Household and fiscal impacts</h2>
+                  <h2>Household and revenue impacts</h2>
                   <p>This section shows how selected policies affect individual households across different income levels and demographic groups, alongside the projected impact on Government revenues and expenditure over the period from 2025 to 2030.</p>
                 </div>
                 <div className="primary-charts">
