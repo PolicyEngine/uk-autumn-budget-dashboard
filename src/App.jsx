@@ -68,39 +68,27 @@ function App() {
   const [selectedYear, setSelectedYear] = useState(2026)
   const [results, setResults] = useState(null)
 
-  // Initialize from URL or select all policies by default
+  // Initialize from URL
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
     const policiesParam = params.get('policies')
-    const yearParam = params.get('year')
 
     if (policiesParam) {
       const policies = policiesParam.split(',')
       setSelectedPolicies(policies)
-    } else {
-      // Select all policies by default
-      setSelectedPolicies(DEFAULT_POLICIES.map(p => p.id))
-    }
-
-    if (yearParam) {
-      const year = parseInt(yearParam)
-      if ([2026, 2027, 2028, 2029].includes(year)) {
-        setSelectedYear(year)
-      }
     }
   }, [])
 
-  // Update URL when policies or year change
+  // Update URL when policies change
   useEffect(() => {
     if (selectedPolicies.length === 0) {
       window.history.replaceState({}, '', window.location.pathname)
     } else {
       const params = new URLSearchParams()
       params.set('policies', selectedPolicies.join(','))
-      params.set('year', selectedYear)
       window.history.replaceState({}, '', `?${params.toString()}`)
     }
-  }, [selectedPolicies, selectedYear])
+  }, [selectedPolicies])
 
   // Run analysis when policies or year change
   useEffect(() => {

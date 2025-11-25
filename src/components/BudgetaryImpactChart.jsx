@@ -60,7 +60,6 @@ function BudgetaryImpactChart({ data }) {
             tickFormatter={formatCurrency}
             tick={{ fontSize: 11, fill: '#666' }}
           />
-          <ReferenceLine y={0} stroke="#666" strokeWidth={1} />
           <Tooltip
             formatter={(value, name) => [formatCurrency(value), name === 'netImpact' ? 'Net impact' : name]}
             labelFormatter={(label) => `Year: ${label}`}
@@ -105,6 +104,7 @@ function BudgetaryImpactChart({ data }) {
             animationDuration={500}
             hide={activePolicies.length <= 1}
           />
+          <ReferenceLine y={0} stroke="#374151" strokeWidth={1} />
         </ComposedChart>
       </ResponsiveContainer>
     </div>
