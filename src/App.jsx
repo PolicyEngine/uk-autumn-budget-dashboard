@@ -1,46 +1,40 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect } from 'react'
 import PolicySelector from './components/PolicySelector'
-import MetricsBar from './components/MetricsBar'
-import HouseholdChart from './components/HouseholdChart'
 import BudgetaryImpactChart from './components/BudgetaryImpactChart'
 import DistributionalChart from './components/DistributionalChart'
 import WaterfallChart from './components/WaterfallChart'
 import ConstituencyMap from './components/ConstituencyMap'
 import EmploymentIncomeChart from './components/EmploymentIncomeChart'
-import FiscalHeadroom from './components/FiscalHeadroom'
 import './App.css'
 
 // Policy definitions
 const DEFAULT_POLICIES = [
   {
     id: 'two_child_limit',
-    name: 'Repealing two child limit',
+    name: '2 child limit repeal',
     description: 'Repeal the two-child limit on benefits'
   },
   {
-    id: 'freezing_thresholds',
-    name: 'Freezing thresholds',
-    description: 'Freeze income tax and National Insurance thresholds'
-  },
-  {
-    id: 'ni_rates',
-    name: 'Adjusting NI rates',
-    description: 'Change National Insurance contribution rates'
-  },
-  {
-    id: 'income_tax_rates',
-    name: 'Adjusting income tax rates',
-    description: 'Modify income tax rate bands'
-  },
-  {
-    id: 'salary_sacrifice',
-    name: 'Salary sacrifice',
-    description: 'Adjust salary sacrifice schemes'
+    id: 'basic_rate_increase_1p',
+    name: 'Basic rate increase by 1 percentage point',
+    description: 'Increase the basic rate of income tax by 1 percentage point'
   }
 ]
 
-// Policy colors for charts
-const POLICY_COLORS = ['#319795', '#5A8FB8', '#B8875A', '#5FB88A', '#4A7BA7', '#C59A5A']
+function parseCSV(csvText) {
+  const lines = csvText.trim().split('\n')
+  const headers = lines[0].split(',')
+  const data = []
+  for (let i = 1; i < lines.length; i++) {
+    const values = lines[i].split(',')
+    const row = {}
+    headers.forEach((header, idx) => {
+      row[header] = values[idx]
+    })
+    data.push(row)
+  }
+  return data
+}
 
 function App() {
   const [selectedPolicies, setSelectedPolicies] = useState([])
@@ -83,150 +77,126 @@ function App() {
 
   const runAnalysis = async () => {
     try {
-      // Fetch real data from CSV
-      const response = await fetch('/data/reform-results.csv')
-      const csvText = await response.text()
+      // Fetch all CSVs in parallel
+      const [
+        budgetaryRes,
+        distributionalRes,
+        winnersLosersRes,
+        metricsRes
+      ] = await Promise.all([
+        fetch('/data/budgetary_impact.csv'),
+        fetch('/data/distributional_impact.csv'),
+        fetch('/data/winners_losers.csv'),
+        fetch('/data/metrics.csv')
+      ])
 
-      // Parse CSV
-      const lines = csvText.trim().split('\n')
-      const headers = lines[0].split(',')
-
-      const csvData = []
-      for (let i = 1; i < lines.length; i++) {
-        const values = lines[i].split(',')
-        const row = {}
-        headers.forEach((header, idx) => {
-          row[header] = values[idx]
-        })
-        csvData.push(row)
-      }
+      const budgetaryData = parseCSV(await budgetaryRes.text())
+      const distributionalData = parseCSV(await distributionalRes.text())
+      const winnersLosersData = parseCSV(await winnersLosersRes.text())
+      const metricsData = parseCSV(await metricsRes.text())
 
       // Filter data for selected policies
-      const filteredData = csvData.filter(row =>
+      const filteredBudgetary = budgetaryData.filter(row =>
+        selectedPolicies.includes(row.reform_id)
+      )
+      const filteredDistributional = distributionalData.filter(row =>
+        selectedPolicies.includes(row.reform_id)
+      )
+      const filteredWinnersLosers = winnersLosersData.filter(row =>
+        selectedPolicies.includes(row.reform_id)
+      )
+      const filteredMetrics = metricsData.filter(row =>
         selectedPolicies.includes(row.reform_id)
       )
 
       // Build budgetary impact data for chart (2026-2029)
+      // Always include all policy keys for smooth animations
       const years = [2026, 2027, 2028, 2029]
       const budgetData = years.map(year => {
         const dataPoint = { year }
-        selectedPolicies.forEach(policyId => {
-          const policy = DEFAULT_POLICIES.find(p => p.id === policyId)
-          const dataRow = filteredData.find(row =>
-            row.reform_id === policyId &&
-            row.metric_type === 'budgetary_impact' &&
-            parseInt(row.year) === year
+        let netImpact = 0
+        DEFAULT_POLICIES.forEach(policy => {
+          const isSelected = selectedPolicies.includes(policy.id)
+          const dataRow = budgetaryData.find(row =>
+            row.reform_id === policy.id && parseInt(row.year) === year
           )
-          // Convert to absolute value and billions (data is already in billions)
-          // Negative values mean it costs money (reduces gov balance)
-          dataPoint[policy.name] = dataRow ? Math.abs(parseFloat(dataRow.value)) : 0
+          const value = isSelected && dataRow ? parseFloat(dataRow.value) : 0
+          dataPoint[policy.name] = value
+          netImpact += value
         })
+        dataPoint.netImpact = netImpact
         return dataPoint
       })
 
-      // Calculate metrics based on available data
-      const budgetaryImpact2026Data = filteredData.filter(row =>
-        row.metric_type === 'budgetary_impact' && parseInt(row.year) === 2026
-      )
-      const budgetaryImpact2026 = budgetaryImpact2026Data.reduce((sum, row) =>
-        sum + Math.abs(parseFloat(row.value)), 0
-      )
+      // Calculate budgetary impact for 2026
+      const budgetaryImpact2026 = filteredBudgetary
+        .filter(row => parseInt(row.year) === 2026)
+        .reduce((sum, row) => sum + parseFloat(row.value), 0)
 
-      // Build distributional data (by income decile)
-      const distributional2026Data = filteredData.filter(row =>
-        row.metric_type === 'distributional_impact' && parseInt(row.year) === 2026
-      )
+      // Build distributional data (grouped by decile with policy breakdown)
+      // Always include all policy keys for smooth animations
+      const decileOrder = ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th', '10th']
+      const distributional2026 = distributionalData.filter(row => parseInt(row.year) === 2026)
+      const distributionalChartData = decileOrder.map(decile => {
+        const dataPoint = { decile }
+        let netChange = 0
+        DEFAULT_POLICIES.forEach(policy => {
+          const isSelected = selectedPolicies.includes(policy.id)
+          const dataRow = distributional2026.find(row =>
+            row.reform_id === policy.id && row.decile === decile
+          )
+          const value = isSelected && dataRow ? parseFloat(dataRow.value) : 0
+          dataPoint[policy.name] = value
+          netChange += value
+        })
+        dataPoint.netChange = netChange
+        return dataPoint
+      })
 
-      let distributionalData = null
-      if (distributional2026Data.length > 0) {
-        // Sort by decile order
-        const decileOrder = ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th', '10th']
-        distributionalData = distributional2026Data
-          .map(row => ({
-            decile: row.decile,
-            percentChange: parseFloat(row.value)
-          }))
-          .sort((a, b) => decileOrder.indexOf(a.decile) - decileOrder.indexOf(b.decile))
-      }
+      // Build waterfall data (grouped by decile with policy breakdown)
+      // Always include all policy keys for smooth animations
+      const waterfall2026 = winnersLosersData.filter(row => parseInt(row.year) === 2026 && row.decile !== 'all')
+      const waterfallDeciles = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10']
+      const waterfallData = waterfallDeciles.map(decile => {
+        const dataPoint = { decile }
+        let netChange = 0
+        DEFAULT_POLICIES.forEach(policy => {
+          const isSelected = selectedPolicies.includes(policy.id)
+          const dataRow = waterfall2026.find(row =>
+            row.reform_id === policy.id && row.decile === decile
+          )
+          const value = isSelected && dataRow ? parseFloat(dataRow.avg_change) : 0
+          dataPoint[policy.name] = value
+          netChange += value
+        })
+        dataPoint.netChange = netChange
+        return dataPoint
+      })
 
-      // Build income change by decile data (simple bar chart)
-      const winnersLosers2026Data = filteredData.filter(row =>
-        row.metric_type === 'winners_losers' && parseInt(row.year) === 2026
-      )
-
-      let waterfallData = null
-      if (winnersLosers2026Data.length > 0) {
-        // Transform data into format: { decile: "1", avg_change: 123.45 }
-        waterfallData = winnersLosers2026Data.map(row => ({
-          decile: row.decile,
-          avg_change: parseFloat(row.value)
-        }))
-      }
-
-      // Extract additional metrics from CSV
-      const peopleAffectedData = filteredData.filter(row =>
-        row.metric_type === 'people_affected' && parseInt(row.year) === 2026
-      )
-      const percentAffected = peopleAffectedData.length > 0
-        ? peopleAffectedData.reduce((sum, row) => sum + parseFloat(row.value), 0)
-        : null
-
-      const giniChangeData = filteredData.filter(row =>
-        row.metric_type === 'gini_change' && parseInt(row.year) === 2026
-      )
-      const giniChange = giniChangeData.length > 0
-        ? giniChangeData.reduce((sum, row) => sum + parseFloat(row.value), 0)
-        : null
-
-      // Get poverty rate change (percentage points)
-      const povertyRateChangeData = filteredData.filter(row =>
-        row.metric_type === 'poverty_rate_change_pp' && parseInt(row.year) === 2026
-      )
-      const povertyRateChange = povertyRateChangeData.length > 0
-        ? povertyRateChangeData.reduce((sum, row) => sum + parseFloat(row.value), 0)
-        : null
+      // Extract metrics
+      const metrics2026 = filteredMetrics.find(row => parseInt(row.year) === 2026)
+      const percentAffected = metrics2026 ? parseFloat(metrics2026.people_affected) : null
+      const giniChange = metrics2026 ? parseFloat(metrics2026.gini_change) : null
+      const povertyRateChange = metrics2026 ? parseFloat(metrics2026.poverty_change_pp) : null
 
       // Calculate fiscal headroom for 2029/30
-      const budgetaryImpact2029Data = filteredData.filter(row =>
-        row.metric_type === 'budgetary_impact' && parseInt(row.year) === 2029
-      )
-      const budgetaryImpact2029 = budgetaryImpact2029Data.length > 0
-        ? budgetaryImpact2029Data.reduce((sum, row) => sum + parseFloat(row.value), 0)
-        : 0
-
-      // OBR baseline headroom is £9.9bn, reform impact reduces it
-      // If impact is -3.37 (costs money), headroom = 9.9 + (-3.37) = 6.53
+      const budgetaryImpact2029 = filteredBudgetary
+        .filter(row => parseInt(row.year) === 2029)
+        .reduce((sum, row) => sum + parseFloat(row.value), 0)
       const obrBaselineHeadroom = 9.9
       const fiscalHeadroom2029 = obrBaselineHeadroom + budgetaryImpact2029
 
-      const metrics = {
-        fiscalHeadroom2029: fiscalHeadroom2029,
-        budgetaryImpact2026: budgetaryImpact2026,
-        percentAffected: percentAffected,
-        giniChange: giniChange,
-        povertyRateChange: povertyRateChange
-      }
-
-      // Build household scatter data
-      const householdScatterData = filteredData.filter(row =>
-        row.metric_type === 'household_scatter' && parseInt(row.year) === 2026
-      )
-
-      let householdData = null
-      if (householdScatterData.length > 0) {
-        householdData = householdScatterData.map(row => ({
-          baseline_income: parseFloat(row.value),
-          income_change: parseFloat(row.employment_income), // Reusing this field for income_change
-          household_weight: parseFloat(row.household_weight || 1)
-        }))
-      }
-
       setResults({
-        metrics,
+        metrics: {
+          fiscalHeadroom2029,
+          budgetaryImpact2026,
+          percentAffected,
+          giniChange,
+          povertyRateChange
+        },
         budgetData,
-        distributionalData,
-        householdData,
-        waterfallData
+        distributionalData: distributionalChartData.length > 0 ? distributionalChartData : null,
+        waterfallData: waterfallData.length > 0 ? waterfallData : null
       })
     } catch (error) {
       console.error('Error loading results:', error)
@@ -369,8 +339,8 @@ function App() {
                   <p>How selected policies affect individual households and government revenues over time</p>
                 </div>
                 <div className="primary-charts">
-                  <EmploymentIncomeChart />
-                  <BudgetaryImpactChart data={results.budgetData} policyColors={POLICY_COLORS} />
+                  <EmploymentIncomeChart selectedPolicies={selectedPolicies} />
+                  <BudgetaryImpactChart data={results.budgetData} />
                 </div>
 
                 {/* Section: Impact over time and distribution */}
@@ -390,7 +360,6 @@ function App() {
                 </div>
                 <div className="secondary-charts">
                   <ConstituencyMap selectedPolicies={selectedPolicies} />
-                  <HouseholdChart data={results.householdData} />
                 </div>
               </>
             )}

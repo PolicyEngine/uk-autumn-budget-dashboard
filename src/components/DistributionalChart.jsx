@@ -1,41 +1,22 @@
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine, LabelList } from 'recharts'
+import { ComposedChart, Bar, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ReferenceLine } from 'recharts'
 import './DistributionalChart.css'
 
+const POLICY_COLORS = {
+  '2 child limit repeal': '#319795',
+  'Basic rate increase by 1 percentage point': '#5A8FB8'
+}
+
+const ALL_POLICY_NAMES = [
+  '2 child limit repeal',
+  'Basic rate increase by 1 percentage point'
+]
+
 function DistributionalChart({ data }) {
-  const formatPercent = (value) => `${value.toFixed(1)}%`
+  const formatPercent = (value) => `${value.toFixed(2)}%`
 
   // Remove "st", "nd", "rd", "th" from decile labels
   const formatDecile = (value) => {
     return value.replace(/st|nd|rd|th/g, '')
-  }
-
-  // Calculate Y-axis domain for better space utilization
-  const getYAxisDomain = () => {
-    if (!data || data.length === 0) return [0, 'auto']
-
-    const values = data.map(d => d.percentChange)
-    const maxValue = Math.max(...values)
-    const minValue = Math.min(...values, 0) // Include 0 if all values are positive
-
-    // Add 10% padding to the top
-    const topPadding = maxValue * 0.1
-    const bottomPadding = minValue < 0 ? Math.abs(minValue) * 0.1 : 0
-
-    return [minValue - bottomPadding, maxValue + topPadding]
-  }
-
-  // Generate exactly 5 evenly spaced ticks
-  const getYAxisTicks = () => {
-    const [min, max] = getYAxisDomain()
-    const range = max - min
-    const step = range / 4 // 4 intervals = 5 ticks
-    return [
-      min,
-      min + step,
-      min + step * 2,
-      min + step * 3,
-      max
-    ]
   }
 
   if (!data || data.length === 0) {
@@ -52,6 +33,13 @@ function DistributionalChart({ data }) {
     )
   }
 
+  // Check which policies have non-zero values
+  const hasNonZeroValues = (policyName) => {
+    return data.some(d => Math.abs(d[policyName] || 0) > 0.0001)
+  }
+
+  const activePolicies = ALL_POLICY_NAMES.filter(hasNonZeroValues)
+
   return (
     <div className="distributional-chart">
       <h2>Impact by income decile — relative</h2>
@@ -60,9 +48,10 @@ function DistributionalChart({ data }) {
       </p>
 
       <ResponsiveContainer width="100%" height={420}>
-        <BarChart
+        <ComposedChart
           data={data}
-          margin={{ top: 20, right: 30, left: 30, bottom: 20 }}
+          margin={{ top: 20, right: 30, left: 70, bottom: 20 }}
+          stackOffset="sign"
         >
           <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
           <XAxis
@@ -77,8 +66,6 @@ function DistributionalChart({ data }) {
             }}
           />
           <YAxis
-            domain={getYAxisDomain()}
-            ticks={getYAxisTicks()}
             label={{
               value: 'Percentage change in net income (%)',
               angle: -90,
@@ -89,27 +76,51 @@ function DistributionalChart({ data }) {
             tickFormatter={formatPercent}
             tick={{ fontSize: 12, fill: '#666' }}
           />
+          <ReferenceLine y={0} stroke="#666" strokeWidth={1} />
           <Tooltip
-            formatter={(value) => formatPercent(value)}
+            formatter={(value, name) => [formatPercent(value), name === 'netChange' ? 'Net change' : name]}
             labelFormatter={(label) => `${label} decile`}
             contentStyle={{ background: 'white', border: '1px solid #e5e7eb', borderRadius: '6px' }}
           />
-          <ReferenceLine y={0} stroke="#333" strokeWidth={1} />
-          <Bar
-            dataKey="percentChange"
-            fill="#319795"
-            name="% change in net income"
-            animationDuration={800}
-            animationBegin={0}
-          >
-            <LabelList
-              dataKey="percentChange"
-              position="inside"
-              formatter={(value) => Math.abs(value) >= 0.1 ? `${value.toFixed(1)}%` : ''}
-              style={{ fontSize: 11, fill: 'white', fontWeight: 500 }}
+          <Legend
+            wrapperStyle={{ paddingTop: '20px' }}
+            iconType="rect"
+            payload={[
+              ...activePolicies.map(name => ({
+                value: name,
+                type: 'rect',
+                color: POLICY_COLORS[name]
+              })),
+              ...(activePolicies.length > 1 ? [{
+                value: 'Net change',
+                type: 'line',
+                color: '#1D4044'
+              }] : [])
+            ]}
+          />
+          {ALL_POLICY_NAMES.map((policyName) => (
+            <Bar
+              key={policyName}
+              dataKey={policyName}
+              fill={POLICY_COLORS[policyName]}
+              name={policyName}
+              stackId="stack"
+              animationDuration={500}
+              animationBegin={0}
+              hide={!hasNonZeroValues(policyName)}
             />
-          </Bar>
-        </BarChart>
+          ))}
+          <Line
+            type="monotone"
+            dataKey="netChange"
+            stroke="#1D4044"
+            strokeWidth={2}
+            dot={{ fill: '#1D4044', strokeWidth: 2 }}
+            name="netChange"
+            animationDuration={500}
+            hide={activePolicies.length <= 1}
+          />
+        </ComposedChart>
       </ResponsiveContainer>
     </div>
   )

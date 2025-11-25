@@ -1,0 +1,23 @@
+reform_id,reform_name,year,decile,avg_change
+two_child_limit,2 child limit repeal,2026,1,136.09976
+two_child_limit,2 child limit repeal,2026,2,409.5209
+two_child_limit,2 child limit repeal,2026,3,155.81017
+two_child_limit,2 child limit repeal,2026,4,96.062454
+two_child_limit,2 child limit repeal,2026,5,47.89112
+two_child_limit,2 child limit repeal,2026,6,11.377586
+two_child_limit,2 child limit repeal,2026,7,0.0
+two_child_limit,2 child limit repeal,2026,8,0.0035683713
+two_child_limit,2 child limit repeal,2026,9,0.0
+two_child_limit,2 child limit repeal,2026,10,0.4599378
+two_child_limit,2 child limit repeal,2026,all,89.047134
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,1,-18.868092
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,2,-44.231266
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,3,-61.688335
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,4,-108.66233
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,5,-175.75873
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,6,-218.3817
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,7,-301.56714
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,8,-362.04343
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,9,-476.498
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,10,-559.46436
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,all,-225.68843

@@ -411,6 +411,13 @@
   margin: 4px 0 0 0;
 }
 
+.tooltip-value-secondary {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin: 8px 0 4px 0;
+  line-height: 1;
+}
+
 /* Loading state */
 .constituency-loading {
   display: flex;

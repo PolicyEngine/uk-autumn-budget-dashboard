@@ -1,5 +1,15 @@
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, LabelList } from 'recharts'
+import { ComposedChart, Bar, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ReferenceLine } from 'recharts'
 import './WaterfallChart.css'
+
+const POLICY_COLORS = {
+  '2 child limit repeal': '#319795',
+  'Basic rate increase by 1 percentage point': '#5A8FB8'
+}
+
+const ALL_POLICY_NAMES = [
+  '2 child limit repeal',
+  'Basic rate increase by 1 percentage point'
+]
 
 function WaterfallChart({ data }) {
   if (!data || data.length === 0) {
@@ -16,19 +26,14 @@ function WaterfallChart({ data }) {
     )
   }
 
-  // Transform data for the chart - expect data with decile and avg_change
-  const chartData = data
-    .filter(d => d.decile && d.decile !== 'all')
-    .sort((a, b) => parseInt(a.decile) - parseInt(b.decile))
-    .map(d => ({
-      decile: `${d.decile}`,
-      value: d.avg_change || 0,
-      displayDecile: `${d.decile}`
-    }))
+  const formatCurrency = (value) => `£${value.toFixed(0)}`
 
-  const getColor = (value) => {
-    return value >= 0 ? '#319795' : '#dc2626'
+  // Check which policies have non-zero values
+  const hasNonZeroValues = (policyName) => {
+    return data.some(d => Math.abs(d[policyName] || 0) > 0.01)
   }
+
+  const activePolicies = ALL_POLICY_NAMES.filter(hasNonZeroValues)
 
   return (
     <div className="waterfall-chart">
@@ -38,13 +43,14 @@ function WaterfallChart({ data }) {
       </p>
 
       <ResponsiveContainer width="100%" height={420}>
-        <BarChart
-          data={chartData}
-          margin={{ top: 20, right: 30, left: 30, bottom: 20 }}
+        <ComposedChart
+          data={data}
+          margin={{ top: 20, right: 30, left: 70, bottom: 20 }}
+          stackOffset="sign"
         >
           <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
           <XAxis
-            dataKey="displayDecile"
+            dataKey="decile"
             tick={{ fontSize: 11, fill: '#666' }}
             label={{
               value: 'Income decile',
@@ -54,7 +60,7 @@ function WaterfallChart({ data }) {
             }}
           />
           <YAxis
-            tickFormatter={(value) => `£${value.toFixed(0)}`}
+            tickFormatter={formatCurrency}
             tick={{ fontSize: 11, fill: '#666' }}
             label={{
               value: 'Average change per household (£)',
@@ -64,23 +70,51 @@ function WaterfallChart({ data }) {
               style: { textAnchor: 'middle', fill: '#374151', fontSize: 12, fontWeight: 500 }
             }}
           />
+          <ReferenceLine y={0} stroke="#666" strokeWidth={1} />
           <Tooltip
-            formatter={(value) => [`£${value.toFixed(2)}`, 'Average change']}
+            formatter={(value, name) => [formatCurrency(value), name === 'netChange' ? 'Net change' : name]}
             labelFormatter={(label) => `Decile: ${label}`}
             contentStyle={{ background: 'white', border: '1px solid #e5e7eb', borderRadius: '6px', fontSize: '12px' }}
           />
-          <Bar dataKey="value" animationDuration={800}>
-            {chartData.map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={getColor(entry.value)} />
-            ))}
-            <LabelList
-              dataKey="value"
-              position="inside"
-              formatter={(value) => Math.abs(value) >= 10 ? `${Math.round(value)}` : ''}
-              style={{ fontSize: 11, fill: 'white', fontWeight: 500 }}
+          <Legend
+            wrapperStyle={{ paddingTop: '20px' }}
+            iconType="rect"
+            payload={[
+              ...activePolicies.map(name => ({
+                value: name,
+                type: 'rect',
+                color: POLICY_COLORS[name]
+              })),
+              ...(activePolicies.length > 1 ? [{
+                value: 'Net change',
+                type: 'line',
+                color: '#1D4044'
+              }] : [])
+            ]}
+          />
+          {ALL_POLICY_NAMES.map((policyName) => (
+            <Bar
+              key={policyName}
+              dataKey={policyName}
+              fill={POLICY_COLORS[policyName]}
+              name={policyName}
+              stackId="stack"
+              animationDuration={500}
+              animationBegin={0}
+              hide={!hasNonZeroValues(policyName)}
             />
-          </Bar>
-        </BarChart>
+          ))}
+          <Line
+            type="monotone"
+            dataKey="netChange"
+            stroke="#1D4044"
+            strokeWidth={2}
+            dot={{ fill: '#1D4044', strokeWidth: 2 }}
+            name="netChange"
+            animationDuration={500}
+            hide={activePolicies.length <= 1}
+          />
+        </ComposedChart>
       </ResponsiveContainer>
     </div>
   )

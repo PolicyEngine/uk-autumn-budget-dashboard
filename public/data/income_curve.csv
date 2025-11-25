@@ -1,0 +1,203 @@
+reform_id,reform_name,year,employment_income,baseline_net_income,reform_net_income
+two_child_limit,2 child limit repeal,2026,0.0,21590.0,25215.0
+two_child_limit,2 child limit repeal,2026,1000.0,22590.0,26215.0
+two_child_limit,2 child limit repeal,2026,2000.0,23590.0,27215.0
+two_child_limit,2 child limit repeal,2026,3000.0,24590.0,28215.0
+two_child_limit,2 child limit repeal,2026,4000.0,25590.0,29215.0
+two_child_limit,2 child limit repeal,2026,5000.0,26590.0,30215.0
+two_child_limit,2 child limit repeal,2026,6000.0,27590.0,31215.0
+two_child_limit,2 child limit repeal,2026,7000.0,28590.0,32215.0
+two_child_limit,2 child limit repeal,2026,8000.0,29590.0,33215.0
+two_child_limit,2 child limit repeal,2026,9000.0,30298.0,33923.0
+two_child_limit,2 child limit repeal,2026,10000.0,30748.0,34373.0
+two_child_limit,2 child limit repeal,2026,11000.0,31198.0,34823.0
+two_child_limit,2 child limit repeal,2026,12000.0,31648.0,35273.0
+two_child_limit,2 child limit repeal,2026,13000.0,32082.0,35708.0
+two_child_limit,2 child limit repeal,2026,14000.0,32481.0,36106.0
+two_child_limit,2 child limit repeal,2026,15000.0,32805.0,36430.0
+two_child_limit,2 child limit repeal,2026,16000.0,33129.0,36754.0
+two_child_limit,2 child limit repeal,2026,17000.0,33453.0,37078.0
+two_child_limit,2 child limit repeal,2026,18000.0,33777.0,37402.0
+two_child_limit,2 child limit repeal,2026,19000.0,34101.0,37726.0
+two_child_limit,2 child limit repeal,2026,20000.0,34425.0,38050.0
+two_child_limit,2 child limit repeal,2026,21000.0,34749.0,38374.0
+two_child_limit,2 child limit repeal,2026,22000.0,35073.0,38698.0
+two_child_limit,2 child limit repeal,2026,23000.0,35397.0,39022.0
+two_child_limit,2 child limit repeal,2026,24000.0,35721.0,39346.0
+two_child_limit,2 child limit repeal,2026,25000.0,36045.0,39670.0
+two_child_limit,2 child limit repeal,2026,26000.0,36369.0,39994.0
+two_child_limit,2 child limit repeal,2026,27000.0,36693.0,40318.0
+two_child_limit,2 child limit repeal,2026,28000.0,37017.0,40642.0
+two_child_limit,2 child limit repeal,2026,29000.0,37341.0,40966.0
+two_child_limit,2 child limit repeal,2026,30000.0,37665.0,41290.0
+two_child_limit,2 child limit repeal,2026,31000.0,37989.0,41614.0
+two_child_limit,2 child limit repeal,2026,32000.0,38313.0,41938.0
+two_child_limit,2 child limit repeal,2026,33000.0,38637.0,42262.0
+two_child_limit,2 child limit repeal,2026,34000.0,38961.0,42586.0
+two_child_limit,2 child limit repeal,2026,35000.0,39285.0,42910.0
+two_child_limit,2 child limit repeal,2026,36000.0,39609.0,43234.0
+two_child_limit,2 child limit repeal,2026,37000.0,39933.0,43558.0
+two_child_limit,2 child limit repeal,2026,38000.0,40257.0,43882.0
+two_child_limit,2 child limit repeal,2026,39000.0,40581.0,44206.0
+two_child_limit,2 child limit repeal,2026,40000.0,40905.0,44530.0
+two_child_limit,2 child limit repeal,2026,41000.0,41229.0,44854.0
+two_child_limit,2 child limit repeal,2026,42000.0,41553.0,45178.0
+two_child_limit,2 child limit repeal,2026,43000.0,41877.0,45502.0
+two_child_limit,2 child limit repeal,2026,44000.0,42201.0,45826.0
+two_child_limit,2 child limit repeal,2026,45000.0,42800.0,46150.0
+two_child_limit,2 child limit repeal,2026,46000.0,43520.0,46474.0
+two_child_limit,2 child limit repeal,2026,47000.0,44240.0,46798.0
+two_child_limit,2 child limit repeal,2026,48000.0,44960.0,47122.0
+two_child_limit,2 child limit repeal,2026,49000.0,45680.0,47446.0
+two_child_limit,2 child limit repeal,2026,50000.0,46400.0,47770.0
+two_child_limit,2 child limit repeal,2026,51000.0,46766.0,47935.0
+two_child_limit,2 child limit repeal,2026,52000.0,47346.0,48196.0
+two_child_limit,2 child limit repeal,2026,53000.0,47926.0,48457.0
+two_child_limit,2 child limit repeal,2026,54000.0,48506.0,48718.0
+two_child_limit,2 child limit repeal,2026,55000.0,49086.0,49086.0
+two_child_limit,2 child limit repeal,2026,56000.0,49666.0,49666.0
+two_child_limit,2 child limit repeal,2026,57000.0,50246.0,50246.0
+two_child_limit,2 child limit repeal,2026,58000.0,50826.0,50826.0
+two_child_limit,2 child limit repeal,2026,59000.0,51406.0,51406.0
+two_child_limit,2 child limit repeal,2026,60000.0,51986.0,51986.0
+two_child_limit,2 child limit repeal,2026,61000.0,52403.0,52403.0
+two_child_limit,2 child limit repeal,2026,62000.0,52821.0,52821.0
+two_child_limit,2 child limit repeal,2026,63000.0,53239.0,53239.0
+two_child_limit,2 child limit repeal,2026,64000.0,53656.0,53656.0
+two_child_limit,2 child limit repeal,2026,65000.0,54074.0,54074.0
+two_child_limit,2 child limit repeal,2026,66000.0,54491.0,54491.0
+two_child_limit,2 child limit repeal,2026,67000.0,54909.0,54909.0
+two_child_limit,2 child limit repeal,2026,68000.0,55326.0,55326.0
+two_child_limit,2 child limit repeal,2026,69000.0,55744.0,55744.0
+two_child_limit,2 child limit repeal,2026,70000.0,56161.0,56161.0
+two_child_limit,2 child limit repeal,2026,71000.0,56579.0,56579.0
+two_child_limit,2 child limit repeal,2026,72000.0,56997.0,56997.0
+two_child_limit,2 child limit repeal,2026,73000.0,57414.0,57414.0
+two_child_limit,2 child limit repeal,2026,74000.0,57832.0,57832.0
+two_child_limit,2 child limit repeal,2026,75000.0,58249.0,58249.0
+two_child_limit,2 child limit repeal,2026,76000.0,58667.0,58667.0
+two_child_limit,2 child limit repeal,2026,77000.0,59084.0,59084.0
+two_child_limit,2 child limit repeal,2026,78000.0,59502.0,59502.0
+two_child_limit,2 child limit repeal,2026,79000.0,59920.0,59920.0
+two_child_limit,2 child limit repeal,2026,80000.0,60337.0,60337.0
+two_child_limit,2 child limit repeal,2026,81000.0,60917.0,60917.0
+two_child_limit,2 child limit repeal,2026,82000.0,61497.0,61497.0
+two_child_limit,2 child limit repeal,2026,83000.0,62077.0,62077.0
+two_child_limit,2 child limit repeal,2026,84000.0,62657.0,62657.0
+two_child_limit,2 child limit repeal,2026,85000.0,63237.0,63237.0
+two_child_limit,2 child limit repeal,2026,86000.0,63817.0,63817.0
+two_child_limit,2 child limit repeal,2026,87000.0,64397.0,64397.0
+two_child_limit,2 child limit repeal,2026,88000.0,64977.0,64977.0
+two_child_limit,2 child limit repeal,2026,89000.0,65557.0,65557.0
+two_child_limit,2 child limit repeal,2026,90000.0,66137.0,66137.0
+two_child_limit,2 child limit repeal,2026,91000.0,66717.0,66717.0
+two_child_limit,2 child limit repeal,2026,92000.0,67297.0,67297.0
+two_child_limit,2 child limit repeal,2026,93000.0,67877.0,67877.0
+two_child_limit,2 child limit repeal,2026,94000.0,68457.0,68457.0
+two_child_limit,2 child limit repeal,2026,95000.0,69037.0,69037.0
+two_child_limit,2 child limit repeal,2026,96000.0,69617.0,69617.0
+two_child_limit,2 child limit repeal,2026,97000.0,70197.0,70197.0
+two_child_limit,2 child limit repeal,2026,98000.0,70777.0,70777.0
+two_child_limit,2 child limit repeal,2026,99000.0,71357.0,71357.0
+two_child_limit,2 child limit repeal,2026,100000.0,71937.0,71937.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,0.0,21590.0,21590.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,1000.0,22590.0,22590.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,2000.0,23590.0,23590.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,3000.0,24590.0,24590.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,4000.0,25590.0,25590.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,5000.0,26590.0,26590.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,6000.0,27590.0,27590.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,7000.0,28590.0,28590.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,8000.0,29590.0,29590.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,9000.0,30298.0,30298.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,10000.0,30748.0,30748.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,11000.0,31198.0,31198.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,12000.0,31648.0,31648.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,13000.0,32082.0,32082.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,14000.0,32481.0,32480.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,15000.0,32805.0,32800.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,16000.0,33129.0,33119.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,17000.0,33453.0,33439.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,18000.0,33777.0,33758.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,19000.0,34101.0,34078.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,20000.0,34425.0,34397.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,21000.0,34749.0,34717.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,22000.0,35073.0,35036.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,23000.0,35397.0,35356.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,24000.0,35721.0,35675.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,25000.0,36045.0,35995.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,26000.0,36369.0,36314.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,27000.0,36693.0,36634.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,28000.0,37017.0,36953.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,29000.0,37341.0,37273.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,30000.0,37665.0,37592.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,31000.0,37989.0,37912.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,32000.0,38313.0,38231.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,33000.0,38637.0,38551.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,34000.0,38961.0,38870.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,35000.0,39285.0,39190.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,36000.0,39609.0,39509.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,37000.0,39933.0,39829.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,38000.0,40257.0,40148.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,39000.0,40581.0,40468.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,40000.0,40905.0,40787.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,41000.0,41229.0,41107.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,42000.0,41553.0,41426.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,43000.0,41877.0,41746.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,44000.0,42201.0,42065.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,45000.0,42800.0,42488.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,46000.0,43520.0,43198.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,47000.0,44240.0,43908.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,48000.0,44960.0,44618.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,49000.0,45680.0,45328.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,50000.0,46400.0,46038.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,51000.0,46766.0,46389.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,52000.0,47346.0,46969.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,53000.0,47926.0,47549.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,54000.0,48506.0,48129.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,55000.0,49086.0,48709.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,56000.0,49666.0,49289.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,57000.0,50246.0,49869.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,58000.0,50826.0,50449.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,59000.0,51406.0,51029.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,60000.0,51986.0,51609.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,61000.0,52403.0,52026.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,62000.0,52821.0,52444.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,63000.0,53239.0,52862.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,64000.0,53656.0,53279.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,65000.0,54074.0,53697.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,66000.0,54491.0,54114.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,67000.0,54909.0,54532.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,68000.0,55326.0,54949.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,69000.0,55744.0,55367.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,70000.0,56161.0,55784.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,71000.0,56579.0,56202.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,72000.0,56997.0,56620.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,73000.0,57414.0,57037.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,74000.0,57832.0,57455.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,75000.0,58249.0,57872.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,76000.0,58667.0,58290.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,77000.0,59084.0,58707.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,78000.0,59502.0,59125.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,79000.0,59920.0,59543.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,80000.0,60337.0,59960.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,81000.0,60917.0,60540.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,82000.0,61497.0,61120.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,83000.0,62077.0,61700.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,84000.0,62657.0,62280.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,85000.0,63237.0,62860.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,86000.0,63817.0,63440.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,87000.0,64397.0,64020.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,88000.0,64977.0,64600.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,89000.0,65557.0,65180.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,90000.0,66137.0,65760.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,91000.0,66717.0,66340.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,92000.0,67297.0,66920.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,93000.0,67877.0,67500.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,94000.0,68457.0,68080.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,95000.0,69037.0,68660.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,96000.0,69617.0,69240.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,97000.0,70197.0,69820.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,98000.0,70777.0,70400.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,99000.0,71357.0,70980.0
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,100000.0,71937.0,71560.0

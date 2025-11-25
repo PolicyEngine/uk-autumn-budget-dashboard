@@ -1,19 +1,7 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, useMemo } from 'react'
 import * as d3 from 'd3'
 import './ConstituencyMap.css'
 
-// Mapping from main policy IDs to constituency scenario IDs
-const POLICY_TO_SCENARIO = {
-  'two_child_limit': 'remove_2_child_limit',
-  // Add more mappings as constituency data becomes available
-  // 'income_tax_rates': 'raise_basic_rate_1p',
-}
-
-const SCENARIO_NAMES = {
-  'raise_basic_rate_1p': 'Raise basic rate by 1p',
-  'raise_higher_rate_1p': 'Raise higher rate by 1p',
-  'remove_2_child_limit': 'Remove 2-child limit',
-}
 
 export default function ConstituencyMap({ selectedPolicies = [] }) {
   const svgRef = useRef(null)
@@ -21,21 +9,16 @@ export default function ConstituencyMap({ selectedPolicies = [] }) {
   const [selectedConstituency, setSelectedConstituency] = useState(null)
   const [tooltipData, setTooltipData] = useState(null)
   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 })
-  const [data, setData] = useState([])
+  const [rawData, setRawData] = useState([])
   const [geoData, setGeoData] = useState(null)
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
   const [searchResults, setSearchResults] = useState([])
 
-  // Determine which scenario to display based on selected policies
-  const selectedScenario = selectedPolicies
-    .map(policyId => POLICY_TO_SCENARIO[policyId])
-    .find(scenarioId => scenarioId !== undefined) || null
-
   // Load data
   useEffect(() => {
     Promise.all([
-      fetch('/data/scenario_gains_by_constituency.csv').then(r => r.text()),
+      fetch('/data/constituency.csv').then(r => r.text()),
       fetch('/data/uk_constituencies_2024.geojson').then(r => r.json())
     ]).then(([csvText, geojson]) => {
       // Parse CSV with proper handling of quoted fields
@@ -60,23 +43,26 @@ export default function ConstituencyMap({ selectedPolicies = [] }) {
       }
 
       const lines = csvText.split('\n')
+      const headers = parseCSVLine(lines[0])
       const parsedData = lines.slice(1)
         .filter(line => line.trim())
         .map(line => {
           const values = parseCSVLine(line)
-          const avgGain = parseFloat(values[3])
-          const relChange = parseFloat(values[4])
+          const row = {}
+          headers.forEach((header, idx) => {
+            row[header] = values[idx]?.trim()
+          })
 
           return {
-            scenario: values[0]?.trim(),
-            constituency_code: values[1]?.trim(),
-            constituency_name: values[2]?.trim().replace(/^"|"$/g, ''),
-            average_gain: avgGain,
-            relative_change: isNaN(relChange) ? 0 : relChange,
+            reform_id: row.reform_id,
+            constituency_code: row.constituency_code,
+            constituency_name: row.constituency_name?.replace(/^"|"$/g, ''),
+            average_gain: parseFloat(row.average_gain) || 0,
+            relative_change: parseFloat(row.relative_change) || 0,
           }
         })
 
-      setData(parsedData)
+      setRawData(parsedData)
       setGeoData(geojson)
       setLoading(false)
     }).catch(error => {
@@ -85,9 +71,37 @@ export default function ConstituencyMap({ selectedPolicies = [] }) {
     })
   }, [])
 
+  // Aggregate data across selected policies
+  const aggregatedData = useMemo(() => {
+    if (!rawData.length || !selectedPolicies.length) return []
+
+    // Group by constituency and sum values across selected policies
+    const constituencyMap = new Map()
+
+    rawData.forEach(row => {
+      if (!selectedPolicies.includes(row.reform_id)) return
+
+      const key = row.constituency_code
+      if (!constituencyMap.has(key)) {
+        constituencyMap.set(key, {
+          constituency_code: row.constituency_code,
+          constituency_name: row.constituency_name,
+          average_gain: 0,
+          relative_change: 0
+        })
+      }
+
+      const existing = constituencyMap.get(key)
+      existing.average_gain += row.average_gain
+      existing.relative_change += row.relative_change
+    })
+
+    return Array.from(constituencyMap.values())
+  }, [rawData, selectedPolicies])
+
   // Render map
   useEffect(() => {
-    if (!svgRef.current || !geoData || !data.length) return
+    if (!svgRef.current || !geoData || !aggregatedData.length) return
 
     const svg = d3.select(svgRef.current)
     svg.selectAll('*').remove()
@@ -146,34 +160,38 @@ export default function ConstituencyMap({ selectedPolicies = [] }) {
 
     const path = d3.geoPath().projection(projection)
 
-    // Filter data for current scenario
-    const scenarioData = data.filter(d => d.scenario === selectedScenario)
-    const dataMap = new Map(scenarioData.map(d => [d.constituency_code, d]))
+    const dataMap = new Map(aggregatedData.map(d => [d.constituency_code, d]))
 
     // Color scale - diverging with white at 0, red for losses, green for gains
     // Use relative_change (percentage of constituency's average income)
     const getValue = (d) => d.relative_change
-    const extent = d3.extent(scenarioData, getValue)
-    const maxAbsValue = Math.max(Math.abs(extent[0]), Math.abs(extent[1]))
+    const extent = d3.extent(aggregatedData, getValue)
+    const maxAbsValue = Math.max(Math.abs(extent[0] || 0), Math.abs(extent[1] || 0)) || 1
 
     const colorScale = d3.scaleDiverging()
       .domain([-maxAbsValue, 0, maxAbsValue])
       .interpolator(d3.interpolateRdYlGn)
 
     // Draw constituencies
-    g.selectAll('path')
+    const paths = g.selectAll('path')
       .data(geoData.features)
       .join('path')
       .attr('d', path)
-      .attr('fill', (d) => {
-        const constData = dataMap.get(d.properties.GSScode)
-        return constData ? colorScale(getValue(constData)) : '#ddd'
-      })
       .attr('stroke', '#fff')
       .attr('stroke-width', 0.05)
       .attr('class', 'constituency-path')
       .style('cursor', 'pointer')
-      .on('click', function(event, d) {
+
+    // Animate fill colors
+    paths.transition()
+      .duration(500)
+      .attr('fill', (d) => {
+        const constData = dataMap.get(d.properties.GSScode)
+        return constData ? colorScale(getValue(constData)) : '#ddd'
+      })
+
+    // Add event handlers (must be on selection, not transition)
+    paths.on('click', function(event, d) {
         event.stopPropagation()
 
         const constData = dataMap.get(d.properties.GSScode)
@@ -244,64 +262,22 @@ export default function ConstituencyMap({ selectedPolicies = [] }) {
 
     // Store zoom behavior for controls
     window.mapZoomBehavior = { svg, zoom }
-  }, [geoData, data, selectedScenario])
-
-  // Update colors when scenario changes
-  useEffect(() => {
-    if (!svgRef.current || !geoData || !data.length) return
-
-    const svg = d3.select(svgRef.current)
-    const scenarioData = data.filter(d => d.scenario === selectedScenario)
-    const dataMap = new Map(scenarioData.map(d => [d.constituency_code, d]))
-
-    // Color scale - use relative_change (percentage)
-    const getValue = (d) => d.relative_change
-    const extent = d3.extent(scenarioData, getValue)
-    const maxAbsValue = Math.max(Math.abs(extent[0]), Math.abs(extent[1]))
-
-    const colorScale = d3.scaleDiverging()
-      .domain([-maxAbsValue, 0, maxAbsValue])
-      .interpolator(d3.interpolateRdYlGn)
-
-    // Update fill colors with transition
-    svg.selectAll('.constituency-path')
-      .transition()
-      .duration(500)
-      .attr('fill', (d) => {
-        const constData = dataMap.get(d.properties.GSScode)
-        const color = constData ? colorScale(getValue(constData)) : '#ddd'
-        return color
-      })
-  }, [selectedScenario, data, geoData])
-
-  // Update selected constituency data when scenario changes
-  useEffect(() => {
-    if (!selectedConstituency || !data.length) return
-
-    const scenarioData = data.filter(d => d.scenario === selectedScenario)
-    const dataMap = new Map(scenarioData.map(d => [d.constituency_code, d]))
-    const newData = dataMap.get(selectedConstituency.constituency_code)
-
-    if (newData) {
-      setSelectedConstituency(newData)
-    }
-  }, [selectedScenario, data, selectedConstituency])
+  }, [geoData, aggregatedData])
 
   // Handle search
   useEffect(() => {
-    if (!searchQuery.trim() || !data.length) {
+    if (!searchQuery.trim() || !aggregatedData.length) {
       setSearchResults([])
       return
     }
 
-    const scenarioData = data.filter(d => d.scenario === selectedScenario)
     const query = searchQuery.toLowerCase()
-    const results = scenarioData.filter(d =>
+    const results = aggregatedData.filter(d =>
       d.constituency_name.toLowerCase().includes(query)
     ).slice(0, 5)
 
     setSearchResults(results)
-  }, [searchQuery, data, selectedScenario])
+  }, [searchQuery, aggregatedData])
 
   // Zoom control functions
   const handleZoomIn = () => {
@@ -389,8 +365,8 @@ export default function ConstituencyMap({ selectedPolicies = [] }) {
     return <div className="constituency-loading">Loading map...</div>
   }
 
-  // Don't render if no supported policy is selected
-  if (!selectedScenario) {
+  // Don't render if no policy is selected or no aggregated data
+  if (!selectedPolicies.length || !aggregatedData.length) {
     return null
   }
 
@@ -424,7 +400,7 @@ export default function ConstituencyMap({ selectedPolicies = [] }) {
                   >
                     <div className="result-name">{result.constituency_name}</div>
                     <div className="result-value">
-                      {result.relative_change.toFixed(2)}%
+                      £{result.average_gain.toFixed(0)} ({result.relative_change.toFixed(2)}%)
                     </div>
                   </button>
                 ))}
@@ -522,10 +498,21 @@ export default function ConstituencyMap({ selectedPolicies = [] }) {
               <p
                 className="tooltip-value"
                 style={{
+                  color: tooltipData.average_gain >= 0 ? '#16a34a' : '#dc2626'
+                }}
+              >
+                £{tooltipData.average_gain.toFixed(0)}
+              </p>
+              <p className="tooltip-label">
+                Average household impact
+              </p>
+              <p
+                className="tooltip-value-secondary"
+                style={{
                   color: tooltipData.relative_change >= 0 ? '#16a34a' : '#dc2626'
                 }}
               >
-                {tooltipData.relative_change.toFixed(2)}%
+                {tooltipData.relative_change >= 0 ? '+' : ''}{tooltipData.relative_change.toFixed(2)}%
               </p>
               <p className="tooltip-label">
                 Relative change

@@ -7,10 +7,17 @@ function HouseholdChart({ data }) {
   const plotData = useMemo(() => {
     if (!data || data.length === 0) return null
 
+    // Randomly sample 1000 points from the data
+    const sampleSize = Math.min(1000, data.length)
+    const sampledData = data
+      .map(d => ({ ...d, sort: Math.random() }))
+      .sort((a, b) => a.sort - b.sort)
+      .slice(0, sampleSize)
+
     // Separate data into gains, losses, and no change
-    const gains = data.filter(d => d.income_change > 0.01)
-    const losses = data.filter(d => d.income_change < -0.01)
-    const noChange = data.filter(d => Math.abs(d.income_change) <= 0.01)
+    const gains = sampledData.filter(d => d.income_change > 0.01)
+    const losses = sampledData.filter(d => d.income_change < -0.01)
+    const noChange = sampledData.filter(d => Math.abs(d.income_change) <= 0.01)
 
     // Scale household weights for marker sizes (1-20 range)
     const maxWeight = Math.max(...data.map(d => d.household_weight))
