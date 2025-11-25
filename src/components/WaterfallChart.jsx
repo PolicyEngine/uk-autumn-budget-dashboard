@@ -4,12 +4,15 @@ import YearSlider from './YearSlider'
 import './WaterfallChart.css'
 
 const POLICY_COLORS = {
-  '2 child limit repeal': '#319795',
-  'Income tax increase (basic and higher +2pp)': '#5A8FB8',
-  'Threshold freeze extension': '#B8875A',
-  'National Insurance rate reduction': '#5FB88A',
-  'Zero-rate VAT on domestic energy': '#4A7BA7',
-  'Salary sacrifice cap': '#C59A5A'
+  // COSTS (negative impacts - distinct warm/neutral tones)
+  '2 child limit repeal': '#991B1B',              // Deep red - cost to treasury
+  'National Insurance rate reduction': '#A16207',  // Dark amber/gold - cost to treasury
+  'Zero-rate VAT on domestic energy': '#EA580C',   // Bright orange - VAT specific (clearly distinct from red)
+
+  // REVENUE (positive impacts - distinct cool tones)
+  'Income tax increase (basic and higher +2pp)': '#64748B',  // Lighter slate - IT specific, more visible
+  'Threshold freeze extension': '#14532D',                   // Deep forest green - revenue raiser
+  'Salary sacrifice cap': '#1E3A8A'                          // Navy blue - revenue raiser
 }
 
 const ALL_POLICY_NAMES = [
@@ -54,6 +57,45 @@ function WaterfallChart({ rawData, selectedPolicies }) {
     dataPoint.netChange = netChange
     return dataPoint
   })
+
+  // Calculate y-axis domain across ALL years to keep scale consistent
+  const calculateYAxisDomain = () => {
+    const allYears = [2026, 2027, 2028, 2029]
+    let minValue = 0
+    let maxValue = 0
+
+    allYears.forEach(year => {
+      const yearData = rawData ? rawData.filter(row =>
+        parseInt(row.year) === year && row.decile !== 'all' && selectedPolicies.includes(row.reform_id)
+      ) : []
+
+      waterfallDeciles.forEach(decile => {
+        let positiveSum = 0
+        let negativeSum = 0
+
+        POLICIES.forEach(policy => {
+          const isSelected = selectedPolicies.includes(policy.id)
+          const dataRow = yearData.find(row =>
+            row.reform_id === policy.id && row.decile === decile
+          )
+          const value = isSelected && dataRow ? parseFloat(dataRow.avg_change) : 0
+          if (value > 0) positiveSum += value
+          else negativeSum += value
+        })
+
+        minValue = Math.min(minValue, negativeSum)
+        maxValue = Math.max(maxValue, positiveSum)
+      })
+    })
+
+    // Add 10% padding to both ends
+    const range = maxValue - minValue
+    const padding = range * 0.1
+
+    return [minValue - padding, maxValue + padding]
+  }
+
+  const yAxisDomain = calculateYAxisDomain()
 
   if (!rawData || rawData.length === 0) {
     return (
@@ -103,7 +145,7 @@ function WaterfallChart({ rawData, selectedPolicies }) {
             }}
           />
           <YAxis
-            domain={[-3000, 1000]}
+            domain={yAxisDomain}
             tickFormatter={formatCurrency}
             tick={{ fontSize: 11, fill: '#666' }}
             label={{
@@ -119,6 +161,8 @@ function WaterfallChart({ rawData, selectedPolicies }) {
             formatter={(value, name) => [formatCurrency(value), name === 'netChange' ? 'Net change' : name]}
             labelFormatter={(label) => `Decile: ${label}`}
             contentStyle={{ background: 'white', border: '1px solid #e5e7eb', borderRadius: '6px', fontSize: '12px' }}
+            wrapperStyle={{ top: '-120px', left: '50%', transform: 'translateX(-50%)' }}
+            cursor={{ fill: 'rgba(49, 151, 149, 0.1)' }}
           />
           <Legend
             wrapperStyle={{ paddingTop: '20px' }}

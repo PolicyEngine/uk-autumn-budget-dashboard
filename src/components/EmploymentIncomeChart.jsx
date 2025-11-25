@@ -97,40 +97,10 @@ function EmploymentIncomeChart({ selectedPolicies, selectedYear = 2026 }) {
     <div className="employment-income-chart">
       <h2>Household net income analysis</h2>
       <p className="chart-description">
-        This chart models a household with 2 adults and{' '}
-        <select
-          id="num-children"
-          style={{
-            padding: '4px 10px',
-            fontSize: '0.95rem',
-            border: '1px solid #cbd5e1',
-            borderRadius: '6px',
-            backgroundColor: 'white',
-            color: '#319795',
-            fontWeight: '500',
-            cursor: 'pointer',
-            outline: 'none',
-            transition: 'border-color 0.2s',
-            boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
-            display: 'inline-block',
-            verticalAlign: 'middle',
-            margin: '0 4px'
-          }}
-          onFocus={(e) => e.target.style.borderColor = '#319795'}
-          onBlur={(e) => e.target.style.borderColor = '#cbd5e1'}
-          defaultValue="3"
-        >
-          <option value="0">0</option>
-          <option value="1">1</option>
-          <option value="2">2</option>
-          <option value="3">3</option>
-          <option value="4">4</option>
-          <option value="5">5</option>
-        </select>
-        {' '}children in 2026-27. Baseline shows current policy, reform shows impact after selected changes.
+        This chart models a household with 2 adults (both age 40) and 3 children (ages 7, 5, and 3) in 2026-27. The primary earner contributes £10,000 annually to their pension. Baseline shows current policy, reform shows impact after selected changes.
       </p>
 
-      <ResponsiveContainer width="100%" height={400}>
+      <ResponsiveContainer width="100%" height={430}>
         <LineChart
           data={data}
           margin={{ top: 25, right: 30, left: 20, bottom: 60 }}

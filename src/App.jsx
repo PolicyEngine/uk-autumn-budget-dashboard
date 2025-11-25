@@ -31,7 +31,7 @@ const DEFAULT_POLICIES = [
   {
     id: 'ni_rate_reduction',
     name: 'National Insurance rate reduction',
-    description: 'Reduce the main National Insurance rate for employees',
+    description: 'Reduce the main NI rate for employees',
     explanation: 'This policy reduces the main employee National Insurance contribution rate from 8% to 6%. National Insurance applies to gross earnings before pension contributions, unlike income tax which applies after deductions.'
   },
   {
@@ -320,7 +320,7 @@ function App() {
                     </div>
                   </div>
                   <div className="key-metric">
-                    <div className="metric-text">Change in inequality (Gini coefficient) in 2026-27</div>
+                    <div className="metric-text">Change in inequality (Gini coefficient)<br />in 2026-27</div>
                     <div className="metric-number">
                       {results.metrics.giniChange !== null
                         ? `${(results.metrics.giniChange * 100).toFixed(1)}%`
@@ -329,7 +329,7 @@ function App() {
                   </div>
                   <div className="key-metric">
                     <div className="metric-text">
-                      Change in poverty rate (absolute BHC) in 2026-27
+                      Change in poverty rate (absolute BHC)<br />in 2026-27
                       <span className="info-icon-wrapper">
                         <svg className="info-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                           <circle cx="12" cy="12" r="10"></circle>
@@ -361,11 +361,9 @@ function App() {
                         The following {selectedPolicies.length === 1 ? 'is the policy' : 'are the policies'} you have selected for analysis:
                       </p>
                       <ul style={{ marginLeft: '20px', lineHeight: '1.7' }}>
-                        {selectedPolicies.map(policyId => {
-                          const policy = DEFAULT_POLICIES.find(p => p.id === policyId)
-                          if (!policy) return null
+                        {DEFAULT_POLICIES.filter(policy => selectedPolicies.includes(policy.id)).map(policy => {
                           return (
-                            <li key={policyId} style={{ marginBottom: '12px' }}>
+                            <li key={policy.id} style={{ marginBottom: '12px' }}>
                               <strong>{policy.name}:</strong> {policy.explanation}
                             </li>
                           )

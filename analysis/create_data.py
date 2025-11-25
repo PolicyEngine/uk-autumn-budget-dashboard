@@ -230,8 +230,15 @@ def calculate_income_curve(
 ) -> list[dict]:
     base_situation = {
         "people": {
-            "adult1": {"age": {str(year): 40}, "employment_income": {str(year): 0}},
-            "adult2": {"age": {str(year): 40}, "employment_income": {str(year): 0}},
+            "adult1": {
+                "age": {str(year): 40},
+                "employment_income": {str(year): 0},
+                "employee_pension_contributions": {str(year): 10000}
+            },
+            "adult2": {
+                "age": {str(year): 40},
+                "employment_income": {str(year): 0}
+            },
             "child1": {"age": {str(year): 7}, "employment_income": {str(year): 0}},
             "child2": {"age": {str(year): 5}, "employment_income": {str(year): 0}},
             "child3": {"age": {str(year): 3}, "employment_income": {str(year): 0}},
@@ -251,7 +258,7 @@ def calculate_income_curve(
             }
         },
         "axes": [[
-            {"name": "employment_income", "min": 0, "max": 100_000, "count": 501, "period": str(year)},
+            {"name": "employment_income", "min": 0, "max": 150_000, "count": 201, "period": str(year)},
         ]]
     }
 
