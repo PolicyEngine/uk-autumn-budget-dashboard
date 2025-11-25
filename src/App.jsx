@@ -28,6 +28,12 @@ const DEFAULT_POLICIES = [
     name: 'Threshold freeze extension',
     description: 'Extend the freeze on income tax thresholds',
     explanation: 'Income tax thresholds include the personal allowance and the higher rate threshold. Under current law, these thresholds are frozen until a certain date. This policy extends that freeze beyond the current end date, keeping the thresholds at their current levels rather than increasing them with inflation.'
+  },
+  {
+    id: 'ni_rate_reduction',
+    name: 'National Insurance rate reduction',
+    description: 'Reduce the main National Insurance rate for employees',
+    explanation: 'This policy reduces the main employee National Insurance contribution rate from 8% to 6%. National Insurance is a tax on earnings paid by employees and employers, which funds state benefits including the state pension and NHS.'
   }
 ]
 

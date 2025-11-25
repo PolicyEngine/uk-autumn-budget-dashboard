@@ -580,6 +580,17 @@ if __name__ == "__main__":
                     },
                 }
             ),
+        ),
+        ScenarioConfig(
+            id="ni_rate_reduction",
+            name="National Insurance rate reduction",
+            scenario=Scenario(
+                parameter_changes={
+                    "gov.hmrc.national_insurance.class_1.rates.employee.main": {
+                        str(y): 0.06 for y in YEARS
+                    },
+                }
+            ),
         )
     ]
 

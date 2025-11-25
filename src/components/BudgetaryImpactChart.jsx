@@ -4,13 +4,15 @@ import './BudgetaryImpactChart.css'
 const POLICY_COLORS = {
   '2 child limit repeal': '#319795',
   'Basic rate increase by 1 percentage point': '#5A8FB8',
-  'Threshold freeze extension': '#B8875A'
+  'Threshold freeze extension': '#B8875A',
+  'National Insurance rate reduction': '#5FB88A'
 }
 
 const ALL_POLICY_NAMES = [
   '2 child limit repeal',
   'Basic rate increase by 1 percentage point',
-  'Threshold freeze extension'
+  'Threshold freeze extension',
+  'National Insurance rate reduction'
 ]
 
 function BudgetaryImpactChart({ data }) {

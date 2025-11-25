@@ -11,3 +11,7 @@ threshold_freeze_extension,Threshold freeze extension,2026,0.0,0.0,0.0,0.0
 threshold_freeze_extension,Threshold freeze extension,2027,0.0,0.0,0.0,0.0
 threshold_freeze_extension,Threshold freeze extension,2028,83.50938109414561,2.959558476329438e-05,0.022120476,0.18564968
 threshold_freeze_extension,Threshold freeze extension,2029,84.01851926937087,0.0001435544583497207,0.17439461,1.4950508
+ni_rate_reduction,National Insurance rate reduction,2026,64.10728552020795,0.0010399735181275222,-0.03225422,-0.2732624
+ni_rate_reduction,National Insurance rate reduction,2027,64.28588362668584,0.0008538536500745515,-0.12817287,-1.0805804
+ni_rate_reduction,National Insurance rate reduction,2028,64.28662973263526,0.000736367730146682,-0.16824627,-1.412034
+ni_rate_reduction,National Insurance rate reduction,2029,64.30450682315274,0.0006393803719297842,-0.045236588,-0.3878044
