@@ -52,7 +52,7 @@ function WaterfallChart({ rawData, selectedPolicies }) {
   if (!rawData || rawData.length === 0) {
     return (
       <div className="waterfall-chart">
-        <h2>Impact by income decile — absolute</h2>
+        <h2>Absolute impact by income decile</h2>
         <p className="chart-description">
           Average absolute change in net income for each income decile, from the 1st (lowest income) to the 10th (highest income).
         </p>
@@ -74,7 +74,7 @@ function WaterfallChart({ rawData, selectedPolicies }) {
 
   return (
     <div className="waterfall-chart">
-      <h2>Impact by income decile — absolute</h2>
+      <h2>Absolute impact by income decile</h2>
       <p className="chart-description">
         Average absolute change in net income for each income decile, measured in pounds per year.
         This shows the actual cash amount gained or lost by households in each decile, from the

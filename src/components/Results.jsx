@@ -4,6 +4,7 @@ import {
   Tooltip, Legend, ResponsiveContainer
 } from 'recharts'
 import HouseholdImpactChart from './HouseholdImpactChart'
+import ConstituencyMap from './ConstituencyMap'
 import './Results.css'
 
 // Animated number component
@@ -236,7 +237,7 @@ function Results({ results, isLoading, selectedPolicies }) {
       <section className="household-impact-section">
         <h2>Household impact</h2>
         <p className="section-description">
-          Explore how the selected policy affects individual households across different income levels.
+          Explore how selected policies affect individual households across different income levels and household compositions. Each dot represents a household's potential net income change under the proposed reforms.
         </p>
         <HouseholdImpactChart
           selectedPolicy={selectedPolicies[0]}
@@ -250,9 +251,9 @@ function Results({ results, isLoading, selectedPolicies }) {
       </section>
 
       <section className="chart-section">
-        <h2>Revenue impact over time</h2>
+        <h2>Fiscal impact over time</h2>
         <p className="chart-description">
-          Projected revenue or expenditure impact of selected policies from 2025 to 2030, measured in billions of pounds.
+          Projected impact on Government revenues and expenditure from selected policies over the period 2025 to 2030, measured in billions of pounds. Positive values indicate revenue gains or expenditure reductions, whilst negative values represent costs to the Treasury.
         </p>
         <ResponsiveContainer width="100%" height={350}>
           <BarChart
@@ -291,7 +292,7 @@ function Results({ results, isLoading, selectedPolicies }) {
       <section className="chart-section">
         <h2>Distributional analysis</h2>
         <p className="chart-description">
-          Average net income change by income decile, showing how the selected policies affect households across the income distribution.
+          Average net income change by income decile, showing how selected policies affect households across the income distribution. This analysis reveals the proportion of winners and losers from the proposed reforms, with each decile representing 10% of households ranked by equivalised household income.
         </p>
         <ResponsiveContainer width="100%" height={350}>
           <BarChart
@@ -323,7 +324,7 @@ function Results({ results, isLoading, selectedPolicies }) {
           <div>
             <h2>Poverty impact</h2>
             <p className="chart-description">
-              Comparison of poverty rates (After Housing Costs) before and after implementing selected policies.
+              Comparison of poverty rates (After Housing Costs) before and after implementing selected policies, showing the reduction in both absolute and relative poverty measures across the UK population.
             </p>
           </div>
         </div>
@@ -352,6 +353,11 @@ function Results({ results, isLoading, selectedPolicies }) {
             <Bar dataKey="With policies" fill="#319795" name="With policies" />
           </BarChart>
         </ResponsiveContainer>
+      </section>
+
+      {/* Geographic constituency analysis */}
+      <section className="constituency-section">
+        <ConstituencyMap selectedPolicies={selectedPolicies} />
       </section>
     </div>
   )

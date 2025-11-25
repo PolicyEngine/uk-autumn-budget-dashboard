@@ -59,7 +59,7 @@ function DistributionalChart({ rawData, selectedPolicies }) {
   if (!rawData || rawData.length === 0) {
     return (
       <div className="distributional-chart">
-        <h2>Impact by income decile — relative</h2>
+        <h2>Relative impact by income decile</h2>
         <p className="chart-description">
           Average percentage change in net income for each income decile, from the 1st (lowest income) to the 10th (highest income).
         </p>
@@ -79,7 +79,7 @@ function DistributionalChart({ rawData, selectedPolicies }) {
 
   return (
     <div className="distributional-chart">
-      <h2>Impact by income decile — relative</h2>
+      <h2>Relative impact by income decile</h2>
       <p className="chart-description">
         Average percentage change in net income for each income decile, from the 1st (lowest income)
         to the 10th (highest income). This shows the proportional impact of reforms
