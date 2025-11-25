@@ -20,19 +20,19 @@ const DEFAULT_POLICIES = [
     id: 'income_tax_increase_2pp',
     name: 'Income tax increase (basic and higher +2pp)',
     description: 'Raise basic and higher rates by 2 percentage points',
-    explanation: 'This policy increases both the basic rate of income tax (from 20% to 22%) and the higher rate (from 40% to 42%). The basic rate applies to income between the personal allowance and the higher rate threshold, whilst the higher rate applies to income above that threshold.'
+    explanation: 'This policy increases the basic income tax rate from 20% to 22% and the higher rate from 40% to 42%. Income tax applies to taxable income after pension contributions and other deductions.'
   },
   {
     id: 'threshold_freeze_extension',
     name: 'Threshold freeze extension',
     description: 'Extend the freeze on income tax thresholds',
-    explanation: 'Income tax thresholds include the personal allowance and the higher rate threshold. Under current law, these thresholds are frozen until a certain date. This policy extends that freeze beyond the current end date, keeping the thresholds at their current levels rather than increasing them with inflation.'
+    explanation: 'This policy extends the income tax threshold freeze to 2029-30. Current law already freezes thresholds until 2027-28. Keeping the personal allowance and higher rate threshold at current levels means that as inflation increases nominal incomes, more income falls into higher tax brackets.'
   },
   {
     id: 'ni_rate_reduction',
     name: 'National Insurance rate reduction',
     description: 'Reduce the main National Insurance rate for employees',
-    explanation: 'This policy reduces the main employee National Insurance contribution rate from 8% to 6%. National Insurance is a tax on earnings paid by employees and employers, which funds state benefits including the state pension and NHS.'
+    explanation: 'This policy reduces the main employee National Insurance contribution rate from 8% to 6%. National Insurance applies to gross earnings before pension contributions, unlike income tax which applies after deductions.'
   }
 ]
 
@@ -360,12 +360,7 @@ function App() {
                 {/* Summary Paragraph */}
                 <div className="summary-paragraph">
                   <p>
-                    Use the policy selector in the top left to choose which budget reforms to analyse.
-                    This dashboard provides a comprehensive analysis of the selected policy reforms.
-                    The metrics below show the immediate fiscal impact and long-term effects on Government finances,
-                    alongside distributional outcomes including changes to inequality and poverty rates.
-                    Use the visualisations to explore how these policies affect different households across
-                    income levels, regions, and demographic groups.
+                    Use the policy selector in the top left to choose which budget reforms to analyse. This dashboard models the fiscal and distributional impacts of selected policies, showing their effects on Government revenues, household incomes, poverty rates, and inequality. Explore the visualisations below to understand how reforms affect different households across income levels, regions, and demographic groups.
                   </p>
 
                   {/* Selected Policies Explanations */}
@@ -407,7 +402,7 @@ function App() {
 
                 {/* Section: Breakdown of the effects */}
                 <div className="section-header">
-                  <h2>Geographic and demographic breakdown</h2>
+                  <h2>Regional and demographic analysis</h2>
                   <p>This section illustrates regional variation in policy impacts across all 650 UK Parliamentary constituencies and explores how different demographic groups and household types experience the effects of the selected reforms.</p>
                 </div>
                 <div className="secondary-charts">
