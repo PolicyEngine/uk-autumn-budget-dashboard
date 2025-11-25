@@ -27,17 +27,17 @@ function HouseholdChart({ data }) {
     const noChange = sampledData.filter(d => Math.abs(d.income_change) <= 0.01)
 
     // Scale household weights for marker sizes (4-15 range for better visibility)
-    const maxWeight = Math.max(...data.map(d => d.household_weight))
+    const maxWeight = data.reduce((max, d) => Math.max(max, d.household_weight), 0)
     const scaleSize = (weight) => Math.max(4, Math.min(15, (weight / maxWeight) * 15))
 
     // Calculate data extent for zoom
     const xValues = sampledData.map(d => d.income_change)
     const yValues = sampledData.map(d => d.baseline_income)
     const extent = {
-      xMin: Math.min(...xValues),
-      xMax: Math.max(...xValues),
-      yMin: Math.min(...yValues),
-      yMax: Math.max(...yValues)
+      xMin: xValues.reduce((min, val) => Math.min(min, val), Infinity),
+      xMax: xValues.reduce((max, val) => Math.max(max, val), -Infinity),
+      yMin: yValues.reduce((min, val) => Math.min(min, val), Infinity),
+      yMax: yValues.reduce((max, val) => Math.max(max, val), -Infinity)
     }
 
     // Prepare data with category and size
