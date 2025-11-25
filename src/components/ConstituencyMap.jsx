@@ -111,7 +111,7 @@ export default function ConstituencyMap({ selectedPolicies = [] }) {
     svg.selectAll('*').remove()
 
     const width = 800
-    const height = 500
+    const height = 600
 
     const g = svg.append('g')
 
@@ -435,8 +435,8 @@ export default function ConstituencyMap({ selectedPolicies = [] }) {
           <svg
             ref={svgRef}
             width="800"
-            height="500"
-            viewBox="0 0 800 500"
+            height="557"
+            viewBox="0 0 800 600"
             preserveAspectRatio="xMidYMid meet"
             onClick={() => {
               setTooltipData(null)
