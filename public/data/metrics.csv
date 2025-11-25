@@ -1,21 +1,25 @@
 reform_id,reform_name,year,people_affected,gini_change,poverty_change_pp,poverty_change_pct
-zero_vat_energy,Zero-rate VAT on domestic energy,2026,99.48722439464261,-0.001683334993125663,0.0,0.0
-zero_vat_energy,Zero-rate VAT on domestic energy,2027,99.48603179540702,-0.0016983298621262124,0.0,0.0
-zero_vat_energy,Zero-rate VAT on domestic energy,2028,99.48424116504827,-0.0017029509425782372,0.0,0.0
-zero_vat_energy,Zero-rate VAT on domestic energy,2029,99.48222511067372,-0.0017140106289902054,0.0,0.0
-two_child_limit,2 child limit repeal,2026,4.406003722868182,-0.005241476999223332,-0.89126396,-7.5509176
-two_child_limit,2 child limit repeal,2027,4.577575924098514,-0.005371398779193052,-0.8807459,-7.4252577
-two_child_limit,2 child limit repeal,2028,4.858383135478726,-0.00564367769364365,-0.8696356,-7.2985573
-two_child_limit,2 child limit repeal,2029,4.879737253647557,-0.005649337348444899,-0.8598747,-7.371537
-income_tax_increase_2pp,Income tax rate increase (basic and higher rates +2pp),2026,75.12965109070964,-0.002554328644598171,0.21929932,1.8579354
-income_tax_increase_2pp,Income tax rate increase (basic and higher rates +2pp),2027,75.6344286474165,-0.002207333351384699,0.09212208,0.77664876
-income_tax_increase_2pp,Income tax rate increase (basic and higher rates +2pp),2028,75.85041048213964,-0.002034667010736226,0.09720516,0.8158101
-income_tax_increase_2pp,Income tax rate increase (basic and higher rates +2pp),2029,75.96894343439749,-0.0017311299891786215,0.28076553,2.4069479
+salary_sacrifice_cap,Salary sacrifice cap,2026,1.2867876803500857,0.0012435166201720399,7.6293945e-06,6.499276e-05
+salary_sacrifice_cap,Salary sacrifice cap,2027,1.2867674600575596,0.0011723250700040422,7.6293945e-06,6.506661e-05
+salary_sacrifice_cap,Salary sacrifice cap,2028,1.2868024718945106,0.0011002781202652837,6.67572e-06,5.6810528e-05
+salary_sacrifice_cap,Salary sacrifice cap,2029,1.2868287468620336,0.001036776505061887,7.6293945e-06,6.544744e-05
+zero_vat_energy,Zero-rate VAT on domestic energy,2026,99.69544977798805,-0.0016642661024512575,0.0,0.0
+zero_vat_energy,Zero-rate VAT on domestic energy,2027,99.6913292644812,-0.0016674594239946363,0.0,0.0
+zero_vat_energy,Zero-rate VAT on domestic energy,2028,99.68941439062866,-0.001671488278592499,0.0,0.0
+zero_vat_energy,Zero-rate VAT on domestic energy,2029,99.68804550854657,-0.0016637528858722674,0.0,0.0
+two_child_limit,2 child limit repeal,2026,4.438016823399826,-0.003303392855016976,-1.0115595,-8.617203
+two_child_limit,2 child limit repeal,2027,4.4991790599603245,-0.0035076140223976745,-0.9871483,-8.418806
+two_child_limit,2 child limit repeal,2028,4.76436954928159,-0.0037439971537952116,-1.0253687,-8.72591
+two_child_limit,2 child limit repeal,2029,4.794246895247298,-0.0038565782733132395,-1.0187864,-8.739484
+income_tax_increase_2pp,Income tax rate increase (basic and higher rates +2pp),2026,75.56123608760795,-0.0031926790934104876,0.12965393,1.104487
+income_tax_increase_2pp,Income tax rate increase (basic and higher rates +2pp),2027,75.97117372262657,-0.002972272357229858,0.07313919,0.623761
+income_tax_increase_2pp,Income tax rate increase (basic and higher rates +2pp),2028,76.15876779886183,-0.002776667045718766,0.06557274,0.5580255
+income_tax_increase_2pp,Income tax rate increase (basic and higher rates +2pp),2029,76.22506300813117,-0.0026466952091862136,0.0844059,0.7240614
 threshold_freeze_extension,Threshold freeze extension,2026,0.0,0.0,0.0,0.0
 threshold_freeze_extension,Threshold freeze extension,2027,0.0,0.0,0.0,0.0
-threshold_freeze_extension,Threshold freeze extension,2028,83.50938109414561,2.959558476329438e-05,0.022120476,0.18564968
-threshold_freeze_extension,Threshold freeze extension,2029,84.01851926937087,0.0001435544583497207,0.17439461,1.4950508
-ni_rate_reduction,National Insurance rate reduction,2026,64.10728552020795,0.0010399735181275222,-0.03225422,-0.2732624
-ni_rate_reduction,National Insurance rate reduction,2027,64.28588362668584,0.0008538536500745515,-0.12817287,-1.0805804
-ni_rate_reduction,National Insurance rate reduction,2028,64.28662973263526,0.000736367730146682,-0.16824627,-1.412034
-ni_rate_reduction,National Insurance rate reduction,2029,64.30450682315274,0.0006393803719297842,-0.045236588,-0.3878044
+threshold_freeze_extension,Threshold freeze extension,2028,84.39805220631546,-8.800453200800581e-05,0.021650314,0.18424465
+threshold_freeze_extension,Threshold freeze extension,2029,84.7783581655556,-0.0001343621091979233,0.086102486,0.73861533
+ni_rate_reduction,National Insurance rate reduction,2026,63.6749762942314,0.0011425150879568885,-0.048859596,-0.41622174
+ni_rate_reduction,National Insurance rate reduction,2027,63.76115532588847,0.0009659755423411167,-0.057746887,-0.49248916
+ni_rate_reduction,National Insurance rate reduction,2028,63.771468632439365,0.0008706209918070269,-0.09096813,-0.77414083
+ni_rate_reduction,National Insurance rate reduction,2029,63.791879772972095,0.0008137624609621342,-0.04848194,-0.41589397

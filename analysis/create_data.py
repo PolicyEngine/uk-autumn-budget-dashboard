@@ -14,6 +14,7 @@ import pandas as pd
 from microdf import MicroSeries
 from policyengine_uk import Microsimulation, Scenario, Simulation
 from policyengine_uk.model_api import Variable, YEAR, Household
+from policyengine_uk.data import UKSingleYearDataset
 from pydantic import BaseModel
 from rich.console import Console
 from rich.progress import Progress, SpinnerColumn, TextColumn
@@ -24,6 +25,9 @@ DATA_INPUTS = Path("./data_inputs")
 DATA_DIR = Path("./data")
 OUTPUT_DIR = Path("./public/data")
 YEARS = [2026, 2027, 2028, 2029]
+
+# Path to enhanced dataset with salary sacrifice data
+ENHANCED_DATASET_PATH = Path("/Users/janansadeqian/policyengine-uk-data/policyengine_uk_data/storage/enhanced_frs_2023_24.h5")
 
 
 class ScenarioConfig(BaseModel):
@@ -445,8 +449,10 @@ class ScenarioResults(BaseModel):
 
 
 def process_scenario(config: ScenarioConfig) -> ScenarioResults:
-    baseline = Microsimulation()
-    reformed = Microsimulation(scenario=config.scenario)
+    # Load enhanced dataset with salary sacrifice data
+    dataset = UKSingleYearDataset(file_path=str(ENHANCED_DATASET_PATH))
+    baseline = Microsimulation(dataset=dataset)
+    reformed = Microsimulation(dataset=dataset, scenario=config.scenario)
 
     # Calculate budgetary impact across all years
     budgetary = calculate_budgetary_impact(baseline, reformed, config.id, config.name)
@@ -586,8 +592,43 @@ def zero_rate_energy_vat(sim):
     return sim
 
 
+def create_ss_cap_reform(employer_response_haircut: float = 0.13, cap_amount: float = 2000):
+    """
+    Salary sacrifice cap reform.
+
+    This reform caps salary sacrifice pension contributions at a specified amount per year,
+    after which national insurance applies. The default cap is £2,000 per year.
+
+    Based on Financial Times reporting (24 November 2025):
+    - Estimated revenue: £3-4 billion per year
+    - Default employer response haircut: 13% (proportion of excess that employers reduce)
+    - When contributions exceed the cap, the excess is converted to regular employment income
+
+    Args:
+        employer_response_haircut: Proportion by which employers reduce their response (default 0.13)
+        cap_amount: Annual cap on NI-free salary sacrifice in £ (default 2000)
+    """
+    def modify(sim):
+        for year in range(2026, 2031):
+            ss_contrib = sim.calculate("pension_contributions_via_salary_sacrifice", period=year)
+            excess_ss_contrib = np.maximum(
+                ss_contrib - cap_amount, 0
+            )
+            emp_income = sim.calculate("employment_income", period=year)
+            new_employment_income = emp_income + excess_ss_contrib * (1 - employer_response_haircut)
+            sim.set_input("employment_income", year, new_employment_income)
+            sim.set_input("employee_pension_contributions", year, excess_ss_contrib * (1 - employer_response_haircut) + sim.calculate("employee_pension_contributions", period=year))
+            sim.set_input("pension_contributions_via_salary_sacrifice", year, ss_contrib - excess_ss_contrib)
+    return Scenario(simulation_modifier=modify)
+
+
 if __name__ == "__main__":
     scenarios = [
+        ScenarioConfig(
+            id="salary_sacrifice_cap",
+            name="Salary sacrifice cap",
+            scenario=create_ss_cap_reform(employer_response_haircut=0.13, cap_amount=2000),
+        ),
         ScenarioConfig(
             id="zero_vat_energy",
             name="Zero-rate VAT on domestic energy",

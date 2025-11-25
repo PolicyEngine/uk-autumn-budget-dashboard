@@ -8,7 +8,8 @@ const POLICY_COLORS = {
   'Income tax increase (basic and higher +2pp)': '#5A8FB8',
   'Threshold freeze extension': '#B8875A',
   'National Insurance rate reduction': '#5FB88A',
-  'Zero-rate VAT on domestic energy': '#4A7BA7'
+  'Zero-rate VAT on domestic energy': '#4A7BA7',
+  'Salary sacrifice cap': '#C59A5A'
 }
 
 const ALL_POLICY_NAMES = [
@@ -16,7 +17,8 @@ const ALL_POLICY_NAMES = [
   'Income tax increase (basic and higher +2pp)',
   'Threshold freeze extension',
   'National Insurance rate reduction',
-  'Zero-rate VAT on domestic energy'
+  'Zero-rate VAT on domestic energy',
+  'Salary sacrifice cap'
 ]
 
 function WaterfallChart({ rawData, selectedPolicies }) {
@@ -28,7 +30,8 @@ function WaterfallChart({ rawData, selectedPolicies }) {
     { id: 'income_tax_increase_2pp', name: 'Income tax increase (basic and higher +2pp)' },
     { id: 'threshold_freeze_extension', name: 'Threshold freeze extension' },
     { id: 'ni_rate_reduction', name: 'National Insurance rate reduction' },
-    { id: 'zero_vat_energy', name: 'Zero-rate VAT on domestic energy' }
+    { id: 'zero_vat_energy', name: 'Zero-rate VAT on domestic energy' },
+    { id: 'salary_sacrifice_cap', name: 'Salary sacrifice cap' }
   ]
 
   const waterfallDeciles = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10']

@@ -39,6 +39,12 @@ const DEFAULT_POLICIES = [
     name: 'Zero-rate VAT on domestic energy',
     description: 'Remove 5% VAT from energy bills',
     explanation: 'This policy removes the 5% VAT currently charged on domestic energy bills. Currently, UK households pay VAT at a reduced rate of 5% on electricity and gas consumption.'
+  },
+  {
+    id: 'salary_sacrifice_cap',
+    name: 'Salary sacrifice cap',
+    description: 'Cap salary sacrifice at £2,000/year',
+    explanation: 'This policy limits the amount that employees can sacrifice from their salaries into pension contributions without paying national insurance to £2,000 per year. Contributions above this cap would be subject to national insurance.'
   }
 ]
 
@@ -356,7 +362,7 @@ function App() {
                 {/* Summary Paragraph */}
                 <div className="summary-paragraph">
                   <p>
-                    Use the policy selector in the top left to choose which budget reforms to analyse. This dashboard models the fiscal and distributional impacts of selected policies, showing their effects on Government revenues, household incomes, poverty rates, and inequality. Explore the visualisations below to understand how reforms affect different households across income levels, regions, and demographic groups.
+                    <strong>Use the policy selector in the top left to choose which budget reforms to analyse.</strong> This dashboard models the fiscal and distributional impacts of selected policies, showing their effects on Government revenues, household incomes, poverty rates, and inequality. Explore the visualisations below to understand how reforms affect different households across income levels, regions, and demographic groups.
                   </p>
 
                   {/* Selected Policies Explanations */}
