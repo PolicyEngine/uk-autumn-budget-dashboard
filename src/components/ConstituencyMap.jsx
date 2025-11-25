@@ -433,7 +433,7 @@ export default function ConstituencyMap({ selectedPolicies = [] }) {
           <svg
             ref={svgRef}
             width="800"
-            height="557"
+            height="568"
             viewBox="0 0 800 600"
             preserveAspectRatio="xMidYMid meet"
             onClick={() => {
