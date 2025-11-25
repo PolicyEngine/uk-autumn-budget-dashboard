@@ -320,7 +320,9 @@ function App() {
                     </div>
                   </div>
                   <div className="key-metric">
-                    <div className="metric-text">Share of people affected</div>
+                    <div className="metric-text">
+                      Share of people affected<br />in 2026-27
+                    </div>
                     <div className="metric-number">
                       {results.metrics.percentAffected !== null
                         ? `${results.metrics.percentAffected.toFixed(1)}%`
@@ -328,7 +330,7 @@ function App() {
                     </div>
                   </div>
                   <div className="key-metric">
-                    <div className="metric-text">Change in inequality (Gini coefficient)</div>
+                    <div className="metric-text">Change in inequality (Gini coefficient) in 2026-27</div>
                     <div className="metric-number">
                       {results.metrics.giniChange !== null
                         ? `${(results.metrics.giniChange * 100).toFixed(1)}%`
@@ -337,7 +339,7 @@ function App() {
                   </div>
                   <div className="key-metric">
                     <div className="metric-text">
-                      Change in poverty rate (absolute BHC)
+                      Change in poverty rate (absolute BHC) in 2026-27
                       <span className="info-icon-wrapper">
                         <svg className="info-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                           <circle cx="12" cy="12" r="10"></circle>
