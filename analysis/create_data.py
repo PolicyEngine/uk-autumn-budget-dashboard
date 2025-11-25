@@ -11,7 +11,6 @@ from typing import Any
 import h5py
 import numpy as np
 import pandas as pd
-from huggingface_hub import hf_hub_download
 from microdf import MicroSeries
 from policyengine_uk import Microsimulation, Scenario, Simulation
 from pydantic import BaseModel
@@ -21,14 +20,9 @@ from rich.progress import Progress, SpinnerColumn, TextColumn
 console = Console()
 
 DATA_INPUTS = Path("./data_inputs")
+DATA_DIR = Path("./data")
 OUTPUT_DIR = Path("./public/data")
 YEARS = [2026, 2027, 2028, 2029]
-
-HF_REPO = "policyengine/policyengine-uk-data-private"
-HF_FILES = [
-    "parliamentary_constituency_weights.h5",
-    "constituencies_2024.csv",
-]
 
 
 class ScenarioConfig(BaseModel):
@@ -42,22 +36,20 @@ class ScenarioConfig(BaseModel):
         arbitrary_types_allowed = True
 
 
-def download_input_data() -> None:
-    """Download required input files from HuggingFace."""
-    DATA_INPUTS.mkdir(parents=True, exist_ok=True)
-    token = os.environ.get("HUGGING_FACE_TOKEN")
+def check_input_data() -> None:
+    """Check that required input files exist locally."""
+    weights_path = DATA_DIR / "parliamentary_constituency_weights.h5"
+    constituencies_path = DATA_INPUTS / "constituencies_2024.csv"
 
-    for filename in HF_FILES:
-        local_path = DATA_INPUTS / filename
-        if not local_path.exists():
-            console.print(f"Downloading {filename}...")
-            hf_hub_download(
-                repo_id=HF_REPO,
-                filename=filename,
-                local_dir=DATA_INPUTS,
-                token=token,
-                repo_type="model",
-            )
+    if not weights_path.exists():
+        console.print(f"[red]Error: {weights_path} not found[/red]")
+        raise FileNotFoundError(f"Required file not found: {weights_path}")
+
+    if not constituencies_path.exists():
+        console.print(f"[red]Error: {constituencies_path} not found[/red]")
+        raise FileNotFoundError(f"Required file not found: {constituencies_path}")
+
+    console.print("[green]✓[/green] Found required constituency data files")
 
 
 def save_csv(df: pd.DataFrame, csv_path: Path) -> None:
@@ -254,7 +246,7 @@ def calculate_income_curve(
             }
         },
         "axes": [[
-            {"name": "employment_income", "min": 0, "max": 100_000, "count": 101, "period": str(year)},
+            {"name": "employment_income", "min": 0, "max": 100_000, "count": 501, "period": str(year)},
         ]]
     }
 
@@ -316,7 +308,7 @@ def calculate_constituency_impacts(
     reform_id: str,
     year: int = 2026,
 ) -> list[dict]:
-    weights_path = DATA_INPUTS / "parliamentary_constituency_weights.h5"
+    weights_path = DATA_DIR / "parliamentary_constituency_weights.h5"
     constituencies_path = DATA_INPUTS / "constituencies_2024.csv"
 
     if not weights_path.exists() or not constituencies_path.exists():
@@ -347,6 +339,7 @@ def calculate_constituency_impacts(
 
             results.append({
                 "reform_id": reform_id,
+                "year": year,
                 "constituency_code": code,
                 "constituency_name": name,
                 "average_gain": avg_change,
@@ -367,7 +360,7 @@ def calculate_demographic_constituency_impacts(
     year: int = 2026,
 ) -> list[dict]:
     """Calculate impacts by children count, marital status, and constituency."""
-    weights_path = DATA_INPUTS / "parliamentary_constituency_weights.h5"
+    weights_path = DATA_DIR / "parliamentary_constituency_weights.h5"
     constituencies_path = DATA_INPUTS / "constituencies_2024.csv"
 
     if not weights_path.exists() or not constituencies_path.exists():
@@ -417,6 +410,7 @@ def calculate_demographic_constituency_impacts(
 
                     results.append({
                         "reform_id": reform_id,
+                        "year": year,
                         "constituency_code": code,
                         "constituency_name": name,
                         "num_children": f"{n_children}+" if n_children == 4 else str(n_children),
@@ -450,32 +444,52 @@ class ScenarioResults(BaseModel):
 
 
 def process_scenario(config: ScenarioConfig) -> ScenarioResults:
-    income_curve = calculate_income_curve(config.scenario, config.id, config.name)
     baseline = Microsimulation()
     reformed = Microsimulation(scenario=config.scenario)
 
+    # Calculate budgetary impact across all years
     budgetary = calculate_budgetary_impact(baseline, reformed, config.id, config.name)
-    distributional, decile_df = calculate_distributional_impact(baseline, reformed, config.id, config.name)
-    winners_losers = calculate_winners_losers(decile_df, config.id, config.name)
-    metrics = calculate_metrics(baseline, reformed, config.id, config.name)
-    household_scatter = calculate_household_scatter(baseline, reformed, config.id, config.name)
-    constituency = calculate_constituency_impacts(baseline, reformed, config.id)
-    demographic_constituency = calculate_demographic_constituency_impacts(baseline, reformed, config.id)
+
+    # Calculate distributional data, metrics, etc. for each year
+    all_distributional = []
+    all_winners_losers = []
+    all_metrics = []
+    all_income_curve = []
+    all_household_scatter = []
+    all_constituency = []
+    all_demographic_constituency = []
+
+    for year in YEARS:
+        distributional, decile_df = calculate_distributional_impact(baseline, reformed, config.id, config.name, year)
+        winners_losers = calculate_winners_losers(decile_df, config.id, config.name, year)
+        metrics = calculate_metrics(baseline, reformed, config.id, config.name, year)
+        income_curve = calculate_income_curve(config.scenario, config.id, config.name, year)
+        household_scatter = calculate_household_scatter(baseline, reformed, config.id, config.name, year)
+        constituency = calculate_constituency_impacts(baseline, reformed, config.id, year=year)
+        demographic_constituency = calculate_demographic_constituency_impacts(baseline, reformed, config.id, year=year)
+
+        all_distributional.extend(distributional)
+        all_winners_losers.extend(winners_losers)
+        all_metrics.extend(metrics)
+        all_income_curve.extend(income_curve)
+        all_household_scatter.extend(household_scatter)
+        all_constituency.extend(constituency)
+        all_demographic_constituency.extend(demographic_constituency)
 
     return ScenarioResults(
         budgetary_impact=budgetary,
-        distributional_impact=distributional,
-        winners_losers=winners_losers,
-        metrics=metrics,
-        income_curve=income_curve,
-        household_scatter=household_scatter,
-        constituency=constituency,
-        demographic_constituency=demographic_constituency,
+        distributional_impact=all_distributional,
+        winners_losers=all_winners_losers,
+        metrics=all_metrics,
+        income_curve=all_income_curve,
+        household_scatter=all_household_scatter,
+        constituency=all_constituency,
+        demographic_constituency=all_demographic_constituency,
     )
 
 
 def run(scenarios: list[ScenarioConfig]) -> None:
-    download_input_data()
+    check_input_data()
 
     # Start with empty dataframes
     budgetary_df = pd.DataFrame()
@@ -550,6 +564,20 @@ if __name__ == "__main__":
                     "gov.hmrc.income_tax.rates.uk[0].rate": {
                         str(y): 0.21 for y in YEARS
                     }
+                }
+            ),
+        ),
+        ScenarioConfig(
+            id="threshold_freeze_extension",
+            name="Threshold freeze extension",
+            scenario=Scenario(
+                parameter_changes={
+                    "gov.hmrc.income_tax.rates.uk[1].threshold": {
+                        str(y): 37700 for y in YEARS
+                    },
+                    "gov.hmrc.income_tax.allowances.personal_allowance.amount": {
+                        str(y): 12570 for y in YEARS
+                    },
                 }
             ),
         )

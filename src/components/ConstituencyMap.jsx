@@ -3,7 +3,7 @@ import * as d3 from 'd3'
 import './ConstituencyMap.css'
 
 
-export default function ConstituencyMap({ selectedPolicies = [] }) {
+export default function ConstituencyMap({ selectedPolicies = [], selectedYear = 2026 }) {
   const svgRef = useRef(null)
   const tooltipRef = useRef(null)
   const [selectedConstituency, setSelectedConstituency] = useState(null)
@@ -55,6 +55,7 @@ export default function ConstituencyMap({ selectedPolicies = [] }) {
 
           return {
             reform_id: row.reform_id,
+            year: parseInt(row.year) || 2026,
             constituency_code: row.constituency_code,
             constituency_name: row.constituency_name?.replace(/^"|"$/g, ''),
             average_gain: parseFloat(row.average_gain) || 0,
@@ -80,6 +81,7 @@ export default function ConstituencyMap({ selectedPolicies = [] }) {
 
     rawData.forEach(row => {
       if (!selectedPolicies.includes(row.reform_id)) return
+      if (row.year !== selectedYear) return
 
       const key = row.constituency_code
       if (!constituencyMap.has(key)) {
@@ -97,7 +99,7 @@ export default function ConstituencyMap({ selectedPolicies = [] }) {
     })
 
     return Array.from(constituencyMap.values())
-  }, [rawData, selectedPolicies])
+  }, [rawData, selectedPolicies, selectedYear])
 
   // Render map
   useEffect(() => {

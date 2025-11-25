@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import PolicySelector from './components/PolicySelector'
+import YearSelector from './components/YearSelector'
 import BudgetaryImpactChart from './components/BudgetaryImpactChart'
 import DistributionalChart from './components/DistributionalChart'
 import WaterfallChart from './components/WaterfallChart'
@@ -21,6 +22,12 @@ const DEFAULT_POLICIES = [
     name: 'Basic rate increase by 1 percentage point',
     description: 'Increase the basic rate of income tax by 1 percentage point',
     explanation: 'This policy increases the basic rate of income tax. The basic rate applies to income between the personal allowance and the higher rate threshold.'
+  },
+  {
+    id: 'threshold_freeze_extension',
+    name: 'Threshold freeze extension',
+    description: 'Extend the freeze on income tax thresholds',
+    explanation: 'Income tax thresholds include the personal allowance and the higher rate threshold. Under current law, these thresholds are frozen until a certain date. This policy extends that freeze beyond the current end date, keeping the thresholds at their current levels rather than increasing them with inflation.'
   }
 ]
 
@@ -41,12 +48,14 @@ function parseCSV(csvText) {
 
 function App() {
   const [selectedPolicies, setSelectedPolicies] = useState([])
+  const [selectedYear, setSelectedYear] = useState(2026)
   const [results, setResults] = useState(null)
 
   // Initialize from URL or select all policies by default
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
     const policiesParam = params.get('policies')
+    const yearParam = params.get('year')
 
     if (policiesParam) {
       const policies = policiesParam.split(',')
@@ -55,20 +64,28 @@ function App() {
       // Select only two_child_limit by default (only policy with data)
       setSelectedPolicies(['two_child_limit'])
     }
+
+    if (yearParam) {
+      const year = parseInt(yearParam)
+      if ([2026, 2027, 2028, 2029].includes(year)) {
+        setSelectedYear(year)
+      }
+    }
   }, [])
 
-  // Update URL when policies change
+  // Update URL when policies or year change
   useEffect(() => {
     if (selectedPolicies.length === 0) {
       window.history.replaceState({}, '', window.location.pathname)
     } else {
       const params = new URLSearchParams()
       params.set('policies', selectedPolicies.join(','))
+      params.set('year', selectedYear)
       window.history.replaceState({}, '', `?${params.toString()}`)
     }
-  }, [selectedPolicies])
+  }, [selectedPolicies, selectedYear])
 
-  // Run analysis when policies change
+  // Run analysis when policies or year change
   useEffect(() => {
     if (selectedPolicies.length === 0) {
       setResults(null)
@@ -76,7 +93,7 @@ function App() {
     }
 
     runAnalysis()
-  }, [selectedPolicies])
+  }, [selectedPolicies, selectedYear])
 
   const runAnalysis = async () => {
     try {
@@ -115,7 +132,7 @@ function App() {
         selectedPolicies.includes(row.reform_id)
       )
       const filteredHouseholdScatter = householdScatterData
-        .filter(row => selectedPolicies.includes(row.reform_id))
+        .filter(row => selectedPolicies.includes(row.reform_id) && parseInt(row.year) === selectedYear)
         .map(row => ({
           baseline_income: parseFloat(row.baseline_income),
           income_change: parseFloat(row.income_change),
@@ -141,21 +158,21 @@ function App() {
         return dataPoint
       })
 
-      // Calculate budgetary impact for 2026
-      const budgetaryImpact2026 = filteredBudgetary
-        .filter(row => parseInt(row.year) === 2026)
+      // Calculate budgetary impact for selected year
+      const budgetaryImpactSelectedYear = filteredBudgetary
+        .filter(row => parseInt(row.year) === selectedYear)
         .reduce((sum, row) => sum + parseFloat(row.value), 0)
 
       // Build distributional data (grouped by decile with policy breakdown)
       // Always include all policy keys for smooth animations
       const decileOrder = ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th', '10th']
-      const distributional2026 = distributionalData.filter(row => parseInt(row.year) === 2026)
+      const distributionalSelectedYear = distributionalData.filter(row => parseInt(row.year) === selectedYear)
       const distributionalChartData = decileOrder.map(decile => {
         const dataPoint = { decile }
         let netChange = 0
         DEFAULT_POLICIES.forEach(policy => {
           const isSelected = selectedPolicies.includes(policy.id)
-          const dataRow = distributional2026.find(row =>
+          const dataRow = distributionalSelectedYear.find(row =>
             row.reform_id === policy.id && row.decile === decile
           )
           const value = isSelected && dataRow ? parseFloat(dataRow.value) : 0
@@ -168,14 +185,14 @@ function App() {
 
       // Build waterfall data (grouped by decile with policy breakdown)
       // Always include all policy keys for smooth animations
-      const waterfall2026 = winnersLosersData.filter(row => parseInt(row.year) === 2026 && row.decile !== 'all')
+      const waterfallSelectedYear = winnersLosersData.filter(row => parseInt(row.year) === selectedYear && row.decile !== 'all')
       const waterfallDeciles = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10']
       const waterfallData = waterfallDeciles.map(decile => {
         const dataPoint = { decile }
         let netChange = 0
         DEFAULT_POLICIES.forEach(policy => {
           const isSelected = selectedPolicies.includes(policy.id)
-          const dataRow = waterfall2026.find(row =>
+          const dataRow = waterfallSelectedYear.find(row =>
             row.reform_id === policy.id && row.decile === decile
           )
           const value = isSelected && dataRow ? parseFloat(dataRow.avg_change) : 0
@@ -187,10 +204,10 @@ function App() {
       })
 
       // Extract metrics
-      const metrics2026 = filteredMetrics.find(row => parseInt(row.year) === 2026)
-      const percentAffected = metrics2026 ? parseFloat(metrics2026.people_affected) : null
-      const giniChange = metrics2026 ? parseFloat(metrics2026.gini_change) : null
-      const povertyRateChange = metrics2026 ? parseFloat(metrics2026.poverty_change_pp) : null
+      const metricsSelectedYear = filteredMetrics.find(row => parseInt(row.year) === selectedYear)
+      const percentAffected = metricsSelectedYear ? parseFloat(metricsSelectedYear.people_affected) : null
+      const giniChange = metricsSelectedYear ? parseFloat(metricsSelectedYear.gini_change) : null
+      const povertyRateChange = metricsSelectedYear ? parseFloat(metricsSelectedYear.poverty_change_pp) : null
 
       // Calculate fiscal headroom for 2029/30
       const budgetaryImpact2029 = filteredBudgetary
@@ -202,7 +219,7 @@ function App() {
       setResults({
         metrics: {
           fiscalHeadroom2029,
-          budgetaryImpact2026,
+          budgetaryImpactSelectedYear,
           percentAffected,
           giniChange,
           povertyRateChange
@@ -243,6 +260,10 @@ function App() {
             <h1>UK Autumn Budget 2025 analysis</h1>
           </div>
           <div className="header-right">
+            <YearSelector
+              selectedYear={selectedYear}
+              onYearChange={setSelectedYear}
+            />
           </div>
         </div>
       </header>
@@ -292,10 +313,10 @@ function App() {
                     </div>
                   </div>
                   <div className="key-metric">
-                    <div className="metric-label-small">Revenue impact in 2026-27</div>
+                    <div className="metric-label-small">Revenue impact in {selectedYear}-{(selectedYear + 1).toString().slice(-2)}</div>
                     <div className="metric-number">
-                      {results.metrics.budgetaryImpact2026 !== null
-                        ? `£${results.metrics.budgetaryImpact2026.toFixed(1)}bn`
+                      {results.metrics.budgetaryImpactSelectedYear !== null
+                        ? `£${results.metrics.budgetaryImpactSelectedYear.toFixed(1)}bn`
                         : 'No data'}
                     </div>
                   </div>
@@ -369,7 +390,7 @@ function App() {
                   <p>How selected policies affect individual households and government revenues over time</p>
                 </div>
                 <div className="primary-charts">
-                  <EmploymentIncomeChart selectedPolicies={selectedPolicies} />
+                  <EmploymentIncomeChart selectedPolicies={selectedPolicies} selectedYear={selectedYear} />
                   <BudgetaryImpactChart data={results.budgetData} />
                 </div>
 
@@ -389,7 +410,7 @@ function App() {
                   <p>Regional variation in policy impacts across Parliamentary constituencies and demographic groups</p>
                 </div>
                 <div className="secondary-charts">
-                  <ConstituencyMap selectedPolicies={selectedPolicies} />
+                  <ConstituencyMap selectedPolicies={selectedPolicies} selectedYear={selectedYear} />
                   {results.householdScatterData && (
                     <HouseholdChart data={results.householdScatterData} />
                   )}

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 import './EmploymentIncomeChart.css'
 
-function EmploymentIncomeChart({ selectedPolicies }) {
+function EmploymentIncomeChart({ selectedPolicies, selectedYear = 2026 }) {
   const [data, setData] = useState([])
   const [loading, setLoading] = useState(true)
 
@@ -25,9 +25,12 @@ function EmploymentIncomeChart({ selectedPolicies }) {
           allData.push(row)
         }
 
+        // Filter by selected year
+        const yearFilteredData = allData.filter(row => parseInt(row.year) === selectedYear)
+
         // Get unique employment income values (up to 100k)
         const employmentIncomes = [...new Set(
-          allData
+          yearFilteredData
             .filter(row => parseFloat(row.employment_income) <= 100000)
             .map(row => parseFloat(row.employment_income))
         )].sort((a, b) => a - b)
@@ -35,7 +38,7 @@ function EmploymentIncomeChart({ selectedPolicies }) {
         // Build chart data: for each employment income, compute baseline and combined reform
         const chartData = employmentIncomes.map(income => {
           // Get baseline from any row (it's the same across reforms)
-          const baselineRow = allData.find(row =>
+          const baselineRow = yearFilteredData.find(row =>
             parseFloat(row.employment_income) === income
           )
           const baseline = baselineRow ? parseFloat(baselineRow.baseline_net_income) : 0
@@ -43,7 +46,7 @@ function EmploymentIncomeChart({ selectedPolicies }) {
           // Sum up the income changes from each selected policy
           let totalIncomeChange = 0
           selectedPolicies.forEach(policyId => {
-            const policyRow = allData.find(row =>
+            const policyRow = yearFilteredData.find(row =>
               row.reform_id === policyId && parseFloat(row.employment_income) === income
             )
             if (policyRow) {
@@ -67,7 +70,7 @@ function EmploymentIncomeChart({ selectedPolicies }) {
         console.error('Error loading income curve data:', error)
         setLoading(false)
       })
-  }, [selectedPolicies])
+  }, [selectedPolicies, selectedYear])
 
   const formatCurrency = (value) => {
     if (value >= 1000) {

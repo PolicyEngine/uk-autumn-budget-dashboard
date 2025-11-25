@@ -3,12 +3,14 @@ import './DistributionalChart.css'
 
 const POLICY_COLORS = {
   '2 child limit repeal': '#319795',
-  'Basic rate increase by 1 percentage point': '#5A8FB8'
+  'Basic rate increase by 1 percentage point': '#5A8FB8',
+  'Threshold freeze extension': '#B8875A'
 }
 
 const ALL_POLICY_NAMES = [
   '2 child limit repeal',
-  'Basic rate increase by 1 percentage point'
+  'Basic rate increase by 1 percentage point',
+  'Threshold freeze extension'
 ]
 
 function DistributionalChart({ data }) {

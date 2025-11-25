@@ -1,21 +1,121 @@
 reform_id,reform_name,year,decile,value
-two_child_limit,2 child limit repeal,2026,1st,0.83370644
-two_child_limit,2 child limit repeal,2026,2nd,1.68421
-two_child_limit,2 child limit repeal,2026,3rd,0.52828586
-two_child_limit,2 child limit repeal,2026,4th,0.28099242
-two_child_limit,2 child limit repeal,2026,5th,0.12037367
-two_child_limit,2 child limit repeal,2026,6th,0.025954833
-two_child_limit,2 child limit repeal,2026,7th,0.0
-two_child_limit,2 child limit repeal,2026,8th,6.150371e-06
+two_child_limit,2 child limit repeal,2026,1st,1.0737975
+two_child_limit,2 child limit repeal,2026,2nd,1.5120655
+two_child_limit,2 child limit repeal,2026,3rd,0.46132925
+two_child_limit,2 child limit repeal,2026,4th,0.36205715
+two_child_limit,2 child limit repeal,2026,5th,0.12027809
+two_child_limit,2 child limit repeal,2026,6th,0.034655847
+two_child_limit,2 child limit repeal,2026,7th,0.0069158617
+two_child_limit,2 child limit repeal,2026,8th,1.4989998e-05
 two_child_limit,2 child limit repeal,2026,9th,0.0
-two_child_limit,2 child limit repeal,2026,10th,0.0003266862
-basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,1st,-0.1155803
-basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,2nd,-0.18190701
-basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,3rd,-0.20915884
-basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,4th,-0.31784832
-basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,5th,-0.4417671
-basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,6th,-0.49817777
-basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,7th,-0.598277
-basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,8th,-0.62401056
-basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,9th,-0.6698521
-basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,10th,-0.3973782
+two_child_limit,2 child limit repeal,2026,10th,0.0003454045
+two_child_limit,2 child limit repeal,2027,1st,1.1016513
+two_child_limit,2 child limit repeal,2027,2nd,1.5710337
+two_child_limit,2 child limit repeal,2027,3rd,0.48240656
+two_child_limit,2 child limit repeal,2027,4th,0.39622834
+two_child_limit,2 child limit repeal,2027,5th,0.14083213
+two_child_limit,2 child limit repeal,2027,6th,0.04049753
+two_child_limit,2 child limit repeal,2027,7th,0.006960899
+two_child_limit,2 child limit repeal,2027,8th,1.5258422e-05
+two_child_limit,2 child limit repeal,2027,9th,0.0
+two_child_limit,2 child limit repeal,2027,10th,0.00069316244
+two_child_limit,2 child limit repeal,2028,1st,1.0052981
+two_child_limit,2 child limit repeal,2028,2nd,1.7763289
+two_child_limit,2 child limit repeal,2028,3rd,0.4934344
+two_child_limit,2 child limit repeal,2028,4th,0.47416916
+two_child_limit,2 child limit repeal,2028,5th,0.13125718
+two_child_limit,2 child limit repeal,2028,6th,0.043826956
+two_child_limit,2 child limit repeal,2028,7th,0.006992406
+two_child_limit,2 child limit repeal,2028,8th,1.5324951e-05
+two_child_limit,2 child limit repeal,2028,9th,0.0
+two_child_limit,2 child limit repeal,2028,10th,0.0006924459
+two_child_limit,2 child limit repeal,2029,1st,0.968195
+two_child_limit,2 child limit repeal,2029,2nd,1.8870918
+two_child_limit,2 child limit repeal,2029,3rd,0.4582683
+two_child_limit,2 child limit repeal,2029,4th,0.48315027
+two_child_limit,2 child limit repeal,2029,5th,0.13147144
+two_child_limit,2 child limit repeal,2029,6th,0.047462523
+two_child_limit,2 child limit repeal,2029,7th,0.007003922
+two_child_limit,2 child limit repeal,2029,8th,1.5389604e-05
+two_child_limit,2 child limit repeal,2029,9th,0.0
+two_child_limit,2 child limit repeal,2029,10th,0.0006924763
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,1st,-0.11429781
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,2nd,-0.1826138
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,3rd,-0.22124363
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,4th,-0.3151443
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,5th,-0.43065286
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,6th,-0.50003177
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,7th,-0.6034179
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,8th,-0.6514234
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,9th,-0.6600326
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,10th,-0.3974902
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2027,1st,-0.11993595
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2027,2nd,-0.18979543
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2027,3rd,-0.23721892
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2027,4th,-0.32169423
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2027,5th,-0.44692513
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2027,6th,-0.5104612
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2027,7th,-0.6220631
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2027,8th,-0.67236584
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2027,9th,-0.6586884
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2027,10th,-0.39463267
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2028,1st,-0.12336468
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2028,2nd,-0.19438909
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2028,3rd,-0.23713405
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2028,4th,-0.33187935
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2028,5th,-0.4560104
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2028,6th,-0.5154626
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2028,7th,-0.6315128
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2028,8th,-0.6785194
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2028,9th,-0.6655975
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2028,10th,-0.39554286
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2029,1st,-0.12729707
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2029,2nd,-0.19828606
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2029,3rd,-0.24185807
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2029,4th,-0.33822715
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2029,5th,-0.4680519
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2029,6th,-0.51608914
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2029,7th,-0.6458768
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2029,8th,-0.6820116
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2029,9th,-0.675862
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2029,10th,-0.39644456
+threshold_freeze_extension,Threshold freeze extension,2026,1st,0.0
+threshold_freeze_extension,Threshold freeze extension,2026,2nd,0.0
+threshold_freeze_extension,Threshold freeze extension,2026,3rd,0.0
+threshold_freeze_extension,Threshold freeze extension,2026,4th,0.0
+threshold_freeze_extension,Threshold freeze extension,2026,5th,0.0
+threshold_freeze_extension,Threshold freeze extension,2026,6th,0.0
+threshold_freeze_extension,Threshold freeze extension,2026,7th,0.0
+threshold_freeze_extension,Threshold freeze extension,2026,8th,0.0
+threshold_freeze_extension,Threshold freeze extension,2026,9th,0.0
+threshold_freeze_extension,Threshold freeze extension,2026,10th,0.0
+threshold_freeze_extension,Threshold freeze extension,2027,1st,0.0
+threshold_freeze_extension,Threshold freeze extension,2027,2nd,0.0
+threshold_freeze_extension,Threshold freeze extension,2027,3rd,0.0
+threshold_freeze_extension,Threshold freeze extension,2027,4th,0.0
+threshold_freeze_extension,Threshold freeze extension,2027,5th,0.0
+threshold_freeze_extension,Threshold freeze extension,2027,6th,0.0
+threshold_freeze_extension,Threshold freeze extension,2027,7th,0.0
+threshold_freeze_extension,Threshold freeze extension,2027,8th,0.0
+threshold_freeze_extension,Threshold freeze extension,2027,9th,0.0
+threshold_freeze_extension,Threshold freeze extension,2027,10th,0.0
+threshold_freeze_extension,Threshold freeze extension,2028,1st,-0.076477066
+threshold_freeze_extension,Threshold freeze extension,2028,2nd,-0.13380703
+threshold_freeze_extension,Threshold freeze extension,2028,3rd,-0.14854236
+threshold_freeze_extension,Threshold freeze extension,2028,4th,-0.15792502
+threshold_freeze_extension,Threshold freeze extension,2028,5th,-0.1831064
+threshold_freeze_extension,Threshold freeze extension,2028,6th,-0.19478832
+threshold_freeze_extension,Threshold freeze extension,2028,7th,-0.22183524
+threshold_freeze_extension,Threshold freeze extension,2028,8th,-0.2722255
+threshold_freeze_extension,Threshold freeze extension,2028,9th,-0.31858578
+threshold_freeze_extension,Threshold freeze extension,2028,10th,-0.20656912
+threshold_freeze_extension,Threshold freeze extension,2029,1st,-0.15720269
+threshold_freeze_extension,Threshold freeze extension,2029,2nd,-0.27009606
+threshold_freeze_extension,Threshold freeze extension,2029,3rd,-0.3038949
+threshold_freeze_extension,Threshold freeze extension,2029,4th,-0.31719315
+threshold_freeze_extension,Threshold freeze extension,2029,5th,-0.37034124
+threshold_freeze_extension,Threshold freeze extension,2029,6th,-0.39056757
+threshold_freeze_extension,Threshold freeze extension,2029,7th,-0.4541219
+threshold_freeze_extension,Threshold freeze extension,2029,8th,-0.5641409
+threshold_freeze_extension,Threshold freeze extension,2029,9th,-0.6484769
+threshold_freeze_extension,Threshold freeze extension,2029,10th,-0.40867633

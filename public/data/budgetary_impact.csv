@@ -1,9 +1,13 @@
 reform_id,reform_name,year,value
-two_child_limit,2 child limit repeal,2026,-2.854372136264056
-two_child_limit,2 child limit repeal,2027,-3.0182041040664505
-two_child_limit,2 child limit repeal,2028,-3.291673792369761
-two_child_limit,2 child limit repeal,2029,-3.3938275540222302
-basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,7.227385113273063
-basic_rate_increase_1p,Basic rate increase by 1 percentage point,2027,7.460301840625212
-basic_rate_increase_1p,Basic rate increase by 1 percentage point,2028,7.687435140065145
-basic_rate_increase_1p,Basic rate increase by 1 percentage point,2029,7.9415193305918255
+two_child_limit,2 child limit repeal,2026,-2.8819921057197857
+two_child_limit,2 child limit repeal,2027,-3.0683604840200744
+two_child_limit,2 child limit repeal,2028,-3.3231352852394895
+two_child_limit,2 child limit repeal,2029,-3.4270109442590386
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,7.233691581740411
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2027,7.466576085896896
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2028,7.693705536806974
+basic_rate_increase_1p,Basic rate increase by 1 percentage point,2029,7.948328986735555
+threshold_freeze_extension,Threshold freeze extension,2026,0.0
+threshold_freeze_extension,Threshold freeze extension,2027,0.0
+threshold_freeze_extension,Threshold freeze extension,2028,3.4975070539414124
+threshold_freeze_extension,Threshold freeze extension,2029,7.223418897939423
