@@ -263,10 +263,19 @@
 
 .policy-explanations-section p {
   margin: 0 0 16px 0;
+  color: #4b5563;
 }
 
 .policy-explanations-section p:last-child {
   margin-bottom: 0;
+}
+
+.policy-explanations-section ul {
+  color: #4b5563;
+}
+
+.policy-explanations-section li {
+  color: #4b5563;
 }
 
 /* Key Metrics Row */

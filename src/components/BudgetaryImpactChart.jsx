@@ -31,7 +31,7 @@ function BudgetaryImpactChart({ data }) {
     <div className="budgetary-impact-chart">
       <h2>Revenue impact</h2>
       <p className="chart-description">
-        Annual budgetary impact from 2026 to 2029, measured in billions of pounds. Positive values indicate revenue gains for the Government, whilst negative values indicate costs to the Treasury.
+        This chart shows the annual budgetary impact from 2026 to 2029, measured in billions of pounds. Positive values indicate revenue gains for the Government, whilst negative values indicate costs to the Treasury.
       </p>
 
       <ResponsiveContainer width="100%" height={400}>
