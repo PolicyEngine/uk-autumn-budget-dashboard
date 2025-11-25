@@ -367,15 +367,20 @@ function App() {
                   {selectedPolicies.length > 0 && (
                     <div className="policy-explanations-section">
                       <h3>Selected {selectedPolicies.length === 1 ? 'policy' : 'policies'}</h3>
-                      {selectedPolicies.map(policyId => {
-                        const policy = DEFAULT_POLICIES.find(p => p.id === policyId)
-                        if (!policy) return null
-                        return (
-                          <p key={policyId}>
-                            <strong>{policy.name}:</strong> {policy.explanation}
-                          </p>
-                        )
-                      })}
+                      <p style={{ marginBottom: '12px' }}>
+                        The following {selectedPolicies.length === 1 ? 'is the policy' : 'are the policies'} you have selected for analysis:
+                      </p>
+                      <ul style={{ marginLeft: '20px', lineHeight: '1.7' }}>
+                        {selectedPolicies.map(policyId => {
+                          const policy = DEFAULT_POLICIES.find(p => p.id === policyId)
+                          if (!policy) return null
+                          return (
+                            <li key={policyId} style={{ marginBottom: '12px' }}>
+                              <strong>{policy.name}:</strong> {policy.explanation}
+                            </li>
+                          )
+                        })}
+                      </ul>
                     </div>
                   )}
                 </div>
