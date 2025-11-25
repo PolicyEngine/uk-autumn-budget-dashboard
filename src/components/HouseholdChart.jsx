@@ -6,17 +6,6 @@ import './HouseholdChart.css'
 function HouseholdChart({ rawData, selectedPolicies }) {
   const [internalYear, setInternalYear] = useState(2026)
 
-  // Filter data by internal year and selected policies
-  const data = useMemo(() => {
-    if (!rawData) return []
-    return rawData
-      .filter(row => selectedPolicies.includes(row.reform_id) && parseInt(row.year) === internalYear)
-      .map(row => ({
-        baseline_income: parseFloat(row.baseline_income),
-        income_change: parseFloat(row.income_change),
-        household_weight: parseFloat(row.household_weight)
-      }))
-  }, [rawData, selectedPolicies, internalYear])
   // Zoom state
   const [zoomDomain, setZoomDomain] = useState(null)
   const [selectionBox, setSelectionBox] = useState(null)
@@ -24,21 +13,104 @@ function HouseholdChart({ rawData, selectedPolicies }) {
   const chartRef = useRef(null)
   const startPoint = useRef(null)
 
+  // Sample households ONCE across all years, then filter by selected year
+  const { sampledIndices, data } = useMemo(() => {
+    if (!rawData) return { sampledIndices: new Set(), data: [] }
+
+    // Group data by reform_id and year
+    const dataByReformAndYear = {}
+    rawData.forEach((row, originalIndex) => {
+      const reformId = row.reform_id
+      const year = parseInt(row.year)
+
+      if (!selectedPolicies.includes(reformId)) return
+
+      if (!dataByReformAndYear[reformId]) {
+        dataByReformAndYear[reformId] = {}
+      }
+      if (!dataByReformAndYear[reformId][year]) {
+        dataByReformAndYear[reformId][year] = []
+      }
+
+      dataByReformAndYear[reformId][year].push({
+        baseline_income: parseFloat(row.baseline_income),
+        income_change: parseFloat(row.income_change),
+        household_weight: parseFloat(row.household_weight),
+        year: year,
+        index: dataByReformAndYear[reformId][year].length // Position within this reform-year
+      })
+    })
+
+    // Get data for the first reform and first year (2026) to establish sample
+    const firstReformId = selectedPolicies[0]
+    const firstYearData = dataByReformAndYear[firstReformId]?.[2026] || []
+
+    if (firstYearData.length === 0) return { sampledIndices: new Set(), data: [] }
+
+    // Deterministically sample 1000 household positions using a simple hash
+    const sampleSize = Math.min(1000, firstYearData.length)
+
+    // Create a simple hash function for deterministic sampling
+    const simpleHash = (index) => {
+      // Use a simple multiplicative hash
+      return (index * 2654435761) % 2**32
+    }
+
+    // Sample household indices deterministically
+    const indicesWithHash = firstYearData.map((d, idx) => ({
+      index: idx,
+      hash: simpleHash(idx)
+    }))
+
+    indicesWithHash.sort((a, b) => a.hash - b.hash)
+    const sampledIndicesArray = indicesWithHash.slice(0, sampleSize).map(d => d.index)
+    const sampledIndicesSet = new Set(sampledIndicesArray)
+
+    // Now collect data for selected year using the sampled indices
+    // Combine income changes from all selected policies for each household
+    const filteredData = []
+    sampledIndicesArray.forEach(idx => {
+      let combinedIncomeChange = 0
+      let baselineIncome = 0
+      let householdWeight = 0
+
+      // Sum income changes from all selected policies for this household
+      selectedPolicies.forEach(reformId => {
+        const yearData = dataByReformAndYear[reformId]?.[internalYear] || []
+        if (yearData[idx]) {
+          combinedIncomeChange += yearData[idx].income_change
+          // Baseline income and weight should be the same across policies
+          if (baselineIncome === 0) {
+            baselineIncome = yearData[idx].baseline_income
+            householdWeight = yearData[idx].household_weight
+          }
+        }
+      })
+
+      // Only add if we have valid data
+      if (baselineIncome > 0 || combinedIncomeChange !== 0) {
+        filteredData.push({
+          baseline_income: baselineIncome,
+          income_change: combinedIncomeChange,
+          household_weight: householdWeight,
+          year: internalYear
+        })
+      }
+    })
+
+    return { sampledIndices: sampledIndicesSet, data: filteredData }
+  }, [rawData, selectedPolicies, internalYear])
+
   // Process data for Recharts
   const { chartData, stats, dataExtent } = useMemo(() => {
     if (!data || data.length === 0) return { chartData: [], stats: null, dataExtent: null }
 
-    // Randomly sample 1000 points from the data to avoid performance issues
-    const sampleSize = Math.min(1000, data.length)
-    const sampledData = data
-      .map(d => ({ ...d, sort: Math.random() }))
-      .sort((a, b) => a.sort - b.sort)
-      .slice(0, sampleSize)
+    // Data is already sampled consistently across years
 
     // Calculate statistics
-    const gains = sampledData.filter(d => d.income_change > 0.01)
-    const losses = sampledData.filter(d => d.income_change < -0.01)
-    const noChange = sampledData.filter(d => Math.abs(d.income_change) <= 0.01)
+    const gains = data.filter(d => d.income_change > 0.01)
+    const losses = data.filter(d => d.income_change < -0.01)
+    const noChange = data.filter(d => Math.abs(d.income_change) <= 0.01)
 
     // Scale household weights for marker sizes (4-15 range for better visibility)
     const maxWeight = data.reduce((max, d) => Math.max(max, d.household_weight), 0)
@@ -48,8 +120,8 @@ function HouseholdChart({ rawData, selectedPolicies }) {
     const scaleOpacity = (weight) => Math.max(0.5, Math.min(0.95, 0.5 + (weight / maxWeight) * 0.45))
 
     // Calculate data extent for zoom
-    const xValues = sampledData.map(d => d.income_change)
-    const yValues = sampledData.map(d => d.baseline_income)
+    const xValues = data.map(d => d.income_change)
+    const yValues = data.map(d => d.baseline_income)
     const extent = {
       xMin: xValues.reduce((min, val) => Math.min(min, val), Infinity),
       xMax: xValues.reduce((max, val) => Math.max(max, val), -Infinity),
@@ -58,7 +130,7 @@ function HouseholdChart({ rawData, selectedPolicies }) {
     }
 
     // Prepare data with category, size, and opacity
-    const processedData = sampledData.map(d => ({
+    const processedData = data.map(d => ({
       x: d.income_change,
       y: d.baseline_income,
       size: scaleSize(d.household_weight),
@@ -74,7 +146,7 @@ function HouseholdChart({ rawData, selectedPolicies }) {
         gains: gains.length,
         losses: losses.length,
         noChange: noChange.length,
-        total: sampledData.length
+        total: data.length
       },
       dataExtent: extent
     }
