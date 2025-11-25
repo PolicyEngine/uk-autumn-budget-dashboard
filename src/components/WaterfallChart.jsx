@@ -1,4 +1,6 @@
+import { useState } from 'react'
 import { ComposedChart, Bar, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ReferenceLine } from 'recharts'
+import YearSlider from './YearSlider'
 import './WaterfallChart.css'
 
 const POLICY_COLORS = {
@@ -15,8 +17,39 @@ const ALL_POLICY_NAMES = [
   'National Insurance rate reduction'
 ]
 
-function WaterfallChart({ data }) {
-  if (!data || data.length === 0) {
+function WaterfallChart({ rawData, selectedPolicies }) {
+  const [internalYear, setInternalYear] = useState(2026)
+
+  // Build chart data for internal year
+  const POLICIES = [
+    { id: 'two_child_limit', name: '2 child limit repeal' },
+    { id: 'income_tax_increase_2pp', name: 'Income tax increase (basic and higher +2pp)' },
+    { id: 'threshold_freeze_extension', name: 'Threshold freeze extension' },
+    { id: 'ni_rate_reduction', name: 'National Insurance rate reduction' }
+  ]
+
+  const waterfallDeciles = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10']
+  const waterfallSelectedYear = rawData ? rawData.filter(row =>
+    parseInt(row.year) === internalYear && row.decile !== 'all' && selectedPolicies.includes(row.reform_id)
+  ) : []
+
+  const data = waterfallDeciles.map(decile => {
+    const dataPoint = { decile }
+    let netChange = 0
+    POLICIES.forEach(policy => {
+      const isSelected = selectedPolicies.includes(policy.id)
+      const dataRow = waterfallSelectedYear.find(row =>
+        row.reform_id === policy.id && row.decile === decile
+      )
+      const value = isSelected && dataRow ? parseFloat(dataRow.avg_change) : 0
+      dataPoint[policy.name] = value
+      netChange += value
+    })
+    dataPoint.netChange = netChange
+    return dataPoint
+  })
+
+  if (!rawData || rawData.length === 0) {
     return (
       <div className="waterfall-chart">
         <h2>Impact by income decile — absolute</h2>
@@ -122,6 +155,8 @@ function WaterfallChart({ data }) {
           />
         </ComposedChart>
       </ResponsiveContainer>
+
+      <YearSlider selectedYear={internalYear} onYearChange={setInternalYear} />
     </div>
   )
 }

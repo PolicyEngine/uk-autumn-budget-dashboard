@@ -1,4 +1,6 @@
+import { useState } from 'react'
 import { ComposedChart, Bar, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ReferenceLine } from 'recharts'
+import YearSlider from './YearSlider'
 import './DistributionalChart.css'
 
 const POLICY_COLORS = {
@@ -15,7 +17,9 @@ const ALL_POLICY_NAMES = [
   'National Insurance rate reduction'
 ]
 
-function DistributionalChart({ data }) {
+function DistributionalChart({ rawData, selectedPolicies }) {
+  const [internalYear, setInternalYear] = useState(2026)
+
   const formatPercent = (value) => `${value.toFixed(2)}%`
 
   // Remove "st", "nd", "rd", "th" from decile labels
@@ -23,7 +27,36 @@ function DistributionalChart({ data }) {
     return value.replace(/st|nd|rd|th/g, '')
   }
 
-  if (!data || data.length === 0) {
+  // Build chart data for internal year
+  const POLICIES = [
+    { id: 'two_child_limit', name: '2 child limit repeal' },
+    { id: 'income_tax_increase_2pp', name: 'Income tax increase (basic and higher +2pp)' },
+    { id: 'threshold_freeze_extension', name: 'Threshold freeze extension' },
+    { id: 'ni_rate_reduction', name: 'National Insurance rate reduction' }
+  ]
+
+  const decileOrder = ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th', '10th']
+  const distributionalSelectedYear = rawData ? rawData.filter(row =>
+    parseInt(row.year) === internalYear && selectedPolicies.includes(row.reform_id)
+  ) : []
+
+  const data = decileOrder.map(decile => {
+    const dataPoint = { decile }
+    let netChange = 0
+    POLICIES.forEach(policy => {
+      const isSelected = selectedPolicies.includes(policy.id)
+      const dataRow = distributionalSelectedYear.find(row =>
+        row.reform_id === policy.id && row.decile === decile
+      )
+      const value = isSelected && dataRow ? parseFloat(dataRow.value) : 0
+      dataPoint[policy.name] = value
+      netChange += value
+    })
+    dataPoint.netChange = netChange
+    return dataPoint
+  })
+
+  if (!rawData || rawData.length === 0) {
     return (
       <div className="distributional-chart">
         <h2>Impact by income decile — relative</h2>
@@ -128,6 +161,8 @@ function DistributionalChart({ data }) {
           />
         </ComposedChart>
       </ResponsiveContainer>
+
+      <YearSlider selectedYear={internalYear} onYearChange={setInternalYear} />
     </div>
   )
 }

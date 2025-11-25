@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState, useMemo } from 'react'
 import * as d3 from 'd3'
+import YearSlider from './YearSlider'
 import './ConstituencyMap.css'
 
 
-export default function ConstituencyMap({ selectedPolicies = [], selectedYear = 2026 }) {
+export default function ConstituencyMap({ selectedPolicies = [] }) {
+  const [internalYear, setInternalYear] = useState(2026)
   const svgRef = useRef(null)
   const tooltipRef = useRef(null)
   const [selectedConstituency, setSelectedConstituency] = useState(null)
@@ -81,7 +83,7 @@ export default function ConstituencyMap({ selectedPolicies = [], selectedYear = 
 
     rawData.forEach(row => {
       if (!selectedPolicies.includes(row.reform_id)) return
-      if (row.year !== selectedYear) return
+      if (row.year !== internalYear) return
 
       const key = row.constituency_code
       if (!constituencyMap.has(key)) {
@@ -99,7 +101,7 @@ export default function ConstituencyMap({ selectedPolicies = [], selectedYear = 
     })
 
     return Array.from(constituencyMap.values())
-  }, [rawData, selectedPolicies, selectedYear])
+  }, [rawData, selectedPolicies, internalYear])
 
   // Render map
   useEffect(() => {
@@ -527,6 +529,8 @@ export default function ConstituencyMap({ selectedPolicies = [], selectedYear = 
           )}
         </div>
       </div>
+
+      <YearSlider selectedYear={internalYear} onYearChange={setInternalYear} />
     </div>
   )
 }

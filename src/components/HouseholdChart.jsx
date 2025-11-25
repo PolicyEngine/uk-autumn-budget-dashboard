@@ -1,8 +1,22 @@
 import { useMemo, useState, useRef, useCallback } from 'react'
 import { ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine, Cell } from 'recharts'
+import YearSlider from './YearSlider'
 import './HouseholdChart.css'
 
-function HouseholdChart({ data }) {
+function HouseholdChart({ rawData, selectedPolicies }) {
+  const [internalYear, setInternalYear] = useState(2026)
+
+  // Filter data by internal year and selected policies
+  const data = useMemo(() => {
+    if (!rawData) return []
+    return rawData
+      .filter(row => selectedPolicies.includes(row.reform_id) && parseInt(row.year) === internalYear)
+      .map(row => ({
+        baseline_income: parseFloat(row.baseline_income),
+        income_change: parseFloat(row.income_change),
+        household_weight: parseFloat(row.household_weight)
+      }))
+  }, [rawData, selectedPolicies, internalYear])
   // Zoom state
   const [zoomDomain, setZoomDomain] = useState(null)
   const [selectionBox, setSelectionBox] = useState(null)
@@ -70,12 +84,11 @@ function HouseholdChart({ data }) {
       return zoomDomain
     }
 
-    // Add padding to base domain
-    const xPadding = (dataExtent.xMax - dataExtent.xMin) * 0.1
+    // Fixed x-axis domain from -5k to 10k, y-axis with padding
     const yPadding = (dataExtent.yMax) * 0.05 // 5% padding on top
 
     return {
-      xDomain: [dataExtent.xMin - xPadding, dataExtent.xMax + xPadding],
+      xDomain: [-5000, 10000],
       yDomain: [0, dataExtent.yMax + yPadding] // Y-axis starts at 0
     }
   }, [dataExtent, zoomDomain])
@@ -212,10 +225,9 @@ function HouseholdChart({ data }) {
     const newXDomain = [xCenter - xRange / 2, xCenter + xRange / 2]
     const newYDomain = [yCenter - yRange / 2, yCenter + yRange / 2]
 
-    // Don't zoom out beyond the initial view
-    const xPadding = (dataExtent.xMax - dataExtent.xMin) * 0.1
+    // Don't zoom out beyond the initial view (fixed x-axis: -5k to 10k)
     const yPadding = (dataExtent.yMax) * 0.05
-    const maxXDomain = [dataExtent.xMin - xPadding, dataExtent.xMax + xPadding]
+    const maxXDomain = [-5000, 10000]
     const maxYDomain = [0, dataExtent.yMax + yPadding] // Y starts at 0
 
     if (newXDomain[0] <= maxXDomain[0] && newXDomain[1] >= maxXDomain[1] &&
@@ -435,6 +447,8 @@ function HouseholdChart({ data }) {
           <span style={{ color: '#374151' }}>No change ({stats?.noChange.toLocaleString('en-GB')})</span>
         </div>
       </div>
+
+      <YearSlider selectedYear={internalYear} onYearChange={setInternalYear} />
     </div>
   )
 }
