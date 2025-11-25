@@ -18,10 +18,10 @@ const DEFAULT_POLICIES = [
     explanation: 'The two-child limit restricts Universal Credit and Child Tax Credit payments to a maximum number of children per family. Removing this limit would allow families to claim child-related benefit payments for all children without a cap.'
   },
   {
-    id: 'basic_rate_increase_1p',
-    name: 'Basic rate increase by 1 percentage point',
-    description: 'Increase the basic rate of income tax by 1 percentage point',
-    explanation: 'This policy increases the basic rate of income tax. The basic rate applies to income between the personal allowance and the higher rate threshold.'
+    id: 'income_tax_increase_2pp',
+    name: 'Income tax increase (basic and higher +2pp)',
+    description: 'Raise basic and higher rates by 2 percentage points',
+    explanation: 'This policy increases both the basic rate of income tax (from 20% to 22%) and the higher rate (from 40% to 42%). The basic rate applies to income between the personal allowance and the higher rate threshold, whilst the higher rate applies to income above that threshold.'
   },
   {
     id: 'threshold_freeze_extension',

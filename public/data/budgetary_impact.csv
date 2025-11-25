@@ -3,10 +3,10 @@ two_child_limit,2 child limit repeal,2026,-2.8819921057197857
 two_child_limit,2 child limit repeal,2027,-3.0683604840200744
 two_child_limit,2 child limit repeal,2028,-3.3231352852394895
 two_child_limit,2 child limit repeal,2029,-3.4270109442590386
-basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,7.233691581740411
-basic_rate_increase_1p,Basic rate increase by 1 percentage point,2027,7.466576085896896
-basic_rate_increase_1p,Basic rate increase by 1 percentage point,2028,7.693705536806974
-basic_rate_increase_1p,Basic rate increase by 1 percentage point,2029,7.948328986735555
+income_tax_increase_2pp,Income tax rate increase (basic and higher rates +2pp),2026,18.61144672987752
+income_tax_increase_2pp,Income tax rate increase (basic and higher rates +2pp),2027,19.306771049234122
+income_tax_increase_2pp,Income tax rate increase (basic and higher rates +2pp),2028,19.88272528914098
+income_tax_increase_2pp,Income tax rate increase (basic and higher rates +2pp),2029,20.547916432131647
 threshold_freeze_extension,Threshold freeze extension,2026,0.0
 threshold_freeze_extension,Threshold freeze extension,2027,0.0
 threshold_freeze_extension,Threshold freeze extension,2028,3.4975070539414124

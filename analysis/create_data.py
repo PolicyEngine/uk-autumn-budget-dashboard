@@ -557,12 +557,15 @@ if __name__ == "__main__":
             ),
         ),
         ScenarioConfig(
-            id="basic_rate_increase_1p",
-            name="Basic rate increase by 1 percentage point",
+            id="income_tax_increase_2pp",
+            name="Income tax rate increase (basic and higher rates +2pp)",
             scenario=Scenario(
                 parameter_changes={
                     "gov.hmrc.income_tax.rates.uk[0].rate": {
-                        str(y): 0.21 for y in YEARS
+                        str(y): 0.22 for y in YEARS
+                    },
+                    "gov.hmrc.income_tax.rates.uk[1].rate": {
+                        str(y): 0.42 for y in YEARS
                     }
                 }
             ),

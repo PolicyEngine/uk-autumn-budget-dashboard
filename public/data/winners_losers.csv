@@ -43,50 +43,50 @@ two_child_limit,2 child limit repeal,2029,8,0.009027076
 two_child_limit,2 child limit repeal,2029,9,0.0
 two_child_limit,2 child limit repeal,2029,10,1.031679
 two_child_limit,2 child limit repeal,2029,all,105.87241
-basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,1,-18.672123
-basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,2,-44.05438
-basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,3,-65.14498
-basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,4,-108.75286
-basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,5,-172.24887
-basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,6,-219.33206
-basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,7,-304.13443
-basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,8,-362.09143
-basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,9,-476.29486
-basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,10,-561.5748
-basic_rate_increase_1p,Basic rate increase by 1 percentage point,2026,all,-226.05649
-basic_rate_increase_1p,Basic rate increase by 1 percentage point,2027,1,-19.642029
-basic_rate_increase_1p,Basic rate increase by 1 percentage point,2027,2,-47.065117
-basic_rate_increase_1p,Basic rate increase by 1 percentage point,2027,3,-70.00544
-basic_rate_increase_1p,Basic rate increase by 1 percentage point,2027,4,-112.34694
-basic_rate_increase_1p,Basic rate increase by 1 percentage point,2027,5,-179.21921
-basic_rate_increase_1p,Basic rate increase by 1 percentage point,2027,6,-226.44614
-basic_rate_increase_1p,Basic rate increase by 1 percentage point,2027,7,-318.95538
-basic_rate_increase_1p,Basic rate increase by 1 percentage point,2027,8,-378.85626
-basic_rate_increase_1p,Basic rate increase by 1 percentage point,2027,9,-475.00864
-basic_rate_increase_1p,Basic rate increase by 1 percentage point,2027,10,-565.4142
-basic_rate_increase_1p,Basic rate increase by 1 percentage point,2027,all,-232.45103
-basic_rate_increase_1p,Basic rate increase by 1 percentage point,2028,1,-20.42496
-basic_rate_increase_1p,Basic rate increase by 1 percentage point,2028,2,-48.534748
-basic_rate_increase_1p,Basic rate increase by 1 percentage point,2028,3,-70.99566
-basic_rate_increase_1p,Basic rate increase by 1 percentage point,2028,4,-117.43076
-basic_rate_increase_1p,Basic rate increase by 1 percentage point,2028,5,-185.97513
-basic_rate_increase_1p,Basic rate increase by 1 percentage point,2028,6,-230.5528
-basic_rate_increase_1p,Basic rate increase by 1 percentage point,2028,7,-330.11798
-basic_rate_increase_1p,Basic rate increase by 1 percentage point,2028,8,-387.87173
-basic_rate_increase_1p,Basic rate increase by 1 percentage point,2028,9,-485.70377
-basic_rate_increase_1p,Basic rate increase by 1 percentage point,2028,10,-577.01184
-basic_rate_increase_1p,Basic rate increase by 1 percentage point,2028,all,-238.58412
-basic_rate_increase_1p,Basic rate increase by 1 percentage point,2029,1,-21.18961
-basic_rate_increase_1p,Basic rate increase by 1 percentage point,2029,2,-50.59672
-basic_rate_increase_1p,Basic rate increase by 1 percentage point,2029,3,-72.466324
-basic_rate_increase_1p,Basic rate increase by 1 percentage point,2029,4,-122.10571
-basic_rate_increase_1p,Basic rate increase by 1 percentage point,2029,5,-194.1368
-basic_rate_increase_1p,Basic rate increase by 1 percentage point,2029,6,-234.69682
-basic_rate_increase_1p,Basic rate increase by 1 percentage point,2029,7,-339.4295
-basic_rate_increase_1p,Basic rate increase by 1 percentage point,2029,8,-400.0474
-basic_rate_increase_1p,Basic rate increase by 1 percentage point,2029,9,-498.21375
-basic_rate_increase_1p,Basic rate increase by 1 percentage point,2029,10,-590.6391
-basic_rate_increase_1p,Basic rate increase by 1 percentage point,2029,all,-245.3993
+income_tax_increase_2pp,Income tax rate increase (basic and higher rates +2pp),2026,1,-37.4204
+income_tax_increase_2pp,Income tax rate increase (basic and higher rates +2pp),2026,2,-88.96499
+income_tax_increase_2pp,Income tax rate increase (basic and higher rates +2pp),2026,3,-130.89859
+income_tax_increase_2pp,Income tax rate increase (basic and higher rates +2pp),2026,4,-219.49454
+income_tax_increase_2pp,Income tax rate increase (basic and higher rates +2pp),2026,5,-354.43427
+income_tax_increase_2pp,Income tax rate increase (basic and higher rates +2pp),2026,6,-453.21054
+income_tax_increase_2pp,Income tax rate increase (basic and higher rates +2pp),2026,7,-638.65063
+income_tax_increase_2pp,Income tax rate increase (basic and higher rates +2pp),2026,8,-811.7853
+income_tax_increase_2pp,Income tax rate increase (basic and higher rates +2pp),2026,9,-1152.5459
+income_tax_increase_2pp,Income tax rate increase (basic and higher rates +2pp),2026,10,-2128.557
+income_tax_increase_2pp,Income tax rate increase (basic and higher rates +2pp),2026,all,-581.6064
+income_tax_increase_2pp,Income tax rate increase (basic and higher rates +2pp),2027,1,-39.427837
+income_tax_increase_2pp,Income tax rate increase (basic and higher rates +2pp),2027,2,-95.24596
+income_tax_increase_2pp,Income tax rate increase (basic and higher rates +2pp),2027,3,-140.48506
+income_tax_increase_2pp,Income tax rate increase (basic and higher rates +2pp),2027,4,-227.44702
+income_tax_increase_2pp,Income tax rate increase (basic and higher rates +2pp),2027,5,-370.06192
+income_tax_increase_2pp,Income tax rate increase (basic and higher rates +2pp),2027,6,-469.38446
+income_tax_increase_2pp,Income tax rate increase (basic and higher rates +2pp),2027,7,-671.8353
+income_tax_increase_2pp,Income tax rate increase (basic and higher rates +2pp),2027,8,-855.98065
+income_tax_increase_2pp,Income tax rate increase (basic and higher rates +2pp),2027,9,-1164.7576
+income_tax_increase_2pp,Income tax rate increase (basic and higher rates +2pp),2027,10,-2168.985
+income_tax_increase_2pp,Income tax rate increase (basic and higher rates +2pp),2027,all,-601.09784
+income_tax_increase_2pp,Income tax rate increase (basic and higher rates +2pp),2028,1,-40.990257
+income_tax_increase_2pp,Income tax rate increase (basic and higher rates +2pp),2028,2,-98.467575
+income_tax_increase_2pp,Income tax rate increase (basic and higher rates +2pp),2028,3,-142.68806
+income_tax_increase_2pp,Income tax rate increase (basic and higher rates +2pp),2028,4,-237.77565
+income_tax_increase_2pp,Income tax rate increase (basic and higher rates +2pp),2028,5,-384.27667
+income_tax_increase_2pp,Income tax rate increase (basic and higher rates +2pp),2028,6,-478.58603
+income_tax_increase_2pp,Income tax rate increase (basic and higher rates +2pp),2028,7,-696.82416
+income_tax_increase_2pp,Income tax rate increase (basic and higher rates +2pp),2028,8,-865.85474
+income_tax_increase_2pp,Income tax rate increase (basic and higher rates +2pp),2028,9,-1204.5569
+income_tax_increase_2pp,Income tax rate increase (basic and higher rates +2pp),2028,10,-2207.4375
+income_tax_increase_2pp,Income tax rate increase (basic and higher rates +2pp),2028,all,-616.5791
+income_tax_increase_2pp,Income tax rate increase (basic and higher rates +2pp),2029,1,-42.49901
+income_tax_increase_2pp,Income tax rate increase (basic and higher rates +2pp),2029,2,-102.68892
+income_tax_increase_2pp,Income tax rate increase (basic and higher rates +2pp),2029,3,-145.90079
+income_tax_increase_2pp,Income tax rate increase (basic and higher rates +2pp),2029,4,-250.92
+income_tax_increase_2pp,Income tax rate increase (basic and higher rates +2pp),2029,5,-401.2454
+income_tax_increase_2pp,Income tax rate increase (basic and higher rates +2pp),2029,6,-488.4653
+income_tax_increase_2pp,Income tax rate increase (basic and higher rates +2pp),2029,7,-717.79614
+income_tax_increase_2pp,Income tax rate increase (basic and higher rates +2pp),2029,8,-908.05725
+income_tax_increase_2pp,Income tax rate increase (basic and higher rates +2pp),2029,9,-1225.1498
+income_tax_increase_2pp,Income tax rate increase (basic and higher rates +2pp),2029,10,-2256.0615
+income_tax_increase_2pp,Income tax rate increase (basic and higher rates +2pp),2029,all,-634.4168
 threshold_freeze_extension,Threshold freeze extension,2026,1,0.0
 threshold_freeze_extension,Threshold freeze extension,2026,2,0.0
 threshold_freeze_extension,Threshold freeze extension,2026,3,0.0
