@@ -97,7 +97,7 @@ function EmploymentIncomeChart({ selectedPolicies, selectedYear = 2026 }) {
     <div className="employment-income-chart">
       <h2>Household net income analysis</h2>
       <p className="chart-description">
-        Model household with 2 adults and{' '}
+        This chart models a household with 2 adults and{' '}
         <select
           id="num-children"
           style={{

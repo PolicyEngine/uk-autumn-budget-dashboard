@@ -294,7 +294,7 @@ function HouseholdChart({ rawData, selectedPolicies }) {
     <div className="household-chart">
       <h2>Household income impacts</h2>
       <p className="chart-description">
-        Net income change plotted against baseline income for 1,000 sampled households.
+        This chart plots net income change against baseline income for 1,000 sampled households.
         Green dots indicate gains, red shows losses, and grey shows minimal change.
         Dot size represents household weight in the population.
       </p>

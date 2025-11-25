@@ -54,7 +54,7 @@ function WaterfallChart({ rawData, selectedPolicies }) {
       <div className="waterfall-chart">
         <h2>Absolute impact by income decile</h2>
         <p className="chart-description">
-          Absolute change in net income by decile, measured in pounds per year.
+          This chart shows the absolute change in net income by decile, measured in pounds per year.
         </p>
         <div style={{ padding: '60px 20px', textAlign: 'center', color: '#666', backgroundColor: '#f9f9f9', borderRadius: '8px' }}>
           <p style={{ margin: 0, fontSize: '0.95rem' }}>No data available yet for this metric</p>
@@ -76,7 +76,7 @@ function WaterfallChart({ rawData, selectedPolicies }) {
     <div className="waterfall-chart">
       <h2>Absolute impact by income decile</h2>
       <p className="chart-description">
-        Absolute change in net income by decile, measured in pounds per year. This shows the actual cash amount gained or lost by households in each decile.
+        This chart shows the absolute change in net income by decile, measured in pounds per year. This represents the actual cash amount gained or lost by households in each decile.
       </p>
 
       <ResponsiveContainer width="100%" height={420}>
