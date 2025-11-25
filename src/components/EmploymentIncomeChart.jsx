@@ -82,7 +82,7 @@ function EmploymentIncomeChart({ selectedPolicies, selectedYear = 2026 }) {
   if (loading) {
     return (
       <div className="employment-income-chart">
-        <h2>Employment income to net income</h2>
+        <h2>Household net income analysis</h2>
         <p className="chart-description">
           Relationship between household head employment income and total household net income
         </p>
@@ -95,7 +95,7 @@ function EmploymentIncomeChart({ selectedPolicies, selectedYear = 2026 }) {
 
   return (
     <div className="employment-income-chart">
-      <h2>Employment income to net income</h2>
+      <h2>Household net income analysis</h2>
       <p className="chart-description">
         Model household with 2 adults and{' '}
         <select
