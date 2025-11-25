@@ -377,7 +377,11 @@ export default function ConstituencyMap({ selectedPolicies = [], selectedYear = 
       {/* Header section */}
       <div className="map-header">
         <h2>Parliamentary constituencies analysis</h2>
-        <p className="chart-description">Geographic variation in household income impacts across all 650 UK constituencies</p>
+      <p className="chart-description">
+          Geographic variation in household income impacts across all 650 UK constituencies.
+          The map shows the average annual change in household net income for each constituency,
+          with shading indicating gains (green) or losses (red) as a percentage of baseline income.
+        </p>
       </div>
 
       {/* Search and legend in top bar */}

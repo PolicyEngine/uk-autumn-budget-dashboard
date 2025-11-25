@@ -285,9 +285,9 @@ function HouseholdChart({ data }) {
     <div className="household-chart">
       <h2>Income changes by household</h2>
       <p className="chart-description">
-        Net income change for each household plotted against their baseline income. Points above zero represent gains; points below represent losses.
-        {stats && ` Showing ${stats.total.toLocaleString('en-GB')} sampled households: ${stats.gains.toLocaleString('en-GB')} with gains, ${stats.losses.toLocaleString('en-GB')} with losses, and ${stats.noChange.toLocaleString('en-GB')} unchanged.`}
-        {' '}Drag to select an area to zoom in.
+        Net income change plotted against baseline income for 1,000 sampled households.
+        Green dots indicate gains, red shows losses, and grey shows minimal change.
+        Dot size represents household weight in the population.
       </p>
 
       <div

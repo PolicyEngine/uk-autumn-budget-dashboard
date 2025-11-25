@@ -28,7 +28,7 @@ function DistributionalChart({ data }) {
       <div className="distributional-chart">
         <h2>Impact by income decile — relative</h2>
         <p className="chart-description">
-          Average percentage change in net income for each income decile, from the poorest 10% (1st) to the richest 10% (10th) of households.
+          Average percentage change in net income for each income decile, from the 1st (lowest income) to the 10th (highest income).
         </p>
         <div style={{ padding: '60px 20px', textAlign: 'center', color: '#666', backgroundColor: '#f9f9f9', borderRadius: '8px' }}>
           <p style={{ margin: 0, fontSize: '0.95rem' }}>No data available yet for this metric</p>
@@ -48,7 +48,9 @@ function DistributionalChart({ data }) {
     <div className="distributional-chart">
       <h2>Impact by income decile — relative</h2>
       <p className="chart-description">
-        Average percentage change in net income for each income decile, from the poorest 10% (1st) to the richest 10% (10th) of households.
+        Average percentage change in net income for each income decile, from the 1st (lowest income)
+        to the 10th (highest income). This shows the proportional impact of reforms
+        relative to baseline income. Positive values indicate income gains; negative values indicate losses.
       </p>
 
       <ResponsiveContainer width="100%" height={420}>

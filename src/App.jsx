@@ -67,8 +67,8 @@ function App() {
       const policies = policiesParam.split(',')
       setSelectedPolicies(policies)
     } else {
-      // Select only two_child_limit by default (only policy with data)
-      setSelectedPolicies(['two_child_limit'])
+      // Select all policies by default
+      setSelectedPolicies(DEFAULT_POLICIES.map(p => p.id))
     }
 
     if (yearParam) {
@@ -367,7 +367,7 @@ function App() {
                   <p>
                     Use the policy selector in the top left to choose which budget reforms to analyse.
                     This dashboard provides a comprehensive analysis of the selected policy reforms.
-                    The metrics below show the immediate fiscal impact and long-term effects on government finances,
+                    The metrics below show the immediate fiscal impact and long-term effects on Government finances,
                     alongside distributional outcomes including changes to inequality and poverty rates.
                     Use the visualisations to explore how these policies affect different households across
                     income levels, regions, and demographic groups.
@@ -393,7 +393,7 @@ function App() {
                 {/* Section: Who is affected */}
                 <div className="section-header">
                   <h2>Household and fiscal impacts</h2>
-                  <p>How selected policies affect individual households and government revenues over time</p>
+                  <p>How selected policies affect individual households and Government revenues over time</p>
                 </div>
                 <div className="primary-charts">
                   <EmploymentIncomeChart selectedPolicies={selectedPolicies} selectedYear={selectedYear} />

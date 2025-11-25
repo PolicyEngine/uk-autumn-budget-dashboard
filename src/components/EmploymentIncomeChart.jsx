@@ -97,7 +97,37 @@ function EmploymentIncomeChart({ selectedPolicies, selectedYear = 2026 }) {
     <div className="employment-income-chart">
       <h2>Employment income to net income</h2>
       <p className="chart-description">
-        Relationship between household head employment income and total household net income
+        Model household with 2 adults and{' '}
+        <select
+          id="num-children"
+          style={{
+            padding: '4px 10px',
+            fontSize: '0.95rem',
+            border: '1px solid #cbd5e1',
+            borderRadius: '6px',
+            backgroundColor: 'white',
+            color: '#319795',
+            fontWeight: '500',
+            cursor: 'pointer',
+            outline: 'none',
+            transition: 'border-color 0.2s',
+            boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
+            display: 'inline-block',
+            verticalAlign: 'middle',
+            margin: '0 4px'
+          }}
+          onFocus={(e) => e.target.style.borderColor = '#319795'}
+          onBlur={(e) => e.target.style.borderColor = '#cbd5e1'}
+          defaultValue="3"
+        >
+          <option value="0">0</option>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+        </select>
+        {' '}children. Baseline (grey) shows current policy, reform (teal) shows impact after selected changes.
       </p>
 
       <ResponsiveContainer width="100%" height={400}>
