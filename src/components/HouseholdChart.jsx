@@ -279,7 +279,7 @@ function HouseholdChart({ rawData, selectedPolicies }) {
   if (!data || data.length === 0) {
     return (
       <div className="household-chart">
-        <h2>Income changes by household</h2>
+        <h2>Household income impacts</h2>
         <p className="chart-description">
           Net income change for each household plotted against their baseline income. Points above zero represent gains; points below represent losses.
         </p>
@@ -292,7 +292,7 @@ function HouseholdChart({ rawData, selectedPolicies }) {
 
   return (
     <div className="household-chart">
-      <h2>Income changes by household</h2>
+      <h2>Household income impacts</h2>
       <p className="chart-description">
         Net income change plotted against baseline income for 1,000 sampled households.
         Green dots indicate gains, red shows losses, and grey shows minimal change.
