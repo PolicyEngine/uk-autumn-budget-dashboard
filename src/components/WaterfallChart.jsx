@@ -7,14 +7,16 @@ const POLICY_COLORS = {
   '2 child limit repeal': '#319795',
   'Income tax increase (basic and higher +2pp)': '#5A8FB8',
   'Threshold freeze extension': '#B8875A',
-  'National Insurance rate reduction': '#5FB88A'
+  'National Insurance rate reduction': '#5FB88A',
+  'Zero-rate VAT on domestic energy': '#4A7BA7'
 }
 
 const ALL_POLICY_NAMES = [
   '2 child limit repeal',
   'Income tax increase (basic and higher +2pp)',
   'Threshold freeze extension',
-  'National Insurance rate reduction'
+  'National Insurance rate reduction',
+  'Zero-rate VAT on domestic energy'
 ]
 
 function WaterfallChart({ rawData, selectedPolicies }) {
@@ -25,7 +27,8 @@ function WaterfallChart({ rawData, selectedPolicies }) {
     { id: 'two_child_limit', name: '2 child limit repeal' },
     { id: 'income_tax_increase_2pp', name: 'Income tax increase (basic and higher +2pp)' },
     { id: 'threshold_freeze_extension', name: 'Threshold freeze extension' },
-    { id: 'ni_rate_reduction', name: 'National Insurance rate reduction' }
+    { id: 'ni_rate_reduction', name: 'National Insurance rate reduction' },
+    { id: 'zero_vat_energy', name: 'Zero-rate VAT on domestic energy' }
   ]
 
   const waterfallDeciles = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10']

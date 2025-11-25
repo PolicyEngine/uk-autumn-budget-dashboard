@@ -127,7 +127,7 @@ function EmploymentIncomeChart({ selectedPolicies, selectedYear = 2026 }) {
           <option value="4">4</option>
           <option value="5">5</option>
         </select>
-        {' '}children in 2026-27. Baseline (grey) shows current policy, reform (teal) shows impact after selected changes.
+        {' '}children in 2026-27. Baseline shows current policy, reform shows impact after selected changes.
       </p>
 
       <ResponsiveContainer width="100%" height={400}>

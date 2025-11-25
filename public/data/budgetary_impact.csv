@@ -1,4 +1,8 @@
 reform_id,reform_name,year,value
+zero_vat_energy,Zero-rate VAT on domestic energy,2026,-3.0669161039233734
+zero_vat_energy,Zero-rate VAT on domestic energy,2027,-3.139826788759489
+zero_vat_energy,Zero-rate VAT on domestic energy,2028,-3.2154378101898318
+zero_vat_energy,Zero-rate VAT on domestic energy,2029,-3.2941755405727413
 two_child_limit,2 child limit repeal,2026,-2.8819921057197857
 two_child_limit,2 child limit repeal,2027,-3.0683604840200744
 two_child_limit,2 child limit repeal,2028,-3.3231352852394895

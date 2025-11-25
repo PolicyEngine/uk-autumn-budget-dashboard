@@ -44,6 +44,9 @@ function HouseholdChart({ rawData, selectedPolicies }) {
     const maxWeight = data.reduce((max, d) => Math.max(max, d.household_weight), 0)
     const scaleSize = (weight) => Math.max(4, Math.min(15, (weight / maxWeight) * 15))
 
+    // Scale household weights for opacity (0.5-0.95 range for better visibility)
+    const scaleOpacity = (weight) => Math.max(0.5, Math.min(0.95, 0.5 + (weight / maxWeight) * 0.45))
+
     // Calculate data extent for zoom
     const xValues = sampledData.map(d => d.income_change)
     const yValues = sampledData.map(d => d.baseline_income)
@@ -54,11 +57,12 @@ function HouseholdChart({ rawData, selectedPolicies }) {
       yMax: yValues.reduce((max, val) => Math.max(max, val), -Infinity)
     }
 
-    // Prepare data with category and size
+    // Prepare data with category, size, and opacity
     const processedData = sampledData.map(d => ({
       x: d.income_change,
       y: d.baseline_income,
       size: scaleSize(d.household_weight),
+      opacity: scaleOpacity(d.household_weight),
       category: d.income_change > 0.01 ? 'gains' :
                 d.income_change < -0.01 ? 'losses' : 'noChange',
       weight: d.household_weight
@@ -413,7 +417,7 @@ function HouseholdChart({ rawData, selectedPolicies }) {
                 <Cell
                   key={`cell-${index}`}
                   fill={getColor(entry.category)}
-                  fillOpacity={0.7}
+                  fillOpacity={entry.opacity}
                   strokeWidth={0.5}
                   stroke={entry.category === 'gains' ? '#2C7A7B' :
                           entry.category === 'losses' ? '#C53030' : '#6B7280'}

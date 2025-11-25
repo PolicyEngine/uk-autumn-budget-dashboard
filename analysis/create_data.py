@@ -13,6 +13,7 @@ import numpy as np
 import pandas as pd
 from microdf import MicroSeries
 from policyengine_uk import Microsimulation, Scenario, Simulation
+from policyengine_uk.model_api import Variable, YEAR, Household
 from pydantic import BaseModel
 from rich.console import Console
 from rich.progress import Progress, SpinnerColumn, TextColumn
@@ -540,8 +541,60 @@ def run(scenarios: list[ScenarioConfig]) -> None:
     console.print(f"Saved results to {OUTPUT_DIR}/")
 
 
+def zero_rate_energy_vat(sim):
+    """
+    Structural reform: Zero-rate VAT on domestic energy consumption.
+
+    This reform removes the 5% VAT on domestic energy bills by:
+    1. Calculating baseline VAT using the standard formula
+    2. Extracting VAT embedded in energy spending: energy × (0.05/1.05)
+    3. Subtracting energy VAT from total VAT
+
+    Based on Guardian article (2 Nov 2025) and Nesta report analysis:
+    - Estimated revenue loss: £2.5-3.0 billion per year
+    - Average household saving: £86-95 per year
+    """
+
+    class vat(Variable):
+        label = "VAT (reformed to zero-rate energy)"
+        entity = Household
+        definition_period = YEAR
+        value_type = float
+        unit = "currency-GBP"
+
+        def formula(household, period, parameters):
+            # Calculate baseline VAT using the original formula
+            full_rate_consumption = household("full_rate_vat_consumption", period)
+            reduced_rate_consumption = household("reduced_rate_vat_consumption", period)
+            p = parameters(period).gov
+
+            baseline_vat = (
+                full_rate_consumption * p.hmrc.vat.standard_rate
+                + reduced_rate_consumption * p.hmrc.vat.reduced_rate
+            ) / p.simulation.microdata_vat_coverage
+
+            # Calculate VAT on energy (energy spending includes VAT)
+            domestic_energy = household("domestic_energy_consumption", period)
+            energy_vat = domestic_energy * (p.hmrc.vat.reduced_rate / (1 + p.hmrc.vat.reduced_rate))
+
+            # Reformed VAT = baseline VAT - VAT on energy
+            return baseline_vat - energy_vat
+
+    # Update the VAT variable with the reformed calculation
+    sim.tax_benefit_system.update_variable(vat)
+
+    return sim
+
+
 if __name__ == "__main__":
     scenarios = [
+        ScenarioConfig(
+            id="zero_vat_energy",
+            name="Zero-rate VAT on domestic energy",
+            scenario=Scenario(
+                simulation_modifier=zero_rate_energy_vat
+            ),
+        ),
         ScenarioConfig(
             id="two_child_limit",
             name="2 child limit repeal",

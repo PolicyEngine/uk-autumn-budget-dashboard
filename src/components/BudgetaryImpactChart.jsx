@@ -5,14 +5,16 @@ const POLICY_COLORS = {
   '2 child limit repeal': '#319795',
   'Income tax increase (basic and higher +2pp)': '#5A8FB8',
   'Threshold freeze extension': '#B8875A',
-  'National Insurance rate reduction': '#5FB88A'
+  'National Insurance rate reduction': '#5FB88A',
+  'Zero-rate VAT on domestic energy': '#4A7BA7'
 }
 
 const ALL_POLICY_NAMES = [
   '2 child limit repeal',
   'Income tax increase (basic and higher +2pp)',
   'Threshold freeze extension',
-  'National Insurance rate reduction'
+  'National Insurance rate reduction',
+  'Zero-rate VAT on domestic energy'
 ]
 
 function BudgetaryImpactChart({ data }) {

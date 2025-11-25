@@ -1,4 +1,8 @@
 reform_id,reform_name,year,people_affected,gini_change,poverty_change_pp,poverty_change_pct
+zero_vat_energy,Zero-rate VAT on domestic energy,2026,99.48722439464261,-0.001683334993125663,0.0,0.0
+zero_vat_energy,Zero-rate VAT on domestic energy,2027,99.48603179540702,-0.0016983298621262124,0.0,0.0
+zero_vat_energy,Zero-rate VAT on domestic energy,2028,99.48424116504827,-0.0017029509425782372,0.0,0.0
+zero_vat_energy,Zero-rate VAT on domestic energy,2029,99.48222511067372,-0.0017140106289902054,0.0,0.0
 two_child_limit,2 child limit repeal,2026,4.406003722868182,-0.005241476999223332,-0.89126396,-7.5509176
 two_child_limit,2 child limit repeal,2027,4.577575924098514,-0.005371398779193052,-0.8807459,-7.4252577
 two_child_limit,2 child limit repeal,2028,4.858383135478726,-0.00564367769364365,-0.8696356,-7.2985573

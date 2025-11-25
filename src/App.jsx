@@ -19,7 +19,7 @@ const DEFAULT_POLICIES = [
   {
     id: 'income_tax_increase_2pp',
     name: 'Income tax increase (basic and higher +2pp)',
-    description: 'Raise basic and higher rates by 2 percentage points',
+    description: 'Raise basic and higher rates by 2 pp',
     explanation: 'This policy increases the basic income tax rate from 20% to 22% and the higher rate from 40% to 42%. Income tax applies to taxable income after pension contributions and other deductions.'
   },
   {
@@ -33,6 +33,12 @@ const DEFAULT_POLICIES = [
     name: 'National Insurance rate reduction',
     description: 'Reduce the main National Insurance rate for employees',
     explanation: 'This policy reduces the main employee National Insurance contribution rate from 8% to 6%. National Insurance applies to gross earnings before pension contributions, unlike income tax which applies after deductions.'
+  },
+  {
+    id: 'zero_vat_energy',
+    name: 'Zero-rate VAT on domestic energy',
+    description: 'Remove 5% VAT from energy bills',
+    explanation: 'This policy removes the 5% VAT currently charged on domestic energy bills. Currently, UK households pay VAT at a reduced rate of 5% on electricity and gas consumption.'
   }
 ]
 

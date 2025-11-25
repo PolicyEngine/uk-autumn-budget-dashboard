@@ -1,4 +1,44 @@
 reform_id,reform_name,year,decile,value
+zero_vat_energy,Zero-rate VAT on domestic energy,2026,1st,0.5021078
+zero_vat_energy,Zero-rate VAT on domestic energy,2026,2nd,0.36505565
+zero_vat_energy,Zero-rate VAT on domestic energy,2026,3rd,0.26620677
+zero_vat_energy,Zero-rate VAT on domestic energy,2026,4th,0.24012995
+zero_vat_energy,Zero-rate VAT on domestic energy,2026,5th,0.2142455
+zero_vat_energy,Zero-rate VAT on domestic energy,2026,6th,0.21367702
+zero_vat_energy,Zero-rate VAT on domestic energy,2026,7th,0.18513966
+zero_vat_energy,Zero-rate VAT on domestic energy,2026,8th,0.18867901
+zero_vat_energy,Zero-rate VAT on domestic energy,2026,9th,0.15733917
+zero_vat_energy,Zero-rate VAT on domestic energy,2026,10th,0.098492086
+zero_vat_energy,Zero-rate VAT on domestic energy,2027,1st,0.5094046
+zero_vat_energy,Zero-rate VAT on domestic energy,2027,2nd,0.3745379
+zero_vat_energy,Zero-rate VAT on domestic energy,2027,3rd,0.26127785
+zero_vat_energy,Zero-rate VAT on domestic energy,2027,4th,0.24259244
+zero_vat_energy,Zero-rate VAT on domestic energy,2027,5th,0.21898814
+zero_vat_energy,Zero-rate VAT on domestic energy,2027,6th,0.21499395
+zero_vat_energy,Zero-rate VAT on domestic energy,2027,7th,0.18677086
+zero_vat_energy,Zero-rate VAT on domestic energy,2027,8th,0.1902877
+zero_vat_energy,Zero-rate VAT on domestic energy,2027,9th,0.15833798
+zero_vat_energy,Zero-rate VAT on domestic energy,2027,10th,0.099411465
+zero_vat_energy,Zero-rate VAT on domestic energy,2028,1st,0.5115917
+zero_vat_energy,Zero-rate VAT on domestic energy,2028,2nd,0.38044927
+zero_vat_energy,Zero-rate VAT on domestic energy,2028,3rd,0.26523137
+zero_vat_energy,Zero-rate VAT on domestic energy,2028,4th,0.24141331
+zero_vat_energy,Zero-rate VAT on domestic energy,2028,5th,0.2192023
+zero_vat_energy,Zero-rate VAT on domestic energy,2028,6th,0.21726903
+zero_vat_energy,Zero-rate VAT on domestic energy,2028,7th,0.18855177
+zero_vat_energy,Zero-rate VAT on domestic energy,2028,8th,0.18983448
+zero_vat_energy,Zero-rate VAT on domestic energy,2028,9th,0.16066276
+zero_vat_energy,Zero-rate VAT on domestic energy,2028,10th,0.09925606
+zero_vat_energy,Zero-rate VAT on domestic energy,2029,1st,0.5199864
+zero_vat_energy,Zero-rate VAT on domestic energy,2029,2nd,0.37843072
+zero_vat_energy,Zero-rate VAT on domestic energy,2029,3rd,0.2720823
+zero_vat_energy,Zero-rate VAT on domestic energy,2029,4th,0.24124515
+zero_vat_energy,Zero-rate VAT on domestic energy,2029,5th,0.22078906
+zero_vat_energy,Zero-rate VAT on domestic energy,2029,6th,0.21542004
+zero_vat_energy,Zero-rate VAT on domestic energy,2029,7th,0.19216731
+zero_vat_energy,Zero-rate VAT on domestic energy,2029,8th,0.1893604
+zero_vat_energy,Zero-rate VAT on domestic energy,2029,9th,0.16180892
+zero_vat_energy,Zero-rate VAT on domestic energy,2029,10th,0.09921655
 two_child_limit,2 child limit repeal,2026,1st,1.0737975
 two_child_limit,2 child limit repeal,2026,2nd,1.5120655
 two_child_limit,2 child limit repeal,2026,3rd,0.46132925
