@@ -99,6 +99,7 @@ function WaterfallChart({ rawData, selectedPolicies }) {
             }}
           />
           <YAxis
+            domain={[-3000, 1000]}
             tickFormatter={formatCurrency}
             tick={{ fontSize: 11, fill: '#666' }}
             label={{

@@ -105,6 +105,7 @@ function DistributionalChart({ rawData, selectedPolicies }) {
             }}
           />
           <YAxis
+            domain={[-3, 3]}
             label={{
               value: 'Percentage change in net income (%)',
               angle: -90,

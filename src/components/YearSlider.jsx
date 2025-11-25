@@ -13,8 +13,9 @@ function YearSlider({ selectedYear, onYearChange }) {
         onYearChange((prevYear) => {
           const currentIndex = YEARS.indexOf(prevYear)
           if (currentIndex >= YEARS.length - 1) {
-            // Loop back to the beginning
-            return YEARS[0]
+            // Stop playing when reaching the end
+            setIsPlaying(false)
+            return prevYear
           }
           return YEARS[currentIndex + 1]
         })
@@ -40,6 +41,10 @@ function YearSlider({ selectedYear, onYearChange }) {
   }
 
   const handlePlayPause = () => {
+    // If at the last year and clicking play, restart from beginning
+    if (!isPlaying && currentIndex >= YEARS.length - 1) {
+      onYearChange(YEARS[0])
+    }
     setIsPlaying(!isPlaying)
   }
 

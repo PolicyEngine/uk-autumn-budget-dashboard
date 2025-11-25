@@ -84,12 +84,10 @@ function HouseholdChart({ rawData, selectedPolicies }) {
       return zoomDomain
     }
 
-    // Fixed x-axis domain from -5k to 10k, y-axis with padding
-    const yPadding = (dataExtent.yMax) * 0.05 // 5% padding on top
-
+    // Fixed x-axis domain from -5k to 10k, y-axis from 0 to 160k
     return {
       xDomain: [-5000, 10000],
-      yDomain: [0, dataExtent.yMax + yPadding] // Y-axis starts at 0
+      yDomain: [0, 160000]
     }
   }, [dataExtent, zoomDomain])
 
@@ -225,10 +223,9 @@ function HouseholdChart({ rawData, selectedPolicies }) {
     const newXDomain = [xCenter - xRange / 2, xCenter + xRange / 2]
     const newYDomain = [yCenter - yRange / 2, yCenter + yRange / 2]
 
-    // Don't zoom out beyond the initial view (fixed x-axis: -5k to 10k)
-    const yPadding = (dataExtent.yMax) * 0.05
+    // Don't zoom out beyond the initial view (fixed axes)
     const maxXDomain = [-5000, 10000]
-    const maxYDomain = [0, dataExtent.yMax + yPadding] // Y starts at 0
+    const maxYDomain = [0, 160000]
 
     if (newXDomain[0] <= maxXDomain[0] && newXDomain[1] >= maxXDomain[1] &&
         newYDomain[0] <= maxYDomain[0] && newYDomain[1] >= maxYDomain[1]) {
