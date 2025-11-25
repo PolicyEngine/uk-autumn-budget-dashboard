@@ -84,7 +84,7 @@ function EmploymentIncomeChart({ selectedPolicies, selectedYear = 2026 }) {
       <div className="employment-income-chart">
         <h2>Household net income analysis</h2>
         <p className="chart-description">
-          Relationship between household head employment income and total household net income in 2026-27
+          This chart shows the relationship between household head employment income and total household net income in 2026-27.
         </p>
         <div style={{ textAlign: 'center', padding: '40px', color: '#666' }}>
           Loading income curve data...

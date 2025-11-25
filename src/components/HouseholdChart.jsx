@@ -281,7 +281,7 @@ function HouseholdChart({ rawData, selectedPolicies }) {
       <div className="household-chart">
         <h2>Household income impacts</h2>
         <p className="chart-description">
-          Net income change for each household plotted against their baseline income. Points above zero represent gains; points below represent losses.
+          This chart plots net income change for each household against their baseline income. Points above zero represent gains; points below represent losses.
         </p>
         <div style={{ padding: '60px 20px', textAlign: 'center', color: '#666', backgroundColor: '#f9f9f9', borderRadius: '8px' }}>
           <p style={{ margin: 0, fontSize: '0.95rem' }}>No data available yet for this metric</p>

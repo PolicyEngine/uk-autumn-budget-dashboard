@@ -61,7 +61,7 @@ function DistributionalChart({ rawData, selectedPolicies }) {
       <div className="distributional-chart">
         <h2>Relative impact by income decile</h2>
         <p className="chart-description">
-          Percentage change in net income by decile, showing the proportional impact relative to baseline income.
+          This chart shows the percentage change in net income by decile, displaying the proportional impact relative to baseline income.
         </p>
         <div style={{ padding: '60px 20px', textAlign: 'center', color: '#666', backgroundColor: '#f9f9f9', borderRadius: '8px' }}>
           <p style={{ margin: 0, fontSize: '0.95rem' }}>No data available yet for this metric</p>
@@ -81,7 +81,7 @@ function DistributionalChart({ rawData, selectedPolicies }) {
     <div className="distributional-chart">
       <h2>Relative impact by income decile</h2>
       <p className="chart-description">
-        Percentage change in net income by decile, showing the proportional impact relative to baseline income. Positive values indicate gains; negative values indicate losses.
+        This chart shows the percentage change in net income by decile, displaying the proportional impact relative to baseline income. Positive values indicate gains; negative values indicate losses.
       </p>
 
       <ResponsiveContainer width="100%" height={420}>
