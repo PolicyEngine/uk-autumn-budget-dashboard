@@ -5,6 +5,7 @@ import DistributionalChart from './components/DistributionalChart'
 import WaterfallChart from './components/WaterfallChart'
 import ConstituencyMap from './components/ConstituencyMap'
 import EmploymentIncomeChart from './components/EmploymentIncomeChart'
+import HouseholdChart from './components/HouseholdChart'
 import './App.css'
 
 // Policy definitions
@@ -12,12 +13,14 @@ const DEFAULT_POLICIES = [
   {
     id: 'two_child_limit',
     name: '2 child limit repeal',
-    description: 'Repeal the two-child limit on benefits'
+    description: 'Repeal the two-child limit on benefits',
+    explanation: 'The two-child limit restricts Universal Credit and Child Tax Credit payments to a maximum number of children per family. Removing this limit would allow families to claim child-related benefit payments for all children without a cap.'
   },
   {
     id: 'basic_rate_increase_1p',
     name: 'Basic rate increase by 1 percentage point',
-    description: 'Increase the basic rate of income tax by 1 percentage point'
+    description: 'Increase the basic rate of income tax by 1 percentage point',
+    explanation: 'This policy increases the basic rate of income tax. The basic rate applies to income between the personal allowance and the higher rate threshold.'
   }
 ]
 
@@ -82,18 +85,21 @@ function App() {
         budgetaryRes,
         distributionalRes,
         winnersLosersRes,
-        metricsRes
+        metricsRes,
+        householdScatterRes
       ] = await Promise.all([
         fetch('/data/budgetary_impact.csv'),
         fetch('/data/distributional_impact.csv'),
         fetch('/data/winners_losers.csv'),
-        fetch('/data/metrics.csv')
+        fetch('/data/metrics.csv'),
+        fetch('/data/household_scatter.csv')
       ])
 
       const budgetaryData = parseCSV(await budgetaryRes.text())
       const distributionalData = parseCSV(await distributionalRes.text())
       const winnersLosersData = parseCSV(await winnersLosersRes.text())
       const metricsData = parseCSV(await metricsRes.text())
+      const householdScatterData = parseCSV(await householdScatterRes.text())
 
       // Filter data for selected policies
       const filteredBudgetary = budgetaryData.filter(row =>
@@ -108,6 +114,13 @@ function App() {
       const filteredMetrics = metricsData.filter(row =>
         selectedPolicies.includes(row.reform_id)
       )
+      const filteredHouseholdScatter = householdScatterData
+        .filter(row => selectedPolicies.includes(row.reform_id))
+        .map(row => ({
+          baseline_income: parseFloat(row.baseline_income),
+          income_change: parseFloat(row.income_change),
+          household_weight: parseFloat(row.household_weight)
+        }))
 
       // Build budgetary impact data for chart (2026-2029)
       // Always include all policy keys for smooth animations
@@ -196,7 +209,8 @@ function App() {
         },
         budgetData,
         distributionalData: distributionalChartData.length > 0 ? distributionalChartData : null,
-        waterfallData: waterfallData.length > 0 ? waterfallData : null
+        waterfallData: waterfallData.length > 0 ? waterfallData : null,
+        householdScatterData: filteredHouseholdScatter.length > 0 ? filteredHouseholdScatter : null
       })
     } catch (error) {
       console.error('Error loading results:', error)
@@ -331,6 +345,22 @@ function App() {
                     Use the visualisations to explore how these policies affect different households across
                     income levels, regions, and demographic groups.
                   </p>
+
+                  {/* Selected Policies Explanations */}
+                  {selectedPolicies.length > 0 && (
+                    <div className="policy-explanations-section">
+                      <h3>Selected {selectedPolicies.length === 1 ? 'policy' : 'policies'}</h3>
+                      {selectedPolicies.map(policyId => {
+                        const policy = DEFAULT_POLICIES.find(p => p.id === policyId)
+                        if (!policy) return null
+                        return (
+                          <p key={policyId}>
+                            <strong>{policy.name}:</strong> {policy.explanation}
+                          </p>
+                        )
+                      })}
+                    </div>
+                  )}
                 </div>
 
                 {/* Section: Who is affected */}
@@ -360,6 +390,9 @@ function App() {
                 </div>
                 <div className="secondary-charts">
                   <ConstituencyMap selectedPolicies={selectedPolicies} />
+                  {results.householdScatterData && (
+                    <HouseholdChart data={results.householdScatterData} />
+                  )}
                 </div>
               </>
             )}
