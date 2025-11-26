@@ -2,32 +2,36 @@ import { ComposedChart, Bar, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
 import './BudgetaryImpactChart.css'
 
 const POLICY_COLORS = {
-  // COSTS (negative impacts - distinct warm/neutral tones)
-  'Fuel duty freeze': '#D1D5DB',                   // Very light gray - cost to treasury
-  '2 child limit repeal': '#991B1B',              // Deep red - cost to treasury
-  'National Insurance rate reduction': '#A16207',  // Dark amber/gold - cost to treasury
-  'Zero-rate VAT on domestic energy': '#EA580C',   // Bright orange - VAT specific (clearly distinct from red)
+  // COSTS to treasury (good for households - teal spectrum, darker = bigger magnitude)
+  'National Insurance rate reduction': '#0F766E',  // Darkest teal (biggest ~£12bn)
+  'Zero-rate VAT on domestic energy': '#14B8A6',   // Medium teal (~£3.3bn)
+  '2 child limit repeal': '#2DD4BF',               // Light teal (~£3bn)
+  'Fuel duty freeze': '#5EEAD4',                   // Lightest teal (smallest ~£1.5bn)
 
-  // REVENUE (positive impacts - distinct cool tones)
-  'Income tax increase (basic and higher +2pp)': '#64748B',  // Lighter slate - IT specific, more visible
-  'Threshold freeze extension': '#14532D',                   // Deep forest green - revenue raiser
-  'Salary sacrifice cap': '#1E3A8A'                          // Navy blue - revenue raiser
+  // REVENUE raisers (bad for households - red spectrum, darker = bigger magnitude)
+  'Income tax increase (basic and higher +2pp)': '#991B1B',  // Darkest red (biggest ~£20bn)
+  'Threshold freeze extension': '#B91C1C',                   // Dark red (~£4-7bn)
+  'Salary sacrifice cap': '#F87171'                          // Light red (smallest ~£1.4bn)
 }
 
+// Order: biggest magnitude closest to zero line (darkest colours at zero)
 const ALL_POLICY_NAMES = [
-  '2 child limit repeal',
+  // Revenue raisers (positive for gov, red) - biggest at bottom (closest to zero), smallest at top
   'Income tax increase (basic and higher +2pp)',
   'Threshold freeze extension',
+  'Salary sacrifice cap',
+  // Costs to treasury (negative for gov, teal) - biggest at top (closest to zero), smallest at bottom
   'National Insurance rate reduction',
   'Zero-rate VAT on domestic energy',
-  'Salary sacrifice cap',
+  '2 child limit repeal',
   'Fuel duty freeze'
 ]
 
 function BudgetaryImpactChart({ data }) {
   if (!data || data.length === 0) return null
 
-  const formatCurrency = (value) => `£${value.toFixed(2)}bn`
+  const formatCurrencyTick = (value) => value < 0 ? `-£${Math.abs(value)}bn` : `£${value}bn`
+  const formatCurrencyTooltip = (value) => value < 0 ? `-£${Math.abs(value).toFixed(1)}bn` : `£${value.toFixed(1)}bn`
 
   // Check which policies have non-zero values for legend/tooltip
   const hasNonZeroValues = (policyName) => {
@@ -36,33 +40,9 @@ function BudgetaryImpactChart({ data }) {
 
   const activePolicies = ALL_POLICY_NAMES.filter(hasNonZeroValues)
 
-  // Calculate dynamic y-axis domain based on actual data
-  const calculateYAxisDomain = () => {
-    let minValue = 0
-    let maxValue = 0
-
-    data.forEach(yearData => {
-      let positiveSum = 0
-      let negativeSum = 0
-
-      ALL_POLICY_NAMES.forEach(policyName => {
-        const value = yearData[policyName] || 0
-        if (value > 0) positiveSum += value
-        else negativeSum += value
-      })
-
-      minValue = Math.min(minValue, negativeSum)
-      maxValue = Math.max(maxValue, positiveSum)
-    })
-
-    // Add 10% padding to both ends
-    const range = maxValue - minValue
-    const padding = range * 0.1
-
-    return [minValue - padding, maxValue + padding]
-  }
-
-  const yAxisDomain = calculateYAxisDomain()
+  // Fixed y-axis domain to ensure 0 is always a tick mark
+  // See: https://github.com/recharts/recharts/issues/6699 for interval={0} not working
+  const yAxisDomain = [-40, 40]
 
   return (
     <div className="budgetary-impact-chart">
@@ -91,11 +71,23 @@ function BudgetaryImpactChart({ data }) {
               dx: -30,
               style: { textAnchor: 'middle', fill: '#374151', fontSize: 12, fontWeight: 500 }
             }}
-            tickFormatter={formatCurrency}
+            tickFormatter={formatCurrencyTick}
             tick={{ fontSize: 11, fill: '#666' }}
+            interval={0}
+            ticks={(() => {
+              const [min, max] = yAxisDomain
+              const interval = max <= 20 ? 5 : 10
+              const ticks = []
+              for (let i = min; i <= max + 0.001; i += interval) {
+                ticks.push(Math.round(i))
+              }
+              // Ensure 0 is always included
+              if (!ticks.includes(0)) ticks.push(0)
+              return ticks.sort((a, b) => a - b)
+            })()}
           />
           <Tooltip
-            formatter={(value, name) => [formatCurrency(value), name === 'netImpact' ? 'Net impact' : name]}
+            formatter={(value, name) => [formatCurrencyTooltip(value), name === 'netImpact' ? 'Net impact' : name]}
             labelFormatter={(label) => `Year: ${label}`}
             contentStyle={{ background: 'white', border: '1px solid #e5e7eb', borderRadius: '6px' }}
             wrapperStyle={{ top: '-120px', left: '50%', transform: 'translateX(-50%)' }}
@@ -114,7 +106,7 @@ function BudgetaryImpactChart({ data }) {
               ...(activePolicies.length > 1 ? [{
                 value: 'Net impact',
                 type: 'line',
-                color: '#1D4044'
+                color: '#FBBF24'
               }] : [])
             ]}
           />
@@ -133,9 +125,9 @@ function BudgetaryImpactChart({ data }) {
           <Line
             type="monotone"
             dataKey="netImpact"
-            stroke="#1D4044"
-            strokeWidth={2}
-            dot={{ fill: '#1D4044', strokeWidth: 2 }}
+            stroke="#FBBF24"
+            strokeWidth={3}
+            dot={{ fill: '#FBBF24', stroke: '#92400E', strokeWidth: 2, r: 5 }}
             name="netImpact"
             animationDuration={500}
             hide={activePolicies.length <= 1}

@@ -172,9 +172,20 @@ export default function ConstituencyMap({ selectedPolicies = [] }) {
     const extent = d3.extent(aggregatedData, getValue)
     const maxAbsValue = Math.max(Math.abs(extent[0] || 0), Math.abs(extent[1] || 0)) || 1
 
+    // Custom interpolator: red -> light grey -> teal (matching chart palette)
     const colorScale = d3.scaleDiverging()
       .domain([-maxAbsValue, 0, maxAbsValue])
-      .interpolator(d3.interpolateRdYlGn)
+      .interpolator(t => {
+        if (t < 0.5) {
+          // Red to grey (losses to zero)
+          const ratio = t * 2 // 0 to 1
+          return d3.interpolateRgb('#DC2626', '#E5E7EB')(ratio)
+        } else {
+          // Grey to teal (zero to gains)
+          const ratio = (t - 0.5) * 2 // 0 to 1
+          return d3.interpolateRgb('#E5E7EB', '#14B8A6')(ratio)
+        }
+      })
 
     // Draw constituencies
     const paths = g.selectAll('path')
@@ -507,7 +518,7 @@ export default function ConstituencyMap({ selectedPolicies = [] }) {
                   color: tooltipData.average_gain >= 0 ? '#16a34a' : '#dc2626'
                 }}
               >
-                £{tooltipData.average_gain.toFixed(0)}
+                {tooltipData.average_gain < 0 ? '-' : ''}£{Math.abs(tooltipData.average_gain).toLocaleString('en-GB', { maximumFractionDigits: 0 })}
               </p>
               <p className="tooltip-label">
                 Average household impact

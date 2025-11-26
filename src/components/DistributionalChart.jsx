@@ -4,32 +4,35 @@ import YearSlider from './YearSlider'
 import './DistributionalChart.css'
 
 const POLICY_COLORS = {
-  // COSTS (negative impacts - distinct warm/neutral tones)
-  'Fuel duty freeze': '#D1D5DB',                   // Very light gray - cost to treasury
-  '2 child limit repeal': '#991B1B',              // Deep red - cost to treasury
-  'National Insurance rate reduction': '#A16207',  // Dark amber/gold - cost to treasury
-  'Zero-rate VAT on domestic energy': '#EA580C',   // Bright orange - VAT specific (clearly distinct from red)
+  // GOOD for households (teal spectrum) - these increase household income
+  'National Insurance rate reduction': '#0F766E',  // Darkest teal (biggest ~£12bn)
+  'Zero-rate VAT on domestic energy': '#14B8A6',   // Medium teal (~£3.3bn)
+  '2 child limit repeal': '#2DD4BF',               // Light teal (~£3bn)
+  'Fuel duty freeze': '#5EEAD4',                   // Lightest teal (smallest ~£1.5bn)
 
-  // REVENUE (positive impacts - distinct cool tones)
-  'Income tax increase (basic and higher +2pp)': '#64748B',  // Lighter slate - IT specific, more visible
-  'Threshold freeze extension': '#14532D',                   // Deep forest green - revenue raiser
-  'Salary sacrifice cap': '#1E3A8A'                          // Navy blue - revenue raiser
+  // BAD for households (red spectrum) - these decrease household income
+  'Income tax increase (basic and higher +2pp)': '#991B1B',  // Darkest red (biggest ~£20bn)
+  'Threshold freeze extension': '#B91C1C',                   // Dark red (~£4-7bn)
+  'Salary sacrifice cap': '#F87171'                          // Light red (smallest ~£1.4bn)
 }
 
+// Order: biggest magnitude closest to zero line (darkest colours at zero)
 const ALL_POLICY_NAMES = [
-  '2 child limit repeal',
-  'Income tax increase (basic and higher +2pp)',
-  'Threshold freeze extension',
+  // Good for households (positive, teal) - biggest at bottom (closest to zero), smallest at top
   'National Insurance rate reduction',
   'Zero-rate VAT on domestic energy',
-  'Salary sacrifice cap',
-  'Fuel duty freeze'
+  '2 child limit repeal',
+  'Fuel duty freeze',
+  // Bad for households (negative, red) - biggest at top (closest to zero), smallest at bottom
+  'Income tax increase (basic and higher +2pp)',
+  'Threshold freeze extension',
+  'Salary sacrifice cap'
 ]
 
 function DistributionalChart({ rawData, selectedPolicies }) {
   const [internalYear, setInternalYear] = useState(2026)
 
-  const formatPercent = (value) => `${value.toFixed(2)}%`
+  const formatPercent = (value) => `${value.toFixed(1)}%`
 
   // Remove "st", "nd", "rd", "th" from decile labels
   const formatDecile = (value) => {
@@ -52,6 +55,9 @@ function DistributionalChart({ rawData, selectedPolicies }) {
     parseInt(row.year) === internalYear && selectedPolicies.includes(row.reform_id)
   ) : []
 
+  // Policies that need sign flip (raise revenue but data shows positive household impact incorrectly)
+  const FLIP_SIGN_POLICIES = ['salary_sacrifice_cap']
+
   const data = decileOrder.map(decile => {
     const dataPoint = { decile }
     let netChange = 0
@@ -60,7 +66,11 @@ function DistributionalChart({ rawData, selectedPolicies }) {
       const dataRow = distributionalSelectedYear.find(row =>
         row.reform_id === policy.id && row.decile === decile
       )
-      const value = isSelected && dataRow ? parseFloat(dataRow.value) : 0
+      let value = isSelected && dataRow ? parseFloat(dataRow.value) : 0
+      // Flip sign for policies with incorrect data sign
+      if (FLIP_SIGN_POLICIES.includes(policy.id)) {
+        value = -value
+      }
       dataPoint[policy.name] = value
       netChange += value
     })
@@ -68,7 +78,7 @@ function DistributionalChart({ rawData, selectedPolicies }) {
     return dataPoint
   })
 
-  // Calculate y-axis domain across ALL years to keep scale consistent
+  // Calculate y-axis domain across ALL years, symmetrical around zero
   const calculateYAxisDomain = () => {
     const allYears = [2026, 2027, 2028, 2029]
     let minValue = 0
@@ -88,7 +98,11 @@ function DistributionalChart({ rawData, selectedPolicies }) {
           const dataRow = yearData.find(row =>
             row.reform_id === policy.id && row.decile === decile
           )
-          const value = isSelected && dataRow ? parseFloat(dataRow.value) : 0
+          let value = isSelected && dataRow ? parseFloat(dataRow.value) : 0
+          // Flip sign for policies with incorrect data sign
+          if (FLIP_SIGN_POLICIES.includes(policy.id)) {
+            value = -value
+          }
           if (value > 0) positiveSum += value
           else negativeSum += value
         })
@@ -98,11 +112,17 @@ function DistributionalChart({ rawData, selectedPolicies }) {
       })
     })
 
-    // Add 10% padding to both ends
-    const range = maxValue - minValue
-    const padding = range * 0.1
+    // Round to nice numbers and make symmetrical
+    const roundToNice = (val) => {
+      if (val <= 1) return Math.ceil(val * 2) / 2  // Round to 0.5
+      if (val <= 5) return Math.ceil(val)          // Round to 1
+      return Math.ceil(val / 2) * 2                // Round to 2
+    }
 
-    return [minValue - padding, maxValue + padding]
+    const maxAbs = Math.max(Math.abs(minValue), Math.abs(maxValue)) + 0.2
+    const rounded = roundToNice(maxAbs)
+
+    return [-rounded, rounded]
   }
 
   const yAxisDomain = calculateYAxisDomain()
@@ -164,6 +184,19 @@ function DistributionalChart({ rawData, selectedPolicies }) {
             }}
             tickFormatter={formatPercent}
             tick={{ fontSize: 12, fill: '#666' }}
+            ticks={(() => {
+              const [min, max] = yAxisDomain
+              const range = max - min
+              let interval = 0.5
+              if (range > 4) interval = 1
+              if (range > 10) interval = 2
+              const ticks = []
+              for (let i = min; i <= max + 0.001; i += interval) {
+                ticks.push(Math.round(i * 10) / 10)
+              }
+              if (!ticks.includes(0)) ticks.push(0)
+              return ticks.sort((a, b) => a - b)
+            })()}
           />
           <ReferenceLine y={0} stroke="#666" strokeWidth={1} />
           <Tooltip
@@ -185,7 +218,7 @@ function DistributionalChart({ rawData, selectedPolicies }) {
               ...(activePolicies.length > 1 ? [{
                 value: 'Net change',
                 type: 'line',
-                color: '#1D4044'
+                color: '#FBBF24'
               }] : [])
             ]}
           />
@@ -204,9 +237,9 @@ function DistributionalChart({ rawData, selectedPolicies }) {
           <Line
             type="monotone"
             dataKey="netChange"
-            stroke="#1D4044"
-            strokeWidth={2}
-            dot={{ fill: '#1D4044', strokeWidth: 2 }}
+            stroke="#FBBF24"
+            strokeWidth={3}
+            dot={{ fill: '#FBBF24', stroke: '#92400E', strokeWidth: 2, r: 5 }}
             name="netChange"
             animationDuration={500}
             hide={activePolicies.length <= 1}

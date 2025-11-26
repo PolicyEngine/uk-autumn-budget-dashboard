@@ -160,9 +160,9 @@ function HouseholdChart({ rawData, selectedPolicies }) {
       return zoomDomain
     }
 
-    // Fixed x-axis domain from -5k to 10k, y-axis from 0 to 160k
+    // Fixed symmetric x-axis domain around 0
     return {
-      xDomain: [-5000, 10000],
+      xDomain: [-10000, 10000],
       yDomain: [0, 160000]
     }
   }, [dataExtent, zoomDomain])
@@ -299,8 +299,8 @@ function HouseholdChart({ rawData, selectedPolicies }) {
     const newXDomain = [xCenter - xRange / 2, xCenter + xRange / 2]
     const newYDomain = [yCenter - yRange / 2, yCenter + yRange / 2]
 
-    // Don't zoom out beyond the initial view (fixed axes)
-    const maxXDomain = [-5000, 10000]
+    // Don't zoom out beyond the initial view
+    const maxXDomain = [-10000, 10000]
     const maxYDomain = [0, 160000]
 
     if (newXDomain[0] <= maxXDomain[0] && newXDomain[1] >= maxXDomain[1] &&
@@ -322,6 +322,10 @@ function HouseholdChart({ rawData, selectedPolicies }) {
   const CustomTooltip = ({ active, payload }) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload
+      const formatValue = (val) => {
+        const absVal = Math.abs(val).toLocaleString('en-GB', { maximumFractionDigits: 0 })
+        return val < 0 ? `-£${absVal}` : `£${absVal}`
+      }
       return (
         <div style={{
           backgroundColor: 'white',
@@ -331,10 +335,10 @@ function HouseholdChart({ rawData, selectedPolicies }) {
           fontSize: '12px'
         }}>
           <p style={{ margin: '2px 0', color: '#374151' }}>
-            <strong>Income change:</strong> £{data.x.toLocaleString('en-GB')}
+            <strong>Income change:</strong> {formatValue(data.x)}
           </p>
           <p style={{ margin: '2px 0', color: '#374151' }}>
-            <strong>Baseline income:</strong> £{data.y.toLocaleString('en-GB')}
+            <strong>Baseline income:</strong> {formatValue(data.y)}
           </p>
         </div>
       )
@@ -449,7 +453,10 @@ function HouseholdChart({ rawData, selectedPolicies }) {
               dataKey="x"
               name="Income change"
               domain={xDomain}
-              tickFormatter={(value) => `£${(value / 1000).toFixed(0)}k`}
+              tickFormatter={(value) => {
+                const absVal = Math.abs(value).toLocaleString('en-GB', { maximumFractionDigits: 0 })
+                return value < 0 ? `-£${absVal}` : `£${absVal}`
+              }}
               tick={{ fontSize: 11, fill: '#666' }}
               label={{
                 value: 'Net income change (£)',
@@ -464,7 +471,10 @@ function HouseholdChart({ rawData, selectedPolicies }) {
               dataKey="y"
               name="Baseline income"
               domain={yDomain}
-              tickFormatter={(value) => `£${(value / 1000).toFixed(0)}k`}
+              tickFormatter={(value) => {
+                const absVal = Math.abs(value).toLocaleString('en-GB', { maximumFractionDigits: 0 })
+                return value < 0 ? `-£${absVal}` : `£${absVal}`
+              }}
               tick={{ fontSize: 11, fill: '#666' }}
               label={{
                 value: 'Baseline household net income (£)',
@@ -490,9 +500,7 @@ function HouseholdChart({ rawData, selectedPolicies }) {
                   key={`cell-${index}`}
                   fill={getColor(entry.category)}
                   fillOpacity={entry.opacity}
-                  strokeWidth={0.5}
-                  stroke={entry.category === 'gains' ? '#2C7A7B' :
-                          entry.category === 'losses' ? '#C53030' : '#6B7280'}
+                  strokeWidth={0}
                 />
               ))}
             </Scatter>

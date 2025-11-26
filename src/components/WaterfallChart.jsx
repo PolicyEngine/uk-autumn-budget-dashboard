@@ -4,26 +4,29 @@ import YearSlider from './YearSlider'
 import './WaterfallChart.css'
 
 const POLICY_COLORS = {
-  // COSTS (negative impacts - distinct warm/neutral tones)
-  'Fuel duty freeze': '#D1D5DB',                   // Very light gray - cost to treasury
-  '2 child limit repeal': '#991B1B',              // Deep red - cost to treasury
-  'National Insurance rate reduction': '#A16207',  // Dark amber/gold - cost to treasury
-  'Zero-rate VAT on domestic energy': '#EA580C',   // Bright orange - VAT specific (clearly distinct from red)
+  // GOOD for households (teal spectrum) - these increase household income
+  'National Insurance rate reduction': '#0F766E',  // Darkest teal (biggest ~£12bn)
+  'Zero-rate VAT on domestic energy': '#14B8A6',   // Medium teal (~£3.3bn)
+  '2 child limit repeal': '#2DD4BF',               // Light teal (~£3bn)
+  'Fuel duty freeze': '#5EEAD4',                   // Lightest teal (smallest ~£1.5bn)
 
-  // REVENUE (positive impacts - distinct cool tones)
-  'Income tax increase (basic and higher +2pp)': '#64748B',  // Lighter slate - IT specific, more visible
-  'Threshold freeze extension': '#14532D',                   // Deep forest green - revenue raiser
-  'Salary sacrifice cap': '#1E3A8A'                          // Navy blue - revenue raiser
+  // BAD for households (red spectrum) - these decrease household income
+  'Income tax increase (basic and higher +2pp)': '#991B1B',  // Darkest red (biggest ~£20bn)
+  'Threshold freeze extension': '#B91C1C',                   // Dark red (~£4-7bn)
+  'Salary sacrifice cap': '#F87171'                          // Light red (smallest ~£1.4bn)
 }
 
+// Order: biggest magnitude closest to zero line (darkest colours at zero)
 const ALL_POLICY_NAMES = [
-  '2 child limit repeal',
-  'Income tax increase (basic and higher +2pp)',
-  'Threshold freeze extension',
+  // Good for households (positive, teal) - biggest at bottom (closest to zero), smallest at top
   'National Insurance rate reduction',
   'Zero-rate VAT on domestic energy',
-  'Salary sacrifice cap',
-  'Fuel duty freeze'
+  '2 child limit repeal',
+  'Fuel duty freeze',
+  // Bad for households (negative, red) - biggest at top (closest to zero), smallest at bottom
+  'Income tax increase (basic and higher +2pp)',
+  'Threshold freeze extension',
+  'Salary sacrifice cap'
 ]
 
 function WaterfallChart({ rawData, selectedPolicies }) {
@@ -45,6 +48,9 @@ function WaterfallChart({ rawData, selectedPolicies }) {
     parseInt(row.year) === internalYear && row.decile !== 'all' && selectedPolicies.includes(row.reform_id)
   ) : []
 
+  // Policies that need sign flip (raise revenue but data shows positive household impact incorrectly)
+  const FLIP_SIGN_POLICIES = ['salary_sacrifice_cap']
+
   const data = waterfallDeciles.map(decile => {
     const dataPoint = { decile }
     let netChange = 0
@@ -53,7 +59,11 @@ function WaterfallChart({ rawData, selectedPolicies }) {
       const dataRow = waterfallSelectedYear.find(row =>
         row.reform_id === policy.id && row.decile === decile
       )
-      const value = isSelected && dataRow ? parseFloat(dataRow.avg_change) : 0
+      let value = isSelected && dataRow ? parseFloat(dataRow.avg_change) : 0
+      // Flip sign for policies with incorrect data sign
+      if (FLIP_SIGN_POLICIES.includes(policy.id)) {
+        value = -value
+      }
       dataPoint[policy.name] = value
       netChange += value
     })
@@ -61,7 +71,7 @@ function WaterfallChart({ rawData, selectedPolicies }) {
     return dataPoint
   })
 
-  // Calculate y-axis domain across ALL years to keep scale consistent
+  // Calculate y-axis domain across ALL years, symmetrical around zero
   const calculateYAxisDomain = () => {
     const allYears = [2026, 2027, 2028, 2029]
     let minValue = 0
@@ -81,7 +91,11 @@ function WaterfallChart({ rawData, selectedPolicies }) {
           const dataRow = yearData.find(row =>
             row.reform_id === policy.id && row.decile === decile
           )
-          const value = isSelected && dataRow ? parseFloat(dataRow.avg_change) : 0
+          let value = isSelected && dataRow ? parseFloat(dataRow.avg_change) : 0
+          // Flip sign for policies with incorrect data sign
+          if (FLIP_SIGN_POLICIES.includes(policy.id)) {
+            value = -value
+          }
           if (value > 0) positiveSum += value
           else negativeSum += value
         })
@@ -91,11 +105,17 @@ function WaterfallChart({ rawData, selectedPolicies }) {
       })
     })
 
-    // Add 10% padding to both ends
-    const range = maxValue - minValue
-    const padding = range * 0.1
+    // Round to nice numbers and make symmetrical
+    const roundToNice = (val) => {
+      if (val <= 500) return Math.ceil(val / 100) * 100
+      if (val <= 2000) return Math.ceil(val / 500) * 500
+      return Math.ceil(val / 1000) * 1000
+    }
 
-    return [minValue - padding, maxValue + padding]
+    const maxAbs = Math.max(Math.abs(minValue), Math.abs(maxValue)) + 50
+    const rounded = roundToNice(maxAbs)
+
+    return [-rounded, rounded]
   }
 
   const yAxisDomain = calculateYAxisDomain()
@@ -114,7 +134,10 @@ function WaterfallChart({ rawData, selectedPolicies }) {
     )
   }
 
-  const formatCurrency = (value) => `£${value.toFixed(0)}`
+  const formatCurrency = (value) => {
+    const absVal = Math.abs(value).toLocaleString('en-GB', { maximumFractionDigits: 0 })
+    return value < 0 ? `-£${absVal}` : `£${absVal}`
+  }
 
   // Check which policies have non-zero values
   const hasNonZeroValues = (policyName) => {
@@ -158,6 +181,20 @@ function WaterfallChart({ rawData, selectedPolicies }) {
               dx: -30,
               style: { textAnchor: 'middle', fill: '#374151', fontSize: 12, fontWeight: 500 }
             }}
+            ticks={(() => {
+              const [min, max] = yAxisDomain
+              const range = max - min
+              let interval = 100
+              if (range > 1000) interval = 250
+              if (range > 2000) interval = 500
+              if (range > 5000) interval = 1000
+              const ticks = []
+              for (let i = min; i <= max + 0.001; i += interval) {
+                ticks.push(Math.round(i))
+              }
+              if (!ticks.includes(0)) ticks.push(0)
+              return ticks.sort((a, b) => a - b)
+            })()}
           />
           <ReferenceLine y={0} stroke="#666" strokeWidth={1} />
           <Tooltip
@@ -179,7 +216,7 @@ function WaterfallChart({ rawData, selectedPolicies }) {
               ...(activePolicies.length > 1 ? [{
                 value: 'Net change',
                 type: 'line',
-                color: '#1D4044'
+                color: '#FBBF24'
               }] : [])
             ]}
           />
@@ -198,9 +235,9 @@ function WaterfallChart({ rawData, selectedPolicies }) {
           <Line
             type="monotone"
             dataKey="netChange"
-            stroke="#1D4044"
-            strokeWidth={2}
-            dot={{ fill: '#1D4044', strokeWidth: 2 }}
+            stroke="#FBBF24"
+            strokeWidth={3}
+            dot={{ fill: '#FBBF24', stroke: '#92400E', strokeWidth: 2, r: 5 }}
             name="netChange"
             animationDuration={500}
             hide={activePolicies.length <= 1}
