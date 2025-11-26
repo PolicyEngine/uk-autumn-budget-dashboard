@@ -83,8 +83,8 @@ function BudgetaryImpactChart({ data }) {
   const activePolicies = ALL_POLICY_NAMES.filter(hasNonZeroValues);
 
   // Fixed y-axis domain to ensure 0 is always a tick mark
-  // See: https://github.com/recharts/recharts/issues/6699 for interval={0} not working
-  const yAxisDomain = [-40, 40];
+  // Narrowed to +/-10bn for the 3 announced policies
+  const yAxisDomain = [-10, 10];
 
   return (
     <div className="budgetary-impact-chart">

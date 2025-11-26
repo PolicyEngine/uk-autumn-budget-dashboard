@@ -62,7 +62,9 @@ function parseCSV(csvText) {
 }
 
 function App() {
-  const [selectedPolicies, setSelectedPolicies] = useState([]);
+  const [selectedPolicies, setSelectedPolicies] = useState(
+    DEFAULT_POLICIES.map((p) => p.id),
+  );
   const [selectedYear, setSelectedYear] = useState(2026);
   const [results, setResults] = useState(null);
   const [showPolicyDetails, setShowPolicyDetails] = useState(false);
@@ -251,13 +253,6 @@ function App() {
         ? parseFloat(metrics2026.poverty_change_pp)
         : null;
 
-      // Calculate fiscal headroom for 2029/30
-      const budgetaryImpact2029 = filteredBudgetary
-        .filter((row) => parseInt(row.year) === 2029)
-        .reduce((sum, row) => sum + parseFloat(row.value), 0);
-      const obrBaselineHeadroom = 9.9;
-      const fiscalHeadroom2029 = obrBaselineHeadroom + budgetaryImpact2029;
-
       // Calculate total revenue over budget window (2026-2029)
       const budgetWindowRevenue = filteredBudgetary.reduce(
         (sum, row) => sum + parseFloat(row.value),
@@ -266,7 +261,6 @@ function App() {
 
       setResults({
         metrics: {
-          fiscalHeadroom2029,
           budgetaryImpact2026,
           budgetWindowRevenue,
           percentAffected,
@@ -359,75 +353,6 @@ function App() {
           <div className="results-container">
             {results && (
               <>
-                {/* Key Metrics Row - Above Hero Chart */}
-                <div className="key-metrics-row">
-                  <div className="key-metric highlighted">
-                    <div className="metric-label">
-                      Fiscal headroom 2029-30
-                      <span className="info-icon-wrapper">
-                        <svg
-                          className="info-icon"
-                          width="14"
-                          height="14"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        >
-                          <circle cx="12" cy="12" r="10"></circle>
-                          <line x1="12" y1="16" x2="12" y2="12"></line>
-                          <line x1="12" y1="8" x2="12.01" y2="8"></line>
-                        </svg>
-                        <span className="info-tooltip">
-                          The gap between forecast fiscal position and the
-                          Government's fiscal rule breach point. Based on OBR
-                          baseline of £9.9bn.
-                        </span>
-                      </span>
-                    </div>
-                    <div className="metric-number">
-                      {results.metrics.fiscalHeadroom2029 !== null
-                        ? `£${results.metrics.fiscalHeadroom2029.toFixed(1)}bn`
-                        : "—"}
-                    </div>
-                  </div>
-                  <div className="key-metric">
-                    <div className="metric-label">
-                      Budget window revenue
-                      <span className="info-icon-wrapper">
-                        <svg
-                          className="info-icon"
-                          width="14"
-                          height="14"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        >
-                          <circle cx="12" cy="12" r="10"></circle>
-                          <line x1="12" y1="16" x2="12" y2="12"></line>
-                          <line x1="12" y1="8" x2="12.01" y2="8"></line>
-                        </svg>
-                        <span className="info-tooltip">
-                          Total net revenue impact over the four-year budget
-                          window (2026-2029). Positive values indicate net
-                          revenue raised; negative values indicate net cost to
-                          the Exchequer.
-                        </span>
-                      </span>
-                    </div>
-                    <div className="metric-number">
-                      {results.metrics.budgetWindowRevenue !== null
-                        ? `${results.metrics.budgetWindowRevenue >= 0 ? "" : "-"}£${Math.abs(results.metrics.budgetWindowRevenue).toFixed(1)}bn`
-                        : "—"}
-                    </div>
-                  </div>
-                </div>
-
                 {/* Hero Chart: Revenue Impact */}
                 <div className="hero-chart">
                   <BudgetaryImpactChart data={results.budgetData} />
