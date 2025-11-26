@@ -32,6 +32,14 @@
   margin: 0;
 }
 
+.dashboard-intro {
+  font-size: 1rem;
+  color: #4b5563;
+  line-height: 1.6;
+  margin: 0 0 20px 0;
+  max-width: 800px;
+}
+
 /* Empty State */
 .empty-state {
   text-align: center;

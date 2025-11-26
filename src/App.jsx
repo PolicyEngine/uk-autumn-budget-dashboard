@@ -299,6 +299,11 @@ function App() {
           />
         </div>
 
+        {/* Dashboard description */}
+        <p className="dashboard-intro">
+          Explore the fiscal and distributional impacts of potential UK budget policies. Select policies to see how they affect government revenue, household incomes, and inequality across income groups.
+        </p>
+
         {selectedPolicies.length === 0 ? (
           <div className="empty-state">
             <p>Select policies to analyse their impact on government revenue and household incomes.</p>
