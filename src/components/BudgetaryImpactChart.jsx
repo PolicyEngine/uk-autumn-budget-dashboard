@@ -1,4 +1,4 @@
-import { ComposedChart, Bar, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ReferenceLine } from 'recharts'
+import { ComposedChart, Bar, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ReferenceLine, LabelList } from 'recharts'
 import './BudgetaryImpactChart.css'
 
 const POLICY_COLORS = {
@@ -26,6 +26,28 @@ const ALL_POLICY_NAMES = [
   '2 child limit repeal',
   'Fuel duty freeze'
 ]
+
+// Custom label component for net impact values
+const NetImpactLabel = (props) => {
+  const { x, y, value, index, dataLength, activePoliciesCount } = props
+  if (activePoliciesCount <= 1) return null
+
+  const formattedValue = value < 0 ? `-£${Math.abs(value).toFixed(1)}bn` : `£${value.toFixed(1)}bn`
+  const yOffset = value >= 0 ? -12 : 18
+
+  return (
+    <text
+      x={x}
+      y={y + yOffset}
+      fill="#92400E"
+      fontSize={12}
+      fontWeight={600}
+      textAnchor="middle"
+    >
+      {formattedValue}
+    </text>
+  )
+}
 
 function BudgetaryImpactChart({ data }) {
   if (!data || data.length === 0) return null
@@ -131,6 +153,7 @@ function BudgetaryImpactChart({ data }) {
             name="netImpact"
             animationDuration={500}
             hide={activePolicies.length <= 1}
+            label={activePolicies.length > 1 ? <NetImpactLabel activePoliciesCount={activePolicies.length} dataLength={data.length} /> : false}
           />
           <ReferenceLine y={0} stroke="#374151" strokeWidth={1} />
         </ComposedChart>

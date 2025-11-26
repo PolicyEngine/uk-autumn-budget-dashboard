@@ -5,6 +5,7 @@ import DistributionalChart from './components/DistributionalChart'
 import WaterfallChart from './components/WaterfallChart'
 import ConstituencyMap from './components/ConstituencyMap'
 import EmploymentIncomeChart from './components/EmploymentIncomeChart'
+import EmploymentIncomeDiffChart from './components/EmploymentIncomeDiffChart'
 import HouseholdChart from './components/HouseholdChart'
 import './App.css'
 
@@ -244,10 +245,15 @@ function App() {
       const obrBaselineHeadroom = 9.9
       const fiscalHeadroom2029 = obrBaselineHeadroom + budgetaryImpact2029
 
+      // Calculate total revenue over budget window (2026-2029)
+      const budgetWindowRevenue = filteredBudgetary
+        .reduce((sum, row) => sum + parseFloat(row.value), 0)
+
       setResults({
         metrics: {
           fiscalHeadroom2029,
           budgetaryImpact2026,
+          budgetWindowRevenue,
           percentAffected,
           giniChange,
           povertyRateChange
@@ -338,42 +344,43 @@ function App() {
                     </div>
                   </div>
                   <div className="key-metric">
-                    <div className="metric-label">Inequality (Gini)</div>
-                    <div className="metric-number">
-                      {results.metrics.giniChange !== null
-                        ? `${(results.metrics.giniChange * 100) >= 0 ? '+' : ''}${(results.metrics.giniChange * 100).toFixed(2)}%`
-                        : '—'}
-                    </div>
-                  </div>
-                  <div className="key-metric">
                     <div className="metric-label">
-                      Poverty rate
+                      Budget window revenue
                       <span className="info-icon-wrapper">
                         <svg className="info-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                           <circle cx="12" cy="12" r="10"></circle>
                           <line x1="12" y1="16" x2="12" y2="12"></line>
                           <line x1="12" y1="8" x2="12.01" y2="8"></line>
                         </svg>
-                        <span className="info-tooltip">Absolute poverty, before housing costs (BHC).</span>
+                        <span className="info-tooltip">Total net revenue impact over the four-year budget window (2026-2029). Positive values indicate net revenue raised; negative values indicate net cost to the Exchequer.</span>
                       </span>
                     </div>
                     <div className="metric-number">
-                      {results.metrics.povertyRateChange !== null
-                        ? `${results.metrics.povertyRateChange >= 0 ? '+' : ''}${results.metrics.povertyRateChange.toFixed(2)}pp`
+                      {results.metrics.budgetWindowRevenue !== null
+                        ? `${results.metrics.budgetWindowRevenue >= 0 ? '' : '-'}£${Math.abs(results.metrics.budgetWindowRevenue).toFixed(1)}bn`
                         : '—'}
                     </div>
                   </div>
                 </div>
 
-                {/* Charts Grid */}
+                {/* Row 1: Absolute and Relative Impact */}
                 <div className="charts-grid">
-                  <EmploymentIncomeChart selectedPolicies={selectedPolicies} selectedYear={2026} />
-                  <DistributionalChart rawData={results.rawDistributional} selectedPolicies={selectedPolicies} />
                   <WaterfallChart rawData={results.rawWinnersLosers} selectedPolicies={selectedPolicies} />
+                  <DistributionalChart rawData={results.rawDistributional} selectedPolicies={selectedPolicies} />
+                </div>
+
+                {/* Row 2: Constituency Map and Scatter */}
+                <div className="charts-grid charts-row-2">
                   <ConstituencyMap selectedPolicies={selectedPolicies} />
                   {results.rawHouseholdScatter && (
                     <HouseholdChart rawData={results.rawHouseholdScatter} selectedPolicies={selectedPolicies} />
                   )}
+                </div>
+
+                {/* Row 3: Net Income Analysis Charts */}
+                <div className="charts-grid charts-row-3">
+                  <EmploymentIncomeChart selectedPolicies={selectedPolicies} selectedYear={2026} />
+                  <EmploymentIncomeDiffChart selectedPolicies={selectedPolicies} selectedYear={2026} />
                 </div>
 
                 {/* Policy Details Footer */}

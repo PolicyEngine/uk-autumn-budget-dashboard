@@ -90,7 +90,7 @@
 /* Key Metrics Row */
 .key-metrics-row {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 16px;
   margin-bottom: 24px;
 }
@@ -216,6 +216,14 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
+.charts-row-2 {
+  margin-top: 20px;
+}
+
+.charts-row-3 {
+  margin-top: 20px;
+}
+
 /* Policy Details Footer */
 .policy-details-footer {
   border-top: 1px solid #e2e8f0;
@@ -283,13 +291,13 @@
   .charts-grid {
     grid-template-columns: 1fr;
   }
-
-  .key-metrics-row {
-    grid-template-columns: 1fr;
-  }
 }
 
 @media (max-width: 768px) {
+  .key-metrics-row {
+    grid-template-columns: 1fr;
+  }
+
   .title-row {
     flex-direction: column;
     align-items: flex-start;

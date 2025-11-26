@@ -1,0 +1,17 @@
+.employment-income-diff-chart {
+  padding: 24px;
+}
+
+.employment-income-diff-chart h2 {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: #374151;
+  margin: 0 0 8px 0;
+}
+
+.employment-income-diff-chart .chart-description {
+  font-size: 0.95rem;
+  color: #666;
+  line-height: 1.5;
+  margin-bottom: 20px;
+}
