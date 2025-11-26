@@ -37,9 +37,11 @@ const ALL_POLICY_NAMES = [
 ];
 
 // Chart metadata for export
-const CHART_TITLE = "Absolute impact by income decile";
 const CHART_DESCRIPTION =
   "This chart shows the absolute change in net income by decile, measured in pounds per year. This represents the actual cash amount gained or lost by households in each decile.";
+
+// Format year for display (e.g., 2026 -> "2026-27")
+const formatYearRange = (year) => `${year}-${(year + 1).toString().slice(-2)}`;
 
 function WaterfallChart({ rawData, selectedPolicies }) {
   const [internalYear, setInternalYear] = useState(2026);
@@ -191,9 +193,11 @@ function WaterfallChart({ rawData, selectedPolicies }) {
       : []),
   ];
 
+  const chartTitle = `Absolute impact by income decile, ${formatYearRange(internalYear)}`;
+
   const handleExportSvg = async () => {
     await exportChartAsSvg(chartRef, "absolute-impact-decile", {
-      title: CHART_TITLE,
+      title: chartTitle,
       description: CHART_DESCRIPTION,
       legendItems,
       logo: CHART_LOGO,
@@ -204,7 +208,7 @@ function WaterfallChart({ rawData, selectedPolicies }) {
     <div className="waterfall-chart">
       <div className="chart-header">
         <div>
-          <h2>Absolute impact by income decile</h2>
+          <h2>{chartTitle}</h2>
           <p className="chart-description">
             This chart shows the absolute change in net income by decile,
             measured in pounds per year. This represents the actual cash amount
@@ -214,6 +218,7 @@ function WaterfallChart({ rawData, selectedPolicies }) {
         <button
           className="export-button"
           onClick={handleExportSvg}
+          title="Download as SVG"
           aria-label="Download chart as SVG"
         >
           <svg
@@ -306,6 +311,11 @@ function WaterfallChart({ rawData, selectedPolicies }) {
           <Legend
             wrapperStyle={{ paddingTop: "20px" }}
             iconType="rect"
+            formatter={(value) => (
+              <span style={{ color: "#374151", fontSize: "13px", fontWeight: 500 }}>
+                {value}
+              </span>
+            )}
             payload={[
               ...activePolicies.map((name) => ({
                 value: name,

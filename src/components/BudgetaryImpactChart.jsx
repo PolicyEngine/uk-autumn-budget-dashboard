@@ -134,6 +134,7 @@ function BudgetaryImpactChart({ data }) {
         <button
           className="export-button"
           onClick={handleExportSvg}
+          title="Download as SVG"
           aria-label="Download chart as SVG"
         >
           <svg
@@ -213,9 +214,11 @@ function BudgetaryImpactChart({ data }) {
           <Legend
             wrapperStyle={{ paddingTop: "20px" }}
             iconType="rect"
-            formatter={(value) =>
-              value === "netImpact" ? "Net impact" : value
-            }
+            formatter={(value) => (
+              <span style={{ color: "#374151", fontSize: "13px", fontWeight: 500 }}>
+                {value === "netImpact" ? "Net impact" : value}
+              </span>
+            )}
             payload={[
               ...activePolicies.map((name) => ({
                 value: name,

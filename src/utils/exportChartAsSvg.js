@@ -117,23 +117,22 @@ function inlineComputedStyles(clonedElement, originalElement) {
  * Create an SVG legend from legend items.
  *
  * @param {Array<{color: string, label: string, type: string}>} items - Legend items
- * @param {number} chartWidth - Width of the chart for centering
+ * @param {number} startX - Starting X position for the legend
  * @param {number} yPosition - Y position for the legend
  * @returns {SVGGElement}
  */
-function createLegend(items, chartWidth, yPosition) {
+function createLegend(items, startX, yPosition) {
   const { legendFontSize, legendIconSize, legendIconTextGap, legendItemGap, colors } = STYLES;
 
-  // Calculate item widths and total width
+  // Calculate item widths
   const itemWidths = items.map((item) => {
     const textWidth = measureTextWidth(item.label, { fontSize: legendFontSize });
     return legendIconSize + legendIconTextGap + textWidth;
   });
-  const totalWidth = itemWidths.reduce((sum, w) => sum + w, 0) + (items.length - 1) * legendItemGap;
 
-  // Create legend group, centered horizontally
+  // Create legend group, starting from startX
   const legendGroup = createSvgGroup({ className: "exported-legend" });
-  let currentX = (chartWidth - totalWidth) / 2;
+  let currentX = startX;
 
   items.forEach((item, index) => {
     const itemGroup = createSvgGroup();
@@ -160,12 +159,12 @@ function createLegend(items, chartWidth, yPosition) {
       itemGroup.appendChild(rect);
     }
 
-    // Draw label with proper font styling
+    // Draw label with proper font styling (matching axis titles)
     const text = createSvgText(item.label, {
       x: currentX + legendIconSize + legendIconTextGap,
       y: yPosition + legendFontSize / 3,
       fontSize: legendFontSize,
-      fontWeight: "400",
+      fontWeight: "500",
       fill: colors.legendText,
     });
     itemGroup.appendChild(text);
@@ -339,14 +338,16 @@ export async function exportChartAsSvg(containerRef, filename = "chart", options
     clonedSvg.insertBefore(descElement, contentGroup);
   }
 
-  // Add legend
+  // Add legend and logo inline in the footer area
+  const footerY = headerHeight + chartHeight + legendHeight / 2;
+
+  // Add legend on the left
   if (legendItems.length > 0) {
-    const legendY = headerHeight + chartHeight + legendHeight / 2;
-    const legendGroup = createLegend(legendItems, chartWidth, legendY);
+    const legendGroup = createLegend(legendItems, STYLES.padding, footerY);
     clonedSvg.appendChild(legendGroup);
   }
 
-  // Embed logo if provided
+  // Embed logo on the right (inline with legend)
   if (logo?.href) {
     try {
       // Convert logo to base64 for standalone SVG
@@ -357,12 +358,10 @@ export async function exportChartAsSvg(containerRef, filename = "chart", options
       });
       logoImage.setAttribute("href", base64Logo);
 
-      // Position logo in bottom-right of chart area (before legend)
-      // Use larger horizontal margin (30px) to bring it in from the edge
-      const logoMarginRight = 30;
-      const logoMarginBottom = logo.padding || 12;
+      // Position logo in bottom-right, vertically centered with legend
+      const logoMarginRight = STYLES.padding;
       const logoX = chartWidth - logo.width - logoMarginRight;
-      const logoY = headerHeight + chartHeight - logo.height - logoMarginBottom;
+      const logoY = footerY - logo.height / 2;
       logoImage.setAttribute("x", logoX);
       logoImage.setAttribute("y", logoY);
 

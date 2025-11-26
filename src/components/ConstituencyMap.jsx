@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, useMemo } from "react";
 import * as d3 from "d3";
 import YearSlider from "./YearSlider";
+import { CHART_LOGO } from "../utils/chartLogo";
 import "./ConstituencyMap.css";
 
 export default function ConstituencyMap({ selectedPolicies = [] }) {
@@ -288,6 +289,15 @@ export default function ConstituencyMap({ selectedPolicies = [] }) {
 
     // Store zoom behavior for controls
     window.mapZoomBehavior = { svg, zoom };
+
+    // Add PolicyEngine logo in bottom-right corner (outside the zoomable group)
+    svg
+      .append("image")
+      .attr("href", CHART_LOGO.href)
+      .attr("width", CHART_LOGO.width)
+      .attr("height", CHART_LOGO.height)
+      .attr("x", width - CHART_LOGO.width - CHART_LOGO.padding)
+      .attr("y", height - CHART_LOGO.height - CHART_LOGO.padding);
   }, [geoData, aggregatedData]);
 
   // Handle search

@@ -18,9 +18,11 @@ import "./HouseholdChart.css";
 import "./ChartExport.css";
 
 // Chart metadata for export
-const CHART_TITLE = "Household income impacts";
 const CHART_DESCRIPTION =
   "This chart plots net income change against baseline income for 1,000 sampled households. Green dots indicate gains, red shows losses, and grey shows minimal change. Dot size represents household weight in the population.";
+
+// Format year for display (e.g., 2026 -> "2026-27")
+const formatYearRange = (year) => `${year}-${(year + 1).toString().slice(-2)}`;
 
 // Legend items for export
 const LEGEND_ITEMS = [
@@ -40,9 +42,11 @@ function HouseholdChart({ rawData, selectedPolicies }) {
   const exportRef = useRef(null);
   const startPoint = useRef(null);
 
+  const chartTitle = `Household income impacts, ${formatYearRange(internalYear)}`;
+
   const handleExportSvg = async () => {
     await exportChartAsSvg(exportRef, "household-impacts", {
-      title: CHART_TITLE,
+      title: chartTitle,
       description: CHART_DESCRIPTION,
       legendItems: LEGEND_ITEMS,
       logo: CHART_LOGO,
@@ -460,7 +464,7 @@ function HouseholdChart({ rawData, selectedPolicies }) {
     <div className="household-chart">
       <div className="chart-header">
         <div>
-          <h2>Household income impacts</h2>
+          <h2>{chartTitle}</h2>
           <p className="chart-description">
             This chart plots net income change against baseline income for 1,000
             sampled households. Green dots indicate gains, red shows losses, and
@@ -471,6 +475,7 @@ function HouseholdChart({ rawData, selectedPolicies }) {
         <button
           className="export-button"
           onClick={handleExportSvg}
+          title="Download as SVG"
           aria-label="Download chart as SVG"
         >
           <svg
@@ -692,7 +697,7 @@ function HouseholdChart({ rawData, selectedPolicies }) {
               borderRadius: "50%",
             }}
           ></div>
-          <span style={{ color: "#374151" }}>Gains</span>
+          <span style={{ color: "#374151", fontSize: "13px", fontWeight: 500 }}>Gains</span>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
           <div
@@ -703,7 +708,7 @@ function HouseholdChart({ rawData, selectedPolicies }) {
               borderRadius: "50%",
             }}
           ></div>
-          <span style={{ color: "#374151" }}>Losses</span>
+          <span style={{ color: "#374151", fontSize: "13px", fontWeight: 500 }}>Losses</span>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
           <div
@@ -714,7 +719,7 @@ function HouseholdChart({ rawData, selectedPolicies }) {
               borderRadius: "50%",
             }}
           ></div>
-          <span style={{ color: "#374151" }}>No change</span>
+          <span style={{ color: "#374151", fontSize: "13px", fontWeight: 500 }}>No change</span>
         </div>
       </div>
 

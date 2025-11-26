@@ -37,9 +37,11 @@ const ALL_POLICY_NAMES = [
 ];
 
 // Chart metadata for export
-const CHART_TITLE = "Relative impact by income decile";
 const CHART_DESCRIPTION =
   "This chart shows the percentage change in net income by decile, displaying the proportional impact relative to baseline income. Positive values indicate gains; negative values indicate losses.";
+
+// Format year for display (e.g., 2026 -> "2026-27")
+const formatYearRange = (year) => `${year}-${(year + 1).toString().slice(-2)}`;
 
 function DistributionalChart({ rawData, selectedPolicies }) {
   const [internalYear, setInternalYear] = useState(2026);
@@ -199,9 +201,11 @@ function DistributionalChart({ rawData, selectedPolicies }) {
       : []),
   ];
 
+  const chartTitle = `Relative impact by income decile, ${formatYearRange(internalYear)}`;
+
   const handleExportSvg = async () => {
     await exportChartAsSvg(chartRef, "distributional-impact", {
-      title: CHART_TITLE,
+      title: chartTitle,
       description: CHART_DESCRIPTION,
       legendItems,
       logo: CHART_LOGO,
@@ -212,7 +216,7 @@ function DistributionalChart({ rawData, selectedPolicies }) {
     <div className="distributional-chart">
       <div className="chart-header">
         <div>
-          <h2>Relative impact by income decile</h2>
+          <h2>{chartTitle}</h2>
           <p className="chart-description">
             This chart shows the percentage change in net income by decile,
             displaying the proportional impact relative to baseline income.
@@ -222,6 +226,7 @@ function DistributionalChart({ rawData, selectedPolicies }) {
         <button
           className="export-button"
           onClick={handleExportSvg}
+          title="Download as SVG"
           aria-label="Download chart as SVG"
         >
           <svg
@@ -313,6 +318,11 @@ function DistributionalChart({ rawData, selectedPolicies }) {
           <Legend
             wrapperStyle={{ paddingTop: "20px" }}
             iconType="rect"
+            formatter={(value) => (
+              <span style={{ color: "#374151", fontSize: "13px", fontWeight: 500 }}>
+                {value}
+              </span>
+            )}
             payload={[
               ...activePolicies.map((name) => ({
                 value: name,

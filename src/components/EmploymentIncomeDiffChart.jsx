@@ -158,6 +158,7 @@ function EmploymentIncomeDiffChart({ selectedPolicies, selectedYear = 2026 }) {
         <button
           className="export-button"
           onClick={handleExportSvg}
+          title="Download as SVG"
           aria-label="Download chart as SVG"
         >
           <svg
