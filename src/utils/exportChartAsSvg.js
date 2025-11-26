@@ -318,6 +318,15 @@ export async function exportChartAsSvg(containerRef, filename = "chart", options
     originalLegend.remove();
   }
 
+  // Remove existing image elements with relative URLs (won't work in standalone SVG)
+  const existingImages = clonedSvg.querySelectorAll("image");
+  existingImages.forEach((img) => {
+    const href = img.getAttribute("href") || img.getAttributeNS("http://www.w3.org/1999/xlink", "href");
+    if (href && !href.startsWith("data:")) {
+      img.remove();
+    }
+  });
+
   // Calculate layout - no extra footer height needed since chart already has legend space
   const headerHeight = calculateHeaderHeight({ title, description }, chartWidth);
   const totalHeight = chartHeight + headerHeight;
@@ -391,7 +400,9 @@ export async function exportChartAsSvg(containerRef, filename = "chart", options
         width: logo.width,
         height: logo.height,
       });
+      // Set both href and xlink:href for maximum browser compatibility
       logoImage.setAttribute("href", base64Logo);
+      logoImage.setAttributeNS("http://www.w3.org/1999/xlink", "xlink:href", base64Logo);
 
       // Position logo vertically centered with legend
       const logoY = footerY - logo.height / 2;

@@ -349,6 +349,15 @@ export async function exportMapAsSvg(svgElement, filename = "map", options = {})
     gElement.removeAttribute("transform");
   }
 
+  // Remove existing image elements with relative URLs (won't work in standalone SVG)
+  const existingImages = clonedSvg.querySelectorAll("image");
+  existingImages.forEach((img) => {
+    const href = img.getAttribute("href") || img.getAttributeNS("http://www.w3.org/1999/xlink", "href");
+    if (href && !href.startsWith("data:")) {
+      img.remove();
+    }
+  });
+
   // Get dimensions
   const width = 800;
   const height = 600;
@@ -408,7 +417,9 @@ export async function exportMapAsSvg(svgElement, filename = "map", options = {})
         x: width - logo.width - 10,
         y: legendY + (STYLES.legendGradientHeight - logo.height) / 2 + 5,
       });
+      // Set both href and xlink:href for maximum browser compatibility
       logoImage.setAttribute("href", base64Logo);
+      logoImage.setAttributeNS("http://www.w3.org/1999/xlink", "xlink:href", base64Logo);
       clonedSvg.appendChild(logoImage);
     } catch (error) {
       console.warn("exportMapAsSvg: Failed to embed logo", error);
