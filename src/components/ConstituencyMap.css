@@ -178,7 +178,7 @@
   width: 180px;
   height: 12px;
   border-radius: 3px;
-  background: linear-gradient(to right, #d73027, #ffffbf, #1a9850);
+  background: linear-gradient(to right, #DC2626, #E5E7EB, #14B8A6);
 }
 
 .legend-labels-horizontal {
@@ -219,7 +219,7 @@
 }
 
 .map-canvas svg {
-  background: #f9fafb;
+  background: white;
   border-radius: 4px;
   width: 100%;
   height: auto;
@@ -409,6 +409,13 @@
   font-size: 0.75rem;
   color: #6b7280;
   margin: 4px 0 0 0;
+}
+
+.tooltip-value-secondary {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin: 8px 0 4px 0;
+  line-height: 1;
 }
 
 /* Loading state */

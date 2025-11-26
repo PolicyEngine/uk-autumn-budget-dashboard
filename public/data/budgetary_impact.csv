@@ -1,0 +1,29 @@
+reform_id,reform_name,year,value
+fuel_duty_freeze,Fuel duty freeze,2026,0.0
+fuel_duty_freeze,Fuel duty freeze,2027,-1.5315589986850306
+fuel_duty_freeze,Fuel duty freeze,2028,-1.300987143579869
+fuel_duty_freeze,Fuel duty freeze,2029,-1.37057316588112
+salary_sacrifice_cap,Salary sacrifice cap,2026,1.3313874386715676
+salary_sacrifice_cap,Salary sacrifice cap,2027,1.351637440123351
+salary_sacrifice_cap,Salary sacrifice cap,2028,1.3754694444393512
+salary_sacrifice_cap,Salary sacrifice cap,2029,1.407288733270791
+zero_vat_energy,Zero-rate VAT on domestic energy,2026,-3.1197856155906343
+zero_vat_energy,Zero-rate VAT on domestic energy,2027,-3.193956830501844
+zero_vat_energy,Zero-rate VAT on domestic energy,2028,-3.2708664140052073
+zero_vat_energy,Zero-rate VAT on domestic energy,2029,-3.350963253755003
+two_child_limit,2 child limit repeal,2026,-2.816193254209347
+two_child_limit,2 child limit repeal,2027,-3.018368956328293
+two_child_limit,2 child limit repeal,2028,-3.269026401221238
+two_child_limit,2 child limit repeal,2029,-3.3662672017927906
+income_tax_increase_2pp,Income tax rate increase (basic and higher rates +2pp),2026,19.244285789141465
+income_tax_increase_2pp,Income tax rate increase (basic and higher rates +2pp),2027,19.96087397252204
+income_tax_increase_2pp,Income tax rate increase (basic and higher rates +2pp),2028,20.578106507849736
+income_tax_increase_2pp,Income tax rate increase (basic and higher rates +2pp),2029,21.254175825730382
+threshold_freeze_extension,Threshold freeze extension,2026,0.0
+threshold_freeze_extension,Threshold freeze extension,2027,0.0
+threshold_freeze_extension,Threshold freeze extension,2028,3.6604904843480464
+threshold_freeze_extension,Threshold freeze extension,2029,7.5624889226554926
+ni_rate_reduction,National Insurance rate reduction,2026,-11.501636128111947
+ni_rate_reduction,National Insurance rate reduction,2027,-11.78738460852567
+ni_rate_reduction,National Insurance rate reduction,2028,-12.100252169980953
+ni_rate_reduction,National Insurance rate reduction,2029,-12.453878643886812

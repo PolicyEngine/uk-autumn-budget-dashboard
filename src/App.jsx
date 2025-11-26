@@ -1,52 +1,80 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect } from 'react'
 import PolicySelector from './components/PolicySelector'
-import MetricsBar from './components/MetricsBar'
-import HouseholdChart from './components/HouseholdChart'
 import BudgetaryImpactChart from './components/BudgetaryImpactChart'
 import DistributionalChart from './components/DistributionalChart'
 import WaterfallChart from './components/WaterfallChart'
 import ConstituencyMap from './components/ConstituencyMap'
 import EmploymentIncomeChart from './components/EmploymentIncomeChart'
-import FiscalHeadroom from './components/FiscalHeadroom'
+import HouseholdChart from './components/HouseholdChart'
 import './App.css'
 
 // Policy definitions
 const DEFAULT_POLICIES = [
   {
     id: 'two_child_limit',
-    name: 'Repealing two child limit',
-    description: 'Repeal the two-child limit on benefits'
+    name: '2 child limit repeal',
+    description: 'Repeal the two-child limit on benefits',
+    explanation: 'The two-child limit restricts Universal Credit and Child Tax Credit payments to a maximum number of children per family. Removing this limit would allow families to claim child-related benefit payments for all children without a cap.'
   },
   {
-    id: 'freezing_thresholds',
-    name: 'Freezing thresholds',
-    description: 'Freeze income tax and National Insurance thresholds'
+    id: 'income_tax_increase_2pp',
+    name: 'Income tax increase (basic and higher +2pp)',
+    description: 'Raise basic and higher rates by 2 pp',
+    explanation: 'This policy increases the basic income tax rate from 20% to 22% and the higher rate from 40% to 42%. Income tax applies to taxable income after pension contributions and other deductions.'
   },
   {
-    id: 'ni_rates',
-    name: 'Adjusting NI rates',
-    description: 'Change National Insurance contribution rates'
+    id: 'threshold_freeze_extension',
+    name: 'Threshold freeze extension',
+    description: 'Extend the freeze on income tax thresholds',
+    explanation: 'This policy extends the freeze on income tax thresholds to 2029-30. Current law already freezes the personal allowance and higher rate threshold until 2027-28. This policy would maintain these thresholds at their current nominal levels for an additional two years.'
   },
   {
-    id: 'income_tax_rates',
-    name: 'Adjusting income tax rates',
-    description: 'Modify income tax rate bands'
+    id: 'ni_rate_reduction',
+    name: 'National Insurance rate reduction',
+    description: 'Reduce the main NI rate for employees',
+    explanation: 'This policy reduces the main employee National Insurance contribution rate from 8% to 6%. National Insurance applies to gross earnings before pension contributions, unlike income tax which applies after deductions.'
   },
   {
-    id: 'salary_sacrifice',
-    name: 'Salary sacrifice',
-    description: 'Adjust salary sacrifice schemes'
+    id: 'zero_vat_energy',
+    name: 'Zero-rate VAT on domestic energy',
+    description: 'Remove 5% VAT from energy bills',
+    explanation: 'This policy removes the 5% VAT currently charged on domestic energy bills. Currently, UK households pay VAT at a reduced rate of 5% on electricity and gas consumption.'
+  },
+  {
+    id: 'salary_sacrifice_cap',
+    name: 'Salary sacrifice cap',
+    description: 'Cap salary sacrifice at £2,000/year',
+    explanation: 'This policy limits the amount that employees can sacrifice from their salaries into pension contributions without paying national insurance to £2,000 per year. Contributions above this cap would be subject to national insurance.'
+  },
+  {
+    id: 'fuel_duty_freeze',
+    name: 'Fuel duty freeze',
+    description: 'Extend fuel duty freeze for two years',
+    explanation: 'This policy extends the fuel duty freeze to maintain the rate at 52.95p per litre for petrol and diesel through 2027-28. Current law includes a temporary 5p cut introduced in 2022. This policy continues that reduced rate for an additional two years before it would revert to the standard rate.'
   }
 ]
 
-// Policy colors for charts
-const POLICY_COLORS = ['#319795', '#5A8FB8', '#B8875A', '#5FB88A', '#4A7BA7', '#C59A5A']
+function parseCSV(csvText) {
+  const lines = csvText.trim().split('\n')
+  const headers = lines[0].split(',')
+  const data = []
+  for (let i = 1; i < lines.length; i++) {
+    const values = lines[i].split(',')
+    const row = {}
+    headers.forEach((header, idx) => {
+      row[header] = values[idx]
+    })
+    data.push(row)
+  }
+  return data
+}
 
 function App() {
   const [selectedPolicies, setSelectedPolicies] = useState([])
+  const [selectedYear, setSelectedYear] = useState(2026)
   const [results, setResults] = useState(null)
 
-  // Initialize from URL or select all policies by default
+  // Initialize from URL
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
     const policiesParam = params.get('policies')
@@ -54,9 +82,6 @@ function App() {
     if (policiesParam) {
       const policies = policiesParam.split(',')
       setSelectedPolicies(policies)
-    } else {
-      // Select only two_child_limit by default (only policy with data)
-      setSelectedPolicies(['two_child_limit'])
     }
   }, [])
 
@@ -71,7 +96,7 @@ function App() {
     }
   }, [selectedPolicies])
 
-  // Run analysis when policies change
+  // Run analysis when policies or year change
   useEffect(() => {
     if (selectedPolicies.length === 0) {
       setResults(null)
@@ -79,154 +104,141 @@ function App() {
     }
 
     runAnalysis()
-  }, [selectedPolicies])
+  }, [selectedPolicies, selectedYear])
 
   const runAnalysis = async () => {
     try {
-      // Fetch real data from CSV
-      const response = await fetch('/data/reform-results.csv')
-      const csvText = await response.text()
+      // Fetch all CSVs in parallel
+      const [
+        budgetaryRes,
+        distributionalRes,
+        winnersLosersRes,
+        metricsRes,
+        householdScatterRes
+      ] = await Promise.all([
+        fetch('/data/budgetary_impact.csv'),
+        fetch('/data/distributional_impact.csv'),
+        fetch('/data/winners_losers.csv'),
+        fetch('/data/metrics.csv'),
+        fetch('/data/household_scatter.csv')
+      ])
 
-      // Parse CSV
-      const lines = csvText.trim().split('\n')
-      const headers = lines[0].split(',')
-
-      const csvData = []
-      for (let i = 1; i < lines.length; i++) {
-        const values = lines[i].split(',')
-        const row = {}
-        headers.forEach((header, idx) => {
-          row[header] = values[idx]
-        })
-        csvData.push(row)
-      }
+      const budgetaryData = parseCSV(await budgetaryRes.text())
+      const distributionalData = parseCSV(await distributionalRes.text())
+      const winnersLosersData = parseCSV(await winnersLosersRes.text())
+      const metricsData = parseCSV(await metricsRes.text())
+      const householdScatterData = parseCSV(await householdScatterRes.text())
 
       // Filter data for selected policies
-      const filteredData = csvData.filter(row =>
+      const filteredBudgetary = budgetaryData.filter(row =>
+        selectedPolicies.includes(row.reform_id)
+      )
+      const filteredDistributional = distributionalData.filter(row =>
+        selectedPolicies.includes(row.reform_id)
+      )
+      const filteredWinnersLosers = winnersLosersData.filter(row =>
+        selectedPolicies.includes(row.reform_id)
+      )
+      const filteredMetrics = metricsData.filter(row =>
+        selectedPolicies.includes(row.reform_id)
+      )
+      // Keep raw household scatter data (filtering will be done by component)
+      const filteredHouseholdScatter = householdScatterData.filter(row =>
         selectedPolicies.includes(row.reform_id)
       )
 
       // Build budgetary impact data for chart (2026-2029)
+      // Always include all policy keys for smooth animations
       const years = [2026, 2027, 2028, 2029]
       const budgetData = years.map(year => {
         const dataPoint = { year }
-        selectedPolicies.forEach(policyId => {
-          const policy = DEFAULT_POLICIES.find(p => p.id === policyId)
-          const dataRow = filteredData.find(row =>
-            row.reform_id === policyId &&
-            row.metric_type === 'budgetary_impact' &&
-            parseInt(row.year) === year
+        let netImpact = 0
+        DEFAULT_POLICIES.forEach(policy => {
+          const isSelected = selectedPolicies.includes(policy.id)
+          const dataRow = budgetaryData.find(row =>
+            row.reform_id === policy.id && parseInt(row.year) === year
           )
-          // Convert to absolute value and billions (data is already in billions)
-          // Negative values mean it costs money (reduces gov balance)
-          dataPoint[policy.name] = dataRow ? Math.abs(parseFloat(dataRow.value)) : 0
+          const value = isSelected && dataRow ? parseFloat(dataRow.value) : 0
+          dataPoint[policy.name] = value
+          netImpact += value
         })
+        dataPoint.netImpact = netImpact
         return dataPoint
       })
 
-      // Calculate metrics based on available data
-      const budgetaryImpact2026Data = filteredData.filter(row =>
-        row.metric_type === 'budgetary_impact' && parseInt(row.year) === 2026
-      )
-      const budgetaryImpact2026 = budgetaryImpact2026Data.reduce((sum, row) =>
-        sum + Math.abs(parseFloat(row.value)), 0
-      )
+      // Calculate budgetary impact for 2026 (metrics always show 2026)
+      const budgetaryImpact2026 = filteredBudgetary
+        .filter(row => parseInt(row.year) === 2026)
+        .reduce((sum, row) => sum + parseFloat(row.value), 0)
 
-      // Build distributional data (by income decile)
-      const distributional2026Data = filteredData.filter(row =>
-        row.metric_type === 'distributional_impact' && parseInt(row.year) === 2026
-      )
+      // Build distributional data (grouped by decile with policy breakdown)
+      // Always include all policy keys for smooth animations
+      const decileOrder = ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th', '10th']
+      const distributionalSelectedYear = distributionalData.filter(row => parseInt(row.year) === selectedYear)
+      const distributionalChartData = decileOrder.map(decile => {
+        const dataPoint = { decile }
+        let netChange = 0
+        DEFAULT_POLICIES.forEach(policy => {
+          const isSelected = selectedPolicies.includes(policy.id)
+          const dataRow = distributionalSelectedYear.find(row =>
+            row.reform_id === policy.id && row.decile === decile
+          )
+          const value = isSelected && dataRow ? parseFloat(dataRow.value) : 0
+          dataPoint[policy.name] = value
+          netChange += value
+        })
+        dataPoint.netChange = netChange
+        return dataPoint
+      })
 
-      let distributionalData = null
-      if (distributional2026Data.length > 0) {
-        // Sort by decile order
-        const decileOrder = ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th', '10th']
-        distributionalData = distributional2026Data
-          .map(row => ({
-            decile: row.decile,
-            percentChange: parseFloat(row.value)
-          }))
-          .sort((a, b) => decileOrder.indexOf(a.decile) - decileOrder.indexOf(b.decile))
-      }
+      // Build waterfall data (grouped by decile with policy breakdown)
+      // Always include all policy keys for smooth animations
+      const waterfallSelectedYear = winnersLosersData.filter(row => parseInt(row.year) === selectedYear && row.decile !== 'all')
+      const waterfallDeciles = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10']
+      const waterfallData = waterfallDeciles.map(decile => {
+        const dataPoint = { decile }
+        let netChange = 0
+        DEFAULT_POLICIES.forEach(policy => {
+          const isSelected = selectedPolicies.includes(policy.id)
+          const dataRow = waterfallSelectedYear.find(row =>
+            row.reform_id === policy.id && row.decile === decile
+          )
+          const value = isSelected && dataRow ? parseFloat(dataRow.avg_change) : 0
+          dataPoint[policy.name] = value
+          netChange += value
+        })
+        dataPoint.netChange = netChange
+        return dataPoint
+      })
 
-      // Build income change by decile data (simple bar chart)
-      const winnersLosers2026Data = filteredData.filter(row =>
-        row.metric_type === 'winners_losers' && parseInt(row.year) === 2026
-      )
-
-      let waterfallData = null
-      if (winnersLosers2026Data.length > 0) {
-        // Transform data into format: { decile: "1", avg_change: 123.45 }
-        waterfallData = winnersLosers2026Data.map(row => ({
-          decile: row.decile,
-          avg_change: parseFloat(row.value)
-        }))
-      }
-
-      // Extract additional metrics from CSV
-      const peopleAffectedData = filteredData.filter(row =>
-        row.metric_type === 'people_affected' && parseInt(row.year) === 2026
-      )
-      const percentAffected = peopleAffectedData.length > 0
-        ? peopleAffectedData.reduce((sum, row) => sum + parseFloat(row.value), 0)
-        : null
-
-      const giniChangeData = filteredData.filter(row =>
-        row.metric_type === 'gini_change' && parseInt(row.year) === 2026
-      )
-      const giniChange = giniChangeData.length > 0
-        ? giniChangeData.reduce((sum, row) => sum + parseFloat(row.value), 0)
-        : null
-
-      // Get poverty rate change (percentage points)
-      const povertyRateChangeData = filteredData.filter(row =>
-        row.metric_type === 'poverty_rate_change_pp' && parseInt(row.year) === 2026
-      )
-      const povertyRateChange = povertyRateChangeData.length > 0
-        ? povertyRateChangeData.reduce((sum, row) => sum + parseFloat(row.value), 0)
-        : null
+      // Extract metrics for 2026 (metrics always show 2026)
+      const metrics2026 = filteredMetrics.find(row => parseInt(row.year) === 2026)
+      const percentAffected = metrics2026 ? parseFloat(metrics2026.people_affected) : null
+      const giniChange = metrics2026 ? parseFloat(metrics2026.gini_change) : null
+      const povertyRateChange = metrics2026 ? parseFloat(metrics2026.poverty_change_pp) : null
 
       // Calculate fiscal headroom for 2029/30
-      const budgetaryImpact2029Data = filteredData.filter(row =>
-        row.metric_type === 'budgetary_impact' && parseInt(row.year) === 2029
-      )
-      const budgetaryImpact2029 = budgetaryImpact2029Data.length > 0
-        ? budgetaryImpact2029Data.reduce((sum, row) => sum + parseFloat(row.value), 0)
-        : 0
-
-      // OBR baseline headroom is £9.9bn, reform impact reduces it
-      // If impact is -3.37 (costs money), headroom = 9.9 + (-3.37) = 6.53
+      const budgetaryImpact2029 = filteredBudgetary
+        .filter(row => parseInt(row.year) === 2029)
+        .reduce((sum, row) => sum + parseFloat(row.value), 0)
       const obrBaselineHeadroom = 9.9
       const fiscalHeadroom2029 = obrBaselineHeadroom + budgetaryImpact2029
 
-      const metrics = {
-        fiscalHeadroom2029: fiscalHeadroom2029,
-        budgetaryImpact2026: budgetaryImpact2026,
-        percentAffected: percentAffected,
-        giniChange: giniChange,
-        povertyRateChange: povertyRateChange
-      }
-
-      // Build household scatter data
-      const householdScatterData = filteredData.filter(row =>
-        row.metric_type === 'household_scatter' && parseInt(row.year) === 2026
-      )
-
-      let householdData = null
-      if (householdScatterData.length > 0) {
-        householdData = householdScatterData.map(row => ({
-          baseline_income: parseFloat(row.value),
-          income_change: parseFloat(row.employment_income), // Reusing this field for income_change
-          household_weight: parseFloat(row.household_weight || 1)
-        }))
-      }
-
       setResults({
-        metrics,
+        metrics: {
+          fiscalHeadroom2029,
+          budgetaryImpact2026,
+          percentAffected,
+          giniChange,
+          povertyRateChange
+        },
         budgetData,
-        distributionalData,
-        householdData,
-        waterfallData
+        distributionalData: distributionalChartData.length > 0 ? distributionalChartData : null,
+        waterfallData: waterfallData.length > 0 ? waterfallData : null,
+        householdScatterData: filteredHouseholdScatter.length > 0 ? filteredHouseholdScatter : null,
+        rawDistributional: filteredDistributional,
+        rawWinnersLosers: filteredWinnersLosers,
+        rawHouseholdScatter: filteredHouseholdScatter
       })
     } catch (error) {
       console.error('Error loading results:', error)
@@ -257,8 +269,6 @@ function App() {
           </div>
           <div className="header-center">
             <h1>UK Autumn Budget 2025 analysis</h1>
-          </div>
-          <div className="header-right">
           </div>
         </div>
       </header>
@@ -316,15 +326,7 @@ function App() {
                     </div>
                   </div>
                   <div className="key-metric">
-                    <div className="metric-text">Share of people affected</div>
-                    <div className="metric-number">
-                      {results.metrics.percentAffected !== null
-                        ? `${results.metrics.percentAffected.toFixed(1)}%`
-                        : 'No data'}
-                    </div>
-                  </div>
-                  <div className="key-metric">
-                    <div className="metric-text">Change in inequality (Gini coefficient)</div>
+                    <div className="metric-text">Change in inequality (Gini coefficient)<br />in 2026-27</div>
                     <div className="metric-number">
                       {results.metrics.giniChange !== null
                         ? `${(results.metrics.giniChange * 100).toFixed(1)}%`
@@ -333,7 +335,7 @@ function App() {
                   </div>
                   <div className="key-metric">
                     <div className="metric-text">
-                      Change in poverty rate (absolute BHC)
+                      Change in poverty rate (absolute BHC)<br />in 2026-27
                       <span className="info-icon-wrapper">
                         <svg className="info-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                           <circle cx="12" cy="12" r="10"></circle>
@@ -354,43 +356,59 @@ function App() {
                 {/* Summary Paragraph */}
                 <div className="summary-paragraph">
                   <p>
-                    Use the policy selector in the top left to choose which budget reforms to analyse.
-                    This dashboard provides a comprehensive analysis of the selected policy reforms.
-                    The metrics below show the immediate fiscal impact and long-term effects on government finances,
-                    alongside distributional outcomes including changes to inequality and poverty rates.
-                    Use the visualisations to explore how these policies affect different households across
-                    income levels, regions, and demographic groups.
+                    <strong>Use the policy selector in the top left to choose which budget reforms to analyse.</strong> This dashboard models the fiscal and distributional impacts of selected policies, showing their effects on Government revenues, household incomes, poverty rates, and inequality. Explore the visualisations below to understand how reforms affect different households across income levels, regions, and demographic groups.
                   </p>
+
+                  {/* Selected Policies Explanations */}
+                  {selectedPolicies.length > 0 && (
+                    <div className="policy-explanations-section">
+                      <h3>Selected {selectedPolicies.length === 1 ? 'policy' : 'policies'}</h3>
+                      <p style={{ marginBottom: '12px' }}>
+                        The following {selectedPolicies.length === 1 ? 'is the policy' : 'are the policies'} you have selected for analysis:
+                      </p>
+                      <ul style={{ marginLeft: '20px', lineHeight: '1.7' }}>
+                        {DEFAULT_POLICIES.filter(policy => selectedPolicies.includes(policy.id)).map(policy => {
+                          return (
+                            <li key={policy.id} style={{ marginBottom: '12px' }}>
+                              <strong>{policy.name}:</strong> {policy.explanation}
+                            </li>
+                          )
+                        })}
+                      </ul>
+                    </div>
+                  )}
                 </div>
 
                 {/* Section: Who is affected */}
                 <div className="section-header">
-                  <h2>Household and fiscal impacts</h2>
-                  <p>How selected policies affect individual households and government revenues over time</p>
+                  <h2>Household and revenue impacts</h2>
+                  <p>This section shows how selected policies affect individual households across different income levels, alongside the projected impact on government revenues over the 2026-27 to 2029-30 fiscal year.</p>
                 </div>
                 <div className="primary-charts">
-                  <EmploymentIncomeChart />
-                  <BudgetaryImpactChart data={results.budgetData} policyColors={POLICY_COLORS} />
+                  <EmploymentIncomeChart selectedPolicies={selectedPolicies} selectedYear={2026} />
+                  <BudgetaryImpactChart data={results.budgetData} />
                 </div>
 
                 {/* Section: Impact over time and distribution */}
                 <div className="section-header">
                   <h2>Distributional analysis</h2>
-                  <p>Income changes across deciles and the proportion of winners and losers from policy reforms</p>
+                  <p>This section shows how the selected policies affect net income across household income deciles, displaying both the relative percentage change and absolute cash amount gained or lost by households in each income group.</p>
                 </div>
                 <div className="secondary-charts">
-                  <DistributionalChart data={results.distributionalData} />
-                  <WaterfallChart data={results.waterfallData} />
+                  <DistributionalChart rawData={results.rawDistributional} selectedPolicies={selectedPolicies} />
+                  <WaterfallChart rawData={results.rawWinnersLosers} selectedPolicies={selectedPolicies} />
                 </div>
 
                 {/* Section: Breakdown of the effects */}
                 <div className="section-header">
-                  <h2>Geographic and demographic breakdown</h2>
-                  <p>Regional variation in policy impacts across Parliamentary constituencies and demographic groups</p>
+                  <h2>Regional and demographic analysis</h2>
+                  <p>This section shows the geographic distribution of policy impacts across all 650 UK Parliamentary constituencies and displays how individual households at different baseline income levels experience net income changes from the selected reforms.</p>
                 </div>
                 <div className="secondary-charts">
                   <ConstituencyMap selectedPolicies={selectedPolicies} />
-                  <HouseholdChart data={results.householdData} />
+                  {results.rawHouseholdScatter && (
+                    <HouseholdChart rawData={results.rawHouseholdScatter} selectedPolicies={selectedPolicies} />
+                  )}
                 </div>
               </>
             )}

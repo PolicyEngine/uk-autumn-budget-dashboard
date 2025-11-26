@@ -362,8 +362,8 @@
 
 .chart-description {
   color: var(--pe-gray-600);
-  font-size: 0.95rem;
-  line-height: 1.6;
+  font-size: 0.875rem;
+  line-height: 1.4;
   margin-bottom: 1.5rem;
   margin-top: 0;
 }

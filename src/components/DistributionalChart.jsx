@@ -1,7 +1,37 @@
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine, LabelList } from 'recharts'
+import { useState } from 'react'
+import { ComposedChart, Bar, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ReferenceLine } from 'recharts'
+import YearSlider from './YearSlider'
 import './DistributionalChart.css'
 
-function DistributionalChart({ data }) {
+const POLICY_COLORS = {
+  // GOOD for households (teal spectrum) - these increase household income
+  'National Insurance rate reduction': '#0F766E',  // Darkest teal (biggest ~£12bn)
+  'Zero-rate VAT on domestic energy': '#14B8A6',   // Medium teal (~£3.3bn)
+  '2 child limit repeal': '#2DD4BF',               // Light teal (~£3bn)
+  'Fuel duty freeze': '#5EEAD4',                   // Lightest teal (smallest ~£1.5bn)
+
+  // BAD for households (red spectrum) - these decrease household income
+  'Income tax increase (basic and higher +2pp)': '#991B1B',  // Darkest red (biggest ~£20bn)
+  'Threshold freeze extension': '#B91C1C',                   // Dark red (~£4-7bn)
+  'Salary sacrifice cap': '#F87171'                          // Light red (smallest ~£1.4bn)
+}
+
+// Order: biggest magnitude closest to zero line (darkest colours at zero)
+const ALL_POLICY_NAMES = [
+  // Good for households (positive, teal) - biggest at bottom (closest to zero), smallest at top
+  'National Insurance rate reduction',
+  'Zero-rate VAT on domestic energy',
+  '2 child limit repeal',
+  'Fuel duty freeze',
+  // Bad for households (negative, red) - biggest at top (closest to zero), smallest at bottom
+  'Income tax increase (basic and higher +2pp)',
+  'Threshold freeze extension',
+  'Salary sacrifice cap'
+]
+
+function DistributionalChart({ rawData, selectedPolicies }) {
+  const [internalYear, setInternalYear] = useState(2026)
+
   const formatPercent = (value) => `${value.toFixed(1)}%`
 
   // Remove "st", "nd", "rd", "th" from decile labels
@@ -9,41 +39,100 @@ function DistributionalChart({ data }) {
     return value.replace(/st|nd|rd|th/g, '')
   }
 
-  // Calculate Y-axis domain for better space utilization
-  const getYAxisDomain = () => {
-    if (!data || data.length === 0) return [0, 'auto']
+  // Build chart data for internal year
+  const POLICIES = [
+    { id: 'two_child_limit', name: '2 child limit repeal' },
+    { id: 'income_tax_increase_2pp', name: 'Income tax increase (basic and higher +2pp)' },
+    { id: 'threshold_freeze_extension', name: 'Threshold freeze extension' },
+    { id: 'ni_rate_reduction', name: 'National Insurance rate reduction' },
+    { id: 'zero_vat_energy', name: 'Zero-rate VAT on domestic energy' },
+    { id: 'salary_sacrifice_cap', name: 'Salary sacrifice cap' },
+    { id: 'fuel_duty_freeze', name: 'Fuel duty freeze' }
+  ]
 
-    const values = data.map(d => d.percentChange)
-    const maxValue = Math.max(...values)
-    const minValue = Math.min(...values, 0) // Include 0 if all values are positive
+  const decileOrder = ['1st', '2nd', '3rd', '4th', '5th', '6th', '7th', '8th', '9th', '10th']
+  const distributionalSelectedYear = rawData ? rawData.filter(row =>
+    parseInt(row.year) === internalYear && selectedPolicies.includes(row.reform_id)
+  ) : []
 
-    // Add 10% padding to the top
-    const topPadding = maxValue * 0.1
-    const bottomPadding = minValue < 0 ? Math.abs(minValue) * 0.1 : 0
+  // Policies that need sign flip (raise revenue but data shows positive household impact incorrectly)
+  const FLIP_SIGN_POLICIES = ['salary_sacrifice_cap']
 
-    return [minValue - bottomPadding, maxValue + topPadding]
+  const data = decileOrder.map(decile => {
+    const dataPoint = { decile }
+    let netChange = 0
+    POLICIES.forEach(policy => {
+      const isSelected = selectedPolicies.includes(policy.id)
+      const dataRow = distributionalSelectedYear.find(row =>
+        row.reform_id === policy.id && row.decile === decile
+      )
+      let value = isSelected && dataRow ? parseFloat(dataRow.value) : 0
+      // Flip sign for policies with incorrect data sign
+      if (FLIP_SIGN_POLICIES.includes(policy.id)) {
+        value = -value
+      }
+      dataPoint[policy.name] = value
+      netChange += value
+    })
+    dataPoint.netChange = netChange
+    return dataPoint
+  })
+
+  // Calculate y-axis domain across ALL years, symmetrical around zero
+  const calculateYAxisDomain = () => {
+    const allYears = [2026, 2027, 2028, 2029]
+    let minValue = 0
+    let maxValue = 0
+
+    allYears.forEach(year => {
+      const yearData = rawData ? rawData.filter(row =>
+        parseInt(row.year) === year && selectedPolicies.includes(row.reform_id)
+      ) : []
+
+      decileOrder.forEach(decile => {
+        let positiveSum = 0
+        let negativeSum = 0
+
+        POLICIES.forEach(policy => {
+          const isSelected = selectedPolicies.includes(policy.id)
+          const dataRow = yearData.find(row =>
+            row.reform_id === policy.id && row.decile === decile
+          )
+          let value = isSelected && dataRow ? parseFloat(dataRow.value) : 0
+          // Flip sign for policies with incorrect data sign
+          if (FLIP_SIGN_POLICIES.includes(policy.id)) {
+            value = -value
+          }
+          if (value > 0) positiveSum += value
+          else negativeSum += value
+        })
+
+        minValue = Math.min(minValue, negativeSum)
+        maxValue = Math.max(maxValue, positiveSum)
+      })
+    })
+
+    // Round to nice numbers and make symmetrical
+    const roundToNice = (val) => {
+      if (val <= 1) return Math.ceil(val * 2) / 2  // Round to 0.5
+      if (val <= 5) return Math.ceil(val)          // Round to 1
+      return Math.ceil(val / 2) * 2                // Round to 2
+    }
+
+    const maxAbs = Math.max(Math.abs(minValue), Math.abs(maxValue)) + 0.2
+    const rounded = roundToNice(maxAbs)
+
+    return [-rounded, rounded]
   }
 
-  // Generate exactly 5 evenly spaced ticks
-  const getYAxisTicks = () => {
-    const [min, max] = getYAxisDomain()
-    const range = max - min
-    const step = range / 4 // 4 intervals = 5 ticks
-    return [
-      min,
-      min + step,
-      min + step * 2,
-      min + step * 3,
-      max
-    ]
-  }
+  const yAxisDomain = calculateYAxisDomain()
 
-  if (!data || data.length === 0) {
+  if (!rawData || rawData.length === 0) {
     return (
       <div className="distributional-chart">
-        <h2>Impact by income decile — relative</h2>
+        <h2>Relative impact by income decile</h2>
         <p className="chart-description">
-          Average percentage change in net income for each income decile, from the poorest 10% (1st) to the richest 10% (10th) of households.
+          This chart shows the percentage change in net income by decile, displaying the proportional impact relative to baseline income.
         </p>
         <div style={{ padding: '60px 20px', textAlign: 'center', color: '#666', backgroundColor: '#f9f9f9', borderRadius: '8px' }}>
           <p style={{ margin: 0, fontSize: '0.95rem' }}>No data available yet for this metric</p>
@@ -52,17 +141,25 @@ function DistributionalChart({ data }) {
     )
   }
 
+  // Check which policies have non-zero values
+  const hasNonZeroValues = (policyName) => {
+    return data.some(d => Math.abs(d[policyName] || 0) > 0.0001)
+  }
+
+  const activePolicies = ALL_POLICY_NAMES.filter(hasNonZeroValues)
+
   return (
     <div className="distributional-chart">
-      <h2>Impact by income decile — relative</h2>
+      <h2>Relative impact by income decile</h2>
       <p className="chart-description">
-        Average percentage change in net income for each income decile, from the poorest 10% (1st) to the richest 10% (10th) of households.
+        This chart shows the percentage change in net income by decile, displaying the proportional impact relative to baseline income. Positive values indicate gains; negative values indicate losses.
       </p>
 
       <ResponsiveContainer width="100%" height={420}>
-        <BarChart
+        <ComposedChart
           data={data}
-          margin={{ top: 20, right: 30, left: 30, bottom: 20 }}
+          margin={{ top: 20, right: 30, left: 70, bottom: 20 }}
+          stackOffset="sign"
         >
           <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
           <XAxis
@@ -77,8 +174,7 @@ function DistributionalChart({ data }) {
             }}
           />
           <YAxis
-            domain={getYAxisDomain()}
-            ticks={getYAxisTicks()}
+            domain={yAxisDomain}
             label={{
               value: 'Percentage change in net income (%)',
               angle: -90,
@@ -88,29 +184,70 @@ function DistributionalChart({ data }) {
             }}
             tickFormatter={formatPercent}
             tick={{ fontSize: 12, fill: '#666' }}
+            ticks={(() => {
+              const [min, max] = yAxisDomain
+              const range = max - min
+              let interval = 0.5
+              if (range > 4) interval = 1
+              if (range > 10) interval = 2
+              const ticks = []
+              for (let i = min; i <= max + 0.001; i += interval) {
+                ticks.push(Math.round(i * 10) / 10)
+              }
+              if (!ticks.includes(0)) ticks.push(0)
+              return ticks.sort((a, b) => a - b)
+            })()}
           />
+          <ReferenceLine y={0} stroke="#666" strokeWidth={1} />
           <Tooltip
-            formatter={(value) => formatPercent(value)}
+            formatter={(value, name) => [formatPercent(value), name === 'netChange' ? 'Net change' : name]}
             labelFormatter={(label) => `${label} decile`}
             contentStyle={{ background: 'white', border: '1px solid #e5e7eb', borderRadius: '6px' }}
+            wrapperStyle={{ top: '-120px', left: '50%', transform: 'translateX(-50%)' }}
+            cursor={{ fill: 'rgba(49, 151, 149, 0.1)' }}
           />
-          <ReferenceLine y={0} stroke="#333" strokeWidth={1} />
-          <Bar
-            dataKey="percentChange"
-            fill="#319795"
-            name="% change in net income"
-            animationDuration={800}
-            animationBegin={0}
-          >
-            <LabelList
-              dataKey="percentChange"
-              position="inside"
-              formatter={(value) => Math.abs(value) >= 0.1 ? `${value.toFixed(1)}%` : ''}
-              style={{ fontSize: 11, fill: 'white', fontWeight: 500 }}
+          <Legend
+            wrapperStyle={{ paddingTop: '20px' }}
+            iconType="rect"
+            payload={[
+              ...activePolicies.map(name => ({
+                value: name,
+                type: 'rect',
+                color: POLICY_COLORS[name]
+              })),
+              ...(activePolicies.length > 1 ? [{
+                value: 'Net change',
+                type: 'line',
+                color: '#FBBF24'
+              }] : [])
+            ]}
+          />
+          {ALL_POLICY_NAMES.map((policyName) => (
+            <Bar
+              key={policyName}
+              dataKey={policyName}
+              fill={POLICY_COLORS[policyName]}
+              name={policyName}
+              stackId="stack"
+              animationDuration={500}
+              animationBegin={0}
+              hide={!hasNonZeroValues(policyName)}
             />
-          </Bar>
-        </BarChart>
+          ))}
+          <Line
+            type="monotone"
+            dataKey="netChange"
+            stroke="#FBBF24"
+            strokeWidth={3}
+            dot={{ fill: '#FBBF24', stroke: '#92400E', strokeWidth: 2, r: 5 }}
+            name="netChange"
+            animationDuration={500}
+            hide={activePolicies.length <= 1}
+          />
+        </ComposedChart>
       </ResponsiveContainer>
+
+      <YearSlider selectedYear={internalYear} onYearChange={setInternalYear} />
     </div>
   )
 }

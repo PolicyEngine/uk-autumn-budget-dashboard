@@ -2,54 +2,66 @@ import { useState, useEffect } from 'react'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 import './EmploymentIncomeChart.css'
 
-function EmploymentIncomeChart() {
+function EmploymentIncomeChart({ selectedPolicies, selectedYear = 2026 }) {
   const [data, setData] = useState([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     // Load income curve data from CSV
-    fetch('/data/reform-results.csv')
+    fetch('/data/income_curve.csv')
       .then(response => response.text())
       .then(csvText => {
         const lines = csvText.trim().split('\n')
         const headers = lines[0].split(',')
 
-        // Parse income curve data
-        const incomeCurveData = []
-
+        // Parse all income curve data
+        const allData = []
         for (let i = 1; i < lines.length; i++) {
           const values = lines[i].split(',')
           const row = {}
           headers.forEach((header, index) => {
             row[header] = values[index]
           })
-
-          // Filter for income_curve metric
-          if (row.metric_type === 'income_curve' && row.reform_id === 'two_child_limit') {
-            incomeCurveData.push({
-              employment_income: parseFloat(row.employment_income),
-              category: row.category,
-              net_income: parseFloat(row.value)
-            })
-          }
+          allData.push(row)
         }
 
-        // Group by employment income
-        const groupedData = {}
-        incomeCurveData.forEach(item => {
-          const empIncome = item.employment_income
-          if (!groupedData[empIncome]) {
-            groupedData[empIncome] = { employment: empIncome }
-          }
-          if (item.category === 'baseline') {
-            groupedData[empIncome].baseline = item.net_income
-          } else if (item.category === 'reform') {
-            groupedData[empIncome].reform = item.net_income
+        // Filter by selected year
+        const yearFilteredData = allData.filter(row => parseInt(row.year) === selectedYear)
+
+        // Get unique employment income values (up to 100k)
+        const employmentIncomes = [...new Set(
+          yearFilteredData
+            .filter(row => parseFloat(row.employment_income) <= 100000)
+            .map(row => parseFloat(row.employment_income))
+        )].sort((a, b) => a - b)
+
+        // Build chart data: for each employment income, compute baseline and combined reform
+        const chartData = employmentIncomes.map(income => {
+          // Get baseline from any row (it's the same across reforms)
+          const baselineRow = yearFilteredData.find(row =>
+            parseFloat(row.employment_income) === income
+          )
+          const baseline = baselineRow ? parseFloat(baselineRow.baseline_net_income) : 0
+
+          // Sum up the income changes from each selected policy
+          let totalIncomeChange = 0
+          selectedPolicies.forEach(policyId => {
+            const policyRow = yearFilteredData.find(row =>
+              row.reform_id === policyId && parseFloat(row.employment_income) === income
+            )
+            if (policyRow) {
+              const reformIncome = parseFloat(policyRow.reform_net_income)
+              const baselineIncome = parseFloat(policyRow.baseline_net_income)
+              totalIncomeChange += (reformIncome - baselineIncome)
+            }
+          })
+
+          return {
+            employment: income,
+            baseline: baseline,
+            reform: baseline + totalIncomeChange
           }
         })
-
-        // Convert to array and sort
-        const chartData = Object.values(groupedData).sort((a, b) => a.employment - b.employment)
 
         setData(chartData)
         setLoading(false)
@@ -58,21 +70,21 @@ function EmploymentIncomeChart() {
         console.error('Error loading income curve data:', error)
         setLoading(false)
       })
-  }, [])
+  }, [selectedPolicies, selectedYear])
 
   const formatCurrency = (value) => {
     if (value >= 1000) {
-      return `£${(value / 1000).toFixed(1)}k`
+      return `£${(value / 1000).toFixed(0)}k`
     }
-    return `£${value.toFixed(1)}`
+    return `£${value.toFixed(0)}`
   }
 
   if (loading) {
     return (
       <div className="employment-income-chart">
-        <h2>Employment income to net income</h2>
+        <h2>Household net income analysis</h2>
         <p className="chart-description">
-          Relationship between household head employment income and total household net income
+          This chart shows the relationship between household head employment income and total household net income in 2026-27.
         </p>
         <div style={{ textAlign: 'center', padding: '40px', color: '#666' }}>
           Loading income curve data...
@@ -83,15 +95,15 @@ function EmploymentIncomeChart() {
 
   return (
     <div className="employment-income-chart">
-      <h2>Employment income to net income</h2>
+      <h2>Household net income analysis</h2>
       <p className="chart-description">
-        Relationship between household head employment income and total household net income
+        This chart models a household with 2 adults (both age 40) and 3 children (ages 7, 5, and 3) in 2026-27. The primary earner contributes £10,000 annually to their pension. Baseline shows current policy, reform shows impact after selected changes.
       </p>
 
-      <ResponsiveContainer width="100%" height={500}>
+      <ResponsiveContainer width="100%" height={430}>
         <LineChart
           data={data}
-          margin={{ top: 25, right: 30, left: 20, bottom: 80 }}
+          margin={{ top: 25, right: 30, left: 20, bottom: 60 }}
         >
           <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
           <XAxis
@@ -106,8 +118,8 @@ function EmploymentIncomeChart() {
             tickFormatter={formatCurrency}
             tick={{ fontSize: 12, fill: '#6b7280' }}
             height={60}
-            ticks={[0, 20000, 40000, 60000, 80000, 100000, 120000, 140000, 160000, 180000, 200000]}
-            domain={[0, 200000]}
+            ticks={[0, 20000, 40000, 60000, 80000, 100000]}
+            domain={[0, 100000]}
           />
           <YAxis
             label={{
@@ -120,8 +132,8 @@ function EmploymentIncomeChart() {
             tickFormatter={formatCurrency}
             tick={{ fontSize: 12, fill: '#6b7280' }}
             width={80}
-            ticks={[0, 20000, 40000, 60000, 80000, 100000, 120000, 140000]}
-            domain={[0, 140000]}
+            ticks={[0, 20000, 40000, 60000, 80000]}
+            domain={[0, 80000]}
           />
           <Tooltip
             formatter={(value) => formatCurrency(value)}
@@ -150,19 +162,19 @@ function EmploymentIncomeChart() {
             strokeWidth={3}
             dot={false}
             name="Baseline"
-            animationDuration={800}
+            animationDuration={500}
             animationBegin={0}
           />
           <Line
             type="monotone"
             dataKey="reform"
-            stroke="#4A7BA7"
+            stroke="#319795"
             strokeWidth={3}
             strokeDasharray="8 4"
             dot={false}
             name="Reform"
-            animationDuration={800}
-            animationBegin={100}
+            animationDuration={500}
+            animationBegin={0}
           />
         </LineChart>
       </ResponsiveContainer>

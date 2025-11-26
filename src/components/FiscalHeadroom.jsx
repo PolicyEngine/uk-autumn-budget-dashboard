@@ -140,7 +140,7 @@ function FiscalHeadroom() {
       </div>
 
       <div className="headroom-note">
-        The fiscal headroom measures the amount of room the government has under its fiscal rules.
+        The fiscal headroom measures the amount of room the Government has under its fiscal rules.
         The OBR baseline is £9.9 billion (0.3% of GDP). This reform {headroom.impact < 0 ? 'reduces' : 'increases'}
         headroom by {formatBillion(Math.abs(headroom.impact))} to {formatBillion(headroom.new)}.
       </div>
