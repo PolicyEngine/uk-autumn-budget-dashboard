@@ -1,28 +1,28 @@
-import { useState, useRef, useEffect } from 'react'
-import './PolicySelector.css'
+import { useState, useRef, useEffect } from "react";
+import "./PolicySelector.css";
 
 function PolicySelector({ policies, selectedPolicies, onPolicyToggle }) {
-  const [isExpanded, setIsExpanded] = useState(false)
-  const dropdownRef = useRef(null)
+  const [isExpanded, setIsExpanded] = useState(false);
+  const dropdownRef = useRef(null);
 
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setIsExpanded(false)
+        setIsExpanded(false);
       }
-    }
+    };
 
     if (isExpanded) {
-      document.addEventListener('mousedown', handleClickOutside)
+      document.addEventListener("mousedown", handleClickOutside);
     }
 
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside)
-    }
-  }, [isExpanded])
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isExpanded]);
 
-  const selectedCount = selectedPolicies.length
+  const selectedCount = selectedPolicies.length;
 
   return (
     <div className="policy-selector" ref={dropdownRef}>
@@ -33,15 +33,17 @@ function PolicySelector({ policies, selectedPolicies, onPolicyToggle }) {
         aria-label="Select policies"
       >
         <span className="policy-selector-label">
-          {selectedCount === 0 ? 'Select policies' : `${selectedCount} ${selectedCount === 1 ? 'policy' : 'policies'} selected`}
+          {selectedCount === 0
+            ? "Select policies"
+            : `${selectedCount} ${selectedCount === 1 ? "policy" : "policies"} selected`}
         </span>
-        <span className="policy-selector-icon">{isExpanded ? '×' : '▼'}</span>
+        <span className="policy-selector-icon">{isExpanded ? "×" : "▼"}</span>
       </button>
 
       {isExpanded && (
         <div className="policy-selector-dropdown">
           <div className="policy-list">
-            {policies.map(policy => (
+            {policies.map((policy) => (
               <label key={policy.id} className="policy-item">
                 <input
                   type="checkbox"
@@ -50,7 +52,9 @@ function PolicySelector({ policies, selectedPolicies, onPolicyToggle }) {
                 />
                 <div className="policy-info">
                   <span className="policy-name">{policy.name}</span>
-                  <span className="policy-description">{policy.description}</span>
+                  <span className="policy-description">
+                    {policy.description}
+                  </span>
                 </div>
               </label>
             ))}
@@ -58,7 +62,7 @@ function PolicySelector({ policies, selectedPolicies, onPolicyToggle }) {
         </div>
       )}
     </div>
-  )
+  );
 }
 
-export default PolicySelector
+export default PolicySelector;

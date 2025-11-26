@@ -1,17 +1,18 @@
 import { useState, useEffect } from "react";
 import {
-  LineChart,
-  Line,
+  AreaChart,
+  Area,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
   Legend,
   ResponsiveContainer,
+  ReferenceLine,
 } from "recharts";
-import "./EmploymentIncomeChart.css";
+import "./EmploymentIncomeDiffChart.css";
 
-function EmploymentIncomeChart({ selectedPolicies, selectedYear = 2026 }) {
+function EmploymentIncomeDiffChart({ selectedPolicies, selectedYear = 2026 }) {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -48,7 +49,7 @@ function EmploymentIncomeChart({ selectedPolicies, selectedYear = 2026 }) {
           ),
         ].sort((a, b) => a - b);
 
-        // Build chart data: for each employment income, compute baseline and combined reform
+        // Build chart data: for each employment income, compute the difference
         const chartData = employmentIncomes.map((income) => {
           // Get baseline from any row (it's the same across reforms)
           const baselineRow = yearFilteredData.find(
@@ -75,8 +76,9 @@ function EmploymentIncomeChart({ selectedPolicies, selectedYear = 2026 }) {
 
           return {
             employment: income,
-            baseline: baseline,
-            reform: baseline + totalIncomeChange,
+            difference: totalIncomeChange,
+            positive: totalIncomeChange >= 0 ? totalIncomeChange : null,
+            negative: totalIncomeChange <= 0 ? totalIncomeChange : null,
           };
         });
 
@@ -90,19 +92,21 @@ function EmploymentIncomeChart({ selectedPolicies, selectedYear = 2026 }) {
   }, [selectedPolicies, selectedYear]);
 
   const formatCurrency = (value) => {
-    if (value >= 1000) {
-      return `£${(value / 1000).toFixed(0)}k`;
+    const absVal = Math.abs(value);
+    if (absVal >= 1000) {
+      const formatted = `£${(absVal / 1000).toFixed(0)}k`;
+      return value < 0 ? `-${formatted}` : formatted;
     }
-    return `£${value.toFixed(0)}`;
+    const formatted = `£${absVal.toFixed(0)}`;
+    return value < 0 ? `-${formatted}` : formatted;
   };
 
   if (loading) {
     return (
-      <div className="employment-income-chart">
-        <h2>Household net income analysis</h2>
+      <div className="employment-income-diff-chart">
+        <h2>Net income change</h2>
         <p className="chart-description">
-          This chart shows the relationship between household head employment
-          income and total household net income in 2026-27.
+          This chart shows the change in household net income under the reform.
         </p>
         <div style={{ textAlign: "center", padding: "40px", color: "#666" }}>
           Loading income curve data...
@@ -111,18 +115,21 @@ function EmploymentIncomeChart({ selectedPolicies, selectedYear = 2026 }) {
     );
   }
 
+  // Calculate symmetric y-axis domain
+  const maxAbs = Math.max(...data.map((d) => Math.abs(d.difference)));
+  const yMax = Math.ceil(maxAbs / 1000) * 1000 || 1000;
+
   return (
-    <div className="employment-income-chart">
-      <h2>Household net income analysis</h2>
+    <div className="employment-income-diff-chart">
+      <h2>Net income change</h2>
       <p className="chart-description">
-        This chart models a household with 2 adults (both age 40) and 3 children
-        (ages 7, 5, and 3) in 2026-27. The primary earner contributes £10,000
-        annually to their pension. Baseline shows current policy, reform shows
-        impact after selected changes.
+        This chart shows the change in household net income (reform minus
+        baseline) for the same household scenario. Green indicates gains, red
+        indicates losses.
       </p>
 
       <ResponsiveContainer width="100%" height={430}>
-        <LineChart
+        <AreaChart
           data={data}
           margin={{ top: 25, right: 30, left: 20, bottom: 60 }}
         >
@@ -149,7 +156,7 @@ function EmploymentIncomeChart({ selectedPolicies, selectedYear = 2026 }) {
           />
           <YAxis
             label={{
-              value: "Household net income",
+              value: "Change in net income",
               angle: -90,
               position: "insideLeft",
               dx: 10,
@@ -163,11 +170,13 @@ function EmploymentIncomeChart({ selectedPolicies, selectedYear = 2026 }) {
             tickFormatter={formatCurrency}
             tick={{ fontSize: 12, fill: "#6b7280" }}
             width={80}
-            ticks={[0, 20000, 40000, 60000, 80000]}
-            domain={[0, 80000]}
+            domain={[-yMax, yMax]}
           />
           <Tooltip
-            formatter={(value) => formatCurrency(value)}
+            formatter={(value, name) => [
+              formatCurrency(value),
+              "Income change",
+            ]}
             labelFormatter={(label) =>
               `Employment income: ${formatCurrency(label)}`
             }
@@ -182,8 +191,8 @@ function EmploymentIncomeChart({ selectedPolicies, selectedYear = 2026 }) {
           />
           <Legend
             wrapperStyle={{ paddingTop: "15px", paddingBottom: "0px" }}
-            iconType="line"
-            iconSize={18}
+            iconType="square"
+            iconSize={14}
             formatter={(value) => (
               <span
                 style={{ fontSize: "13px", fontWeight: 500, color: "#374151" }}
@@ -193,32 +202,40 @@ function EmploymentIncomeChart({ selectedPolicies, selectedYear = 2026 }) {
             )}
             verticalAlign="bottom"
             align="center"
+            payload={[
+              { value: "Gain", type: "square", color: "#319795" },
+              { value: "Loss", type: "square", color: "#E53E3E" },
+            ]}
           />
-          <Line
+          <ReferenceLine y={0} stroke="#374151" strokeWidth={1} />
+          <Area
             type="monotone"
-            dataKey="baseline"
-            stroke="#9CA3AF"
-            strokeWidth={3}
-            dot={false}
-            name="Baseline"
-            animationDuration={500}
-            animationBegin={0}
-          />
-          <Line
-            type="monotone"
-            dataKey="reform"
+            dataKey="positive"
             stroke="#319795"
-            strokeWidth={3}
-            strokeDasharray="8 4"
-            dot={false}
-            name="Reform"
+            strokeWidth={2}
+            fill="#319795"
+            fillOpacity={0.6}
+            baseValue={0}
+            connectNulls={false}
             animationDuration={500}
             animationBegin={0}
           />
-        </LineChart>
+          <Area
+            type="monotone"
+            dataKey="negative"
+            stroke="#E53E3E"
+            strokeWidth={2}
+            fill="#E53E3E"
+            fillOpacity={0.6}
+            baseValue={0}
+            connectNulls={false}
+            animationDuration={500}
+            animationBegin={0}
+          />
+        </AreaChart>
       </ResponsiveContainer>
     </div>
   );
 }
 
-export default EmploymentIncomeChart;
+export default EmploymentIncomeDiffChart;

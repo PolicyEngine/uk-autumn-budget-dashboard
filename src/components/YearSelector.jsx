@@ -1,24 +1,24 @@
-import { useState, useRef, useEffect } from 'react'
-import './YearSelector.css'
+import { useState, useRef, useEffect } from "react";
+import "./YearSelector.css";
 
 function YearSelector({ selectedYear, onYearChange }) {
-  const [isOpen, setIsOpen] = useState(false)
-  const dropdownRef = useRef(null)
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef(null);
 
-  const years = [2026, 2027, 2028, 2029]
+  const years = [2026, 2027, 2028, 2029];
 
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setIsOpen(false)
+        setIsOpen(false);
       }
-    }
+    };
 
-    document.addEventListener('mousedown', handleClickOutside)
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside)
-    }
-  }, [])
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   return (
     <div className="year-selector" ref={dropdownRef}>
@@ -28,7 +28,7 @@ function YearSelector({ selectedYear, onYearChange }) {
       >
         <span className="year-label">Year: {selectedYear}</span>
         <svg
-          className={`dropdown-arrow ${isOpen ? 'open' : ''}`}
+          className={`dropdown-arrow ${isOpen ? "open" : ""}`}
           width="12"
           height="12"
           viewBox="0 0 12 12"
@@ -47,10 +47,10 @@ function YearSelector({ selectedYear, onYearChange }) {
           {years.map((year) => (
             <button
               key={year}
-              className={`year-option ${selectedYear === year ? 'selected' : ''}`}
+              className={`year-option ${selectedYear === year ? "selected" : ""}`}
               onClick={() => {
-                onYearChange(year)
-                setIsOpen(false)
+                onYearChange(year);
+                setIsOpen(false);
               }}
             >
               {year}
@@ -59,7 +59,7 @@ function YearSelector({ selectedYear, onYearChange }) {
         </div>
       )}
     </div>
-  )
+  );
 }
 
-export default YearSelector
+export default YearSelector;

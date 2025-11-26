@@ -12,7 +12,9 @@
   background: white;
   border: 1px solid #d1d5db;
   border-radius: 5px;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu",
+    "Cantarell", sans-serif;
   font-size: 1.05rem;
   font-weight: 500;
   color: #374151;
@@ -26,7 +28,9 @@
 
 .policy-selector-toggle:hover {
   border-color: #0f766e;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05), 0 0 0 2px rgba(15, 118, 110, 0.1);
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.05),
+    0 0 0 2px rgba(15, 118, 110, 0.1);
 }
 
 .policy-selector-toggle:focus {
