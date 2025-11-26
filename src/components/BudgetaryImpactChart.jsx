@@ -29,8 +29,7 @@ const ALL_POLICY_NAMES = [
 
 // Custom label component for net impact values
 const NetImpactLabel = (props) => {
-  const { x, y, value, index, dataLength, activePoliciesCount } = props
-  if (activePoliciesCount <= 1) return null
+  const { x, y, value } = props
 
   const formattedValue = value < 0 ? `-£${Math.abs(value).toFixed(1)}bn` : `£${value.toFixed(1)}bn`
   const yOffset = value >= 0 ? -12 : 18
@@ -153,7 +152,7 @@ function BudgetaryImpactChart({ data }) {
             name="netImpact"
             animationDuration={500}
             hide={activePolicies.length <= 1}
-            label={activePolicies.length > 1 ? <NetImpactLabel activePoliciesCount={activePolicies.length} dataLength={data.length} /> : false}
+            label={activePolicies.length > 1 ? <NetImpactLabel /> : false}
           />
           <ReferenceLine y={0} stroke="#374151" strokeWidth={1} />
         </ComposedChart>
