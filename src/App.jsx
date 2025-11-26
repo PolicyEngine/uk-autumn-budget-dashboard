@@ -54,6 +54,25 @@ const DEFAULT_POLICIES = [
   }
 ]
 
+// Preset policy combinations
+const PRESETS = [
+  {
+    id: 'revenue-neutral',
+    name: 'Revenue-neutral',
+    policies: ['ni_rate_reduction', 'income_tax_increase_2pp']
+  },
+  {
+    id: 'progressive',
+    name: 'Progressive',
+    policies: ['two_child_limit', 'income_tax_increase_2pp', 'threshold_freeze_extension']
+  },
+  {
+    id: 'all',
+    name: 'All policies',
+    policies: DEFAULT_POLICIES.map(p => p.id)
+  }
+]
+
 function parseCSV(csvText) {
   const lines = csvText.trim().split('\n')
   const headers = lines[0].split(',')
@@ -73,6 +92,7 @@ function App() {
   const [selectedPolicies, setSelectedPolicies] = useState([])
   const [selectedYear, setSelectedYear] = useState(2026)
   const [results, setResults] = useState(null)
+  const [showPolicyDetails, setShowPolicyDetails] = useState(false)
 
   // Initialize from URL
   useEffect(() => {
@@ -256,158 +276,140 @@ function App() {
     })
   }
 
+  const handlePresetClick = (presetPolicies) => {
+    setSelectedPolicies(presetPolicies)
+  }
+
   return (
     <div className="app">
-      <header className="app-header">
-        <div className="header-content">
-          <div className="header-left">
-            <PolicySelector
-              policies={DEFAULT_POLICIES}
-              selectedPolicies={selectedPolicies}
-              onPolicyToggle={handlePolicyToggle}
-            />
-          </div>
-          <div className="header-center">
-            <h1>UK Autumn Budget 2025 analysis</h1>
-          </div>
-        </div>
-      </header>
-
       <main className="main-content">
+        {/* Title row with controls */}
+        <div className="title-row">
+          <h1>UK Autumn Budget 2025</h1>
+          <PolicySelector
+            policies={DEFAULT_POLICIES}
+            selectedPolicies={selectedPolicies}
+            onPolicyToggle={handlePolicyToggle}
+          />
+        </div>
+
         {selectedPolicies.length === 0 ? (
           <div className="empty-state">
-            <h2>Welcome to the UK Autumn Budget 2025 dashboard</h2>
-            <p>
-              Select one or more policies from the dropdown above to analyse their potential impacts on UK households and public finances.
-            </p>
-            <p className="help-text">
-              This dashboard is powered by{' '}
-              <a href="https://policyengine.org/uk" target="_blank" rel="noopener noreferrer">
-                PolicyEngine UK
-              </a>
-              , a free, open-source tool for computing the impact of public policy.
-            </p>
+            <p>Select policies to analyse their impact on government revenue and household incomes.</p>
+            <div className="preset-buttons">
+              {PRESETS.map(preset => (
+                <button
+                  key={preset.id}
+                  className="preset-button"
+                  onClick={() => handlePresetClick(preset.policies)}
+                >
+                  {preset.name}
+                </button>
+              ))}
+            </div>
           </div>
         ) : (
           <div className="results-container">
             {results && (
               <>
-                {/* Introduction Section */}
-                <div className="intro-section">
-                  <h2>Highlights and introduction</h2>
+                {/* Hero Chart: Revenue Impact */}
+                <div className="hero-chart">
+                  <BudgetaryImpactChart data={results.budgetData} />
                 </div>
 
                 {/* Key Metrics Row */}
                 <div className="key-metrics-row">
                   <div className="key-metric highlighted">
-                    <div className="metric-label-small">
-                      Fiscal headroom in 2029-30
+                    <div className="metric-label">
+                      Fiscal headroom 2029-30
                       <span className="info-icon-wrapper">
                         <svg className="info-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                           <circle cx="12" cy="12" r="10"></circle>
                           <line x1="12" y1="16" x2="12" y2="12"></line>
                           <line x1="12" y1="8" x2="12.01" y2="8"></line>
                         </svg>
-                        <span className="info-tooltip">Fiscal headroom is the gap between the forecast fiscal position and the point at which the Government would breach its fiscal rule. The budgetary impact of each reform is applied directly to the OBR's forecast current budget balance in 2029-30 to produce the updated headroom.</span>
+                        <span className="info-tooltip">The gap between forecast fiscal position and the Government's fiscal rule breach point. Based on OBR baseline of £9.9bn.</span>
                       </span>
                     </div>
                     <div className="metric-number">
                       {results.metrics.fiscalHeadroom2029 !== null
                         ? `£${results.metrics.fiscalHeadroom2029.toFixed(1)}bn`
-                        : 'No data'}
+                        : '—'}
                     </div>
                   </div>
                   <div className="key-metric">
-                    <div className="metric-label-small">Revenue impact in 2026-27</div>
-                    <div className="metric-number">
-                      {results.metrics.budgetaryImpact2026 !== null
-                        ? `£${results.metrics.budgetaryImpact2026.toFixed(1)}bn`
-                        : 'No data'}
-                    </div>
-                  </div>
-                  <div className="key-metric">
-                    <div className="metric-text">Change in inequality (Gini coefficient)<br />in 2026-27</div>
+                    <div className="metric-label">Inequality (Gini)</div>
                     <div className="metric-number">
                       {results.metrics.giniChange !== null
-                        ? `${(results.metrics.giniChange * 100).toFixed(1)}%`
-                        : 'No data'}
+                        ? `${(results.metrics.giniChange * 100) >= 0 ? '+' : ''}${(results.metrics.giniChange * 100).toFixed(2)}%`
+                        : '—'}
                     </div>
                   </div>
                   <div className="key-metric">
-                    <div className="metric-text">
-                      Change in poverty rate (absolute BHC)<br />in 2026-27
+                    <div className="metric-label">
+                      Poverty rate
                       <span className="info-icon-wrapper">
                         <svg className="info-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                           <circle cx="12" cy="12" r="10"></circle>
                           <line x1="12" y1="16" x2="12" y2="12"></line>
                           <line x1="12" y1="8" x2="12.01" y2="8"></line>
                         </svg>
-                        <span className="info-tooltip">BHC stands for Before Housing Costs. This measures poverty based on household income before deducting housing costs such as rent, mortgage payments, and other housing expenses. Absolute poverty is measured against a fixed threshold that doesn't change with median incomes.</span>
+                        <span className="info-tooltip">Absolute poverty, before housing costs (BHC).</span>
                       </span>
                     </div>
                     <div className="metric-number">
                       {results.metrics.povertyRateChange !== null
-                        ? `${results.metrics.povertyRateChange.toFixed(1)}pp`
-                        : 'No data'}
+                        ? `${results.metrics.povertyRateChange >= 0 ? '+' : ''}${results.metrics.povertyRateChange.toFixed(2)}pp`
+                        : '—'}
                     </div>
                   </div>
                 </div>
 
-                {/* Summary Paragraph */}
-                <div className="summary-paragraph">
-                  <p>
-                    <strong>Use the policy selector in the top left to choose which budget reforms to analyse.</strong> This dashboard models the fiscal and distributional impacts of selected policies, showing their effects on Government revenues, household incomes, poverty rates, and inequality. Explore the visualisations below to understand how reforms affect different households across income levels, regions, and demographic groups.
-                  </p>
-
-                  {/* Selected Policies Explanations */}
-                  {selectedPolicies.length > 0 && (
-                    <div className="policy-explanations-section">
-                      <h3>Selected {selectedPolicies.length === 1 ? 'policy' : 'policies'}</h3>
-                      <p style={{ marginBottom: '12px' }}>
-                        The following {selectedPolicies.length === 1 ? 'is the policy' : 'are the policies'} you have selected for analysis:
-                      </p>
-                      <ul style={{ marginLeft: '20px', lineHeight: '1.7' }}>
-                        {DEFAULT_POLICIES.filter(policy => selectedPolicies.includes(policy.id)).map(policy => {
-                          return (
-                            <li key={policy.id} style={{ marginBottom: '12px' }}>
-                              <strong>{policy.name}:</strong> {policy.explanation}
-                            </li>
-                          )
-                        })}
-                      </ul>
-                    </div>
-                  )}
-                </div>
-
-                {/* Section: Who is affected */}
-                <div className="section-header">
-                  <h2>Household and revenue impacts</h2>
-                  <p>This section shows how selected policies affect individual households across different income levels, alongside the projected impact on government revenues over the 2026-27 to 2029-30 fiscal year.</p>
-                </div>
-                <div className="primary-charts">
+                {/* Charts Grid */}
+                <div className="charts-grid">
                   <EmploymentIncomeChart selectedPolicies={selectedPolicies} selectedYear={2026} />
-                  <BudgetaryImpactChart data={results.budgetData} />
-                </div>
-
-                {/* Section: Impact over time and distribution */}
-                <div className="section-header">
-                  <h2>Distributional analysis</h2>
-                  <p>This section shows how the selected policies affect net income across household income deciles, displaying both the relative percentage change and absolute cash amount gained or lost by households in each income group.</p>
-                </div>
-                <div className="secondary-charts">
                   <DistributionalChart rawData={results.rawDistributional} selectedPolicies={selectedPolicies} />
                   <WaterfallChart rawData={results.rawWinnersLosers} selectedPolicies={selectedPolicies} />
-                </div>
-
-                {/* Section: Breakdown of the effects */}
-                <div className="section-header">
-                  <h2>Regional and demographic analysis</h2>
-                  <p>This section shows the geographic distribution of policy impacts across all 650 UK Parliamentary constituencies and displays how individual households at different baseline income levels experience net income changes from the selected reforms.</p>
-                </div>
-                <div className="secondary-charts">
                   <ConstituencyMap selectedPolicies={selectedPolicies} />
                   {results.rawHouseholdScatter && (
                     <HouseholdChart rawData={results.rawHouseholdScatter} selectedPolicies={selectedPolicies} />
+                  )}
+                </div>
+
+                {/* Policy Details Footer */}
+                <div className="policy-details-footer">
+                  <button
+                    className="policy-details-toggle"
+                    onClick={() => setShowPolicyDetails(!showPolicyDetails)}
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <line x1="12" y1="16" x2="12" y2="12"></line>
+                      <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                    </svg>
+                    About selected policies
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      style={{ transform: showPolicyDetails ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }}
+                    >
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </button>
+                  {showPolicyDetails && (
+                    <div className="policy-details-content">
+                      {DEFAULT_POLICIES.filter(policy => selectedPolicies.includes(policy.id)).map(policy => (
+                        <div key={policy.id} className="policy-detail">
+                          <strong>{policy.name}:</strong> {policy.explanation}
+                        </div>
+                      ))}
+                    </div>
                   )}
                 </div>
               </>
