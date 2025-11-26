@@ -324,7 +324,7 @@ function DistributionalChart({ rawData, selectedPolicies }) {
               </span>
             )}
             payload={[
-              ...activePolicies.map((name) => ({
+              ...ALL_POLICY_NAMES.map((name) => ({
                 value: name,
                 type: "rect",
                 color: POLICY_COLORS[name],
