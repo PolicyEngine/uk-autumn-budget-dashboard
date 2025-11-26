@@ -7,80 +7,41 @@ import ConstituencyMap from "./components/ConstituencyMap";
 import EmploymentIncomeChart from "./components/EmploymentIncomeChart";
 import EmploymentIncomeDiffChart from "./components/EmploymentIncomeDiffChart";
 import HouseholdChart from "./components/HouseholdChart";
+import OBRComparisonTable from "./components/OBRComparisonTable";
 import "./App.css";
 
-// Policy definitions
+// Policy definitions - only policies announced in the November 2025 Autumn Budget
+// Note: NICs on salary-sacrificed pensions is excluded pending data calibration
+// See: https://github.com/PolicyEngine/policyengine-uk-data/issues/215
 const DEFAULT_POLICIES = [
   {
     id: "two_child_limit",
     name: "2 child limit repeal",
     description: "Repeal the two-child limit on benefits",
     explanation:
-      "The two-child limit restricts Universal Credit and Child Tax Credit payments to a maximum number of children per family. Removing this limit would allow families to claim child-related benefit payments for all children without a cap.",
-  },
-  {
-    id: "income_tax_increase_2pp",
-    name: "Income tax increase (basic and higher +2pp)",
-    description: "Raise basic and higher rates by 2 pp",
-    explanation:
-      "This policy increases the basic income tax rate from 20% to 22% and the higher rate from 40% to 42%. Income tax applies to taxable income after pension contributions and other deductions.",
+      "The two-child limit restricts Universal Credit and Child Tax Credit payments to a maximum number of children per family. Removing this limit allows families to claim child-related benefit payments for all children without a cap. The Government estimates this will reduce child poverty by 450,000 by 2029-30.",
   },
   {
     id: "threshold_freeze_extension",
     name: "Threshold freeze extension",
-    description: "Extend the freeze on income tax thresholds",
+    description: "Extend the freeze on income tax thresholds to 2030-31",
     explanation:
-      "This policy extends the freeze on income tax thresholds to 2029-30. Current law already freezes the personal allowance and higher rate threshold until 2027-28. This policy would maintain these thresholds at their current nominal levels for an additional two years.",
-  },
-  {
-    id: "ni_rate_reduction",
-    name: "National Insurance rate reduction",
-    description: "Reduce the main NI rate for employees",
-    explanation:
-      "This policy reduces the main employee National Insurance contribution rate from 8% to 6%. National Insurance applies to gross earnings before pension contributions, unlike income tax which applies after deductions.",
-  },
-  {
-    id: "zero_vat_energy",
-    name: "Zero-rate VAT on domestic energy",
-    description: "Remove 5% VAT from energy bills",
-    explanation:
-      "This policy removes the 5% VAT currently charged on domestic energy bills. Currently, UK households pay VAT at a reduced rate of 5% on electricity and gas consumption.",
-  },
-  {
-    id: "salary_sacrifice_cap",
-    name: "Salary sacrifice cap",
-    description: "Cap salary sacrifice at £2,000/year",
-    explanation:
-      "This policy limits the amount that employees can sacrifice from their salaries into pension contributions without paying national insurance to £2,000 per year. Contributions above this cap would be subject to national insurance.",
+      "This policy extends the freeze on income tax thresholds from 2027-28 to 2030-31. The personal allowance remains frozen at £12,570, the higher-rate threshold at £50,270, and the additional-rate threshold at £125,140. The NICs secondary threshold is also frozen. By 2030-31, the OBR estimates this will bring 5.2 million additional individuals into paying income tax.",
   },
   {
     id: "fuel_duty_freeze",
-    name: "Fuel duty freeze",
-    description: "Extend fuel duty freeze for two years",
+    name: "Fuel duty freeze extension",
+    description: "Extend fuel duty freeze through 2027-28",
     explanation:
-      "This policy extends the fuel duty freeze to maintain the rate at 52.95p per litre for petrol and diesel through 2027-28. Current law includes a temporary 5p cut introduced in 2022. This policy continues that reduced rate for an additional two years before it would revert to the standard rate.",
+      "This policy extends the fuel duty freeze, maintaining the 5p cut introduced in 2022 through 2027-28. The freeze is then unwound with a staged approach from September 2026, and rates are uprated annually by RPI from April 2027.",
   },
 ];
 
 // Preset policy combinations
 const PRESETS = [
   {
-    id: "revenue-neutral",
-    name: "Revenue-neutral",
-    policies: ["ni_rate_reduction", "income_tax_increase_2pp"],
-  },
-  {
-    id: "progressive",
-    name: "Progressive",
-    policies: [
-      "two_child_limit",
-      "income_tax_increase_2pp",
-      "threshold_freeze_extension",
-    ],
-  },
-  {
-    id: "all",
-    name: "All policies",
+    id: "autumn-budget",
+    name: "Autumn Budget 2025",
     policies: DEFAULT_POLICIES.map((p) => p.id),
   },
 ];
@@ -106,13 +67,19 @@ function App() {
   const [results, setResults] = useState(null);
   const [showPolicyDetails, setShowPolicyDetails] = useState(false);
 
+  // Valid policy IDs from DEFAULT_POLICIES
+  const validPolicyIds = DEFAULT_POLICIES.map((p) => p.id);
+
   // Initialize from URL
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const policiesParam = params.get("policies");
 
     if (policiesParam) {
-      const policies = policiesParam.split(",");
+      // Filter to only include valid policy IDs
+      const policies = policiesParam
+        .split(",")
+        .filter((id) => validPolicyIds.includes(id));
       setSelectedPolicies(policies);
     }
   }, []);
@@ -500,6 +467,9 @@ function App() {
                     selectedYear={2026}
                   />
                 </div>
+
+                {/* OBR Comparison Table */}
+                <OBRComparisonTable selectedPolicies={selectedPolicies} />
 
                 {/* Policy Details Footer */}
                 <div id="policy-details" className="policy-details-footer">
