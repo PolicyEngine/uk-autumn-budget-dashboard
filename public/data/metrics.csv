@@ -1,4 +1,8 @@
 reform_id,reform_name,year,people_affected,gini_change,poverty_change_pp,poverty_change_pct
+fuel_duty_freeze,Fuel duty freeze,2026,0.0,0.0,0.0,0.0
+fuel_duty_freeze,Fuel duty freeze,2027,50.43127299012835,-0.000930781791018819,0.0,0.0
+fuel_duty_freeze,Fuel duty freeze,2028,50.34409196999946,-0.0007753578708846354,0.0,0.0
+fuel_duty_freeze,Fuel duty freeze,2029,50.34976545067554,-0.0007948235348913116,0.0,0.0
 salary_sacrifice_cap,Salary sacrifice cap,2026,1.2867876803500857,0.0012435166201720399,7.6293945e-06,6.499276e-05
 salary_sacrifice_cap,Salary sacrifice cap,2027,1.2867674600575596,0.0011723250700040422,7.6293945e-06,6.506661e-05
 salary_sacrifice_cap,Salary sacrifice cap,2028,1.2868024718945106,0.0011002781202652837,6.67572e-06,5.6810528e-05

@@ -632,18 +632,6 @@ def create_ss_cap_reform(employer_response_haircut: float = 0.13, cap_amount: fl
 if __name__ == "__main__":
     scenarios = [
         ScenarioConfig(
-            id="salary_sacrifice_cap",
-            name="Salary sacrifice cap",
-            scenario=create_ss_cap_reform(employer_response_haircut=0.13, cap_amount=2000),
-        ),
-        ScenarioConfig(
-            id="zero_vat_energy",
-            name="Zero-rate VAT on domestic energy",
-            scenario=Scenario(
-                simulation_modifier=zero_rate_energy_vat
-            ),
-        ),
-        ScenarioConfig(
             id="two_child_limit",
             name="2 child limit repeal",
             scenario=Scenario(
@@ -693,6 +681,30 @@ if __name__ == "__main__":
                     "gov.hmrc.national_insurance.class_1.rates.employee.main": {
                         str(y): 0.06 for y in YEARS
                     },
+                }
+            ),
+        ),
+        ScenarioConfig(
+            id="zero_vat_energy",
+            name="Zero-rate VAT on domestic energy",
+            scenario=Scenario(
+                simulation_modifier=zero_rate_energy_vat
+            ),
+        ),
+        ScenarioConfig(
+            id="salary_sacrifice_cap",
+            name="Salary sacrifice cap",
+            scenario=create_ss_cap_reform(employer_response_haircut=0.13, cap_amount=2000),
+        ),
+        ScenarioConfig(
+            id="fuel_duty_freeze",
+            name="Fuel duty freeze",
+            scenario=Scenario(
+                parameter_changes={
+                    "gov.hmrc.fuel_duty.petrol_and_diesel": {
+                        "2026-03-22": 0.5295,
+                        "2027-04-01": 0.5295,
+                    }
                 }
             ),
         )

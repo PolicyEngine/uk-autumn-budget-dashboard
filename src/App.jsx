@@ -45,6 +45,12 @@ const DEFAULT_POLICIES = [
     name: 'Salary sacrifice cap',
     description: 'Cap salary sacrifice at £2,000/year',
     explanation: 'This policy limits the amount that employees can sacrifice from their salaries into pension contributions without paying national insurance to £2,000 per year. Contributions above this cap would be subject to national insurance.'
+  },
+  {
+    id: 'fuel_duty_freeze',
+    name: 'Fuel duty freeze',
+    description: 'Extend fuel duty freeze for two years',
+    explanation: 'This policy extends the fuel duty freeze to maintain the rate at 52.95p per litre for petrol and diesel through 2027-28. Current law includes a temporary 5p cut introduced in 2022. This policy continues that reduced rate for an additional two years before it would revert to the standard rate.'
   }
 ]
 

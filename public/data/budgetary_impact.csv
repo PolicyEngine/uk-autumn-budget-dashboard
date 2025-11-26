@@ -1,4 +1,8 @@
 reform_id,reform_name,year,value
+fuel_duty_freeze,Fuel duty freeze,2026,0.0
+fuel_duty_freeze,Fuel duty freeze,2027,-1.5315589986850306
+fuel_duty_freeze,Fuel duty freeze,2028,-1.300987143579869
+fuel_duty_freeze,Fuel duty freeze,2029,-1.37057316588112
 salary_sacrifice_cap,Salary sacrifice cap,2026,1.3313874386715676
 salary_sacrifice_cap,Salary sacrifice cap,2027,1.351637440123351
 salary_sacrifice_cap,Salary sacrifice cap,2028,1.3754694444393512

@@ -5,6 +5,7 @@ import './WaterfallChart.css'
 
 const POLICY_COLORS = {
   // COSTS (negative impacts - distinct warm/neutral tones)
+  'Fuel duty freeze': '#D1D5DB',                   // Very light gray - cost to treasury
   '2 child limit repeal': '#991B1B',              // Deep red - cost to treasury
   'National Insurance rate reduction': '#A16207',  // Dark amber/gold - cost to treasury
   'Zero-rate VAT on domestic energy': '#EA580C',   // Bright orange - VAT specific (clearly distinct from red)
@@ -21,7 +22,8 @@ const ALL_POLICY_NAMES = [
   'Threshold freeze extension',
   'National Insurance rate reduction',
   'Zero-rate VAT on domestic energy',
-  'Salary sacrifice cap'
+  'Salary sacrifice cap',
+  'Fuel duty freeze'
 ]
 
 function WaterfallChart({ rawData, selectedPolicies }) {
@@ -34,7 +36,8 @@ function WaterfallChart({ rawData, selectedPolicies }) {
     { id: 'threshold_freeze_extension', name: 'Threshold freeze extension' },
     { id: 'ni_rate_reduction', name: 'National Insurance rate reduction' },
     { id: 'zero_vat_energy', name: 'Zero-rate VAT on domestic energy' },
-    { id: 'salary_sacrifice_cap', name: 'Salary sacrifice cap' }
+    { id: 'salary_sacrifice_cap', name: 'Salary sacrifice cap' },
+    { id: 'fuel_duty_freeze', name: 'Fuel duty freeze' }
   ]
 
   const waterfallDeciles = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10']

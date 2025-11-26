@@ -3,6 +3,7 @@ import './BudgetaryImpactChart.css'
 
 const POLICY_COLORS = {
   // COSTS (negative impacts - distinct warm/neutral tones)
+  'Fuel duty freeze': '#D1D5DB',                   // Very light gray - cost to treasury
   '2 child limit repeal': '#991B1B',              // Deep red - cost to treasury
   'National Insurance rate reduction': '#A16207',  // Dark amber/gold - cost to treasury
   'Zero-rate VAT on domestic energy': '#EA580C',   // Bright orange - VAT specific (clearly distinct from red)
@@ -19,7 +20,8 @@ const ALL_POLICY_NAMES = [
   'Threshold freeze extension',
   'National Insurance rate reduction',
   'Zero-rate VAT on domestic energy',
-  'Salary sacrifice cap'
+  'Salary sacrifice cap',
+  'Fuel duty freeze'
 ]
 
 function BudgetaryImpactChart({ data }) {
