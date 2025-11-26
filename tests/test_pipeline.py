@@ -1,6 +1,5 @@
 """Tests for the data generation pipeline."""
 
-
 import pandas as pd
 import pytest
 
