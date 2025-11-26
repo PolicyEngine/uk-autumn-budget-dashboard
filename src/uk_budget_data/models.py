@@ -3,7 +3,7 @@
 from pathlib import Path
 from typing import Any, Callable, Optional
 
-from policyengine_uk import Scenario
+from policyengine_uk.utils.scenario import Scenario
 from pydantic import BaseModel, Field
 
 
