@@ -30,28 +30,28 @@ ALL_RESULTS = []
 # OBR projections for comparison
 OBR_PROJECTIONS = {
     'Dividends Tax Increase (+2pp)': {
-        'description': 'OBR estimate: £1.2bn/year average from 2027-28',
+        'description': 'OBR estimate: £1.2bn/year average from 2027-28 (starts April 2026)',
         'years': {
-            2026: None,  # Policy starts April 2026, behavioural effects expected
+            2026: 1.2,  # Policy starts April 2026 (full year impact assumed)
             2027: 1.2,
             2028: 1.2,
             2029: 1.2,
         }
     },
     'Savings Income Tax Increase (+2pp)': {
-        'description': 'OBR estimate: £0.5bn/year average from 2028-29',
+        'description': 'OBR estimate: £0.5bn/year average from 2028-29 (starts April 2027)',
         'years': {
-            2026: None,
-            2027: None,  # Policy starts April 2027
+            2026: 0.0,  # Not yet implemented
+            2027: 0.5,  # Policy starts April 2027 (full year impact assumed)
             2028: 0.5,
             2029: 0.5,
         }
     },
     'Property Income Tax Increase (+2pp)': {
-        'description': 'OBR estimate: £0.5bn/year average from 2028-29',
+        'description': 'OBR estimate: £0.5bn/year average from 2028-29 (starts April 2027)',
         'years': {
-            2026: None,
-            2027: None,  # Policy starts April 2027
+            2026: 0.0,  # Not yet implemented
+            2027: 0.5,  # Policy starts April 2027 (full year impact assumed)
             2028: 0.5,
             2029: 0.5,
         }
@@ -59,10 +59,10 @@ OBR_PROJECTIONS = {
     'Combined Reforms (All Three)': {
         'description': 'OBR estimate: £2.1bn by 2029-30',
         'years': {
-            2026: None,
-            2027: 1.2,  # Dividends only
-            2028: 2.2,  # Dividends + Savings + Property
-            2029: 2.1,  # Total expected
+            2026: 1.2,  # Dividends only (starts April 2026)
+            2027: 2.2,  # All three (savings + property start April 2027)
+            2028: 2.2,  # All three
+            2029: 2.1,  # Total expected (slight behavioural adjustment)
         }
     }
 }
@@ -87,6 +87,11 @@ def create_income_source_tax_reform(
     wage_mid_adj: float = 0.0,
     wage_upper_adj: float = 0.0,
     wage_top_adj: float = 0.0,
+    # Year from which each income type's adjustment applies
+    rental_start_year: int = 2026,
+    interest_start_year: int = 2026,
+    equity_start_year: int = 2026,
+    wage_start_year: int = 2026,
 ):
     """
     Create income source-specific tax rate adjustment reform.
@@ -135,6 +140,7 @@ def create_income_source_tax_reform(
             unit = "currency-GBP"
 
             def formula(person, period, parameters):
+                year = period.start.year
                 # Extract income by source
                 employment_and_pension = (
                     person("taxable_employment_income", period)
@@ -259,24 +265,40 @@ def create_income_source_tax_reform(
                     np.inf,
                 )
 
-                # Calculate total adjustment
-                return (
+                # Calculate total adjustment (only apply from specified start years)
+                wage_adjustment = (
                     wage_base_adj * wage_in_base
                     + wage_mid_adj * wage_in_mid
                     + wage_upper_adj * wage_in_upper
                     + wage_top_adj * wage_in_top
-                    + rental_base_adj * rental_in_base
+                ) if year >= wage_start_year else 0
+
+                rental_adjustment = (
+                    rental_base_adj * rental_in_base
                     + rental_mid_adj * rental_in_mid
                     + rental_upper_adj * rental_in_upper
                     + rental_top_adj * rental_in_top
-                    + interest_base_adj * interest_in_base
+                ) if year >= rental_start_year else 0
+
+                interest_adjustment = (
+                    interest_base_adj * interest_in_base
                     + interest_mid_adj * interest_in_mid
                     + interest_upper_adj * interest_in_upper
                     + interest_top_adj * interest_in_top
-                    + equity_base_adj * equity_in_base
+                ) if year >= interest_start_year else 0
+
+                equity_adjustment = (
+                    equity_base_adj * equity_in_base
                     + equity_mid_adj * equity_in_mid
                     + equity_upper_adj * equity_in_upper
                     + equity_top_adj * equity_in_top
+                ) if year >= equity_start_year else 0
+
+                return (
+                    wage_adjustment
+                    + rental_adjustment
+                    + interest_adjustment
+                    + equity_adjustment
                 )
 
         # Register the new variable
@@ -331,6 +353,7 @@ def test_dividends_tax_increase(baseline_microsim):
         equity_base_adj=0.02,    # Basic rate: 8.75% → 10.75%
         equity_mid_adj=0.02,     # Higher rate: 33.75% → 35.75%
         equity_top_adj=0.02,     # Additional rate: 39.35% → 41.35%
+        equity_start_year=2026,  # Policy starts April 2026
     )
 
     dataset = UKSingleYearDataset(file_path=str(ENHANCED_DATASET_PATH))
@@ -366,6 +389,7 @@ def test_savings_tax_increase(baseline_microsim):
         interest_base_adj=0.02,    # Basic rate: 20% → 22%
         interest_mid_adj=0.02,     # Higher rate: 40% → 42%
         interest_top_adj=0.02,     # Additional rate: 45% → 47%
+        interest_start_year=2027,  # Policy starts April 2027
     )
 
     dataset = UKSingleYearDataset(file_path=str(ENHANCED_DATASET_PATH))
@@ -401,6 +425,7 @@ def test_property_tax_increase(baseline_microsim):
         rental_base_adj=0.02,    # Basic rate: 20% → 22%
         rental_mid_adj=0.02,     # Higher rate: 40% → 42%
         rental_top_adj=0.02,     # Additional rate: 45% → 47%
+        rental_start_year=2027,  # Policy starts April 2027
     )
 
     dataset = UKSingleYearDataset(file_path=str(ENHANCED_DATASET_PATH))
@@ -433,18 +458,21 @@ def test_combined_reforms(baseline_microsim):
     """
     reform = create_income_source_tax_reform(
         apply_threshold_freeze=False,
-        # Dividends +2pp (from 2026)
+        # Dividends +2pp (from April 2026)
         equity_base_adj=0.02,
         equity_mid_adj=0.02,
         equity_top_adj=0.02,
-        # Savings +2pp (from 2027)
+        equity_start_year=2026,
+        # Savings +2pp (from April 2027)
         interest_base_adj=0.02,
         interest_mid_adj=0.02,
         interest_top_adj=0.02,
-        # Property +2pp (from 2027)
+        interest_start_year=2027,
+        # Property +2pp (from April 2027)
         rental_base_adj=0.02,
         rental_mid_adj=0.02,
         rental_top_adj=0.02,
+        rental_start_year=2027,
     )
 
     dataset = UKSingleYearDataset(file_path=str(ENHANCED_DATASET_PATH))
@@ -509,7 +537,11 @@ def write_results_to_file(output_path="income_source_tax_reforms_results.txt"):
 
                 if obr_value is not None:
                     diff = sim_value - obr_value
-                    diff_str = f"£{diff:+.2f}bn ({diff/obr_value*100:+.1f}%)"
+                    # Avoid division by zero for OBR = 0.0
+                    if obr_value != 0:
+                        diff_str = f"£{diff:+.2f}bn ({diff/obr_value*100:+.1f}%)"
+                    else:
+                        diff_str = f"£{diff:+.2f}bn (OBR=0)"
                 else:
                     diff_str = "N/A"
 
