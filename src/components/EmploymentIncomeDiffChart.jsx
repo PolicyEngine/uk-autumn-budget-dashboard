@@ -1,87 +1,105 @@
-import { useState, useEffect } from 'react'
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ReferenceLine } from 'recharts'
-import './EmploymentIncomeDiffChart.css'
+import { useState, useEffect } from "react";
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+  ReferenceLine,
+} from "recharts";
+import "./EmploymentIncomeDiffChart.css";
 
 function EmploymentIncomeDiffChart({ selectedPolicies, selectedYear = 2026 }) {
-  const [data, setData] = useState([])
-  const [loading, setLoading] = useState(true)
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     // Load income curve data from CSV
-    fetch('/data/income_curve.csv')
-      .then(response => response.text())
-      .then(csvText => {
-        const lines = csvText.trim().split('\n')
-        const headers = lines[0].split(',')
+    fetch("/data/income_curve.csv")
+      .then((response) => response.text())
+      .then((csvText) => {
+        const lines = csvText.trim().split("\n");
+        const headers = lines[0].split(",");
 
         // Parse all income curve data
-        const allData = []
+        const allData = [];
         for (let i = 1; i < lines.length; i++) {
-          const values = lines[i].split(',')
-          const row = {}
+          const values = lines[i].split(",");
+          const row = {};
           headers.forEach((header, index) => {
-            row[header] = values[index]
-          })
-          allData.push(row)
+            row[header] = values[index];
+          });
+          allData.push(row);
         }
 
         // Filter by selected year
-        const yearFilteredData = allData.filter(row => parseInt(row.year) === selectedYear)
+        const yearFilteredData = allData.filter(
+          (row) => parseInt(row.year) === selectedYear,
+        );
 
         // Get unique employment income values (up to 100k)
-        const employmentIncomes = [...new Set(
-          yearFilteredData
-            .filter(row => parseFloat(row.employment_income) <= 100000)
-            .map(row => parseFloat(row.employment_income))
-        )].sort((a, b) => a - b)
+        const employmentIncomes = [
+          ...new Set(
+            yearFilteredData
+              .filter((row) => parseFloat(row.employment_income) <= 100000)
+              .map((row) => parseFloat(row.employment_income)),
+          ),
+        ].sort((a, b) => a - b);
 
         // Build chart data: for each employment income, compute the difference
-        const chartData = employmentIncomes.map(income => {
+        const chartData = employmentIncomes.map((income) => {
           // Get baseline from any row (it's the same across reforms)
-          const baselineRow = yearFilteredData.find(row =>
-            parseFloat(row.employment_income) === income
-          )
-          const baseline = baselineRow ? parseFloat(baselineRow.baseline_net_income) : 0
+          const baselineRow = yearFilteredData.find(
+            (row) => parseFloat(row.employment_income) === income,
+          );
+          const baseline = baselineRow
+            ? parseFloat(baselineRow.baseline_net_income)
+            : 0;
 
           // Sum up the income changes from each selected policy
-          let totalIncomeChange = 0
-          selectedPolicies.forEach(policyId => {
-            const policyRow = yearFilteredData.find(row =>
-              row.reform_id === policyId && parseFloat(row.employment_income) === income
-            )
+          let totalIncomeChange = 0;
+          selectedPolicies.forEach((policyId) => {
+            const policyRow = yearFilteredData.find(
+              (row) =>
+                row.reform_id === policyId &&
+                parseFloat(row.employment_income) === income,
+            );
             if (policyRow) {
-              const reformIncome = parseFloat(policyRow.reform_net_income)
-              const baselineIncome = parseFloat(policyRow.baseline_net_income)
-              totalIncomeChange += (reformIncome - baselineIncome)
+              const reformIncome = parseFloat(policyRow.reform_net_income);
+              const baselineIncome = parseFloat(policyRow.baseline_net_income);
+              totalIncomeChange += reformIncome - baselineIncome;
             }
-          })
+          });
 
           return {
             employment: income,
             difference: totalIncomeChange,
             positive: totalIncomeChange >= 0 ? totalIncomeChange : null,
-            negative: totalIncomeChange <= 0 ? totalIncomeChange : null
-          }
-        })
+            negative: totalIncomeChange <= 0 ? totalIncomeChange : null,
+          };
+        });
 
-        setData(chartData)
-        setLoading(false)
+        setData(chartData);
+        setLoading(false);
       })
-      .catch(error => {
-        console.error('Error loading income curve data:', error)
-        setLoading(false)
-      })
-  }, [selectedPolicies, selectedYear])
+      .catch((error) => {
+        console.error("Error loading income curve data:", error);
+        setLoading(false);
+      });
+  }, [selectedPolicies, selectedYear]);
 
   const formatCurrency = (value) => {
-    const absVal = Math.abs(value)
+    const absVal = Math.abs(value);
     if (absVal >= 1000) {
-      const formatted = `£${(absVal / 1000).toFixed(0)}k`
-      return value < 0 ? `-${formatted}` : formatted
+      const formatted = `£${(absVal / 1000).toFixed(0)}k`;
+      return value < 0 ? `-${formatted}` : formatted;
     }
-    const formatted = `£${absVal.toFixed(0)}`
-    return value < 0 ? `-${formatted}` : formatted
-  }
+    const formatted = `£${absVal.toFixed(0)}`;
+    return value < 0 ? `-${formatted}` : formatted;
+  };
 
   if (loading) {
     return (
@@ -90,22 +108,24 @@ function EmploymentIncomeDiffChart({ selectedPolicies, selectedYear = 2026 }) {
         <p className="chart-description">
           This chart shows the change in household net income under the reform.
         </p>
-        <div style={{ textAlign: 'center', padding: '40px', color: '#666' }}>
+        <div style={{ textAlign: "center", padding: "40px", color: "#666" }}>
           Loading income curve data...
         </div>
       </div>
-    )
+    );
   }
 
   // Calculate symmetric y-axis domain
-  const maxAbs = Math.max(...data.map(d => Math.abs(d.difference)))
-  const yMax = Math.ceil(maxAbs / 1000) * 1000 || 1000
+  const maxAbs = Math.max(...data.map((d) => Math.abs(d.difference)));
+  const yMax = Math.ceil(maxAbs / 1000) * 1000 || 1000;
 
   return (
     <div className="employment-income-diff-chart">
       <h2>Net income change</h2>
       <p className="chart-description">
-        This chart shows the change in household net income (reform minus baseline) for the same household scenario. Green indicates gains, red indicates losses.
+        This chart shows the change in household net income (reform minus
+        baseline) for the same household scenario. Green indicates gains, red
+        indicates losses.
       </p>
 
       <ResponsiveContainer width="100%" height={430}>
@@ -118,52 +138,73 @@ function EmploymentIncomeDiffChart({ selectedPolicies, selectedYear = 2026 }) {
             dataKey="employment"
             type="number"
             label={{
-              value: 'Household head employment income',
-              position: 'insideBottom',
+              value: "Household head employment income",
+              position: "insideBottom",
               offset: -5,
-              style: { textAnchor: 'middle', fill: '#374151', fontSize: 13, fontWeight: 500 }
+              style: {
+                textAnchor: "middle",
+                fill: "#374151",
+                fontSize: 13,
+                fontWeight: 500,
+              },
             }}
             tickFormatter={formatCurrency}
-            tick={{ fontSize: 12, fill: '#6b7280' }}
+            tick={{ fontSize: 12, fill: "#6b7280" }}
             height={60}
             ticks={[0, 20000, 40000, 60000, 80000, 100000]}
             domain={[0, 100000]}
           />
           <YAxis
             label={{
-              value: 'Change in net income',
+              value: "Change in net income",
               angle: -90,
-              position: 'insideLeft',
+              position: "insideLeft",
               dx: 10,
-              style: { textAnchor: 'middle', fill: '#374151', fontSize: 13, fontWeight: 500 }
+              style: {
+                textAnchor: "middle",
+                fill: "#374151",
+                fontSize: 13,
+                fontWeight: 500,
+              },
             }}
             tickFormatter={formatCurrency}
-            tick={{ fontSize: 12, fill: '#6b7280' }}
+            tick={{ fontSize: 12, fill: "#6b7280" }}
             width={80}
             domain={[-yMax, yMax]}
           />
           <Tooltip
-            formatter={(value, name) => [formatCurrency(value), 'Income change']}
-            labelFormatter={(label) => `Employment income: ${formatCurrency(label)}`}
+            formatter={(value, name) => [
+              formatCurrency(value),
+              "Income change",
+            ]}
+            labelFormatter={(label) =>
+              `Employment income: ${formatCurrency(label)}`
+            }
             contentStyle={{
-              background: 'white',
-              border: '1px solid #d1d5db',
-              borderRadius: '8px',
-              padding: '12px',
-              boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+              background: "white",
+              border: "1px solid #d1d5db",
+              borderRadius: "8px",
+              padding: "12px",
+              boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
             }}
-            labelStyle={{ fontWeight: 600, marginBottom: '4px' }}
+            labelStyle={{ fontWeight: 600, marginBottom: "4px" }}
           />
           <Legend
-            wrapperStyle={{ paddingTop: '15px', paddingBottom: '0px' }}
+            wrapperStyle={{ paddingTop: "15px", paddingBottom: "0px" }}
             iconType="square"
             iconSize={14}
-            formatter={(value) => <span style={{ fontSize: '13px', fontWeight: 500, color: '#374151' }}>{value}</span>}
+            formatter={(value) => (
+              <span
+                style={{ fontSize: "13px", fontWeight: 500, color: "#374151" }}
+              >
+                {value}
+              </span>
+            )}
             verticalAlign="bottom"
             align="center"
             payload={[
-              { value: 'Gain', type: 'square', color: '#319795' },
-              { value: 'Loss', type: 'square', color: '#E53E3E' }
+              { value: "Gain", type: "square", color: "#319795" },
+              { value: "Loss", type: "square", color: "#E53E3E" },
             ]}
           />
           <ReferenceLine y={0} stroke="#374151" strokeWidth={1} />
@@ -194,7 +235,7 @@ function EmploymentIncomeDiffChart({ selectedPolicies, selectedYear = 2026 }) {
         </AreaChart>
       </ResponsiveContainer>
     </div>
-  )
+  );
 }
 
-export default EmploymentIncomeDiffChart
+export default EmploymentIncomeDiffChart;

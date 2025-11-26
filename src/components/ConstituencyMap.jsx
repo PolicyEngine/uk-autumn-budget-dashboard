@@ -1,388 +1,401 @@
-import { useEffect, useRef, useState, useMemo } from 'react'
-import * as d3 from 'd3'
-import YearSlider from './YearSlider'
-import './ConstituencyMap.css'
-
+import { useEffect, useRef, useState, useMemo } from "react";
+import * as d3 from "d3";
+import YearSlider from "./YearSlider";
+import "./ConstituencyMap.css";
 
 export default function ConstituencyMap({ selectedPolicies = [] }) {
-  const [internalYear, setInternalYear] = useState(2026)
-  const svgRef = useRef(null)
-  const tooltipRef = useRef(null)
-  const [selectedConstituency, setSelectedConstituency] = useState(null)
-  const [tooltipData, setTooltipData] = useState(null)
-  const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 })
-  const [rawData, setRawData] = useState([])
-  const [geoData, setGeoData] = useState(null)
-  const [loading, setLoading] = useState(true)
-  const [searchQuery, setSearchQuery] = useState('')
-  const [searchResults, setSearchResults] = useState([])
+  const [internalYear, setInternalYear] = useState(2026);
+  const svgRef = useRef(null);
+  const tooltipRef = useRef(null);
+  const [selectedConstituency, setSelectedConstituency] = useState(null);
+  const [tooltipData, setTooltipData] = useState(null);
+  const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
+  const [rawData, setRawData] = useState([]);
+  const [geoData, setGeoData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
 
   // Load data
   useEffect(() => {
     Promise.all([
-      fetch('/data/constituency.csv').then(r => r.text()),
-      fetch('/data/uk_constituencies_2024.geojson').then(r => r.json())
-    ]).then(([csvText, geojson]) => {
-      // Parse CSV with proper handling of quoted fields
-      const parseCSVLine = (line) => {
-        const result = []
-        let current = ''
-        let inQuotes = false
+      fetch("/data/constituency.csv").then((r) => r.text()),
+      fetch("/data/uk_constituencies_2024.geojson").then((r) => r.json()),
+    ])
+      .then(([csvText, geojson]) => {
+        // Parse CSV with proper handling of quoted fields
+        const parseCSVLine = (line) => {
+          const result = [];
+          let current = "";
+          let inQuotes = false;
 
-        for (let i = 0; i < line.length; i++) {
-          const char = line[i]
-          if (char === '"') {
-            inQuotes = !inQuotes
-          } else if (char === ',' && !inQuotes) {
-            result.push(current.trim())
-            current = ''
-          } else {
-            current += char
+          for (let i = 0; i < line.length; i++) {
+            const char = line[i];
+            if (char === '"') {
+              inQuotes = !inQuotes;
+            } else if (char === "," && !inQuotes) {
+              result.push(current.trim());
+              current = "";
+            } else {
+              current += char;
+            }
           }
-        }
-        result.push(current.trim())
-        return result
-      }
+          result.push(current.trim());
+          return result;
+        };
 
-      const lines = csvText.split('\n')
-      const headers = parseCSVLine(lines[0])
-      const parsedData = lines.slice(1)
-        .filter(line => line.trim())
-        .map(line => {
-          const values = parseCSVLine(line)
-          const row = {}
-          headers.forEach((header, idx) => {
-            row[header] = values[idx]?.trim()
-          })
+        const lines = csvText.split("\n");
+        const headers = parseCSVLine(lines[0]);
+        const parsedData = lines
+          .slice(1)
+          .filter((line) => line.trim())
+          .map((line) => {
+            const values = parseCSVLine(line);
+            const row = {};
+            headers.forEach((header, idx) => {
+              row[header] = values[idx]?.trim();
+            });
 
-          return {
-            reform_id: row.reform_id,
-            year: parseInt(row.year) || 2026,
-            constituency_code: row.constituency_code,
-            constituency_name: row.constituency_name?.replace(/^"|"$/g, ''),
-            average_gain: parseFloat(row.average_gain) || 0,
-            relative_change: parseFloat(row.relative_change) || 0,
-          }
-        })
+            return {
+              reform_id: row.reform_id,
+              year: parseInt(row.year) || 2026,
+              constituency_code: row.constituency_code,
+              constituency_name: row.constituency_name?.replace(/^"|"$/g, ""),
+              average_gain: parseFloat(row.average_gain) || 0,
+              relative_change: parseFloat(row.relative_change) || 0,
+            };
+          });
 
-      setRawData(parsedData)
-      setGeoData(geojson)
-      setLoading(false)
-    }).catch(error => {
-      console.error('Error loading data:', error)
-      setLoading(false)
-    })
-  }, [])
+        setRawData(parsedData);
+        setGeoData(geojson);
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error("Error loading data:", error);
+        setLoading(false);
+      });
+  }, []);
 
   // Aggregate data across selected policies
   const aggregatedData = useMemo(() => {
-    if (!rawData.length || !selectedPolicies.length) return []
+    if (!rawData.length || !selectedPolicies.length) return [];
 
     // Group by constituency and sum values across selected policies
-    const constituencyMap = new Map()
+    const constituencyMap = new Map();
 
-    rawData.forEach(row => {
-      if (!selectedPolicies.includes(row.reform_id)) return
-      if (row.year !== internalYear) return
+    rawData.forEach((row) => {
+      if (!selectedPolicies.includes(row.reform_id)) return;
+      if (row.year !== internalYear) return;
 
-      const key = row.constituency_code
+      const key = row.constituency_code;
       if (!constituencyMap.has(key)) {
         constituencyMap.set(key, {
           constituency_code: row.constituency_code,
           constituency_name: row.constituency_name,
           average_gain: 0,
-          relative_change: 0
-        })
+          relative_change: 0,
+        });
       }
 
-      const existing = constituencyMap.get(key)
-      existing.average_gain += row.average_gain
-      existing.relative_change += row.relative_change
-    })
+      const existing = constituencyMap.get(key);
+      existing.average_gain += row.average_gain;
+      existing.relative_change += row.relative_change;
+    });
 
-    return Array.from(constituencyMap.values())
-  }, [rawData, selectedPolicies, internalYear])
+    return Array.from(constituencyMap.values());
+  }, [rawData, selectedPolicies, internalYear]);
 
   // Render map
   useEffect(() => {
-    if (!svgRef.current || !geoData || !aggregatedData.length) return
+    if (!svgRef.current || !geoData || !aggregatedData.length) return;
 
-    const svg = d3.select(svgRef.current)
-    svg.selectAll('*').remove()
+    const svg = d3.select(svgRef.current);
+    svg.selectAll("*").remove();
 
-    const width = 800
-    const height = 600
+    const width = 800;
+    const height = 600;
 
-    const g = svg.append('g')
+    const g = svg.append("g");
 
     // Get bounds of the British National Grid coordinates
     const bounds = {
       xMin: Infinity,
       xMax: -Infinity,
       yMin: Infinity,
-      yMax: -Infinity
-    }
+      yMax: -Infinity,
+    };
 
     geoData.features.forEach((feature) => {
-      const coords = feature.geometry?.coordinates
-      if (!coords) return
+      const coords = feature.geometry?.coordinates;
+      if (!coords) return;
 
       const traverse = (c) => {
-        if (typeof c[0] === 'number') {
-          bounds.xMin = Math.min(bounds.xMin, c[0])
-          bounds.xMax = Math.max(bounds.xMax, c[0])
-          bounds.yMin = Math.min(bounds.yMin, c[1])
-          bounds.yMax = Math.max(bounds.yMax, c[1])
+        if (typeof c[0] === "number") {
+          bounds.xMin = Math.min(bounds.xMin, c[0]);
+          bounds.xMax = Math.max(bounds.xMax, c[0]);
+          bounds.yMin = Math.min(bounds.yMin, c[1]);
+          bounds.yMax = Math.max(bounds.yMax, c[1]);
         } else {
-          c.forEach(traverse)
+          c.forEach(traverse);
         }
-      }
-      traverse(coords)
-    })
+      };
+      traverse(coords);
+    });
 
     // Create scale to fit British National Grid coordinates into SVG
-    const padding = 20
-    const dataWidth = bounds.xMax - bounds.xMin
-    const dataHeight = bounds.yMax - bounds.yMin
-    const scale = Math.min((width - 2 * padding) / dataWidth, (height - 2 * padding) / dataHeight)
+    const padding = 20;
+    const dataWidth = bounds.xMax - bounds.xMin;
+    const dataHeight = bounds.yMax - bounds.yMin;
+    const scale = Math.min(
+      (width - 2 * padding) / dataWidth,
+      (height - 2 * padding) / dataHeight,
+    );
 
     // Calculate centering offsets
-    const scaledWidth = dataWidth * scale
-    const scaledHeight = dataHeight * scale
-    const offsetX = (width - scaledWidth) / 2
-    const offsetY = (height - scaledHeight) / 2
+    const scaledWidth = dataWidth * scale;
+    const scaledHeight = dataHeight * scale;
+    const offsetX = (width - scaledWidth) / 2;
+    const offsetY = (height - scaledHeight) / 2;
 
     const projection = d3.geoTransform({
-      point: function(x, y) {
+      point: function (x, y) {
         // Transform British National Grid to SVG coordinates
         this.stream.point(
           (x - bounds.xMin) * scale + offsetX,
-          height - ((y - bounds.yMin) * scale + offsetY)
-        )
-      }
-    })
+          height - ((y - bounds.yMin) * scale + offsetY),
+        );
+      },
+    });
 
-    const path = d3.geoPath().projection(projection)
+    const path = d3.geoPath().projection(projection);
 
-    const dataMap = new Map(aggregatedData.map(d => [d.constituency_code, d]))
+    const dataMap = new Map(
+      aggregatedData.map((d) => [d.constituency_code, d]),
+    );
 
     // Color scale - diverging with white at 0, red for losses, green for gains
     // Use relative_change (percentage of constituency's average income)
-    const getValue = (d) => d.relative_change
-    const extent = d3.extent(aggregatedData, getValue)
-    const maxAbsValue = Math.max(Math.abs(extent[0] || 0), Math.abs(extent[1] || 0)) || 1
+    const getValue = (d) => d.relative_change;
+    const extent = d3.extent(aggregatedData, getValue);
+    const maxAbsValue =
+      Math.max(Math.abs(extent[0] || 0), Math.abs(extent[1] || 0)) || 1;
 
     // Custom interpolator: red -> light grey -> teal (matching chart palette)
-    const colorScale = d3.scaleDiverging()
+    const colorScale = d3
+      .scaleDiverging()
       .domain([-maxAbsValue, 0, maxAbsValue])
-      .interpolator(t => {
+      .interpolator((t) => {
         if (t < 0.5) {
           // Red to grey (losses to zero)
-          const ratio = t * 2 // 0 to 1
-          return d3.interpolateRgb('#DC2626', '#E5E7EB')(ratio)
+          const ratio = t * 2; // 0 to 1
+          return d3.interpolateRgb("#DC2626", "#E5E7EB")(ratio);
         } else {
           // Grey to teal (zero to gains)
-          const ratio = (t - 0.5) * 2 // 0 to 1
-          return d3.interpolateRgb('#E5E7EB', '#14B8A6')(ratio)
+          const ratio = (t - 0.5) * 2; // 0 to 1
+          return d3.interpolateRgb("#E5E7EB", "#14B8A6")(ratio);
         }
-      })
+      });
 
     // Draw constituencies
-    const paths = g.selectAll('path')
+    const paths = g
+      .selectAll("path")
       .data(geoData.features)
-      .join('path')
-      .attr('d', path)
-      .attr('stroke', '#fff')
-      .attr('stroke-width', 0.05)
-      .attr('class', 'constituency-path')
-      .style('cursor', 'pointer')
+      .join("path")
+      .attr("d", path)
+      .attr("stroke", "#fff")
+      .attr("stroke-width", 0.05)
+      .attr("class", "constituency-path")
+      .style("cursor", "pointer");
 
     // Animate fill colors
-    paths.transition()
+    paths
+      .transition()
       .duration(500)
-      .attr('fill', (d) => {
-        const constData = dataMap.get(d.properties.GSScode)
-        return constData ? colorScale(getValue(constData)) : '#ddd'
-      })
+      .attr("fill", (d) => {
+        const constData = dataMap.get(d.properties.GSScode);
+        return constData ? colorScale(getValue(constData)) : "#ddd";
+      });
 
     // Add event handlers (must be on selection, not transition)
-    paths.on('click', function(event, d) {
-        event.stopPropagation()
+    paths
+      .on("click", function (event, d) {
+        event.stopPropagation();
 
-        const constData = dataMap.get(d.properties.GSScode)
+        const constData = dataMap.get(d.properties.GSScode);
 
         if (constData) {
           // Update styling for all paths
-          svg.selectAll('.constituency-path')
-            .attr('stroke', '#fff')
-            .attr('stroke-width', 0.05)
+          svg
+            .selectAll(".constituency-path")
+            .attr("stroke", "#fff")
+            .attr("stroke-width", 0.05);
 
           // Highlight selected constituency
-          d3.select(this)
-            .attr('stroke', '#1D4044')
-            .attr('stroke-width', 0.6)
+          d3.select(this).attr("stroke", "#1D4044").attr("stroke-width", 0.6);
 
-          setSelectedConstituency(constData)
+          setSelectedConstituency(constData);
 
           // Get centroid of constituency for tooltip positioning
-          const bounds = path.bounds(d)
-          const centerX = (bounds[0][0] + bounds[1][0]) / 2
-          const centerY = (bounds[0][1] + bounds[1][1]) / 2
+          const bounds = path.bounds(d);
+          const centerX = (bounds[0][0] + bounds[1][0]) / 2;
+          const centerY = (bounds[0][1] + bounds[1][1]) / 2;
 
           // Show tooltip
-          setTooltipData(constData)
-          setTooltipPosition({ x: centerX, y: centerY })
+          setTooltipData(constData);
+          setTooltipPosition({ x: centerX, y: centerY });
 
           // Smooth zoom to constituency
-          const dx = bounds[1][0] - bounds[0][0]
-          const dy = bounds[1][1] - bounds[0][1]
-          const x = (bounds[0][0] + bounds[1][0]) / 2
-          const y = (bounds[0][1] + bounds[1][1]) / 2
-          const scale = Math.min(4, 0.9 / Math.max(dx / width, dy / height))
-          const translate = [width / 2 - scale * x, height / 2 - scale * y]
+          const dx = bounds[1][0] - bounds[0][0];
+          const dy = bounds[1][1] - bounds[0][1];
+          const x = (bounds[0][0] + bounds[1][0]) / 2;
+          const y = (bounds[0][1] + bounds[1][1]) / 2;
+          const scale = Math.min(4, 0.9 / Math.max(dx / width, dy / height));
+          const translate = [width / 2 - scale * x, height / 2 - scale * y];
 
-          svg.transition()
+          svg
+            .transition()
             .duration(750)
             .call(
               zoom.transform,
-              d3.zoomIdentity.translate(translate[0], translate[1]).scale(scale)
-            )
+              d3.zoomIdentity
+                .translate(translate[0], translate[1])
+                .scale(scale),
+            );
         }
       })
-      .on('mouseover', function() {
-        const currentStrokeWidth = d3.select(this).attr('stroke-width')
-        if (currentStrokeWidth === '0.05') {
-          d3.select(this)
-            .attr('stroke', '#666')
-            .attr('stroke-width', 0.3)
+      .on("mouseover", function () {
+        const currentStrokeWidth = d3.select(this).attr("stroke-width");
+        if (currentStrokeWidth === "0.05") {
+          d3.select(this).attr("stroke", "#666").attr("stroke-width", 0.3);
         }
       })
-      .on('mouseout', function() {
-        const currentStrokeWidth = d3.select(this).attr('stroke-width')
-        if (currentStrokeWidth !== '0.6') {
-          d3.select(this)
-            .attr('stroke', '#fff')
-            .attr('stroke-width', 0.05)
+      .on("mouseout", function () {
+        const currentStrokeWidth = d3.select(this).attr("stroke-width");
+        if (currentStrokeWidth !== "0.6") {
+          d3.select(this).attr("stroke", "#fff").attr("stroke-width", 0.05);
         }
-      })
+      });
 
     // Zoom behavior
-    const zoom = d3.zoom()
+    const zoom = d3
+      .zoom()
       .scaleExtent([1, 8])
-      .on('zoom', (event) => {
-        g.attr('transform', event.transform)
-      })
+      .on("zoom", (event) => {
+        g.attr("transform", event.transform);
+      });
 
-    svg.call(zoom)
+    svg.call(zoom);
 
     // Store zoom behavior for controls
-    window.mapZoomBehavior = { svg, zoom }
-  }, [geoData, aggregatedData])
+    window.mapZoomBehavior = { svg, zoom };
+  }, [geoData, aggregatedData]);
 
   // Handle search
   useEffect(() => {
     if (!searchQuery.trim() || !aggregatedData.length) {
-      setSearchResults([])
-      return
+      setSearchResults([]);
+      return;
     }
 
-    const query = searchQuery.toLowerCase()
-    const results = aggregatedData.filter(d =>
-      d.constituency_name.toLowerCase().includes(query)
-    ).slice(0, 5)
+    const query = searchQuery.toLowerCase();
+    const results = aggregatedData
+      .filter((d) => d.constituency_name.toLowerCase().includes(query))
+      .slice(0, 5);
 
-    setSearchResults(results)
-  }, [searchQuery, aggregatedData])
+    setSearchResults(results);
+  }, [searchQuery, aggregatedData]);
 
   // Zoom control functions
   const handleZoomIn = () => {
     if (window.mapZoomBehavior) {
-      const { svg, zoom } = window.mapZoomBehavior
-      svg.transition().duration(300).call(zoom.scaleBy, 1.5)
+      const { svg, zoom } = window.mapZoomBehavior;
+      svg.transition().duration(300).call(zoom.scaleBy, 1.5);
     }
-  }
+  };
 
   const handleZoomOut = () => {
     if (window.mapZoomBehavior) {
-      const { svg, zoom } = window.mapZoomBehavior
-      svg.transition().duration(300).call(zoom.scaleBy, 0.67)
+      const { svg, zoom } = window.mapZoomBehavior;
+      svg.transition().duration(300).call(zoom.scaleBy, 0.67);
     }
-  }
+  };
 
   const handleResetZoom = () => {
     if (window.mapZoomBehavior) {
-      const { svg, zoom } = window.mapZoomBehavior
-      svg.transition().duration(750).call(zoom.transform, d3.zoomIdentity)
+      const { svg, zoom } = window.mapZoomBehavior;
+      svg.transition().duration(750).call(zoom.transform, d3.zoomIdentity);
     }
-    setTooltipData(null)
+    setTooltipData(null);
     if (svgRef.current) {
-      const svg = d3.select(svgRef.current)
-      svg.selectAll('.constituency-path')
-        .attr('stroke', '#fff')
-        .attr('stroke-width', 0.05)
+      const svg = d3.select(svgRef.current);
+      svg
+        .selectAll(".constituency-path")
+        .attr("stroke", "#fff")
+        .attr("stroke-width", 0.05);
     }
-  }
+  };
 
   const selectConstituency = (constData) => {
-    setSelectedConstituency(constData)
-    setSearchQuery('')
-    setSearchResults([])
+    setSelectedConstituency(constData);
+    setSearchQuery("");
+    setSearchResults([]);
 
-    if (!geoData || !svgRef.current) return
+    if (!geoData || !svgRef.current) return;
 
-    const svg = d3.select(svgRef.current)
+    const svg = d3.select(svgRef.current);
 
     // Update styling for all paths
-    svg.selectAll('.constituency-path')
-      .attr('stroke', '#fff')
-      .attr('stroke-width', 0.05)
+    svg
+      .selectAll(".constituency-path")
+      .attr("stroke", "#fff")
+      .attr("stroke-width", 0.05);
 
     // Highlight selected constituency
-    const selectedPath = svg.selectAll('.constituency-path')
-      .filter((d) => d.properties.GSScode === constData.constituency_code)
+    const selectedPath = svg
+      .selectAll(".constituency-path")
+      .filter((d) => d.properties.GSScode === constData.constituency_code);
 
-    selectedPath
-      .attr('stroke', '#1D4044')
-      .attr('stroke-width', 0.6)
+    selectedPath.attr("stroke", "#1D4044").attr("stroke-width", 0.6);
 
     // Get the bounding box of the selected path
-    const pathNode = selectedPath.node()
-    if (!pathNode) return
+    const pathNode = selectedPath.node();
+    if (!pathNode) return;
 
-    const bbox = pathNode.getBBox()
-    const centerX = bbox.x + bbox.width / 2
-    const centerY = bbox.y + bbox.height / 2
+    const bbox = pathNode.getBBox();
+    const centerX = bbox.x + bbox.width / 2;
+    const centerY = bbox.y + bbox.height / 2;
 
     // Show tooltip
-    setTooltipData(constData)
-    setTooltipPosition({ x: centerX, y: centerY })
+    setTooltipData(constData);
+    setTooltipPosition({ x: centerX, y: centerY });
 
     // Smooth zoom to constituency
-    const dx = bbox.width
-    const dy = bbox.height
-    const x = centerX
-    const y = centerY
-    const scale = Math.min(4, 0.9 / Math.max(dx / 800, dy / 500))
-    const translate = [800 / 2 - scale * x, 500 / 2 - scale * y]
+    const dx = bbox.width;
+    const dy = bbox.height;
+    const x = centerX;
+    const y = centerY;
+    const scale = Math.min(4, 0.9 / Math.max(dx / 800, dy / 500));
+    const translate = [800 / 2 - scale * x, 500 / 2 - scale * y];
 
     if (window.mapZoomBehavior) {
-      const { svg: svgZoom, zoom } = window.mapZoomBehavior
-      svgZoom.transition()
+      const { svg: svgZoom, zoom } = window.mapZoomBehavior;
+      svgZoom
+        .transition()
         .duration(750)
         .call(
           zoom.transform,
-          d3.zoomIdentity.translate(translate[0], translate[1]).scale(scale)
-        )
+          d3.zoomIdentity.translate(translate[0], translate[1]).scale(scale),
+        );
     }
-  }
+  };
 
   if (loading) {
-    return <div className="constituency-loading">Loading map...</div>
+    return <div className="constituency-loading">Loading map...</div>;
   }
 
   // Don't render if no policy is selected or no aggregated data
   if (!selectedPolicies.length || !aggregatedData.length) {
-    return null
+    return null;
   }
 
   return (
@@ -390,8 +403,10 @@ export default function ConstituencyMap({ selectedPolicies = [] }) {
       {/* Header section */}
       <div className="map-header">
         <h2>Constituency-level impacts</h2>
-      <p className="chart-description">
-          This map shows the average annual change in household net income across all 650 UK constituencies. Green shading indicates gains, red indicates losses, measured as a percentage of baseline income.
+        <p className="chart-description">
+          This map shows the average annual change in household net income
+          across all 650 UK constituencies. Green shading indicates gains, red
+          indicates losses, measured as a percentage of baseline income.
         </p>
       </div>
 
@@ -415,9 +430,12 @@ export default function ConstituencyMap({ selectedPolicies = [] }) {
                     onClick={() => selectConstituency(result)}
                     className="search-result-item"
                   >
-                    <div className="result-name">{result.constituency_name}</div>
+                    <div className="result-name">
+                      {result.constituency_name}
+                    </div>
                     <div className="result-value">
-                      £{result.average_gain.toFixed(0)} ({result.relative_change.toFixed(2)}%)
+                      £{result.average_gain.toFixed(0)} (
+                      {result.relative_change.toFixed(2)}%)
                     </div>
                   </button>
                 ))}
@@ -448,18 +466,22 @@ export default function ConstituencyMap({ selectedPolicies = [] }) {
             viewBox="0 0 800 600"
             preserveAspectRatio="xMidYMid meet"
             onClick={() => {
-              setTooltipData(null)
+              setTooltipData(null);
               if (svgRef.current) {
-                const svg = d3.select(svgRef.current)
-                svg.selectAll('.constituency-path')
-                  .attr('stroke', '#fff')
-                  .attr('stroke-width', 0.05)
+                const svg = d3.select(svgRef.current);
+                svg
+                  .selectAll(".constituency-path")
+                  .attr("stroke", "#fff")
+                  .attr("stroke-width", 0.05);
               }
             }}
           />
 
           {/* Map controls */}
-          <div className="map-controls-container" onClick={(e) => e.stopPropagation()}>
+          <div
+            className="map-controls-container"
+            onClick={(e) => e.stopPropagation()}
+          >
             {/* Zoom controls */}
             <div className="zoom-controls">
               <button
@@ -469,9 +491,25 @@ export default function ConstituencyMap({ selectedPolicies = [] }) {
                 aria-label="Zoom in"
               >
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                  <circle cx="10" cy="10" r="7" stroke="currentColor" strokeWidth="2"/>
-                  <path d="M10 7V13M7 10H13" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                  <path d="M15 15L20 20" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                  <circle
+                    cx="10"
+                    cy="10"
+                    r="7"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  />
+                  <path
+                    d="M10 7V13M7 10H13"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                  />
+                  <path
+                    d="M15 15L20 20"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                  />
                 </svg>
               </button>
               <button
@@ -481,9 +519,25 @@ export default function ConstituencyMap({ selectedPolicies = [] }) {
                 aria-label="Zoom out"
               >
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                  <circle cx="10" cy="10" r="7" stroke="currentColor" strokeWidth="2"/>
-                  <path d="M7 10H13" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                  <path d="M15 15L20 20" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                  <circle
+                    cx="10"
+                    cy="10"
+                    r="7"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  />
+                  <path
+                    d="M7 10H13"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                  />
+                  <path
+                    d="M15 15L20 20"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                  />
                 </svg>
               </button>
               <button
@@ -493,8 +547,19 @@ export default function ConstituencyMap({ selectedPolicies = [] }) {
                 aria-label="Reset zoom"
               >
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                  <path d="M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C14.8273 3 17.35 4.30367 19 6.34267" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                  <path d="M21 3V8H16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path
+                    d="M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C14.8273 3 17.35 4.30367 19 6.34267"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                  />
+                  <path
+                    d="M21 3V8H16"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
                 </svg>
               </button>
             </div>
@@ -510,30 +575,36 @@ export default function ConstituencyMap({ selectedPolicies = [] }) {
               }}
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="tooltip-close" onClick={() => setTooltipData(null)}>×</div>
+              <div
+                className="tooltip-close"
+                onClick={() => setTooltipData(null)}
+              >
+                ×
+              </div>
               <h4>{tooltipData.constituency_name}</h4>
               <p
                 className="tooltip-value"
                 style={{
-                  color: tooltipData.average_gain >= 0 ? '#16a34a' : '#dc2626'
+                  color: tooltipData.average_gain >= 0 ? "#16a34a" : "#dc2626",
                 }}
               >
-                {tooltipData.average_gain < 0 ? '-' : ''}£{Math.abs(tooltipData.average_gain).toLocaleString('en-GB', { maximumFractionDigits: 0 })}
+                {tooltipData.average_gain < 0 ? "-" : ""}£
+                {Math.abs(tooltipData.average_gain).toLocaleString("en-GB", {
+                  maximumFractionDigits: 0,
+                })}
               </p>
-              <p className="tooltip-label">
-                Average household impact
-              </p>
+              <p className="tooltip-label">Average household impact</p>
               <p
                 className="tooltip-value-secondary"
                 style={{
-                  color: tooltipData.relative_change >= 0 ? '#16a34a' : '#dc2626'
+                  color:
+                    tooltipData.relative_change >= 0 ? "#16a34a" : "#dc2626",
                 }}
               >
-                {tooltipData.relative_change >= 0 ? '+' : ''}{tooltipData.relative_change.toFixed(2)}%
+                {tooltipData.relative_change >= 0 ? "+" : ""}
+                {tooltipData.relative_change.toFixed(2)}%
               </p>
-              <p className="tooltip-label">
-                Relative change
-              </p>
+              <p className="tooltip-label">Relative change</p>
             </div>
           )}
         </div>
@@ -541,5 +612,5 @@ export default function ConstituencyMap({ selectedPolicies = [] }) {
 
       <YearSlider selectedYear={internalYear} onYearChange={setInternalYear} />
     </div>
-  )
+  );
 }
