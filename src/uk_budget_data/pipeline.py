@@ -284,7 +284,7 @@ class DataPipeline:
                 console.print(f"[green]✓[/green] {reform.name}")
 
         # Aggregate and save
-        aggregated = aggregate_results(results)
+        aggregated = aggregate_results(results, config=self.config)
         self._save_all(aggregated)
 
         return aggregated
@@ -302,6 +302,7 @@ class DataPipeline:
             "household_scatter": "household_scatter.csv",
             "constituency": "constituency.csv",
             "demographic_constituency": "demographic_constituency.csv",
+            "obr_comparison": "obr_comparison.csv",
         }
 
         for key, filename in file_mapping.items():
@@ -313,11 +314,13 @@ class DataPipeline:
 
 def aggregate_results(
     results: list[ReformResult],
+    config: "DataConfig" = None,
 ) -> dict[str, pd.DataFrame]:
     """Aggregate results from multiple reforms into DataFrames.
 
     Args:
         results: List of ReformResult objects.
+        config: Data configuration (for OBR estimates path).
 
     Returns:
         Dict mapping metric name to combined DataFrame.
@@ -331,6 +334,7 @@ def aggregate_results(
         "household_scatter": pd.DataFrame(),
         "constituency": pd.DataFrame(),
         "demographic_constituency": pd.DataFrame(),
+        "obr_comparison": pd.DataFrame(),
     }
 
     for result in results:
@@ -405,6 +409,21 @@ def aggregate_results(
                 ],
                 ignore_index=True,
             )
+
+    # Generate OBR comparison by merging budgetary impact with OBR estimates
+    if config and len(aggregated["budgetary_impact"]) > 0:
+        obr_path = config.data_inputs_dir / "obr_estimates.csv"
+        if obr_path.exists():
+            obr_df = pd.read_csv(obr_path)
+            pe_df = aggregated["budgetary_impact"].copy()
+            pe_df = pe_df.rename(columns={"value": "policyengine_value"})
+            comparison = pd.merge(
+                pe_df,
+                obr_df[["reform_id", "year", "obr_value"]],
+                on=["reform_id", "year"],
+                how="left",
+            )
+            aggregated["obr_comparison"] = comparison
 
     return aggregated
 
