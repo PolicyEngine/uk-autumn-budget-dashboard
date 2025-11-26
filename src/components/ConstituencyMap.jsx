@@ -2,7 +2,37 @@ import { useEffect, useRef, useState, useMemo } from "react";
 import * as d3 from "d3";
 import YearSlider from "./YearSlider";
 import { CHART_LOGO } from "../utils/chartLogo";
+import { downloadSvg } from "../utils/downloadFile";
 import "./ConstituencyMap.css";
+import "./ChartExport.css";
+
+// Chart metadata for export
+const CHART_TITLE = "Constituency-level impacts";
+const CHART_DESCRIPTION =
+  "This map shows the average annual change in household net income across all 650 UK constituencies. Green shading indicates gains, red indicates losses, measured as a percentage of baseline income.";
+
+// Format year for display (e.g., 2026 -> "2026-27")
+const formatYearRange = (year) => `${year}-${(year + 1).toString().slice(-2)}`;
+
+/**
+ * Convert an image URL to a base64 data URL.
+ */
+async function imageToBase64(url) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      canvas.width = img.naturalWidth;
+      canvas.height = img.naturalHeight;
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(img, 0, 0);
+      resolve(canvas.toDataURL("image/png"));
+    };
+    img.onerror = reject;
+    img.src = url;
+  });
+}
 
 export default function ConstituencyMap({ selectedPolicies = [] }) {
   const [internalYear, setInternalYear] = useState(2026);
@@ -399,6 +429,252 @@ export default function ConstituencyMap({ selectedPolicies = [] }) {
     }
   };
 
+  const handleExportSvg = async () => {
+    if (!svgRef.current) return;
+
+    const originalSvg = svgRef.current;
+    const clonedSvg = originalSvg.cloneNode(true);
+
+    // Reset zoom transform on cloned SVG for clean export
+    const gElement = clonedSvg.querySelector("g");
+    if (gElement) {
+      gElement.removeAttribute("transform");
+    }
+
+    // Get dimensions from the original SVG
+    const width = 800;
+    const height = 600;
+
+    // Style constants
+    const padding = 20;
+    const titleFontSize = 18;
+    const descriptionFontSize = 13;
+    const lineHeight = 1.5;
+
+    // Calculate header height
+    const titleHeight = titleFontSize + padding;
+    const descLines = Math.ceil(CHART_DESCRIPTION.length / 80); // Rough estimate
+    const descHeight = descLines * descriptionFontSize * lineHeight + 8;
+    const headerHeight = titleHeight + descHeight + padding;
+
+    // Calculate legend height (gradient bar + labels)
+    const legendHeight = 50;
+    const footerBottomPadding = 20;
+
+    const totalHeight = headerHeight + height + legendHeight;
+
+    // Update SVG dimensions
+    clonedSvg.setAttribute("width", width);
+    clonedSvg.setAttribute("height", totalHeight);
+    clonedSvg.setAttribute("viewBox", `0 0 ${width} ${totalHeight}`);
+    clonedSvg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+    clonedSvg.setAttribute("xmlns:xlink", "http://www.w3.org/1999/xlink");
+
+    // Wrap existing content and translate down
+    const existingContent = Array.from(clonedSvg.childNodes);
+    const contentGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+    contentGroup.setAttribute("transform", `translate(0, ${headerHeight})`);
+    existingContent.forEach((child) => contentGroup.appendChild(child));
+    clonedSvg.appendChild(contentGroup);
+
+    // Add white background
+    const background = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+    background.setAttribute("x", "0");
+    background.setAttribute("y", "0");
+    background.setAttribute("width", width);
+    background.setAttribute("height", totalHeight);
+    background.setAttribute("fill", "white");
+    clonedSvg.insertBefore(background, contentGroup);
+
+    // Add title
+    const title = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    title.setAttribute("x", padding);
+    title.setAttribute("y", padding + titleFontSize);
+    title.setAttribute("style", `font-family: system-ui, -apple-system, sans-serif; font-size: ${titleFontSize}px; font-weight: 600; fill: #374151;`);
+    title.textContent = `${CHART_TITLE}, ${formatYearRange(internalYear)}`;
+    clonedSvg.insertBefore(title, contentGroup);
+
+    // Add description with word wrapping
+    const desc = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    desc.setAttribute("x", padding);
+    desc.setAttribute("y", padding + titleFontSize + 8 + descriptionFontSize);
+    desc.setAttribute("style", `font-family: system-ui, -apple-system, sans-serif; font-size: ${descriptionFontSize}px; font-weight: 400; fill: #4b5563;`);
+
+    // Simple word wrapping
+    const maxCharsPerLine = 100;
+    const words = CHART_DESCRIPTION.split(" ");
+    let lines = [];
+    let currentLine = "";
+    words.forEach((word) => {
+      if ((currentLine + " " + word).length > maxCharsPerLine) {
+        lines.push(currentLine);
+        currentLine = word;
+      } else {
+        currentLine = currentLine ? currentLine + " " + word : word;
+      }
+    });
+    if (currentLine) lines.push(currentLine);
+
+    lines.forEach((line, index) => {
+      const tspan = document.createElementNS("http://www.w3.org/2000/svg", "tspan");
+      tspan.setAttribute("x", padding);
+      tspan.setAttribute("dy", index === 0 ? "0" : `${descriptionFontSize * lineHeight}px`);
+      tspan.textContent = line;
+      desc.appendChild(tspan);
+    });
+    clonedSvg.insertBefore(desc, contentGroup);
+
+    // Add legend gradient and labels at the bottom
+    const legendY = headerHeight + height + 15;
+    const gradientWidth = 200;
+    const gradientHeight = 12;
+    const legendX = (width - gradientWidth) / 2;
+
+    // Create gradient definition
+    const defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
+    const gradient = document.createElementNS("http://www.w3.org/2000/svg", "linearGradient");
+    gradient.setAttribute("id", "exportLegendGradient");
+    gradient.setAttribute("x1", "0%");
+    gradient.setAttribute("x2", "100%");
+
+    const stop1 = document.createElementNS("http://www.w3.org/2000/svg", "stop");
+    stop1.setAttribute("offset", "0%");
+    stop1.setAttribute("stop-color", "#DC2626");
+    const stop2 = document.createElementNS("http://www.w3.org/2000/svg", "stop");
+    stop2.setAttribute("offset", "50%");
+    stop2.setAttribute("stop-color", "#E5E7EB");
+    const stop3 = document.createElementNS("http://www.w3.org/2000/svg", "stop");
+    stop3.setAttribute("offset", "100%");
+    stop3.setAttribute("stop-color", "#14B8A6");
+
+    gradient.appendChild(stop1);
+    gradient.appendChild(stop2);
+    gradient.appendChild(stop3);
+    defs.appendChild(gradient);
+    clonedSvg.insertBefore(defs, background);
+
+    // Add gradient rect
+    const gradientRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+    gradientRect.setAttribute("x", legendX);
+    gradientRect.setAttribute("y", legendY);
+    gradientRect.setAttribute("width", gradientWidth);
+    gradientRect.setAttribute("height", gradientHeight);
+    gradientRect.setAttribute("fill", "url(#exportLegendGradient)");
+    gradientRect.setAttribute("rx", "2");
+    clonedSvg.appendChild(gradientRect);
+
+    // Add legend labels
+    const labelStyle = "font-family: system-ui, -apple-system, sans-serif; font-size: 12px; font-weight: 500; fill: #374151;";
+
+    const lossLabel = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    lossLabel.setAttribute("x", legendX);
+    lossLabel.setAttribute("y", legendY + gradientHeight + 15);
+    lossLabel.setAttribute("style", labelStyle);
+    lossLabel.textContent = "Loss";
+    clonedSvg.appendChild(lossLabel);
+
+    const zeroLabel = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    zeroLabel.setAttribute("x", legendX + gradientWidth / 2);
+    zeroLabel.setAttribute("y", legendY + gradientHeight + 15);
+    zeroLabel.setAttribute("style", labelStyle + " text-anchor: middle;");
+    zeroLabel.textContent = "0%";
+    clonedSvg.appendChild(zeroLabel);
+
+    const gainLabel = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    gainLabel.setAttribute("x", legendX + gradientWidth);
+    gainLabel.setAttribute("y", legendY + gradientHeight + 15);
+    gainLabel.setAttribute("style", labelStyle + " text-anchor: end;");
+    gainLabel.textContent = "Gain";
+    clonedSvg.appendChild(gainLabel);
+
+    // Embed logo on the right of the legend area
+    try {
+      const base64Logo = await imageToBase64(CHART_LOGO.href);
+      const logoImage = document.createElementNS("http://www.w3.org/2000/svg", "image");
+      logoImage.setAttribute("href", base64Logo);
+      logoImage.setAttribute("width", CHART_LOGO.width);
+      logoImage.setAttribute("height", CHART_LOGO.height);
+      logoImage.setAttribute("x", width - CHART_LOGO.width - 10);
+      logoImage.setAttribute("y", legendY + (gradientHeight - CHART_LOGO.height) / 2 + 5);
+      clonedSvg.appendChild(logoImage);
+    } catch (error) {
+      console.warn("Failed to embed logo", error);
+    }
+
+    // Add tooltip/hovercard if a constituency is selected
+    if (tooltipData) {
+      const tooltipWidth = 180;
+      const tooltipHeight = 110;
+      const tooltipPadding = 12;
+
+      // Position tooltip in top-right area of the map (fixed position for export)
+      const tooltipX = width - tooltipWidth - 20;
+      const tooltipY = headerHeight + 20;
+
+      // Tooltip background with shadow effect
+      const tooltipBg = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+      tooltipBg.setAttribute("x", tooltipX);
+      tooltipBg.setAttribute("y", tooltipY);
+      tooltipBg.setAttribute("width", tooltipWidth);
+      tooltipBg.setAttribute("height", tooltipHeight);
+      tooltipBg.setAttribute("fill", "white");
+      tooltipBg.setAttribute("stroke", "#e5e7eb");
+      tooltipBg.setAttribute("stroke-width", "1");
+      tooltipBg.setAttribute("rx", "8");
+      clonedSvg.appendChild(tooltipBg);
+
+      // Constituency name
+      const nameText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      nameText.setAttribute("x", tooltipX + tooltipPadding);
+      nameText.setAttribute("y", tooltipY + tooltipPadding + 14);
+      nameText.setAttribute("style", "font-family: system-ui, -apple-system, sans-serif; font-size: 14px; font-weight: 600; fill: #374151;");
+      nameText.textContent = tooltipData.constituency_name.length > 22
+        ? tooltipData.constituency_name.substring(0, 20) + "..."
+        : tooltipData.constituency_name;
+      clonedSvg.appendChild(nameText);
+
+      // Average gain value
+      const gainColor = tooltipData.average_gain >= 0 ? "#16a34a" : "#dc2626";
+      const gainText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      gainText.setAttribute("x", tooltipX + tooltipPadding);
+      gainText.setAttribute("y", tooltipY + tooltipPadding + 38);
+      gainText.setAttribute("style", `font-family: system-ui, -apple-system, sans-serif; font-size: 18px; font-weight: 700; fill: ${gainColor};`);
+      const absGain = Math.abs(tooltipData.average_gain).toLocaleString("en-GB", { maximumFractionDigits: 0 });
+      gainText.textContent = `${tooltipData.average_gain < 0 ? "-" : ""}£${absGain}`;
+      clonedSvg.appendChild(gainText);
+
+      // Label for average gain
+      const gainLabel = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      gainLabel.setAttribute("x", tooltipX + tooltipPadding);
+      gainLabel.setAttribute("y", tooltipY + tooltipPadding + 52);
+      gainLabel.setAttribute("style", "font-family: system-ui, -apple-system, sans-serif; font-size: 11px; font-weight: 400; fill: #6b7280;");
+      gainLabel.textContent = "Average household impact";
+      clonedSvg.appendChild(gainLabel);
+
+      // Relative change value
+      const relColor = tooltipData.relative_change >= 0 ? "#16a34a" : "#dc2626";
+      const relText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      relText.setAttribute("x", tooltipX + tooltipPadding);
+      relText.setAttribute("y", tooltipY + tooltipPadding + 72);
+      relText.setAttribute("style", `font-family: system-ui, -apple-system, sans-serif; font-size: 14px; font-weight: 600; fill: ${relColor};`);
+      relText.textContent = `${tooltipData.relative_change >= 0 ? "+" : ""}${tooltipData.relative_change.toFixed(2)}%`;
+      clonedSvg.appendChild(relText);
+
+      // Label for relative change
+      const relLabel = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      relLabel.setAttribute("x", tooltipX + tooltipPadding);
+      relLabel.setAttribute("y", tooltipY + tooltipPadding + 86);
+      relLabel.setAttribute("style", "font-family: system-ui, -apple-system, sans-serif; font-size: 11px; font-weight: 400; fill: #6b7280;");
+      relLabel.textContent = "Relative change";
+      clonedSvg.appendChild(relLabel);
+    }
+
+    // Serialize and download
+    const serializer = new XMLSerializer();
+    const svgString = serializer.serializeToString(clonedSvg);
+    downloadSvg(svgString, `constituency-map-${internalYear}`);
+  };
+
   if (loading) {
     return <div className="constituency-loading">Loading map...</div>;
   }
@@ -412,12 +688,38 @@ export default function ConstituencyMap({ selectedPolicies = [] }) {
     <div className="constituency-map-wrapper">
       {/* Header section */}
       <div className="map-header">
-        <h2>Constituency-level impacts</h2>
-        <p className="chart-description">
-          This map shows the average annual change in household net income
-          across all 650 UK constituencies. Green shading indicates gains, red
-          indicates losses, measured as a percentage of baseline income.
-        </p>
+        <div className="chart-header">
+          <div>
+            <h2>Constituency-level impacts, {formatYearRange(internalYear)}</h2>
+            <p className="chart-description">
+              This map shows the average annual change in household net income
+              across all 650 UK constituencies. Green shading indicates gains, red
+              indicates losses, measured as a percentage of baseline income.
+            </p>
+          </div>
+          <button
+            className="export-button"
+            onClick={handleExportSvg}
+            title="Download as SVG"
+            aria-label="Download map as SVG"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+              <polyline points="7 10 12 15 17 10" />
+              <line x1="12" y1="15" x2="12" y2="3" />
+            </svg>
+          </button>
+        </div>
       </div>
 
       {/* Search and legend in top bar */}
