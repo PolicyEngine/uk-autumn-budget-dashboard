@@ -24,3 +24,6 @@ export { measureTextWidth, wrapText, estimateTextHeight } from "./textMeasure";
 
 // File downloads
 export { downloadFile, downloadSvg } from "./downloadFile";
+
+// Chart logo
+export { PolicyEngineLogo, CHART_LOGO } from "./chartLogo";

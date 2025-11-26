@@ -15,6 +15,30 @@ import {
 import { measureTextWidth, wrapText, estimateTextHeight } from "./textMeasure";
 import { downloadSvg } from "./downloadFile";
 
+/**
+ * Convert an image URL to a base64 data URL.
+ * This allows embedding images directly in the SVG for standalone export.
+ *
+ * @param {string} url - URL or path to the image
+ * @returns {Promise<string>} - Base64 data URL
+ */
+async function imageToBase64(url) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      canvas.width = img.naturalWidth;
+      canvas.height = img.naturalHeight;
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(img, 0, 0);
+      resolve(canvas.toDataURL("image/png"));
+    };
+    img.onerror = reject;
+    img.src = url;
+  });
+}
+
 // Style constants
 const STYLES = {
   padding: 20,
@@ -136,11 +160,12 @@ function createLegend(items, chartWidth, yPosition) {
       itemGroup.appendChild(rect);
     }
 
-    // Draw label
+    // Draw label with proper font styling
     const text = createSvgText(item.label, {
       x: currentX + legendIconSize + legendIconTextGap,
       y: yPosition + legendFontSize / 3,
       fontSize: legendFontSize,
+      fontWeight: "400",
       fill: colors.legendText,
     });
     itemGroup.appendChild(text);
@@ -239,10 +264,15 @@ function calculateHeaderHeight({ title, description }, chartWidth) {
  * @param {string} options.title - Title to display above the chart
  * @param {string} options.description - Description text below the title
  * @param {Array<{color: string, label: string, type: string}>} options.legendItems - Legend items
- * @returns {boolean} - True if export was successful
+ * @param {Object} options.logo - Logo configuration
+ * @param {string} options.logo.href - URL/path to logo image
+ * @param {number} options.logo.width - Logo width
+ * @param {number} options.logo.height - Logo height
+ * @param {number} options.logo.padding - Padding from edges
+ * @returns {Promise<boolean>} - True if export was successful
  */
-export function exportChartAsSvg(containerRef, filename = "chart", options = {}) {
-  const { title, description, legendItems = [] } = options;
+export async function exportChartAsSvg(containerRef, filename = "chart", options = {}) {
+  const { title, description, legendItems = [], logo } = options;
 
   if (!containerRef?.current) {
     console.error("exportChartAsSvg: No container ref provided");
@@ -314,6 +344,32 @@ export function exportChartAsSvg(containerRef, filename = "chart", options = {})
     const legendY = headerHeight + chartHeight + legendHeight / 2;
     const legendGroup = createLegend(legendItems, chartWidth, legendY);
     clonedSvg.appendChild(legendGroup);
+  }
+
+  // Embed logo if provided
+  if (logo?.href) {
+    try {
+      // Convert logo to base64 for standalone SVG
+      const base64Logo = await imageToBase64(logo.href);
+      const logoImage = createSvgElement("image", {
+        width: logo.width,
+        height: logo.height,
+      });
+      logoImage.setAttribute("href", base64Logo);
+
+      // Position logo in bottom-right of chart area (before legend)
+      // Use larger horizontal margin (30px) to bring it in from the edge
+      const logoMarginRight = 30;
+      const logoMarginBottom = logo.padding || 12;
+      const logoX = chartWidth - logo.width - logoMarginRight;
+      const logoY = headerHeight + chartHeight - logo.height - logoMarginBottom;
+      logoImage.setAttribute("x", logoX);
+      logoImage.setAttribute("y", logoY);
+
+      clonedSvg.appendChild(logoImage);
+    } catch (error) {
+      console.warn("exportChartAsSvg: Failed to embed logo", error);
+    }
   }
 
   // Serialize and download

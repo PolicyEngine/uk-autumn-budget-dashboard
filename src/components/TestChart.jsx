@@ -8,9 +8,12 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
+  Customized,
 } from "recharts";
 import { exportChartAsSvg } from "../utils/exportChartAsSvg";
 import "./TestChart.css";
+
+import { PolicyEngineLogo, CHART_LOGO } from "../utils/chartLogo";
 
 // Sample data for the test chart
 const sampleData = [
@@ -35,11 +38,12 @@ const LEGEND_ITEMS = [
 function TestChart() {
   const chartRef = useRef(null);
 
-  const handleExportSvg = () => {
-    const success = exportChartAsSvg(chartRef, "test-chart-export", {
+  const handleExportSvg = async () => {
+    const success = await exportChartAsSvg(chartRef, "test-chart-export", {
       title: CHART_TITLE,
       description: CHART_DESCRIPTION,
       legendItems: LEGEND_ITEMS,
+      logo: CHART_LOGO,
     });
     if (!success) {
       console.error("Failed to export chart as SVG");
@@ -115,6 +119,7 @@ function TestChart() {
             <Legend wrapperStyle={{ paddingTop: "20px" }} />
             <Bar dataKey="revenue" fill="#319795" name="Revenue" />
             <Bar dataKey="expenditure" fill="#5A8FB8" name="Expenditure" />
+            <Customized component={PolicyEngineLogo} />
           </BarChart>
         </ResponsiveContainer>
       </div>
