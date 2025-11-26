@@ -26,7 +26,7 @@ const DEFAULT_POLICIES = [
     id: 'threshold_freeze_extension',
     name: 'Threshold freeze extension',
     description: 'Extend the freeze on income tax thresholds',
-    explanation: 'This policy extends the income tax threshold freeze to 2029-30. Current law already freezes thresholds until 2027-28. Keeping the personal allowance and higher rate threshold at current levels means that as inflation increases nominal incomes, more income falls into higher tax brackets.'
+    explanation: 'This policy extends the freeze on income tax thresholds to 2029-30. Current law already freezes the personal allowance and higher rate threshold until 2027-28. This policy would maintain these thresholds at their current nominal levels for an additional two years.'
   },
   {
     id: 'ni_rate_reduction',
@@ -376,7 +376,7 @@ function App() {
                 {/* Section: Who is affected */}
                 <div className="section-header">
                   <h2>Household and revenue impacts</h2>
-                  <p>This section shows how selected policies affect individual households across different income levels and demographic groups, alongside the projected impact on Government revenues and expenditure over the period from 2025 to 2030.</p>
+                  <p>This section shows how selected policies affect individual households across different income levels, alongside the projected impact on government revenues over the 2026-27 to 2029-30 fiscal year.</p>
                 </div>
                 <div className="primary-charts">
                   <EmploymentIncomeChart selectedPolicies={selectedPolicies} selectedYear={2026} />
@@ -386,7 +386,7 @@ function App() {
                 {/* Section: Impact over time and distribution */}
                 <div className="section-header">
                   <h2>Distributional analysis</h2>
-                  <p>This section examines how income changes are distributed across household income deciles, revealing the proportion of winners and losers from the proposed policy reforms and their effects on income inequality and poverty rates.</p>
+                  <p>This section shows how the selected policies affect net income across household income deciles, displaying both the relative percentage change and absolute cash amount gained or lost by households in each income group.</p>
                 </div>
                 <div className="secondary-charts">
                   <DistributionalChart rawData={results.rawDistributional} selectedPolicies={selectedPolicies} />
@@ -396,7 +396,7 @@ function App() {
                 {/* Section: Breakdown of the effects */}
                 <div className="section-header">
                   <h2>Regional and demographic analysis</h2>
-                  <p>This section illustrates regional variation in policy impacts across all 650 UK Parliamentary constituencies and explores how different demographic groups and household types experience the effects of the selected reforms.</p>
+                  <p>This section shows the geographic distribution of policy impacts across all 650 UK Parliamentary constituencies and displays how individual households at different baseline income levels experience net income changes from the selected reforms.</p>
                 </div>
                 <div className="secondary-charts">
                   <ConstituencyMap selectedPolicies={selectedPolicies} />
