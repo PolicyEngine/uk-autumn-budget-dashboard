@@ -257,7 +257,7 @@ function DistributionalChart({ rawData, selectedPolicies }) {
             wrapperStyle={{ paddingTop: "20px" }}
             iconType="rect"
             payload={[
-              ...activePolicies.map((name) => ({
+              ...ALL_POLICY_NAMES.map((name) => ({
                 value: name,
                 type: "rect",
                 color: POLICY_COLORS[name],
