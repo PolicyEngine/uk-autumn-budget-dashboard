@@ -233,7 +233,7 @@ function EmploymentIncomeChart({ selectedPolicies, selectedYear = 2026 }) {
             labelStyle={{ fontWeight: 600, marginBottom: "4px" }}
           />
           <Legend
-            wrapperStyle={{ paddingTop: "15px", paddingBottom: "0px" }}
+            wrapperStyle={{ paddingTop: "15px", paddingBottom: "0px", paddingRight: "140px" }}
             iconType="line"
             iconSize={18}
             formatter={(value) => (

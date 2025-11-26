@@ -316,7 +316,7 @@ function DistributionalChart({ rawData, selectedPolicies }) {
             cursor={{ fill: "rgba(49, 151, 149, 0.1)" }}
           />
           <Legend
-            wrapperStyle={{ paddingTop: "20px" }}
+            wrapperStyle={{ paddingTop: "20px", paddingRight: "140px" }}
             iconType="rect"
             formatter={(value) => (
               <span style={{ color: "#374151", fontSize: "13px", fontWeight: 500 }}>

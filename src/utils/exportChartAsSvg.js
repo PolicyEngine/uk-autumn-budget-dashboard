@@ -47,7 +47,6 @@ const STYLES = {
   legendFontSize: 12,
   lineHeight: 1.5,
   titleDescGap: 8,
-  legendHeight: 40,
   legendIconSize: 14,
   legendIconTextGap: 6,
   legendItemGap: 24,
@@ -111,6 +110,23 @@ function inlineComputedStyles(clonedElement, originalElement) {
   for (let i = 0; i < clonedChildren.length && i < originalChildren.length; i++) {
     inlineComputedStyles(clonedChildren[i], originalChildren[i]);
   }
+}
+
+/**
+ * Calculate the total width of legend items.
+ *
+ * @param {Array<{color: string, label: string, type: string}>} items - Legend items
+ * @returns {number} Total width in pixels
+ */
+function calculateLegendWidth(items) {
+  const { legendFontSize, legendIconSize, legendIconTextGap, legendItemGap } = STYLES;
+
+  const itemWidths = items.map((item) => {
+    const textWidth = measureTextWidth(item.label, { fontSize: legendFontSize });
+    return legendIconSize + legendIconTextGap + textWidth;
+  });
+
+  return itemWidths.reduce((sum, w) => sum + w, 0) + (items.length - 1) * legendItemGap;
 }
 
 /**
@@ -296,10 +312,15 @@ export async function exportChartAsSvg(containerRef, filename = "chart", options
   const clonedSvg = svgElement.cloneNode(true);
   inlineComputedStyles(clonedSvg, svgElement);
 
-  // Calculate layout
+  // Remove the original Recharts legend (we'll add our own in the footer)
+  const originalLegend = clonedSvg.querySelector(".recharts-legend-wrapper");
+  if (originalLegend) {
+    originalLegend.remove();
+  }
+
+  // Calculate layout - no extra footer height needed since chart already has legend space
   const headerHeight = calculateHeaderHeight({ title, description }, chartWidth);
-  const legendHeight = legendItems.length > 0 ? STYLES.legendHeight : 0;
-  const totalHeight = chartHeight + headerHeight + legendHeight;
+  const totalHeight = chartHeight + headerHeight;
 
   // Update SVG dimensions
   clonedSvg.setAttribute("width", chartWidth);
@@ -338,16 +359,30 @@ export async function exportChartAsSvg(containerRef, filename = "chart", options
     clonedSvg.insertBefore(descElement, contentGroup);
   }
 
-  // Add legend and logo inline in the footer area
-  const footerY = headerHeight + chartHeight + legendHeight / 2;
+  // Add legend and logo inline in the footer area (using existing chart legend space)
+  // Layout: legend centered in remaining space, logo anchored to right
+  // Position near bottom of chart area with small padding
+  const footerBottomPadding = 20;
+  const footerY = headerHeight + chartHeight - footerBottomPadding;
+  const logoRightPadding = 10;
 
-  // Add legend on the left
+  // Calculate logo position (anchored to right)
+  const logoX = logo?.href ? chartWidth - logo.width - logoRightPadding : chartWidth;
+
+  // Calculate available space for legend (from left edge to logo)
+  const availableWidth = logo?.href ? logoX : chartWidth;
+  const legendWidth = legendItems.length > 0 ? calculateLegendWidth(legendItems) : 0;
+
+  // Center legend within the available space (left of logo)
+  const legendStartX = (availableWidth - legendWidth) / 2;
+
+  // Add legend (centered in space left of logo)
   if (legendItems.length > 0) {
-    const legendGroup = createLegend(legendItems, STYLES.padding, footerY);
+    const legendGroup = createLegend(legendItems, legendStartX, footerY);
     clonedSvg.appendChild(legendGroup);
   }
 
-  // Embed logo on the right (inline with legend)
+  // Embed logo on the right
   if (logo?.href) {
     try {
       // Convert logo to base64 for standalone SVG
@@ -358,9 +393,7 @@ export async function exportChartAsSvg(containerRef, filename = "chart", options
       });
       logoImage.setAttribute("href", base64Logo);
 
-      // Position logo in bottom-right, vertically centered with legend
-      const logoMarginRight = STYLES.padding;
-      const logoX = chartWidth - logo.width - logoMarginRight;
+      // Position logo vertically centered with legend
       const logoY = footerY - logo.height / 2;
       logoImage.setAttribute("x", logoX);
       logoImage.setAttribute("y", logoY);
