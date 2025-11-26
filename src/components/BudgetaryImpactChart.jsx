@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import {
   ComposedChart,
   Bar,
@@ -10,8 +11,12 @@ import {
   ResponsiveContainer,
   ReferenceLine,
   LabelList,
+  Customized,
 } from "recharts";
+import { PolicyEngineLogo, CHART_LOGO } from "../utils/chartLogo";
+import { exportChartAsSvg } from "../utils/exportChartAsSvg";
 import "./BudgetaryImpactChart.css";
+import "./ChartExport.css";
 
 const POLICY_COLORS = {
   // COSTS to treasury (good for households - teal spectrum)
@@ -67,7 +72,14 @@ const NetImpactLabel = (props) => {
   );
 };
 
+// Chart metadata for export
+const CHART_TITLE = "Revenue impact";
+const CHART_DESCRIPTION =
+  "This chart shows the annual budgetary impact from 2026 to 2029, measured in billions of pounds. Positive values indicate revenue gains for the Government, whilst negative values indicate costs to the Treasury.";
+
 function BudgetaryImpactChart({ data }) {
+  const chartRef = useRef(null);
+
   if (!data || data.length === 0) return null;
 
   const formatCurrencyTick = (value) =>
@@ -86,16 +98,65 @@ function BudgetaryImpactChart({ data }) {
   // Narrowed to +/-10bn for the 3 announced policies
   const yAxisDomain = [-10, 10];
 
+  // Build legend items for export
+  const legendItems = [
+    ...activePolicies.map((name) => ({
+      color: POLICY_COLORS[name],
+      label: name,
+      type: "rect",
+    })),
+    ...(activePolicies.length > 1
+      ? [{ color: "#FBBF24", label: "Net impact", type: "line" }]
+      : []),
+  ];
+
+  const handleExportSvg = async () => {
+    await exportChartAsSvg(chartRef, "revenue-impact", {
+      title: CHART_TITLE,
+      description: CHART_DESCRIPTION,
+      legendItems,
+      logo: CHART_LOGO,
+    });
+  };
+
   return (
     <div className="budgetary-impact-chart">
-      <h2>Revenue impact</h2>
-      <p className="chart-description">
-        This chart shows the annual budgetary impact from 2026 to 2029, measured
-        in billions of pounds. Positive values indicate revenue gains for the
-        Government, whilst negative values indicate costs to the Treasury.
-      </p>
+      <div className="chart-header">
+        <div>
+          <h2>Revenue impact</h2>
+          <p className="chart-description">
+            This chart shows the annual budgetary impact from 2026 to 2029,
+            measured in billions of pounds. Positive values indicate revenue
+            gains for the Government, whilst negative values indicate costs to
+            the Treasury.
+          </p>
+        </div>
+        <button
+          className="export-button"
+          onClick={handleExportSvg}
+          title="Download as SVG"
+          aria-label="Download chart as SVG"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <polyline points="7 10 12 15 17 10" />
+            <line x1="12" y1="15" x2="12" y2="3" />
+          </svg>
+        </button>
+      </div>
 
-      <ResponsiveContainer width="100%" height={400}>
+      <div ref={chartRef}>
+        <ResponsiveContainer width="100%" height={400}>
         <ComposedChart
           data={data}
           margin={{ top: 15, right: 20, left: 70, bottom: 15 }}
@@ -151,11 +212,13 @@ function BudgetaryImpactChart({ data }) {
             cursor={{ fill: "rgba(49, 151, 149, 0.1)" }}
           />
           <Legend
-            wrapperStyle={{ paddingTop: "20px" }}
+            wrapperStyle={{ paddingTop: "20px", paddingRight: "140px" }}
             iconType="rect"
-            formatter={(value) =>
-              value === "netImpact" ? "Net impact" : value
-            }
+            formatter={(value) => (
+              <span style={{ color: "#374151", fontSize: "13px", fontWeight: 500 }}>
+                {value === "netImpact" ? "Net impact" : value}
+              </span>
+            )}
             payload={[
               ...activePolicies.map((name) => ({
                 value: name,
@@ -197,8 +260,10 @@ function BudgetaryImpactChart({ data }) {
             label={activePolicies.length > 1 ? <NetImpactLabel /> : false}
           />
           <ReferenceLine y={0} stroke="#374151" strokeWidth={1} />
+          <Customized component={PolicyEngineLogo} />
         </ComposedChart>
       </ResponsiveContainer>
+      </div>
     </div>
   );
 }
