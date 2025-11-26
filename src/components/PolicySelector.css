@@ -25,13 +25,13 @@
 }
 
 .policy-selector-toggle:hover {
-  border-color: #319795;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05), 0 0 0 2px rgba(49, 151, 149, 0.1);
+  border-color: #0f766e;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05), 0 0 0 2px rgba(15, 118, 110, 0.1);
 }
 
 .policy-selector-toggle:focus {
   outline: none;
-  box-shadow: 0 0 0 3px rgba(49, 151, 149, 0.2);
+  box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.2);
 }
 
 .policy-selector-label {
@@ -44,7 +44,7 @@
 
 .policy-selector-icon {
   font-size: 1rem;
-  color: #319795;
+  color: #0f766e;
   transition: transform 0.2s ease;
   flex-shrink: 0;
 }
@@ -97,7 +97,7 @@
   margin-top: 4px;
   width: 18px;
   height: 18px;
-  accent-color: #319795;
+  accent-color: #0f766e;
   cursor: pointer;
   flex-shrink: 0;
 }
