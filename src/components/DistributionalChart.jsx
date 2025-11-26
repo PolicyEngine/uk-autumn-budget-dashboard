@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import {
   ComposedChart,
   Bar,
@@ -10,9 +10,13 @@ import {
   Legend,
   ResponsiveContainer,
   ReferenceLine,
+  Customized,
 } from "recharts";
 import YearSlider from "./YearSlider";
+import { PolicyEngineLogo, CHART_LOGO } from "../utils/chartLogo";
+import { exportChartAsSvg } from "../utils/exportChartAsSvg";
 import "./DistributionalChart.css";
+import "./ChartExport.css";
 
 const POLICY_COLORS = {
   // GOOD for households (teal spectrum)
@@ -32,8 +36,16 @@ const ALL_POLICY_NAMES = [
   "Threshold freeze extension",
 ];
 
+// Chart metadata for export
+const CHART_DESCRIPTION =
+  "This chart shows the percentage change in net income by decile, displaying the proportional impact relative to baseline income. Positive values indicate gains; negative values indicate losses.";
+
+// Format year for display (e.g., 2026 -> "2026-27")
+const formatYearRange = (year) => `${year}-${(year + 1).toString().slice(-2)}`;
+
 function DistributionalChart({ rawData, selectedPolicies }) {
   const [internalYear, setInternalYear] = useState(2026);
+  const chartRef = useRef(null);
 
   const formatPercent = (value) => `${value.toFixed(1)}%`;
 
@@ -177,16 +189,66 @@ function DistributionalChart({ rawData, selectedPolicies }) {
 
   const activePolicies = ALL_POLICY_NAMES.filter(hasNonZeroValues);
 
+  // Build legend items for export
+  const legendItems = [
+    ...activePolicies.map((name) => ({
+      color: POLICY_COLORS[name],
+      label: name,
+      type: "rect",
+    })),
+    ...(activePolicies.length > 1
+      ? [{ color: "#FBBF24", label: "Net change", type: "line" }]
+      : []),
+  ];
+
+  const chartTitle = `Relative impact by income decile, ${formatYearRange(internalYear)}`;
+
+  const handleExportSvg = async () => {
+    await exportChartAsSvg(chartRef, "distributional-impact", {
+      title: chartTitle,
+      description: CHART_DESCRIPTION,
+      legendItems,
+      logo: CHART_LOGO,
+    });
+  };
+
   return (
     <div className="distributional-chart">
-      <h2>Relative impact by income decile</h2>
-      <p className="chart-description">
-        This chart shows the percentage change in net income by decile,
-        displaying the proportional impact relative to baseline income. Positive
-        values indicate gains; negative values indicate losses.
-      </p>
+      <div className="chart-header">
+        <div>
+          <h2>{chartTitle}</h2>
+          <p className="chart-description">
+            This chart shows the percentage change in net income by decile,
+            displaying the proportional impact relative to baseline income.
+            Positive values indicate gains; negative values indicate losses.
+          </p>
+        </div>
+        <button
+          className="export-button"
+          onClick={handleExportSvg}
+          title="Download as SVG"
+          aria-label="Download chart as SVG"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <polyline points="7 10 12 15 17 10" />
+            <line x1="12" y1="15" x2="12" y2="3" />
+          </svg>
+        </button>
+      </div>
 
-      <ResponsiveContainer width="100%" height={420}>
+      <div ref={chartRef}>
+        <ResponsiveContainer width="100%" height={420}>
         <ComposedChart
           data={data}
           margin={{ top: 20, right: 30, left: 70, bottom: 20 }}
@@ -254,10 +316,15 @@ function DistributionalChart({ rawData, selectedPolicies }) {
             cursor={{ fill: "rgba(49, 151, 149, 0.1)" }}
           />
           <Legend
-            wrapperStyle={{ paddingTop: "20px" }}
+            wrapperStyle={{ paddingTop: "20px", paddingRight: "140px" }}
             iconType="rect"
+            formatter={(value) => (
+              <span style={{ color: "#374151", fontSize: "13px", fontWeight: 500 }}>
+                {value}
+              </span>
+            )}
             payload={[
-              ...activePolicies.map((name) => ({
+              ...ALL_POLICY_NAMES.map((name) => ({
                 value: name,
                 type: "rect",
                 color: POLICY_COLORS[name],
@@ -295,8 +362,10 @@ function DistributionalChart({ rawData, selectedPolicies }) {
             animationDuration={500}
             hide={activePolicies.length <= 1}
           />
+          <Customized component={PolicyEngineLogo} />
         </ComposedChart>
       </ResponsiveContainer>
+      </div>
 
       <YearSlider selectedYear={internalYear} onYearChange={setInternalYear} />
     </div>

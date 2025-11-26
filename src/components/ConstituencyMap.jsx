@@ -1,7 +1,18 @@
 import { useEffect, useRef, useState, useMemo } from "react";
 import * as d3 from "d3";
 import YearSlider from "./YearSlider";
+import { CHART_LOGO } from "../utils/chartLogo";
+import { exportMapAsSvg } from "../utils/exportMapAsSvg";
 import "./ConstituencyMap.css";
+import "./ChartExport.css";
+
+// Chart metadata for export
+const CHART_TITLE = "Constituency-level impacts";
+const CHART_DESCRIPTION =
+  "This map shows the average annual change in household net income across all 650 UK constituencies. Green shading indicates gains, red indicates losses, measured as a percentage of baseline income.";
+
+// Format year for display (e.g., 2026 -> "2026-27")
+const formatYearRange = (year) => `${year}-${(year + 1).toString().slice(-2)}`;
 
 export default function ConstituencyMap({ selectedPolicies = [] }) {
   const [internalYear, setInternalYear] = useState(2026);
@@ -288,6 +299,15 @@ export default function ConstituencyMap({ selectedPolicies = [] }) {
 
     // Store zoom behavior for controls
     window.mapZoomBehavior = { svg, zoom };
+
+    // Add PolicyEngine logo in bottom-right corner (outside the zoomable group)
+    svg
+      .append("image")
+      .attr("href", CHART_LOGO.href)
+      .attr("width", CHART_LOGO.width)
+      .attr("height", CHART_LOGO.height)
+      .attr("x", width - CHART_LOGO.width - CHART_LOGO.padding)
+      .attr("y", height - CHART_LOGO.height - CHART_LOGO.padding);
   }, [geoData, aggregatedData]);
 
   // Handle search
@@ -389,6 +409,17 @@ export default function ConstituencyMap({ selectedPolicies = [] }) {
     }
   };
 
+  const handleExportSvg = async () => {
+    if (!svgRef.current) return;
+
+    await exportMapAsSvg(svgRef.current, `constituency-map-${internalYear}`, {
+      title: `${CHART_TITLE}, ${formatYearRange(internalYear)}`,
+      description: CHART_DESCRIPTION,
+      logo: CHART_LOGO,
+      tooltipData,
+    });
+  };
+
   if (loading) {
     return <div className="constituency-loading">Loading map...</div>;
   }
@@ -402,12 +433,38 @@ export default function ConstituencyMap({ selectedPolicies = [] }) {
     <div className="constituency-map-wrapper">
       {/* Header section */}
       <div className="map-header">
-        <h2>Constituency-level impacts</h2>
-        <p className="chart-description">
-          This map shows the average annual change in household net income
-          across all 650 UK constituencies. Green shading indicates gains, red
-          indicates losses, measured as a percentage of baseline income.
-        </p>
+        <div className="chart-header">
+          <div>
+            <h2>Constituency-level impacts, {formatYearRange(internalYear)}</h2>
+            <p className="chart-description">
+              This map shows the average annual change in household net income
+              across all 650 UK constituencies. Green shading indicates gains, red
+              indicates losses, measured as a percentage of baseline income.
+            </p>
+          </div>
+          <button
+            className="export-button"
+            onClick={handleExportSvg}
+            title="Download as SVG"
+            aria-label="Download map as SVG"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+              <polyline points="7 10 12 15 17 10" />
+              <line x1="12" y1="15" x2="12" y2="3" />
+            </svg>
+          </button>
+        </div>
       </div>
 
       {/* Search and legend in top bar */}
