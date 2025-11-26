@@ -47,6 +47,16 @@
   margin: 0 0 20px 0;
 }
 
+.dashboard-intro a {
+  color: #0f766e;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.dashboard-intro a:hover {
+  color: #065f5c;
+}
+
 /* Empty State */
 .empty-state {
   text-align: center;

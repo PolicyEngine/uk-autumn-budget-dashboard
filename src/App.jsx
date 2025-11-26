@@ -353,7 +353,21 @@ function App() {
         <p className="dashboard-intro">
           Explore the fiscal and distributional impacts of potential UK budget
           policies. Select policies to see how they affect government revenue,
-          household incomes, and inequality across income groups.
+          household incomes, and inequality across income groups.{" "}
+          {selectedPolicies.length > 0 && (
+            <a
+              href="#policy-details"
+              onClick={(e) => {
+                e.preventDefault();
+                setShowPolicyDetails(true);
+                document
+                  .getElementById("policy-details")
+                  ?.scrollIntoView({ behavior: "smooth" });
+              }}
+            >
+              See policy descriptions below.
+            </a>
+          )}
         </p>
 
         {selectedPolicies.length === 0 ? (
@@ -488,7 +502,7 @@ function App() {
                 </div>
 
                 {/* Policy Details Footer */}
-                <div className="policy-details-footer">
+                <div id="policy-details" className="policy-details-footer">
                   <button
                     className="policy-details-toggle"
                     onClick={() => setShowPolicyDetails(!showPolicyDetails)}
