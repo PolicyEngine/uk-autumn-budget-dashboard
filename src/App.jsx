@@ -8,7 +8,6 @@ import EmploymentIncomeChart from "./components/EmploymentIncomeChart";
 import EmploymentIncomeDiffChart from "./components/EmploymentIncomeDiffChart";
 import HouseholdChart from "./components/HouseholdChart";
 import OBRComparisonTable from "./components/OBRComparisonTable";
-import TestChart from "./components/TestChart";
 import "./App.css";
 
 // Policy definitions - only policies announced in the November 2025 Autumn Budget
@@ -396,9 +395,6 @@ function App() {
 
                 {/* OBR Comparison Table */}
                 <OBRComparisonTable selectedPolicies={selectedPolicies} />
-
-                {/* Test Chart for SVG Export */}
-                <TestChart />
 
                 {/* Policy Details Footer */}
                 <div id="policy-details" className="policy-details-footer">

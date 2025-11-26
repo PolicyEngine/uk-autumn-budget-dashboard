@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import {
   ComposedChart,
   Bar,
@@ -10,9 +10,13 @@ import {
   Legend,
   ResponsiveContainer,
   ReferenceLine,
+  Customized,
 } from "recharts";
 import YearSlider from "./YearSlider";
+import { PolicyEngineLogo, CHART_LOGO } from "../utils/chartLogo";
+import { exportChartAsSvg } from "../utils/exportChartAsSvg";
 import "./WaterfallChart.css";
+import "./ChartExport.css";
 
 const POLICY_COLORS = {
   // GOOD for households (teal spectrum)
@@ -32,8 +36,14 @@ const ALL_POLICY_NAMES = [
   "Threshold freeze extension",
 ];
 
+// Chart metadata for export
+const CHART_TITLE = "Absolute impact by income decile";
+const CHART_DESCRIPTION =
+  "This chart shows the absolute change in net income by decile, measured in pounds per year. This represents the actual cash amount gained or lost by households in each decile.";
+
 function WaterfallChart({ rawData, selectedPolicies }) {
   const [internalYear, setInternalYear] = useState(2026);
+  const chartRef = useRef(null);
 
   // Build chart data for internal year
   const POLICIES = [
@@ -169,16 +179,63 @@ function WaterfallChart({ rawData, selectedPolicies }) {
 
   const activePolicies = ALL_POLICY_NAMES.filter(hasNonZeroValues);
 
+  // Build legend items for export
+  const legendItems = [
+    ...activePolicies.map((name) => ({
+      color: POLICY_COLORS[name],
+      label: name,
+      type: "rect",
+    })),
+    ...(activePolicies.length > 1
+      ? [{ color: "#FBBF24", label: "Net change", type: "line" }]
+      : []),
+  ];
+
+  const handleExportSvg = async () => {
+    await exportChartAsSvg(chartRef, "absolute-impact-decile", {
+      title: CHART_TITLE,
+      description: CHART_DESCRIPTION,
+      legendItems,
+      logo: CHART_LOGO,
+    });
+  };
+
   return (
     <div className="waterfall-chart">
-      <h2>Absolute impact by income decile</h2>
-      <p className="chart-description">
-        This chart shows the absolute change in net income by decile, measured
-        in pounds per year. This represents the actual cash amount gained or
-        lost by households in each decile.
-      </p>
+      <div className="chart-header">
+        <div>
+          <h2>Absolute impact by income decile</h2>
+          <p className="chart-description">
+            This chart shows the absolute change in net income by decile,
+            measured in pounds per year. This represents the actual cash amount
+            gained or lost by households in each decile.
+          </p>
+        </div>
+        <button
+          className="export-button"
+          onClick={handleExportSvg}
+          aria-label="Download chart as SVG"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <polyline points="7 10 12 15 17 10" />
+            <line x1="12" y1="15" x2="12" y2="3" />
+          </svg>
+        </button>
+      </div>
 
-      <ResponsiveContainer width="100%" height={420}>
+      <div ref={chartRef}>
+        <ResponsiveContainer width="100%" height={420}>
         <ComposedChart
           data={data}
           margin={{ top: 20, right: 30, left: 70, bottom: 20 }}
@@ -288,8 +345,10 @@ function WaterfallChart({ rawData, selectedPolicies }) {
             animationDuration={500}
             hide={activePolicies.length <= 1}
           />
+          <Customized component={PolicyEngineLogo} />
         </ComposedChart>
       </ResponsiveContainer>
+      </div>
 
       <YearSlider selectedYear={internalYear} onYearChange={setInternalYear} />
     </div>

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   AreaChart,
   Area,
@@ -9,12 +9,37 @@ import {
   Legend,
   ResponsiveContainer,
   ReferenceLine,
+  Customized,
 } from "recharts";
+import { PolicyEngineLogo, CHART_LOGO } from "../utils/chartLogo";
+import { exportChartAsSvg } from "../utils/exportChartAsSvg";
 import "./EmploymentIncomeDiffChart.css";
+import "./ChartExport.css";
+
+// Chart metadata for export
+const CHART_TITLE = "Net income change";
+const CHART_DESCRIPTION =
+  "This chart shows the change in household net income (reform minus baseline) for the same household scenario. Green indicates gains, red indicates losses.";
+
+// Legend items for export
+const LEGEND_ITEMS = [
+  { color: "#319795", label: "Gain", type: "rect" },
+  { color: "#E53E3E", label: "Loss", type: "rect" },
+];
 
 function EmploymentIncomeDiffChart({ selectedPolicies, selectedYear = 2026 }) {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const chartRef = useRef(null);
+
+  const handleExportSvg = async () => {
+    await exportChartAsSvg(chartRef, "net-income-change", {
+      title: CHART_TITLE,
+      description: CHART_DESCRIPTION,
+      legendItems: LEGEND_ITEMS,
+      logo: CHART_LOGO,
+    });
+  };
 
   useEffect(() => {
     // Load income curve data from CSV
@@ -121,15 +146,41 @@ function EmploymentIncomeDiffChart({ selectedPolicies, selectedYear = 2026 }) {
 
   return (
     <div className="employment-income-diff-chart">
-      <h2>Net income change</h2>
-      <p className="chart-description">
-        This chart shows the change in household net income (reform minus
-        baseline) for the same household scenario. Green indicates gains, red
-        indicates losses.
-      </p>
+      <div className="chart-header">
+        <div>
+          <h2>Net income change</h2>
+          <p className="chart-description">
+            This chart shows the change in household net income (reform minus
+            baseline) for the same household scenario. Green indicates gains,
+            red indicates losses.
+          </p>
+        </div>
+        <button
+          className="export-button"
+          onClick={handleExportSvg}
+          aria-label="Download chart as SVG"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <polyline points="7 10 12 15 17 10" />
+            <line x1="12" y1="15" x2="12" y2="3" />
+          </svg>
+        </button>
+      </div>
 
-      <ResponsiveContainer width="100%" height={430}>
-        <AreaChart
+      <div ref={chartRef}>
+        <ResponsiveContainer width="100%" height={430}>
+          <AreaChart
           data={data}
           margin={{ top: 25, right: 30, left: 20, bottom: 60 }}
         >
@@ -232,8 +283,10 @@ function EmploymentIncomeDiffChart({ selectedPolicies, selectedYear = 2026 }) {
             animationDuration={500}
             animationBegin={0}
           />
-        </AreaChart>
-      </ResponsiveContainer>
+          <Customized component={PolicyEngineLogo} />
+          </AreaChart>
+        </ResponsiveContainer>
+      </div>
     </div>
   );
 }

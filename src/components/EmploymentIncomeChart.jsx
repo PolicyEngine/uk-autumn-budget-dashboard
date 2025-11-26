@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   LineChart,
   Line,
@@ -8,12 +8,37 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
+  Customized,
 } from "recharts";
+import { PolicyEngineLogo, CHART_LOGO } from "../utils/chartLogo";
+import { exportChartAsSvg } from "../utils/exportChartAsSvg";
 import "./EmploymentIncomeChart.css";
+import "./ChartExport.css";
+
+// Chart metadata for export
+const CHART_TITLE = "Household net income analysis";
+const CHART_DESCRIPTION =
+  "This chart models a household with 2 adults (both age 40) and 3 children (ages 7, 5, and 3) in 2026-27. The primary earner contributes £10,000 annually to their pension. Baseline shows current policy, reform shows impact after selected changes.";
+
+// Legend items for export
+const LEGEND_ITEMS = [
+  { color: "#9CA3AF", label: "Baseline", type: "line" },
+  { color: "#319795", label: "Reform", type: "line" },
+];
 
 function EmploymentIncomeChart({ selectedPolicies, selectedYear = 2026 }) {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const chartRef = useRef(null);
+
+  const handleExportSvg = async () => {
+    await exportChartAsSvg(chartRef, "household-net-income", {
+      title: CHART_TITLE,
+      description: CHART_DESCRIPTION,
+      legendItems: LEGEND_ITEMS,
+      logo: CHART_LOGO,
+    });
+  };
 
   useEffect(() => {
     // Load income curve data from CSV
@@ -113,16 +138,42 @@ function EmploymentIncomeChart({ selectedPolicies, selectedYear = 2026 }) {
 
   return (
     <div className="employment-income-chart">
-      <h2>Household net income analysis</h2>
-      <p className="chart-description">
-        This chart models a household with 2 adults (both age 40) and 3 children
-        (ages 7, 5, and 3) in 2026-27. The primary earner contributes £10,000
-        annually to their pension. Baseline shows current policy, reform shows
-        impact after selected changes.
-      </p>
+      <div className="chart-header">
+        <div>
+          <h2>Household net income analysis</h2>
+          <p className="chart-description">
+            This chart models a household with 2 adults (both age 40) and 3
+            children (ages 7, 5, and 3) in 2026-27. The primary earner
+            contributes £10,000 annually to their pension. Baseline shows
+            current policy, reform shows impact after selected changes.
+          </p>
+        </div>
+        <button
+          className="export-button"
+          onClick={handleExportSvg}
+          aria-label="Download chart as SVG"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <polyline points="7 10 12 15 17 10" />
+            <line x1="12" y1="15" x2="12" y2="3" />
+          </svg>
+        </button>
+      </div>
 
-      <ResponsiveContainer width="100%" height={430}>
-        <LineChart
+      <div ref={chartRef}>
+        <ResponsiveContainer width="100%" height={430}>
+          <LineChart
           data={data}
           margin={{ top: 25, right: 30, left: 20, bottom: 60 }}
         >
@@ -215,8 +266,10 @@ function EmploymentIncomeChart({ selectedPolicies, selectedYear = 2026 }) {
             animationDuration={500}
             animationBegin={0}
           />
-        </LineChart>
-      </ResponsiveContainer>
+          <Customized component={PolicyEngineLogo} />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
     </div>
   );
 }

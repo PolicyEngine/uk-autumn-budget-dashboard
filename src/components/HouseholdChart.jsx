@@ -9,9 +9,25 @@ import {
   ResponsiveContainer,
   ReferenceLine,
   Cell,
+  Customized,
 } from "recharts";
 import YearSlider from "./YearSlider";
+import { PolicyEngineLogo, CHART_LOGO } from "../utils/chartLogo";
+import { exportChartAsSvg } from "../utils/exportChartAsSvg";
 import "./HouseholdChart.css";
+import "./ChartExport.css";
+
+// Chart metadata for export
+const CHART_TITLE = "Household income impacts";
+const CHART_DESCRIPTION =
+  "This chart plots net income change against baseline income for 1,000 sampled households. Green dots indicate gains, red shows losses, and grey shows minimal change. Dot size represents household weight in the population.";
+
+// Legend items for export
+const LEGEND_ITEMS = [
+  { color: "#319795", label: "Gains", type: "rect" },
+  { color: "#E53E3E", label: "Losses", type: "rect" },
+  { color: "#9CA3AF", label: "No change", type: "rect" },
+];
 
 function HouseholdChart({ rawData, selectedPolicies }) {
   const [internalYear, setInternalYear] = useState(2026);
@@ -21,7 +37,17 @@ function HouseholdChart({ rawData, selectedPolicies }) {
   const [selectionBox, setSelectionBox] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
   const chartRef = useRef(null);
+  const exportRef = useRef(null);
   const startPoint = useRef(null);
+
+  const handleExportSvg = async () => {
+    await exportChartAsSvg(exportRef, "household-impacts", {
+      title: CHART_TITLE,
+      description: CHART_DESCRIPTION,
+      legendItems: LEGEND_ITEMS,
+      logo: CHART_LOGO,
+    });
+  };
 
   // Sample households ONCE across all years, then filter by selected year
   const { sampledIndices, data } = useMemo(() => {
@@ -432,15 +458,41 @@ function HouseholdChart({ rawData, selectedPolicies }) {
 
   return (
     <div className="household-chart">
-      <h2>Household income impacts</h2>
-      <p className="chart-description">
-        This chart plots net income change against baseline income for 1,000
-        sampled households. Green dots indicate gains, red shows losses, and
-        grey shows minimal change. Dot size represents household weight in the
-        population.
-      </p>
+      <div className="chart-header">
+        <div>
+          <h2>Household income impacts</h2>
+          <p className="chart-description">
+            This chart plots net income change against baseline income for 1,000
+            sampled households. Green dots indicate gains, red shows losses, and
+            grey shows minimal change. Dot size represents household weight in
+            the population.
+          </p>
+        </div>
+        <button
+          className="export-button"
+          onClick={handleExportSvg}
+          aria-label="Download chart as SVG"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <polyline points="7 10 12 15 17 10" />
+            <line x1="12" y1="15" x2="12" y2="3" />
+          </svg>
+        </button>
+      </div>
 
-      <div
+      <div ref={exportRef}>
+        <div
         style={{
           position: "relative",
           cursor: isDragging ? "crosshair" : "default",
@@ -615,8 +667,10 @@ function HouseholdChart({ rawData, selectedPolicies }) {
                 />
               ))}
             </Scatter>
+            <Customized component={PolicyEngineLogo} />
           </ScatterChart>
         </ResponsiveContainer>
+        </div>
       </div>
 
       <div
