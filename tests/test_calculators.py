@@ -1,0 +1,289 @@
+"""Tests for metric calculators.
+
+These tests verify the calculator functions work correctly with mock data.
+Full integration tests require PolicyEngine UK and microdata.
+"""
+
+import numpy as np
+import pandas as pd
+import pytest
+
+
+class TestBudgetaryImpactCalculator:
+    """Tests for budgetary impact calculation."""
+
+    def test_calculator_returns_list_of_dicts(self):
+        """Calculator returns list of dicts with expected keys."""
+        from uk_budget_data.calculators import BudgetaryImpactCalculator
+
+        calc = BudgetaryImpactCalculator(years=[2026, 2027])
+
+        # Create mock data
+        mock_result = calc.calculate_from_values(
+            reform_id="test",
+            reform_name="Test Reform",
+            baseline_balances={2026: 100e9, 2027: 105e9},
+            reformed_balances={2026: 98e9, 2027: 102e9},
+        )
+
+        assert isinstance(mock_result, list)
+        assert len(mock_result) == 2
+
+        for item in mock_result:
+            assert "reform_id" in item
+            assert "reform_name" in item
+            assert "year" in item
+            assert "value" in item
+
+    def test_calculator_computes_difference_in_billions(self):
+        """Calculator reports impact in billions."""
+        from uk_budget_data.calculators import BudgetaryImpactCalculator
+
+        calc = BudgetaryImpactCalculator(years=[2026])
+
+        result = calc.calculate_from_values(
+            reform_id="test",
+            reform_name="Test",
+            baseline_balances={2026: 100e9},
+            reformed_balances={2026: 98e9},
+        )
+
+        # Reformed - baseline = 98 - 100 = -2 billion
+        assert result[0]["value"] == pytest.approx(-2.0)
+
+
+class TestDistributionalImpactCalculator:
+    """Tests for distributional impact calculation."""
+
+    def test_calculator_returns_decile_data(self):
+        """Calculator returns data for all 10 deciles."""
+        from uk_budget_data.calculators import DistributionalImpactCalculator
+
+        calc = DistributionalImpactCalculator()
+
+        # Create mock decile data
+        decile_df = pd.DataFrame(
+            {
+                "household_income_decile": [1, 1, 2, 2, 3, 3],
+                "baseline_income": [10000, 12000, 20000, 22000, 30000, 32000],
+                "reform_income": [10500, 12500, 20100, 22100, 30050, 32050],
+                "income_change": [500, 500, 100, 100, 50, 50],
+                "household_weight": [1000, 1000, 1000, 1000, 1000, 1000],
+            }
+        )
+
+        result = calc.calculate_from_dataframe(
+            reform_id="test",
+            reform_name="Test",
+            year=2026,
+            decile_df=decile_df,
+        )
+
+        assert isinstance(result, list)
+        # Should have 3 deciles (1, 2, 3 in our mock data)
+        assert len(result) == 3
+
+    def test_calculator_computes_relative_change(self):
+        """Calculator computes change as percentage of baseline."""
+        from uk_budget_data.calculators import DistributionalImpactCalculator
+
+        calc = DistributionalImpactCalculator()
+
+        decile_df = pd.DataFrame(
+            {
+                "household_income_decile": [1, 1],
+                "baseline_income": [10000, 10000],
+                "reform_income": [11000, 11000],
+                "income_change": [1000, 1000],
+                "household_weight": [1.0, 1.0],
+            }
+        )
+
+        result = calc.calculate_from_dataframe(
+            reform_id="test",
+            reform_name="Test",
+            year=2026,
+            decile_df=decile_df,
+        )
+
+        # 1000/10000 = 10%
+        assert result[0]["value"] == pytest.approx(10.0)
+
+
+class TestWinnersLosersCalculator:
+    """Tests for winners/losers calculation."""
+
+    def test_calculator_includes_all_deciles_plus_overall(self):
+        """Calculator includes all deciles plus 'all' category."""
+        from uk_budget_data.calculators import WinnersLosersCalculator
+
+        calc = WinnersLosersCalculator()
+
+        decile_df = pd.DataFrame(
+            {
+                "household_income_decile": list(range(1, 11)) * 2,
+                "income_change": [100] * 20,
+                "household_weight": [1.0] * 20,
+            }
+        )
+
+        result = calc.calculate_from_dataframe(
+            reform_id="test",
+            reform_name="Test",
+            year=2026,
+            decile_df=decile_df,
+        )
+
+        # 10 deciles + 1 "all"
+        assert len(result) == 11
+
+        # Check "all" category exists
+        all_result = [r for r in result if r["decile"] == "all"]
+        assert len(all_result) == 1
+
+    def test_calculator_computes_weighted_average(self):
+        """Calculator computes weighted average change per household."""
+        from uk_budget_data.calculators import WinnersLosersCalculator
+
+        calc = WinnersLosersCalculator()
+
+        # Two households: one gains 100, one gains 200
+        # Weights: 1 and 3, so weighted avg = (100*1 + 200*3)/(1+3) = 175
+        decile_df = pd.DataFrame(
+            {
+                "household_income_decile": [1, 1],
+                "income_change": [100, 200],
+                "household_weight": [1.0, 3.0],
+            }
+        )
+
+        result = calc.calculate_from_dataframe(
+            reform_id="test",
+            reform_name="Test",
+            year=2026,
+            decile_df=decile_df,
+        )
+
+        decile_1 = [r for r in result if r["decile"] == "1"][0]
+        assert decile_1["avg_change"] == pytest.approx(175.0)
+
+
+class TestMetricsCalculator:
+    """Tests for summary metrics calculation."""
+
+    def test_calculator_returns_required_metrics(self):
+        """Calculator returns people_affected, gini_change, poverty metrics."""
+        from uk_budget_data.calculators import MetricsCalculator
+
+        calc = MetricsCalculator()
+
+        result = calc.calculate_from_values(
+            reform_id="test",
+            reform_name="Test",
+            year=2026,
+            percent_affected=25.5,
+            gini_change=-0.02,
+            poverty_change_pp=-1.5,
+            poverty_change_pct=-10.0,
+        )
+
+        assert len(result) == 1
+        metrics = result[0]
+        assert metrics["people_affected"] == 25.5
+        assert metrics["gini_change"] == pytest.approx(-0.02)
+        assert metrics["poverty_change_pp"] == -1.5
+        assert metrics["poverty_change_pct"] == -10.0
+
+
+class TestIncomeCurveCalculator:
+    """Tests for income curve calculation."""
+
+    def test_calculator_returns_points_array(self):
+        """Calculator returns array of income curve points."""
+        from uk_budget_data.calculators import IncomeCurveCalculator
+
+        calc = IncomeCurveCalculator(
+            max_income=150_000,
+            num_points=101,
+        )
+
+        assert calc.max_income == 150_000
+        assert calc.num_points == 101
+
+    def test_calculator_generates_income_range(self):
+        """Calculator generates correct income range."""
+        from uk_budget_data.calculators import IncomeCurveCalculator
+
+        calc = IncomeCurveCalculator(
+            max_income=100_000,
+            num_points=11,
+        )
+
+        incomes = calc.get_income_range()
+        assert len(incomes) == 11
+        assert incomes[0] == 0
+        assert incomes[-1] == 100_000
+
+
+class TestHouseholdScatterCalculator:
+    """Tests for household scatter plot calculation."""
+
+    def test_calculator_filters_by_income_range(self):
+        """Calculator filters households by baseline income range."""
+        from uk_budget_data.calculators import HouseholdScatterCalculator
+
+        calc = HouseholdScatterCalculator(max_income=50_000)
+
+        result = calc.calculate_from_arrays(
+            reform_id="test",
+            reform_name="Test",
+            year=2026,
+            baseline_incomes=np.array([20_000, 40_000, 60_000, 80_000]),
+            income_changes=np.array([100, 200, 300, 400]),
+            weights=np.array([1.0, 1.0, 1.0, 1.0]),
+        )
+
+        # Only first two should be included (< 50k)
+        assert len(result) == 2
+
+
+class TestConstituencyCalculator:
+    """Tests for constituency-level calculation."""
+
+    def test_calculator_returns_constituency_data(self):
+        """Calculator returns data with constituency codes and names."""
+        from uk_budget_data.calculators import ConstituencyCalculator
+
+        calc = ConstituencyCalculator()
+
+        # Mock constituency data
+        result = calc.calculate_from_values(
+            reform_id="test",
+            year=2026,
+            constituency_code="E14000530",
+            constituency_name="Cities of London and Westminster",
+            average_gain=150.0,
+            relative_change=0.5,
+        )
+
+        assert result["reform_id"] == "test"
+        assert result["constituency_code"] == "E14000530"
+        assert result["average_gain"] == 150.0
+
+
+class TestCalculatorFactory:
+    """Tests for calculator factory pattern."""
+
+    def test_get_all_calculators(self):
+        """Can retrieve all standard calculators."""
+        from uk_budget_data.calculators import get_standard_calculators
+
+        calculators = get_standard_calculators(years=[2026, 2027])
+
+        assert "budgetary" in calculators
+        assert "distributional" in calculators
+        assert "winners_losers" in calculators
+        assert "metrics" in calculators
+        assert "income_curve" in calculators
+        assert "household_scatter" in calculators
+        assert "constituency" in calculators
