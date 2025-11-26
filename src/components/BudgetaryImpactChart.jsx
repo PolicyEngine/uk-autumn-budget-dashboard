@@ -14,29 +14,21 @@ import {
 import "./BudgetaryImpactChart.css";
 
 const POLICY_COLORS = {
-  // COSTS to treasury (good for households - teal spectrum, equally spaced)
-  "National Insurance rate reduction": "#065F5C", // Darkest teal (biggest ~£12bn)
-  "Zero-rate VAT on domestic energy": "#0D7377", // Dark-medium teal
-  "2 child limit repeal": "#14A3A8", // Medium teal (~£3bn)
-  "Fuel duty freeze": "#5DD3D1", // Light teal (smallest ~£1.5bn)
+  // COSTS to treasury (good for households - teal spectrum)
+  "2 child limit repeal": "#0D9488", // Teal (~£3bn)
+  "Fuel duty freeze extension": "#5EEAD4", // Light teal (~£1.5bn)
 
-  // REVENUE raisers (bad for households - red spectrum, darker = bigger magnitude)
-  "Income tax increase (basic and higher +2pp)": "#991B1B", // Darkest red (biggest ~£20bn)
-  "Threshold freeze extension": "#DC2626", // Medium red (~£4-7bn)
-  "Salary sacrifice cap": "#F87171", // Light red (smallest ~£1.4bn)
+  // REVENUE raisers (bad for households - amber spectrum)
+  "Threshold freeze extension": "#D97706", // Amber (~£7bn)
 };
 
-// Order: biggest magnitude closest to zero line (darkest colours at zero)
+// Order: biggest magnitude closest to zero line
 const ALL_POLICY_NAMES = [
-  // Revenue raisers (positive for gov, red) - biggest at bottom (closest to zero), smallest at top
-  "Income tax increase (basic and higher +2pp)",
+  // Revenue raisers (positive for gov) - biggest at bottom (closest to zero)
   "Threshold freeze extension",
-  "Salary sacrifice cap",
-  // Costs to treasury (negative for gov, teal) - biggest at top (closest to zero), smallest at bottom
-  "National Insurance rate reduction",
-  "Zero-rate VAT on domestic energy",
+  // Costs to treasury (negative for gov) - biggest at top (closest to zero)
   "2 child limit repeal",
-  "Fuel duty freeze",
+  "Fuel duty freeze extension",
 ];
 
 // Custom label component for net impact values
@@ -91,8 +83,8 @@ function BudgetaryImpactChart({ data }) {
   const activePolicies = ALL_POLICY_NAMES.filter(hasNonZeroValues);
 
   // Fixed y-axis domain to ensure 0 is always a tick mark
-  // See: https://github.com/recharts/recharts/issues/6699 for interval={0} not working
-  const yAxisDomain = [-40, 40];
+  // Narrowed to +/-10bn for the 3 announced policies
+  const yAxisDomain = [-10, 10];
 
   return (
     <div className="budgetary-impact-chart">

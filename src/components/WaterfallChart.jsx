@@ -15,29 +15,21 @@ import YearSlider from "./YearSlider";
 import "./WaterfallChart.css";
 
 const POLICY_COLORS = {
-  // GOOD for households (teal spectrum, equally spaced)
-  "National Insurance rate reduction": "#065F5C", // Darkest teal (biggest ~£12bn)
-  "Zero-rate VAT on domestic energy": "#0D7377", // Dark-medium teal
-  "2 child limit repeal": "#14A3A8", // Medium teal (~£3bn)
-  "Fuel duty freeze": "#5DD3D1", // Light teal (smallest ~£1.5bn)
+  // GOOD for households (teal spectrum)
+  "2 child limit repeal": "#0D9488", // Teal
+  "Fuel duty freeze extension": "#5EEAD4", // Light teal
 
-  // BAD for households (red spectrum) - these decrease household income
-  "Income tax increase (basic and higher +2pp)": "#991B1B", // Darkest red (biggest ~£20bn)
-  "Threshold freeze extension": "#DC2626", // Medium red (~£4-7bn)
-  "Salary sacrifice cap": "#F87171", // Light red (smallest ~£1.4bn)
+  // BAD for households (amber spectrum) - these decrease household income
+  "Threshold freeze extension": "#D97706", // Amber
 };
 
-// Order: biggest magnitude closest to zero line (darkest colours at zero)
+// Order: biggest magnitude closest to zero line
 const ALL_POLICY_NAMES = [
-  // Good for households (positive, teal) - biggest at bottom (closest to zero), smallest at top
-  "National Insurance rate reduction",
-  "Zero-rate VAT on domestic energy",
+  // Good for households (positive, teal)
   "2 child limit repeal",
-  "Fuel duty freeze",
-  // Bad for households (negative, red) - biggest at top (closest to zero), smallest at bottom
-  "Income tax increase (basic and higher +2pp)",
+  "Fuel duty freeze extension",
+  // Bad for households (negative, amber)
   "Threshold freeze extension",
-  "Salary sacrifice cap",
 ];
 
 function WaterfallChart({ rawData, selectedPolicies }) {
@@ -46,15 +38,8 @@ function WaterfallChart({ rawData, selectedPolicies }) {
   // Build chart data for internal year
   const POLICIES = [
     { id: "two_child_limit", name: "2 child limit repeal" },
-    {
-      id: "income_tax_increase_2pp",
-      name: "Income tax increase (basic and higher +2pp)",
-    },
     { id: "threshold_freeze_extension", name: "Threshold freeze extension" },
-    { id: "ni_rate_reduction", name: "National Insurance rate reduction" },
-    { id: "zero_vat_energy", name: "Zero-rate VAT on domestic energy" },
-    { id: "salary_sacrifice_cap", name: "Salary sacrifice cap" },
-    { id: "fuel_duty_freeze", name: "Fuel duty freeze" },
+    { id: "fuel_duty_freeze", name: "Fuel duty freeze extension" },
   ];
 
   const waterfallDeciles = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"];
@@ -68,7 +53,7 @@ function WaterfallChart({ rawData, selectedPolicies }) {
     : [];
 
   // Policies that need sign flip (raise revenue but data shows positive household impact incorrectly)
-  const FLIP_SIGN_POLICIES = ["salary_sacrifice_cap"];
+  const FLIP_SIGN_POLICIES = [];
 
   const data = waterfallDeciles.map((decile) => {
     const dataPoint = { decile };
