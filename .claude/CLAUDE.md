@@ -2,6 +2,38 @@
 
 When working on the UK Autumn Budget dashboard project, follow these comprehensive guidelines:
 
+## Critical: Dependency Management
+
+### uv.lock Controls Installed Versions
+**IMPORTANT**: The `uv.lock` file pins exact dependency versions. Manual `uv pip install` commands will be overridden by the lockfile on next `uv sync`.
+
+When upgrading dependencies (especially policyengine-uk):
+```bash
+# CORRECT: Upgrade via lockfile
+uv lock --upgrade-package policyengine-uk
+uv sync
+
+# WRONG: This will be overridden by uv.lock
+uv pip install policyengine-uk==X.Y.Z
+```
+
+### Verifying Installed Package Contents
+When checking if a package has specific changes:
+1. First update the lockfile: `uv lock --upgrade-package <package>`
+2. Sync: `uv sync`
+3. Then check the installed files
+
+### policyengine-uk Updates
+This project relies on policyengine-uk having Autumn Budget 2025 parameters baked in. We're actively updating policyengine-uk, so **always use the latest version**:
+
+```bash
+# Keep policyengine-uk up to date
+uv lock --upgrade-package policyengine-uk
+uv sync
+```
+
+The reforms in `src/uk_budget_data/reforms.py` assume current law = Autumn Budget policy, with baseline parameter changes setting pre-budget values to show policy impact.
+
 ## Visual Style Guide
 
 ### Colour Palette

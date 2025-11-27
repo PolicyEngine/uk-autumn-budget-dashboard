@@ -174,7 +174,13 @@ def _create_fuel_duty_freeze() -> Reform:
 
 
 def _create_threshold_freeze_extension() -> Reform:
-    """Create the threshold freeze extension reform."""
+    """Create the threshold freeze extension reform.
+
+    policyengine-uk 2.60.0+ has frozen thresholds (Autumn Budget policy).
+    This reform compares against the pre-budget baseline (CPI uprating).
+    - Baseline: CPI-indexed from 2028 (pre-budget)
+    - Reform: Frozen at £12,570 PA and £37,700 threshold (policyengine-uk default)
+    """
     baseline = get_pre_autumn_budget_baseline()
     return Reform(
         id="threshold_freeze_extension",

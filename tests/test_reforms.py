@@ -193,7 +193,13 @@ class TestThresholdFreeze:
         assert reform is not None
 
     def test_reform_uses_pre_ab_baseline(self):
-        """Reform compares current law (freeze) against pre-AB baseline."""
+        """Reform compares frozen thresholds against pre-AB baseline (CPI-indexed).
+
+        policyengine-uk 2.60.0+ has frozen thresholds (Autumn Budget policy).
+        This reform sets CPI-indexed values as baseline to show impact.
+        - Baseline: CPI-indexed from 2028 (pre-budget)
+        - Reform: Frozen at £12,570 PA and £37,700 threshold (policyengine-uk default)
+        """
         from uk_budget_data.reforms import (
             get_pre_autumn_budget_baseline,
             get_reform,
@@ -202,17 +208,13 @@ class TestThresholdFreeze:
         reform = get_reform("threshold_freeze_extension")
         pre_ab_baseline = get_pre_autumn_budget_baseline()
 
-        # Reform uses custom baseline (pre-Autumn Budget values)
-        assert reform.has_custom_baseline()
-        assert reform.baseline_parameter_changes is not None
-
         pa_key = "gov.hmrc.income_tax.allowances.personal_allowance.amount"
         threshold_key = "gov.hmrc.income_tax.rates.uk[1].threshold"
 
+        # Baseline has CPI-indexed values (pre-Autumn Budget)
         assert pa_key in reform.baseline_parameter_changes
         assert threshold_key in reform.baseline_parameter_changes
 
-        # Baseline has inflation-indexed values from PRE_AUTUMN_BUDGET_BASELINE
         assert (
             reform.baseline_parameter_changes[pa_key]["2028"]
             == pre_ab_baseline[pa_key]["2028"]
@@ -222,7 +224,7 @@ class TestThresholdFreeze:
             == pre_ab_baseline[threshold_key]["2028"]
         )
 
-        # Reform parameter_changes is empty (uses default policyengine-uk params)
+        # Reform parameter_changes is empty (uses policyengine-uk frozen values)
         assert reform.parameter_changes == {}
 
 
