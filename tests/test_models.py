@@ -85,6 +85,38 @@ class TestReform:
         scenario = reform.to_scenario()
         assert scenario is not None
 
+    def test_reform_with_custom_baseline(self):
+        """Reform can specify a custom baseline scenario."""
+        from uk_budget_data.models import Reform
+
+        reform = Reform(
+            id="fuel_duty",
+            name="Fuel duty freeze",
+            baseline_parameter_changes={
+                "gov.hmrc.fuel_duty.petrol_and_diesel": {"2026": 0.58},
+            },
+            parameter_changes={
+                "gov.hmrc.fuel_duty.petrol_and_diesel": {"2026": 0.54},
+            },
+        )
+
+        assert reform.has_custom_baseline() is True
+        baseline_scenario = reform.to_baseline_scenario()
+        assert baseline_scenario is not None
+
+    def test_reform_without_custom_baseline(self):
+        """Reform without baseline_parameter_changes returns None."""
+        from uk_budget_data.models import Reform
+
+        reform = Reform(
+            id="test_reform",
+            name="Test Reform",
+            parameter_changes={"gov.test.param": {"2026": 100}},
+        )
+
+        assert reform.has_custom_baseline() is False
+        assert reform.to_baseline_scenario() is None
+
 
 class TestReformResult:
     """Tests for ReformResult model."""
@@ -160,3 +192,22 @@ class TestDataConfig:
         )
         assert config.income_curve_max == 200_000
         assert config.income_curve_points == 101
+
+    def test_global_baseline_parameter_changes(self):
+        """DataConfig can specify global baseline parameter changes."""
+        from uk_budget_data.models import DataConfig
+
+        config = DataConfig(
+            baseline_parameter_changes={
+                "gov.hmrc.income_tax.rates.uk[1].threshold": {"2026": 37700},
+            }
+        )
+        baseline_scenario = config.get_baseline_scenario()
+        assert baseline_scenario is not None
+
+    def test_no_global_baseline_returns_none(self):
+        """DataConfig without baseline returns None."""
+        from uk_budget_data.models import DataConfig
+
+        config = DataConfig()
+        assert config.get_baseline_scenario() is None

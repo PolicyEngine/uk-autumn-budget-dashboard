@@ -266,14 +266,29 @@ class DataPipeline:
                 )
 
                 # Create simulations
+                # Baseline priority: reform-specific > global config > default
+                baseline_scenario = (
+                    reform.to_baseline_scenario()
+                    or self.config.get_baseline_scenario()
+                )
+                reform_scenario = reform.to_scenario()
+
                 if dataset:
-                    baseline = Microsimulation(dataset=dataset)
+                    if baseline_scenario:
+                        baseline = Microsimulation(
+                            dataset=dataset, scenario=baseline_scenario
+                        )
+                    else:
+                        baseline = Microsimulation(dataset=dataset)
                     reformed = Microsimulation(
-                        dataset=dataset, scenario=reform.to_scenario()
+                        dataset=dataset, scenario=reform_scenario
                     )
                 else:
-                    baseline = Microsimulation()
-                    reformed = Microsimulation(scenario=reform.to_scenario())
+                    if baseline_scenario:
+                        baseline = Microsimulation(scenario=baseline_scenario)
+                    else:
+                        baseline = Microsimulation()
+                    reformed = Microsimulation(scenario=reform_scenario)
 
                 # Process reform
                 processor = ReformProcessor(reform, self.config)

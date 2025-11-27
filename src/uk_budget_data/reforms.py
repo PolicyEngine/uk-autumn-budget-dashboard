@@ -53,14 +53,29 @@ FUEL_DUTY_FREEZE = Reform(
     id="fuel_duty_freeze",
     name="Fuel duty freeze extension",
     description=(
-        "Extends the 5p fuel duty cut introduced in March 2022. "
-        "Maintains fuel duty at 52.95p per litre rather than reverting "
-        "to 57.95p. This represents the 15th consecutive year of freeze."
+        "Freezes fuel duty rates until September 2026, comparing the announced "
+        "policy (freeze at 52.95p until September 2026, then staggered reversal) "
+        "against a baseline where the 5p cut ends on 22 March 2026. "
+        "See https://policyengine.org/uk/research/fuel-duty-freeze-2025 for details."
     ),
+    # Baseline: Higher fuel duty rates (no freeze)
+    # The 5p cut ends on 22 March 2026, returning to 57.95p, then RPI uprating
+    baseline_parameter_changes={
+        "gov.hmrc.fuel_duty.petrol_and_diesel": {
+            "2026": 0.58,
+            "2027": 0.61,
+            "2028": 0.63,
+            "2029": 0.64,
+        }
+    },
+    # Reform: Lower fuel duty rates (with freeze)
+    # Freeze at 52.95p until September 2026, then staggered reversal
     parameter_changes={
         "gov.hmrc.fuel_duty.petrol_and_diesel": {
-            "2026-03-22": 0.5295,
-            "2027-04-01": 0.5295,
+            "2026": 0.54,
+            "2027": 0.60,
+            "2028": 0.62,
+            "2029": 0.63,
         }
     },
 )
