@@ -462,6 +462,92 @@ def create_salary_sacrifice_cap_reform(
     )
 
 
+def _create_rail_fare_freeze() -> Reform:
+    """Create a rail fare freeze reform.
+
+    Models the fiscal impact of freezing regulated rail fares by increasing
+    government rail subsidy spending. The additional subsidy is distributed
+    to households proportionally based on their rail usage.
+
+    Methodology:
+    - Baseline fare increases follow the regulated fares formula: July RPI + 1%
+    - 2026: 5.8% based on GOV.UK counterfactual (July 2025 RPI 4.8% + 1%)
+    - 2027-2029: Projected using OBR RPI forecasts + 1% formula
+    - Reform adds 1.5% multiplier to government subsidy in 2026, reflecting:
+      * Only 45% of rail fares are regulated (GOV.UK)
+      * 50:50 funding split between subsidy and fares (ORR)
+      * Behavioral offsets from increased ridership (GOV.UK)
+
+    Sources:
+    - GOV.UK Rail Fares Freeze: https://www.gov.uk/government/publications/rail-fares-freeze-passenger-savings-estimate
+    - OBR March 2025 Economic Outlook: https://obr.uk/efo/economic-and-fiscal-outlook-march-2025/
+    - ORR Rail Funding: https://www.orr.gov.uk/
+    """
+    # Baseline fare increases - regulated fares formula (July RPI + 1%)
+    baseline_increases = {
+        2026: 0.058,  # 5.8% (July 2025 RPI 4.8% + 1%)
+        2027: 0.042,  # 4.2% (OBR RPI forecast ~3.2% + 1%)
+        2028: 0.039,  # 3.9% (OBR RPI forecast ~2.9% + 1%)
+        2029: 0.039,  # 3.9% (OBR RPI forecast ~2.9% + 1%)
+    }
+
+    # Reform multiplier for 2026 - represents additional public spending
+    # to compensate for the rail fare freeze policy
+    # 1.5% chosen to reflect partial coverage (45% of fares), funding structure, and behavioral offsets
+    reform_2026_multiplier = 1.015
+
+    def baseline_modifier(sim: Simulation) -> Simulation:
+        """Apply standard fare increases each year (baseline scenario)."""
+        base_2025 = sim.calculate("rail_subsidy_spending", 2025, map_to="household")
+        cumulative = 1.0
+
+        for year in sorted(baseline_increases.keys()):
+            cumulative *= 1 + baseline_increases[year]
+            new_values = base_2025 * cumulative
+            sim.set_input("rail_subsidy_spending", year, new_values)
+
+        return sim
+
+    def reform_modifier(sim: Simulation) -> Simulation:
+        """Apply reform with fare freeze via increased subsidy."""
+        base_2025 = sim.calculate("rail_subsidy_spending", 2025, map_to="household")
+        baseline_cumulative = 1.0
+        reform_cumulative = 1.0
+
+        for year in sorted(baseline_increases.keys()):
+            baseline_cumulative *= 1 + baseline_increases[year]
+
+            if year == 2026:
+                reform_cumulative = (1 + baseline_increases[year]) * reform_2026_multiplier
+            else:
+                reform_cumulative *= 1 + baseline_increases[year]
+
+            baseline_subsidy_hh = base_2025 * baseline_cumulative
+            baseline_total = baseline_subsidy_hh.sum()
+            reform_total_target = base_2025.sum() * reform_cumulative
+            total_excess = reform_total_target - baseline_total
+
+            household_share = baseline_subsidy_hh / baseline_total
+            household_gain = total_excess * household_share
+            reformed_subsidy = baseline_subsidy_hh + household_gain
+            sim.set_input("rail_subsidy_spending", year, reformed_subsidy)
+
+        return sim
+
+    return Reform(
+        id="rail_fare_freeze",
+        name="Rail fare freeze",
+        description=(
+            "Freezes regulated rail fares by increasing government subsidy "
+            "spending. Additional subsidy distributed to households proportionally "
+            "by rail usage. Uses a 1.5% multiplier reflecting partial coverage and "
+            "behavioral offsets."
+        ),
+        baseline_simulation_modifier=baseline_modifier,
+        simulation_modifier=reform_modifier,
+    )
+
+
 # =============================================================================
 # COMBINED AUTUMN BUDGET REFORM
 # =============================================================================
@@ -593,6 +679,7 @@ def _get_all_reforms() -> list[Reform]:
     if _ALL_REFORMS_CACHE is None:
         _ALL_REFORMS_CACHE = _get_autumn_budget_2025_reforms() + [
             create_salary_sacrifice_cap_reform(),
+            _create_rail_fare_freeze(),
         ]
     return _ALL_REFORMS_CACHE
 
