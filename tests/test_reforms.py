@@ -83,9 +83,15 @@ class TestFuelDutyFreeze:
         param_key = "gov.hmrc.fuel_duty.petrol_and_diesel"
         assert param_key in reform.parameter_changes
 
-        # Rate should be 0.5295 (52.95p)
-        for date_val in reform.parameter_changes[param_key].values():
-            assert date_val == 0.5295
+        # Reform rates should be lower than baseline rates
+        # (freeze vs no-freeze comparison)
+        assert reform.has_custom_baseline()
+        assert reform.baseline_parameter_changes is not None
+
+        # Reform rate for 2026 should be 0.54 (freeze extended)
+        assert reform.parameter_changes[param_key]["2026"] == 0.54
+        # Baseline rate for 2026 should be 0.58 (no freeze)
+        assert reform.baseline_parameter_changes[param_key]["2026"] == 0.58
 
 
 class TestThresholdFreeze:
