@@ -15,8 +15,15 @@ we use a pre-Autumn Budget baseline to show the impact of budget policies.
 from typing import Optional
 
 import numpy as np
-from policyengine_uk import Simulation, Microsimulation
-from policyengine_uk.model_api import *
+from policyengine_uk import Microsimulation, Simulation
+from policyengine_uk.model_api import (
+    YEAR,
+    Household,
+    Person,
+    Variable,
+    max_,
+    select,
+)
 
 from uk_budget_data.models import Reform
 
