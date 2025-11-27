@@ -95,83 +95,110 @@ def _calculate_pre_autumn_budget_baseline() -> dict:
     }
 
 
-# Calculate baseline values using OBR forecasts
-PRE_AUTUMN_BUDGET_BASELINE = _calculate_pre_autumn_budget_baseline()
+# Cache for lazy-loaded baseline
+_PRE_AUTUMN_BUDGET_BASELINE_CACHE: dict | None = None
+
+
+def get_pre_autumn_budget_baseline() -> dict:
+    """Get the pre-Autumn Budget baseline values (lazy-loaded).
+
+    Returns cached values on subsequent calls to avoid repeated
+    Microsimulation initialization.
+    """
+    global _PRE_AUTUMN_BUDGET_BASELINE_CACHE
+    if _PRE_AUTUMN_BUDGET_BASELINE_CACHE is None:
+        _PRE_AUTUMN_BUDGET_BASELINE_CACHE = (
+            _calculate_pre_autumn_budget_baseline()
+        )
+    return _PRE_AUTUMN_BUDGET_BASELINE_CACHE
+
+
+# Alias for backwards compatibility (lazy-loaded)
+PRE_AUTUMN_BUDGET_BASELINE = None  # Set lazily below
+
+
+def _get_pre_ab_baseline_key(key: str) -> dict:
+    """Get a specific key from the pre-AB baseline (lazy-loaded)."""
+    return get_pre_autumn_budget_baseline()[key]
 
 
 # =============================================================================
 # SPENDING MEASURES (costs to treasury)
 # =============================================================================
 
-TWO_CHILD_LIMIT_REPEAL = Reform(
-    id="two_child_limit",
-    name="2 child limit repeal",
-    description=(
-        "Removes the two-child limit on benefits. The limit restricts "
-        "child-related payments in Universal Credit and Tax Credits to "
-        "the first two children in a family."
-    ),
-    parameter_changes={
-        "gov.dwp.tax_credits.child_tax_credit.limit.child_count": _years_dict(
-            np.inf
-        ),
-        "gov.dwp.universal_credit.elements.child.limit.child_count": (
-            _years_dict(np.inf)
-        ),
-    },
-)
 
-FUEL_DUTY_FREEZE = Reform(
-    id="fuel_duty_freeze",
-    name="Fuel duty freeze extension",
-    description=(
-        "Extends the 5p fuel duty cut until September 2026, then implements a "
-        "staggered reversal. Compares Autumn Budget policy (freeze) against "
-        "pre-budget baseline (5p cut ending March 2026). "
-        "See https://policyengine.org/uk/research/fuel-duty-freeze-2025 for details."
-    ),
-    # Baseline: Pre-Autumn Budget (5p cut ends March 2026, then RPI uprating)
-    baseline_parameter_changes={
-        "gov.hmrc.fuel_duty.petrol_and_diesel": (
-            PRE_AUTUMN_BUDGET_BASELINE["gov.hmrc.fuel_duty.petrol_and_diesel"]
-        )
-    },
-    # Reform: Current law (Autumn Budget policy) - use default parameters
-    # policyengine-uk v2.59.0 has the freeze baked in
-    parameter_changes={},
-)
+def _create_two_child_limit_repeal() -> Reform:
+    """Create the two-child limit repeal reform."""
+    return Reform(
+        id="two_child_limit",
+        name="2 child limit repeal",
+        description=(
+            "Removes the two-child limit on benefits. The limit restricts "
+            "child-related payments in Universal Credit and Tax Credits to "
+            "the first two children in a family."
+        ),
+        parameter_changes={
+            "gov.dwp.tax_credits.child_tax_credit.limit.child_count": (
+                _years_dict(np.inf)
+            ),
+            "gov.dwp.universal_credit.elements.child.limit.child_count": (
+                _years_dict(np.inf)
+            ),
+        },
+    )
+
+
+def _create_fuel_duty_freeze() -> Reform:
+    """Create the fuel duty freeze extension reform."""
+    baseline = get_pre_autumn_budget_baseline()
+    return Reform(
+        id="fuel_duty_freeze",
+        name="Fuel duty freeze extension",
+        description=(
+            "Extends the 5p fuel duty cut until September 2026, then "
+            "implements a staggered reversal. Compares Autumn Budget policy "
+            "(freeze) against pre-budget baseline (5p cut ending March 2026). "
+            "See https://policyengine.org/uk/research/fuel-duty-freeze-2025"
+        ),
+        baseline_parameter_changes={
+            "gov.hmrc.fuel_duty.petrol_and_diesel": baseline[
+                "gov.hmrc.fuel_duty.petrol_and_diesel"
+            ]
+        },
+        parameter_changes={},
+    )
 
 
 # =============================================================================
 # TAX MEASURES (revenue raisers)
 # =============================================================================
 
-THRESHOLD_FREEZE_EXTENSION = Reform(
-    id="threshold_freeze_extension",
-    name="Threshold freeze extension",
-    description=(
-        "Extends the freeze on income tax thresholds from April 2028 to "
-        "April 2031. Personal allowance remains at £12,570 and the higher "
-        "rate threshold at £37,700. Compares Autumn Budget policy (freeze) "
-        "against pre-budget baseline (inflation uprating from 2028)."
-    ),
-    # Baseline: Pre-Autumn Budget (thresholds unfrozen from April 2028)
-    baseline_parameter_changes={
-        "gov.hmrc.income_tax.allowances.personal_allowance.amount": (
-            PRE_AUTUMN_BUDGET_BASELINE[
-                "gov.hmrc.income_tax.allowances.personal_allowance.amount"
-            ]
+
+def _create_threshold_freeze_extension() -> Reform:
+    """Create the threshold freeze extension reform."""
+    baseline = get_pre_autumn_budget_baseline()
+    return Reform(
+        id="threshold_freeze_extension",
+        name="Threshold freeze extension",
+        description=(
+            "Extends the freeze on income tax thresholds from April 2028 to "
+            "April 2031. Personal allowance remains at £12,570 and the higher "
+            "rate threshold at £37,700. Compares Autumn Budget policy (freeze) "
+            "against pre-budget baseline (inflation uprating from 2028)."
         ),
-        "gov.hmrc.income_tax.rates.uk[1].threshold": (
-            PRE_AUTUMN_BUDGET_BASELINE[
-                "gov.hmrc.income_tax.rates.uk[1].threshold"
-            ]
-        ),
-    },
-    # Reform: Current law (Autumn Budget policy) - use default parameters
-    # policyengine-uk v2.59.0 has the freeze extension baked in
-    parameter_changes={},
-)
+        baseline_parameter_changes={
+            "gov.hmrc.income_tax.allowances.personal_allowance.amount": (
+                baseline[
+                    "gov.hmrc.income_tax.allowances.personal_allowance.amount"
+                ]
+            ),
+            "gov.hmrc.income_tax.rates.uk[1].threshold": (
+                baseline["gov.hmrc.income_tax.rates.uk[1].threshold"]
+            ),
+        },
+        parameter_changes={},
+    )
+
 
 # Placeholder reforms - parameter paths need verification
 DIVIDEND_TAX_INCREASE = Reform(
@@ -329,27 +356,73 @@ def create_salary_sacrifice_cap_reform(
 
 
 # =============================================================================
-# REFORM COLLECTIONS
+# REFORM COLLECTIONS (lazy-loaded to avoid import-time Microsimulation)
 # =============================================================================
 
-# Main reforms for the November 2025 Autumn Budget
-AUTUMN_BUDGET_2025_REFORMS: list[Reform] = [
-    TWO_CHILD_LIMIT_REPEAL,
-    FUEL_DUTY_FREEZE,
-    THRESHOLD_FREEZE_EXTENSION,
-    DIVIDEND_TAX_INCREASE,
-    SAVINGS_TAX_INCREASE,
-    PROPERTY_TAX_INCREASE,
-    ZERO_VAT_ENERGY,
-]
+# Cache for lazy-loaded reforms
+_AUTUMN_BUDGET_2025_REFORMS_CACHE: list[Reform] | None = None
+_ALL_REFORMS_CACHE: list[Reform] | None = None
+_REFORM_LOOKUP_CACHE: dict[str, Reform] | None = None
 
-# All available reforms including experimental ones
-ALL_REFORMS: list[Reform] = AUTUMN_BUDGET_2025_REFORMS + [
-    create_salary_sacrifice_cap_reform(),
-]
 
-# Reform lookup by ID
-_REFORM_LOOKUP: dict[str, Reform] = {r.id: r for r in ALL_REFORMS}
+def _get_autumn_budget_2025_reforms() -> list[Reform]:
+    """Get the main Autumn Budget 2025 reforms (lazy-loaded)."""
+    global _AUTUMN_BUDGET_2025_REFORMS_CACHE
+    if _AUTUMN_BUDGET_2025_REFORMS_CACHE is None:
+        _AUTUMN_BUDGET_2025_REFORMS_CACHE = [
+            _create_two_child_limit_repeal(),
+            _create_fuel_duty_freeze(),
+            _create_threshold_freeze_extension(),
+            DIVIDEND_TAX_INCREASE,
+            SAVINGS_TAX_INCREASE,
+            PROPERTY_TAX_INCREASE,
+            ZERO_VAT_ENERGY,
+        ]
+    return _AUTUMN_BUDGET_2025_REFORMS_CACHE
+
+
+def _get_all_reforms() -> list[Reform]:
+    """Get all available reforms (lazy-loaded)."""
+    global _ALL_REFORMS_CACHE
+    if _ALL_REFORMS_CACHE is None:
+        _ALL_REFORMS_CACHE = _get_autumn_budget_2025_reforms() + [
+            create_salary_sacrifice_cap_reform(),
+        ]
+    return _ALL_REFORMS_CACHE
+
+
+def _get_reform_lookup() -> dict[str, Reform]:
+    """Get the reform lookup dictionary (lazy-loaded)."""
+    global _REFORM_LOOKUP_CACHE
+    if _REFORM_LOOKUP_CACHE is None:
+        _REFORM_LOOKUP_CACHE = {r.id: r for r in _get_all_reforms()}
+    return _REFORM_LOOKUP_CACHE
+
+
+# Public getter functions for backwards compatibility
+def get_autumn_budget_2025_reforms() -> list[Reform]:
+    """Get the main Autumn Budget 2025 reforms.
+
+    Returns a list of Reform objects for all policies in the November 2025
+    Autumn Budget. Lazy-loaded to avoid import-time initialization.
+    """
+    return _get_autumn_budget_2025_reforms()
+
+
+def get_all_reforms() -> list[Reform]:
+    """Get all available reforms including experimental ones.
+
+    Returns a list of all Reform objects, including both Autumn Budget
+    reforms and experimental reforms like salary sacrifice cap.
+    """
+    return _get_all_reforms()
+
+
+# Module-level aliases that are lazy-loaded on first access
+# Note: These are initially None and populated on first use via get_reform()
+# For most use cases, prefer using get_reform(id) or get_autumn_budget_2025_reforms()
+AUTUMN_BUDGET_2025_REFORMS: list[Reform] | None = None
+ALL_REFORMS: list[Reform] | None = None
 
 
 def get_reform(reform_id: str) -> Optional[Reform]:
@@ -361,9 +434,9 @@ def get_reform(reform_id: str) -> Optional[Reform]:
     Returns:
         The Reform object, or None if not found.
     """
-    return _REFORM_LOOKUP.get(reform_id)
+    return _get_reform_lookup().get(reform_id)
 
 
 def list_reform_ids() -> list[str]:
     """Get a list of all available reform IDs."""
-    return list(_REFORM_LOOKUP.keys())
+    return list(_get_reform_lookup().keys())

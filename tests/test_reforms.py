@@ -9,7 +9,9 @@ class TestPreAutumnBudgetBaseline:
 
     def test_income_tax_thresholds_use_cpi_uprating(self):
         """Pre-AB baseline thresholds should use CPI uprating from 2028."""
-        from uk_budget_data.reforms import PRE_AUTUMN_BUDGET_BASELINE
+        from uk_budget_data.reforms import get_pre_autumn_budget_baseline
+
+        PRE_AUTUMN_BUDGET_BASELINE = get_pre_autumn_budget_baseline()
 
         sim = Microsimulation()
         cpi_index = (
@@ -47,7 +49,9 @@ class TestPreAutumnBudgetBaseline:
 
     def test_fuel_duty_uses_rpi_uprating(self):
         """Pre-AB baseline fuel duty should use RPI uprating after Mar 2026."""
-        from uk_budget_data.reforms import PRE_AUTUMN_BUDGET_BASELINE
+        from uk_budget_data.reforms import get_pre_autumn_budget_baseline
+
+        PRE_AUTUMN_BUDGET_BASELINE = get_pre_autumn_budget_baseline()
 
         sim = Microsimulation()
         rpi_index = (
@@ -86,23 +90,24 @@ class TestReformDefinitions:
 
     def test_autumn_budget_reforms_exist(self):
         """Autumn Budget 2025 reforms are defined."""
-        from uk_budget_data.reforms import AUTUMN_BUDGET_2025_REFORMS
+        from uk_budget_data.reforms import get_autumn_budget_2025_reforms
 
-        assert len(AUTUMN_BUDGET_2025_REFORMS) > 0
+        reforms = get_autumn_budget_2025_reforms()
+        assert len(reforms) > 0
 
     def test_all_reforms_have_required_fields(self):
         """All reforms have id and name."""
-        from uk_budget_data.reforms import AUTUMN_BUDGET_2025_REFORMS
+        from uk_budget_data.reforms import get_autumn_budget_2025_reforms
 
-        for reform in AUTUMN_BUDGET_2025_REFORMS:
+        for reform in get_autumn_budget_2025_reforms():
             assert reform.id, f"Reform missing id: {reform}"
             assert reform.name, f"Reform missing name: {reform}"
 
     def test_all_reforms_convertible_to_scenario(self):
         """All reforms can be converted to PolicyEngine Scenario."""
-        from uk_budget_data.reforms import AUTUMN_BUDGET_2025_REFORMS
+        from uk_budget_data.reforms import get_autumn_budget_2025_reforms
 
-        for reform in AUTUMN_BUDGET_2025_REFORMS:
+        for reform in get_autumn_budget_2025_reforms():
             scenario = reform.to_scenario()
             assert (
                 scenario is not None
@@ -187,11 +192,12 @@ class TestThresholdFreeze:
     def test_reform_uses_pre_ab_baseline(self):
         """Reform compares current law (freeze) against pre-AB baseline."""
         from uk_budget_data.reforms import (
-            PRE_AUTUMN_BUDGET_BASELINE,
+            get_pre_autumn_budget_baseline,
             get_reform,
         )
 
         reform = get_reform("threshold_freeze_extension")
+        pre_ab_baseline = get_pre_autumn_budget_baseline()
 
         # Reform uses custom baseline (pre-Autumn Budget values)
         assert reform.has_custom_baseline()
@@ -206,11 +212,11 @@ class TestThresholdFreeze:
         # Baseline has inflation-indexed values from PRE_AUTUMN_BUDGET_BASELINE
         assert (
             reform.baseline_parameter_changes[pa_key]["2028"]
-            == PRE_AUTUMN_BUDGET_BASELINE[pa_key]["2028"]
+            == pre_ab_baseline[pa_key]["2028"]
         )
         assert (
             reform.baseline_parameter_changes[threshold_key]["2028"]
-            == PRE_AUTUMN_BUDGET_BASELINE[threshold_key]["2028"]
+            == pre_ab_baseline[threshold_key]["2028"]
         )
 
         # Reform parameter_changes is empty (uses default policyengine-uk params)
