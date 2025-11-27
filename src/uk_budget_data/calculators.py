@@ -508,10 +508,15 @@ class IncomeCurveCalculator(BaseCalculator):
 
 @dataclass
 class HouseholdScatterCalculator(BaseCalculator):
-    """Calculates household-level scatter plot data."""
+    """Calculates household-level scatter plot data.
+
+    Samples households to keep file size manageable while maintaining
+    representativeness. Uses deterministic sampling for reproducibility.
+    """
 
     max_income: int = 150_000
     min_income: int = 0
+    sample_size: int = 2000  # Sample per reform per year
 
     def calculate(
         self,
@@ -550,7 +555,11 @@ class HouseholdScatterCalculator(BaseCalculator):
         income_changes: np.ndarray,
         weights: np.ndarray,
     ) -> list[dict]:
-        """Calculate from numpy arrays (for testing)."""
+        """Calculate from numpy arrays (for testing).
+
+        Returns all households within income range. Sampling for git
+        is done separately via sample_household_scatter.py script.
+        """
         mask = (baseline_incomes >= self.min_income) & (
             baseline_incomes <= self.max_income
         )

@@ -153,7 +153,7 @@ class ReformProcessor:
             )
             all_income_curve.extend(income_curve)
 
-            # Household scatter
+            # Household scatter (sampled to ~2k households per reform/year)
             household_scatter = self.household_scatter_calc.calculate(
                 baseline, reformed, reform_id, reform_name, year
             )
@@ -314,7 +314,7 @@ class DataPipeline:
             "winners_losers": "winners_losers.csv",
             "metrics": "metrics.csv",
             "income_curve": "income_curve.csv",
-            "household_scatter": "household_scatter.csv",
+            "household_scatter": "household_scatter_full.csv",
             "constituency": "constituency.csv",
             "demographic_constituency": "demographic_constituency.csv",
             "obr_comparison": "obr_comparison.csv",

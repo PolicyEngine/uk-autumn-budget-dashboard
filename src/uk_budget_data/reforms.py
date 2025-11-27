@@ -199,42 +199,150 @@ def _create_threshold_freeze_extension() -> Reform:
     )
 
 
-# Placeholder reforms - parameter paths need verification
-DIVIDEND_TAX_INCREASE = Reform(
-    id="dividend_tax_increase_2pp",
-    name="Dividend tax increase (+2pp)",
-    description=(
-        "Increases dividend tax rates by 2 percentage points from April 2026. "
-        "Basic rate: 8.75% -> 10.75%, Higher rate: 33.75% -> 35.75%."
-    ),
-    parameter_changes={
-        # TODO: Add correct parameter paths for dividend tax rates
-    },
-)
+# =============================================================================
+# INCOME SOURCE TAX RATE INCREASES (from policyengine-uk PR #1395)
+# =============================================================================
+# These reforms compare the new Autumn Budget rates (baked into policyengine-uk)
+# against the pre-budget baseline rates.
+#
+# Dividends: +2pp from April 2026 (basic 8.75%->10.75%, higher 33.75%->35.75%)
+# Savings: +2pp from April 2027 (basic 20%->22%, higher 40%->42%, add 45%->47%)
+# Property: +2pp from April 2027 (basic 20%->22%, higher 40%->42%, add 45%->47%)
 
-SAVINGS_TAX_INCREASE = Reform(
-    id="savings_tax_increase_2pp",
-    name="Savings income tax increase (+2pp)",
-    description=(
-        "Increases savings income tax rates by 2 percentage points "
-        "from April 2027."
-    ),
-    parameter_changes={
-        # TODO: Add correct parameter paths for savings tax rates
-    },
-)
 
-PROPERTY_TAX_INCREASE = Reform(
-    id="property_tax_increase_2pp",
-    name="Property income tax increase (+2pp)",
-    description=(
-        "Increases property income tax rates by 2 percentage points "
-        "from April 2027."
-    ),
-    parameter_changes={
-        # TODO: This may require a structural reform
-    },
-)
+def _set_pre_budget_dividend_rates(sim):
+    """Set pre-budget dividend rates in the baseline simulation.
+
+    Reverts the Autumn Budget 2025 changes:
+    - Basic rate: 10.75% -> 8.75%
+    - Higher rate: 35.75% -> 33.75%
+
+    Uses simulation_modifier because dividend rates are stored in a
+    ParameterScale which requires direct bracket access. Modifies
+    values_list directly to replace the Autumn Budget rate change.
+    """
+    div = sim.tax_benefit_system.parameters.gov.hmrc.income_tax.rates.dividends
+    # Revert basic rate (bracket 0) to pre-budget 8.75%
+    # Directly modify the 2026-04-06 entry in values_list
+    div.brackets[0].rate.values_list[0].value = 0.0875
+    # Revert higher rate (bracket 1) to pre-budget 33.75%
+    div.brackets[1].rate.values_list[0].value = 0.3375
+    return sim
+
+
+def _create_dividend_tax_increase() -> Reform:
+    """Create the dividend tax increase reform.
+
+    Increases dividend tax rates by 2pp from April 2026:
+    - Basic rate: 8.75% -> 10.75%
+    - Higher rate: 33.75% -> 35.75%
+    - Additional rate: unchanged at 39.35%
+
+    OBR fiscal impact (Table 3.5):
+    - 2026-27: £0.3bn
+    - 2027-28: £1.0bn
+    - 2028-29: £1.0bn
+    - 2029-30: £1.0bn
+    """
+    # Uses baseline_simulation_modifier because dividend rates are stored
+    # in a ParameterScale which requires direct bracket modification
+    return Reform(
+        id="dividend_tax_increase_2pp",
+        name="Dividend tax increase (+2pp)",
+        description=(
+            "Increases dividend tax rates by 2 percentage points from April "
+            "2026. Basic rate: 8.75% → 10.75%, Higher rate: 33.75% → 35.75%. "
+            "OBR estimates £1.0-1.1bn annual yield from 2027-28."
+        ),
+        baseline_simulation_modifier=_set_pre_budget_dividend_rates,
+        parameter_changes={},  # Uses new rates from policyengine-uk
+    )
+
+
+def _create_savings_tax_increase() -> Reform:
+    """Create the savings income tax increase reform.
+
+    Increases savings income tax rates by 2pp from April 2027:
+    - Basic rate: 20% -> 22%
+    - Higher rate: 40% -> 42%
+    - Additional rate: 45% -> 47%
+
+    OBR fiscal impact (Table 3.5):
+    - 2027-28: £0.0bn (starts April 2027)
+    - 2028-29: £0.5bn
+    - 2029-30: £0.5bn
+    """
+    return Reform(
+        id="savings_tax_increase_2pp",
+        name="Savings income tax increase (+2pp)",
+        description=(
+            "Increases savings income tax rates by 2 percentage points from "
+            "April 2027. Basic: 20% → 22%, Higher: 40% → 42%, Additional: "
+            "45% → 47%. OBR estimates £0.5bn annual yield from 2028-29."
+        ),
+        baseline_parameter_changes={
+            # Pre-budget rates (20% basic, 40% higher, 45% additional)
+            "gov.hmrc.income_tax.rates.savings.basic": {
+                "2027": 0.20,
+                "2028": 0.20,
+                "2029": 0.20,
+            },
+            "gov.hmrc.income_tax.rates.savings.higher": {
+                "2027": 0.40,
+                "2028": 0.40,
+                "2029": 0.40,
+            },
+            "gov.hmrc.income_tax.rates.savings.additional": {
+                "2027": 0.45,
+                "2028": 0.45,
+                "2029": 0.45,
+            },
+        },
+        parameter_changes={},  # Uses new rates from policyengine-uk v2.60+
+    )
+
+
+def _create_property_tax_increase() -> Reform:
+    """Create the property income tax increase reform.
+
+    Increases property income tax rates by 2pp from April 2027:
+    - Basic rate: 20% -> 22%
+    - Higher rate: 40% -> 42%
+    - Additional rate: 45% -> 47%
+
+    OBR fiscal impact (Table 3.5):
+    - 2027-28: £0.0bn (starts April 2027)
+    - 2028-29: £0.6bn
+    - 2029-30: £0.4bn
+    """
+    return Reform(
+        id="property_tax_increase_2pp",
+        name="Property income tax increase (+2pp)",
+        description=(
+            "Increases property income tax rates by 2 percentage points from "
+            "April 2027. Basic: 20% → 22%, Higher: 40% → 42%, Additional: "
+            "45% → 47%. OBR estimates £0.4-0.6bn annual yield from 2028-29."
+        ),
+        baseline_parameter_changes={
+            # Pre-budget rates (20% basic, 40% higher, 45% additional)
+            "gov.hmrc.income_tax.rates.property.basic": {
+                "2027": 0.20,
+                "2028": 0.20,
+                "2029": 0.20,
+            },
+            "gov.hmrc.income_tax.rates.property.higher": {
+                "2027": 0.40,
+                "2028": 0.40,
+                "2029": 0.40,
+            },
+            "gov.hmrc.income_tax.rates.property.additional": {
+                "2027": 0.45,
+                "2028": 0.45,
+                "2029": 0.45,
+            },
+        },
+        parameter_changes={},  # Uses new rates from policyengine-uk v2.60+
+    )
 
 
 # =============================================================================
@@ -355,6 +463,104 @@ def create_salary_sacrifice_cap_reform(
 
 
 # =============================================================================
+# COMBINED AUTUMN BUDGET REFORM
+# =============================================================================
+
+
+def _create_combined_autumn_budget_reform() -> Reform:
+    """Create a combined reform with all Autumn Budget 2025 provisions.
+
+    This reform combines:
+    - Two-child limit repeal (spending)
+    - Fuel duty freeze extension (spending)
+    - Threshold freeze extension (revenue)
+    - Dividend tax increase +2pp (revenue)
+    - Savings tax increase +2pp (revenue)
+    - Property tax increase +2pp (revenue)
+
+    Note: Zero-rate VAT on energy is NOT included as it was not in the budget.
+    """
+    baseline = get_pre_autumn_budget_baseline()
+
+    # Combine all baseline parameter changes
+    combined_baseline_params = {
+        # Fuel duty baseline (pre-budget rates)
+        "gov.hmrc.fuel_duty.petrol_and_diesel": baseline[
+            "gov.hmrc.fuel_duty.petrol_and_diesel"
+        ],
+        # Threshold baseline (CPI-indexed from 2028)
+        "gov.hmrc.income_tax.allowances.personal_allowance.amount": baseline[
+            "gov.hmrc.income_tax.allowances.personal_allowance.amount"
+        ],
+        "gov.hmrc.income_tax.rates.uk[1].threshold": baseline[
+            "gov.hmrc.income_tax.rates.uk[1].threshold"
+        ],
+        # Savings tax baseline (pre-budget rates)
+        "gov.hmrc.income_tax.rates.savings.basic": {
+            "2027": 0.20,
+            "2028": 0.20,
+            "2029": 0.20,
+        },
+        "gov.hmrc.income_tax.rates.savings.higher": {
+            "2027": 0.40,
+            "2028": 0.40,
+            "2029": 0.40,
+        },
+        "gov.hmrc.income_tax.rates.savings.additional": {
+            "2027": 0.45,
+            "2028": 0.45,
+            "2029": 0.45,
+        },
+        # Property tax baseline (pre-budget rates)
+        "gov.hmrc.income_tax.rates.property.basic": {
+            "2027": 0.20,
+            "2028": 0.20,
+            "2029": 0.20,
+        },
+        "gov.hmrc.income_tax.rates.property.higher": {
+            "2027": 0.40,
+            "2028": 0.40,
+            "2029": 0.40,
+        },
+        "gov.hmrc.income_tax.rates.property.additional": {
+            "2027": 0.45,
+            "2028": 0.45,
+            "2029": 0.45,
+        },
+    }
+
+    # Combined baseline simulation modifier for dividend rates
+    def combined_baseline_modifier(sim):
+        """Apply pre-budget dividend rates to baseline simulation."""
+        _set_pre_budget_dividend_rates(sim)
+        return sim
+
+    # Reform parameter changes (two-child limit repeal)
+    reform_params = {
+        "gov.dwp.tax_credits.child_tax_credit.limit.child_count": _years_dict(
+            np.inf
+        ),
+        "gov.dwp.universal_credit.elements.child.limit.child_count": (
+            _years_dict(np.inf)
+        ),
+    }
+
+    return Reform(
+        id="autumn_budget_2025_combined",
+        name="Autumn Budget 2025 (combined)",
+        description=(
+            "All Autumn Budget 2025 provisions combined: two-child limit "
+            "repeal, fuel duty freeze extension, threshold freeze extension, "
+            "and tax rate increases on dividends (+2pp), savings (+2pp), and "
+            "property income (+2pp). Shows full budget impact with interactions."
+        ),
+        baseline_parameter_changes=combined_baseline_params,
+        baseline_simulation_modifier=combined_baseline_modifier,
+        parameter_changes=reform_params,
+    )
+
+
+# =============================================================================
 # REFORM COLLECTIONS (lazy-loaded to avoid import-time Microsimulation)
 # =============================================================================
 
@@ -369,12 +575,13 @@ def _get_autumn_budget_2025_reforms() -> list[Reform]:
     global _AUTUMN_BUDGET_2025_REFORMS_CACHE
     if _AUTUMN_BUDGET_2025_REFORMS_CACHE is None:
         _AUTUMN_BUDGET_2025_REFORMS_CACHE = [
+            _create_combined_autumn_budget_reform(),  # Combined first
             _create_two_child_limit_repeal(),
             _create_fuel_duty_freeze(),
             _create_threshold_freeze_extension(),
-            DIVIDEND_TAX_INCREASE,
-            SAVINGS_TAX_INCREASE,
-            PROPERTY_TAX_INCREASE,
+            _create_dividend_tax_increase(),
+            _create_savings_tax_increase(),
+            _create_property_tax_increase(),
             ZERO_VAT_ENERGY,
         ]
     return _AUTUMN_BUDGET_2025_REFORMS_CACHE

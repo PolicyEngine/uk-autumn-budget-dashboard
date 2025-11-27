@@ -53,13 +53,14 @@ function HouseholdChart({ rawData, selectedPolicies }) {
     });
   };
 
-  // Sample households ONCE across all years, then filter by selected year
-  const { sampledIndices, data } = useMemo(() => {
-    if (!rawData) return { sampledIndices: new Set(), data: [] };
+  // Process pre-sampled data from backend (no frontend sampling needed)
+  // Backend samples ~2k households per reform/year using deterministic hashing
+  const data = useMemo(() => {
+    if (!rawData) return [];
 
     // Group data by reform_id and year
     const dataByReformAndYear = {};
-    rawData.forEach((row, originalIndex) => {
+    rawData.forEach((row) => {
       const reformId = row.reform_id;
       const year = parseInt(row.year);
 
@@ -77,42 +78,19 @@ function HouseholdChart({ rawData, selectedPolicies }) {
         income_change: parseFloat(row.income_change),
         household_weight: parseFloat(row.household_weight),
         year: year,
-        index: dataByReformAndYear[reformId][year].length, // Position within this reform-year
+        index: dataByReformAndYear[reformId][year].length,
       });
     });
 
-    // Get data for the first reform and first year (2026) to establish sample
+    // Get data for the first reform to establish household indices
     const firstReformId = selectedPolicies[0];
-    const firstYearData = dataByReformAndYear[firstReformId]?.[2026] || [];
+    const firstYearData = dataByReformAndYear[firstReformId]?.[internalYear] || [];
 
-    if (firstYearData.length === 0)
-      return { sampledIndices: new Set(), data: [] };
+    if (firstYearData.length === 0) return [];
 
-    // Deterministically sample 1000 household positions using a simple hash
-    const sampleSize = Math.min(1000, firstYearData.length);
-
-    // Create a simple hash function for deterministic sampling
-    const simpleHash = (index) => {
-      // Use a simple multiplicative hash
-      return (index * 2654435761) % 2 ** 32;
-    };
-
-    // Sample household indices deterministically
-    const indicesWithHash = firstYearData.map((d, idx) => ({
-      index: idx,
-      hash: simpleHash(idx),
-    }));
-
-    indicesWithHash.sort((a, b) => a.hash - b.hash);
-    const sampledIndicesArray = indicesWithHash
-      .slice(0, sampleSize)
-      .map((d) => d.index);
-    const sampledIndicesSet = new Set(sampledIndicesArray);
-
-    // Now collect data for selected year using the sampled indices
     // Combine income changes from all selected policies for each household
     const filteredData = [];
-    sampledIndicesArray.forEach((idx) => {
+    firstYearData.forEach((_, idx) => {
       let combinedIncomeChange = 0;
       let baselineIncome = 0;
       let householdWeight = 0;
@@ -141,7 +119,7 @@ function HouseholdChart({ rawData, selectedPolicies }) {
       }
     });
 
-    return { sampledIndices: sampledIndicesSet, data: filteredData };
+    return filteredData;
   }, [rawData, selectedPolicies, internalYear]);
 
   // Process data for Recharts

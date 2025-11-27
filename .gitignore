@@ -34,3 +34,6 @@ __pycache__/
 .venv/
 venv/
 .pytest_cache/
+
+# Large data files (full versions kept locally, sampled versions checked in)
+public/data/household_scatter_full.csv

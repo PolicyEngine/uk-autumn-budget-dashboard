@@ -28,6 +28,8 @@ jobs:
         run: uv sync --extra dev
 
       - name: Run tests
+        env:
+          HUGGING_FACE_TOKEN: ${{ secrets.HUGGING_FACE_TOKEN }}
         run: uv run pytest tests/ -v
 
   lint:
