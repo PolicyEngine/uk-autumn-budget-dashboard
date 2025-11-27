@@ -31,9 +31,9 @@ const DEFAULT_POLICIES = [
   {
     id: "fuel_duty_freeze",
     name: "Fuel duty freeze extension",
-    description: "Extend fuel duty freeze through 2027-28",
+    description: "Freeze fuel duty rates until September 2026",
     explanation:
-      "This policy extends the fuel duty freeze, maintaining the 5p cut introduced in 2022 through 2027-28. The freeze is then unwound with a staged approach from September 2026, and rates are uprated annually by RPI from April 2027.",
+      "The baseline assumes the 5p cut ends on 22 March 2026, returning the rate to 57.95p, followed by RPI uprating from April 2026. The announced policy (reform) maintains the freeze at 52.95p until September 2026, then implements a staggered reversal with increases of 1p, 2p, and 2p over three-month periods, reaching 57.95p by March 2027. Both then apply annual RPI uprating. See our <a href=\"https://policyengine.org/uk/research/fuel-duty-freeze-2025\" target=\"_blank\" rel=\"noopener noreferrer\">research report</a> for details.",
   },
 ];
 
@@ -442,7 +442,12 @@ function App() {
                         selectedPolicies.includes(policy.id),
                       ).map((policy) => (
                         <div key={policy.id} className="policy-detail">
-                          <strong>{policy.name}:</strong> {policy.explanation}
+                          <strong>{policy.name}:</strong>{" "}
+                          <span
+                            dangerouslySetInnerHTML={{
+                              __html: policy.explanation,
+                            }}
+                          />
                         </div>
                       ))}
                     </div>

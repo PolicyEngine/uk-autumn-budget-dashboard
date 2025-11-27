@@ -36,6 +36,7 @@ class ScenarioConfig(BaseModel):
     id: str
     name: str
     scenario: Any  # Scenario object (can't be validated by pydantic)
+    baseline_scenario: Any = None  # Optional custom baseline scenario
 
     class Config:
         arbitrary_types_allowed = True
@@ -458,7 +459,13 @@ class ScenarioResults(BaseModel):
 def process_scenario(config: ScenarioConfig) -> ScenarioResults:
     # Load enhanced dataset with salary sacrifice data
     dataset = UKSingleYearDataset(file_path=str(ENHANCED_DATASET_PATH))
-    baseline = Microsimulation(dataset=dataset)
+
+    # Use custom baseline scenario if provided, otherwise use default
+    if config.baseline_scenario is not None:
+        baseline = Microsimulation(dataset=dataset, scenario=config.baseline_scenario)
+    else:
+        baseline = Microsimulation(dataset=dataset)
+
     reformed = Microsimulation(dataset=dataset, scenario=config.scenario)
 
     # Calculate budgetary impact across all years
@@ -599,6 +606,44 @@ def zero_rate_energy_vat(sim):
     return sim
 
 
+def create_fuel_duty_freeze_scenarios():
+    """
+    Fuel duty freeze reform.
+
+    This reform compares:
+    - Baseline: Higher fuel duty rates (no freeze)
+      2026: £0.58/litre, 2027: £0.61/litre, 2028: £0.63/litre, 2029+: £0.64/litre
+    - Reform: Lower fuel duty rates (with freeze)
+      2026: £0.54/litre, 2027: £0.60/litre, 2028: £0.62/litre, 2029+: £0.63/litre
+
+    Returns:
+        tuple: (baseline_scenario, reform_scenario)
+    """
+    baseline_scenario = Scenario(
+        parameter_changes={
+            "gov.hmrc.fuel_duty.petrol_and_diesel": {
+                "2026": 0.58,
+                "2027": 0.61,
+                "2028": 0.63,
+                "2029": 0.64,
+            }
+        }
+    )
+
+    reform_scenario = Scenario(
+        parameter_changes={
+            "gov.hmrc.fuel_duty.petrol_and_diesel": {
+                "2026": 0.54,
+                "2027": 0.60,
+                "2028": 0.62,
+                "2029": 0.63,
+            }
+        }
+    )
+
+    return baseline_scenario, reform_scenario
+
+
 def create_ss_cap_reform(employer_response_haircut: float = 0.13, cap_amount: float = 2000):
     """
     Salary sacrifice cap reform.
@@ -630,7 +675,16 @@ def create_ss_cap_reform(employer_response_haircut: float = 0.13, cap_amount: fl
 
 
 if __name__ == "__main__":
+    # Create fuel duty scenarios (baseline, reform)
+    fuel_duty_baseline, fuel_duty_reform = create_fuel_duty_freeze_scenarios()
+
     scenarios = [
+        ScenarioConfig(
+            id="fuel_duty_freeze",
+            name="Fuel duty freeze",
+            scenario=fuel_duty_reform,
+            baseline_scenario=fuel_duty_baseline,
+        ),
         ScenarioConfig(
             id="two_child_limit",
             name="2 child limit repeal",
@@ -696,18 +750,6 @@ if __name__ == "__main__":
             name="Salary sacrifice cap",
             scenario=create_ss_cap_reform(employer_response_haircut=0.13, cap_amount=2000),
         ),
-        ScenarioConfig(
-            id="fuel_duty_freeze",
-            name="Fuel duty freeze",
-            scenario=Scenario(
-                parameter_changes={
-                    "gov.hmrc.fuel_duty.petrol_and_diesel": {
-                        "2026-03-22": 0.5295,
-                        "2027-04-01": 0.5295,
-                    }
-                }
-            ),
-        )
     ]
 
     run(scenarios)
