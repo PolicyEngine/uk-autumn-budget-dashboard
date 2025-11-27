@@ -1,7 +1,16 @@
 """Tests for reform definitions."""
 
+import os
+
 import numpy as np
+import pytest
 from policyengine_uk.system import system
+
+# Skip tests that require HuggingFace token (for microsimulation data)
+requires_hf_token = pytest.mark.skipif(
+    not os.environ.get("HUGGING_FACE_TOKEN"),
+    reason="Requires HUGGING_FACE_TOKEN for microsimulation data",
+)
 
 
 class TestPreAutumnBudgetBaseline:
@@ -241,6 +250,7 @@ class TestDividendTaxIncrease:
         # Reform parameter_changes is empty (uses new rates from policyengine-uk)
         assert reform.parameter_changes == {}
 
+    @requires_hf_token
     def test_baseline_modifier_sets_pre_budget_rates(self):
         """Baseline simulation modifier correctly sets pre-budget rates."""
         from policyengine_uk import Microsimulation
@@ -387,10 +397,14 @@ class TestGetReform:
         assert reform is None
 
 
+@requires_hf_token
 class TestBudgetaryImpacts:
     """Tests for budgetary impact calculations.
 
-    These tests verify that PolicyEngine estimates are within reasonable
+    These tests require microsimulation data from HuggingFace.
+    Set HUGGING_FACE_TOKEN environment variable to run them.
+
+    Tests verify that PolicyEngine estimates are within reasonable
     range of OBR estimates. The tolerance accounts for methodological
     differences between OBR's costing model and PolicyEngine's microsimulation.
 
