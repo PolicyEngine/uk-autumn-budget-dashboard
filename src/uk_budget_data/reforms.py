@@ -403,6 +403,106 @@ ZERO_VAT_ENERGY = Reform(
 )
 
 
+# Rail fare increase rates (per OBR forecasts)
+# Baseline: fares increase by RPI formula each year
+RAIL_FARE_INCREASES = {
+    2026: 0.058,  # 5.8% baseline increase
+    2027: 0.042,  # 4.2%
+    2028: 0.039,  # 3.9%
+    2029: 0.039,  # 3.9%
+}
+
+# Treasury cost estimates for rail fare freeze (£bn)
+# Source: Treasury estimate of £145m in 2026-27, £775m total by 2030-31
+RAIL_FREEZE_COSTS = {
+    2026: 0.145,  # £145m
+    2027: 0.155,  # Estimated from total
+    2028: 0.160,  # Estimated from total
+    2029: 0.165,  # Estimated from total
+}
+
+
+def _rail_fares_freeze_modifier(sim: Simulation) -> Simulation:
+    """Structural reform: Rail fares freeze for 2026.
+
+    The government announced a one-year freeze on regulated rail fares from
+    March 2026 - the first freeze in 30 years. Without the freeze, fares would
+    have increased by 5.8% under the RPI formula.
+
+    This reform increases rail_subsidy_spending to compensate for the foregone
+    fare revenue. The cost is based on Treasury estimates (£145m in 2026-27,
+    £775m total by 2030-31) and distributed proportionally based on household
+    rail usage.
+
+    Implementation:
+    - Get current rail subsidy values from the model
+    - Add Treasury-estimated cost distributed proportionally by rail usage
+    - Adjust for household weights when setting sample values
+    """
+    for year in [2026, 2027, 2028, 2029]:
+        # Get current rail subsidy values and weights
+        current_rail = sim.calculate(
+            "rail_subsidy_spending", year, map_to="household"
+        )
+        weights = sim.calculate("household_weight", year)
+
+        # Convert to numpy arrays for manipulation
+        current_array = np.array(current_rail)
+        weights_array = np.array(weights)
+
+        # Treasury cost estimate for this year (in £)
+        treasury_cost = RAIL_FREEZE_COSTS[year] * 1e9
+
+        # Calculate weighted shares of rail usage
+        weighted_rail = current_array * weights_array
+        total_weighted_rail = weighted_rail.sum()
+
+        # Distribute cost proportionally by rail usage
+        # Need to divide by weight since set_input takes sample values
+        # that will later be weighted
+        share = np.where(
+            total_weighted_rail > 0, weighted_rail / total_weighted_rail, 0
+        )
+        sample_gain = np.where(
+            weights_array > 0, share * treasury_cost / weights_array, 0
+        )
+
+        # Set the reformed rail subsidy
+        reformed_values = current_array + sample_gain
+        sim.set_input("rail_subsidy_spending", year, reformed_values)
+
+    return sim
+
+
+def _create_rail_fares_freeze() -> Reform:
+    """Create the rail fares freeze reform.
+
+    Freezes regulated rail fares for one year from March 2026 - the first
+    freeze in 30 years. Saves passengers an estimated £600 million in
+    2026-27 (per government estimates).
+
+    OBR fiscal impact (Table 3.5):
+    - 2026-27: -£0.2bn (cost)
+    - 2027-28: -£0.2bn (cost)
+    - 2028-29: -£0.2bn (cost)
+    - 2029-30: -£0.2bn (cost)
+
+    Note: Government estimates £600m passenger savings in 2026-27 alone.
+    The ongoing cost reflects the permanent base effect of the freeze.
+    """
+    return Reform(
+        id="rail_fares_freeze",
+        name="Rail fares freeze",
+        description=(
+            "Freezes regulated rail fares for one year from March 2026. "
+            "Without the freeze, fares would have increased by 5.8% under the "
+            "RPI formula. Saves commuters on expensive routes over £300/year. "
+            "See https://policyengine.org/uk/research/rail-fares-freeze-2025"
+        ),
+        simulation_modifier=_rail_fares_freeze_modifier,
+    )
+
+
 def create_salary_sacrifice_cap_reform(
     cap_amount: float = 2000,
     employer_response_haircut: float = 0.13,
@@ -582,6 +682,7 @@ def _get_autumn_budget_2025_reforms() -> list[Reform]:
             _create_combined_autumn_budget_reform(),  # Combined first
             _create_two_child_limit_repeal(),
             _create_fuel_duty_freeze(),
+            _create_rail_fares_freeze(),
             _create_threshold_freeze_extension(),
             _create_dividend_tax_increase(),
             _create_savings_tax_increase(),
