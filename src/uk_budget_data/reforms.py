@@ -7,6 +7,9 @@ Reforms are organised into:
 - Spending measures (costs to treasury)
 - Tax measures (revenue raisers)
 - Structural reforms (using simulation modifiers)
+
+Since policyengine-uk v2.59.0 includes the Autumn Budget parameter updates,
+we use a pre-Autumn Budget baseline to show the impact of budget policies.
 """
 
 from typing import Optional
@@ -25,6 +28,42 @@ def _years_dict(value, years: list[int] = None) -> dict[str, any]:
     """Create a {year: value} dict for parameter changes."""
     years = years or DEFAULT_YEARS
     return {str(y): value for y in years}
+
+
+# =============================================================================
+# PRE-AUTUMN BUDGET BASELINE
+# =============================================================================
+# These values represent what parameters would have been WITHOUT the November
+# 2025 Autumn Budget. Used as baseline for comparing budget policy impacts.
+#
+# Income tax thresholds: Would have unfrozen after April 2028
+# Using OBR CPI inflation forecasts: 2.6% (2028), 2.1% (2029), 2.0% (2030)
+# Personal allowance: £12,570 -> £12,897 (2028) -> £13,168 (2029)
+# Basic rate threshold: £37,700 -> £38,680 (2028) -> £39,493 (2029)
+#
+# Fuel duty: 5p cut would have ended March 2026 per Spring Budget 2025
+# Would return to 57.95p then RPI uprating
+
+PRE_AUTUMN_BUDGET_BASELINE = {
+    # Income tax thresholds - inflation indexed from April 2028
+    # (before Autumn Budget extended freeze to April 2031)
+    "gov.hmrc.income_tax.allowances.personal_allowance.amount": {
+        "2028": 12897,  # £12,570 * 1.026
+        "2029": 13168,  # £12,897 * 1.021
+    },
+    "gov.hmrc.income_tax.rates.uk[1].threshold": {
+        "2028": 38680,  # £37,700 * 1.026
+        "2029": 39493,  # £38,680 * 1.021
+    },
+    # Fuel duty - 5p cut ending per Spring Budget 2025
+    # (before Autumn Budget extended freeze to Sep 2026)
+    "gov.hmrc.fuel_duty.petrol_and_diesel": {
+        "2026-03-22": 0.5795,  # 5p cut ends, returns to 57.95p
+        "2027-04-01": 0.5980,  # RPI uprating ~3.2%
+        "2028-04-01": 0.6154,  # RPI uprating ~2.9%
+        "2029-04-01": 0.6334,  # RPI uprating ~2.9%
+    },
+}
 
 
 # =============================================================================
@@ -53,31 +92,20 @@ FUEL_DUTY_FREEZE = Reform(
     id="fuel_duty_freeze",
     name="Fuel duty freeze extension",
     description=(
-        "Freezes fuel duty rates until September 2026, comparing the announced "
-        "policy (freeze at 52.95p until September 2026, then staggered reversal) "
-        "against a baseline where the 5p cut ends on 22 March 2026. "
+        "Extends the 5p fuel duty cut until September 2026, then implements a "
+        "staggered reversal. Compares Autumn Budget policy (freeze) against "
+        "pre-budget baseline (5p cut ending March 2026). "
         "See https://policyengine.org/uk/research/fuel-duty-freeze-2025 for details."
     ),
-    # Baseline: Higher fuel duty rates (no freeze)
-    # The 5p cut ends on 22 March 2026, returning to 57.95p, then RPI uprating
+    # Baseline: Pre-Autumn Budget (5p cut ends March 2026, then RPI uprating)
     baseline_parameter_changes={
-        "gov.hmrc.fuel_duty.petrol_and_diesel": {
-            "2026": 0.58,
-            "2027": 0.61,
-            "2028": 0.63,
-            "2029": 0.64,
-        }
+        "gov.hmrc.fuel_duty.petrol_and_diesel": (
+            PRE_AUTUMN_BUDGET_BASELINE["gov.hmrc.fuel_duty.petrol_and_diesel"]
+        )
     },
-    # Reform: Lower fuel duty rates (with freeze)
-    # Freeze at 52.95p until September 2026, then staggered reversal
-    parameter_changes={
-        "gov.hmrc.fuel_duty.petrol_and_diesel": {
-            "2026": 0.54,
-            "2027": 0.60,
-            "2028": 0.62,
-            "2029": 0.63,
-        }
-    },
+    # Reform: Current law (Autumn Budget policy) - use default parameters
+    # policyengine-uk v2.59.0 has the freeze baked in
+    parameter_changes={},
 )
 
 
@@ -89,17 +117,27 @@ THRESHOLD_FREEZE_EXTENSION = Reform(
     id="threshold_freeze_extension",
     name="Threshold freeze extension",
     description=(
-        "Extends the freeze on income tax thresholds to 2030-31. "
-        "Personal allowance remains at £12,570 and the higher rate "
-        "threshold at £37,700, dragging more people into higher bands "
-        "through fiscal drag."
+        "Extends the freeze on income tax thresholds from April 2028 to "
+        "April 2031. Personal allowance remains at £12,570 and the higher "
+        "rate threshold at £37,700. Compares Autumn Budget policy (freeze) "
+        "against pre-budget baseline (inflation uprating from 2028)."
     ),
-    parameter_changes={
-        "gov.hmrc.income_tax.rates.uk[1].threshold": _years_dict(37700),
+    # Baseline: Pre-Autumn Budget (thresholds unfrozen from April 2028)
+    baseline_parameter_changes={
         "gov.hmrc.income_tax.allowances.personal_allowance.amount": (
-            _years_dict(12570)
+            PRE_AUTUMN_BUDGET_BASELINE[
+                "gov.hmrc.income_tax.allowances.personal_allowance.amount"
+            ]
+        ),
+        "gov.hmrc.income_tax.rates.uk[1].threshold": (
+            PRE_AUTUMN_BUDGET_BASELINE[
+                "gov.hmrc.income_tax.rates.uk[1].threshold"
+            ]
         ),
     },
+    # Reform: Current law (Autumn Budget policy) - use default parameters
+    # policyengine-uk v2.59.0 has the freeze extension baked in
+    parameter_changes={},
 )
 
 # Placeholder reforms - parameter paths need verification

@@ -7,7 +7,7 @@ name = "uk_budget_data"
 version = "0.1.0"
 description = "Data generation pipeline for UK Autumn Budget dashboard"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.13"
 license = { text = "MIT" }
 authors = [{ name = "PolicyEngine", email = "hello@policyengine.org" }]
 classifiers = [
@@ -15,13 +15,10 @@ classifiers = [
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
 ]
 dependencies = [
-    "policyengine-uk>=2.0.0",
+    "policyengine-uk>=2.59.0",
     "pandas>=2.0.0",
     "numpy>=1.24.0",
     "h5py>=3.0.0",
@@ -52,11 +49,11 @@ addopts = "-v --tb=short"
 
 [tool.black]
 line-length = 79
-target-version = ["py310", "py311", "py312", "py313"]
+target-version = ["py313"]
 
 [tool.ruff]
 line-length = 79
-target-version = "py310"
+target-version = "py313"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "W"]

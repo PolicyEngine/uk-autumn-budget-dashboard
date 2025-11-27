@@ -78,20 +78,22 @@ class TestFuelDutyFreeze:
         from uk_budget_data.reforms import get_reform
 
         reform = get_reform("fuel_duty_freeze")
-        assert reform.parameter_changes is not None
 
-        param_key = "gov.hmrc.fuel_duty.petrol_and_diesel"
-        assert param_key in reform.parameter_changes
-
-        # Reform rates should be lower than baseline rates
-        # (freeze vs no-freeze comparison)
+        # Reform uses custom baseline (pre-Autumn Budget values)
         assert reform.has_custom_baseline()
         assert reform.baseline_parameter_changes is not None
 
-        # Reform rate for 2026 should be 0.54 (freeze extended)
-        assert reform.parameter_changes[param_key]["2026"] == 0.54
-        # Baseline rate for 2026 should be 0.58 (no freeze)
-        assert reform.baseline_parameter_changes[param_key]["2026"] == 0.58
+        param_key = "gov.hmrc.fuel_duty.petrol_and_diesel"
+        assert param_key in reform.baseline_parameter_changes
+
+        # Baseline has pre-AB values (5p cut ending, higher rates)
+        # Reform uses current law (policyengine-uk v2.59.0 has freeze baked in)
+        assert (
+            reform.baseline_parameter_changes[param_key]["2026-03-22"]
+            == 0.5795
+        )
+        # Reform parameter_changes is empty (uses default policyengine-uk params)
+        assert reform.parameter_changes == {}
 
 
 class TestThresholdFreeze:
@@ -104,26 +106,30 @@ class TestThresholdFreeze:
         reform = get_reform("threshold_freeze_extension")
         assert reform is not None
 
-    def test_reform_freezes_thresholds(self):
-        """Reform freezes personal allowance and basic rate threshold."""
+    def test_reform_uses_pre_ab_baseline(self):
+        """Reform compares current law (freeze) against pre-AB baseline."""
         from uk_budget_data.reforms import get_reform
 
         reform = get_reform("threshold_freeze_extension")
-        assert reform.parameter_changes is not None
+
+        # Reform uses custom baseline (pre-Autumn Budget values)
+        assert reform.has_custom_baseline()
+        assert reform.baseline_parameter_changes is not None
 
         pa_key = "gov.hmrc.income_tax.allowances.personal_allowance.amount"
         threshold_key = "gov.hmrc.income_tax.rates.uk[1].threshold"
 
-        assert pa_key in reform.parameter_changes
-        assert threshold_key in reform.parameter_changes
+        assert pa_key in reform.baseline_parameter_changes
+        assert threshold_key in reform.baseline_parameter_changes
 
-        # Personal allowance frozen at 12570
-        for year_val in reform.parameter_changes[pa_key].values():
-            assert year_val == 12570
+        # Baseline has inflation-indexed values for 2028+
+        assert reform.baseline_parameter_changes[pa_key]["2028"] == 12897
+        assert (
+            reform.baseline_parameter_changes[threshold_key]["2028"] == 38680
+        )
 
-        # Basic rate threshold frozen at 37700
-        for year_val in reform.parameter_changes[threshold_key].values():
-            assert year_val == 37700
+        # Reform parameter_changes is empty (uses default policyengine-uk params)
+        assert reform.parameter_changes == {}
 
 
 class TestStructuralReforms:
