@@ -23,3 +23,7 @@ property_tax_increase_2pp,Property income tax increase (+2pp),2026,0.0
 property_tax_increase_2pp,Property income tax increase (+2pp),2027,0.0
 property_tax_increase_2pp,Property income tax increase (+2pp),2028,0.6
 property_tax_increase_2pp,Property income tax increase (+2pp),2029,0.4
+salary_sacrifice_cap,NICs on salary sacrifice (>£2k),2026,0.0
+salary_sacrifice_cap,NICs on salary sacrifice (>£2k),2027,0.0
+salary_sacrifice_cap,NICs on salary sacrifice (>£2k),2028,0.0
+salary_sacrifice_cap,NICs on salary sacrifice (>£2k),2029,4.0

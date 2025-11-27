@@ -1,16 +1,16 @@
 reform_id,reform_name,year,people_affected,gini_change,poverty_change_pp,poverty_change_pct
-autumn_budget_2025_combined,Autumn Budget 2025 (combined),2026,51.51520771847713,-0.0069238374043675095,-0.9402933,-6.3290143
-autumn_budget_2025_combined,Autumn Budget 2025 (combined),2027,43.86751570419236,-0.005803987888538435,-0.91835785,-6.4073524
-autumn_budget_2025_combined,Autumn Budget 2025 (combined),2028,54.331556754956864,-0.005812880954996382,-0.987381,-6.9111214
-autumn_budget_2025_combined,Autumn Budget 2025 (combined),2029,47.40251424335699,-0.006270001187015033,-0.97164917,-6.7792444
+autumn_budget_2025_combined,Autumn Budget 2025 (combined),2026,4.030643917199364,-0.005456966498999001,-0.9402933,-6.3290143
+autumn_budget_2025_combined,Autumn Budget 2025 (combined),2027,14.946687261765824,-0.00593522182253389,-0.91835785,-6.4073524
+autumn_budget_2025_combined,Autumn Budget 2025 (combined),2028,15.09340305845151,-0.006102267997100309,-0.987381,-6.9111214
+autumn_budget_2025_combined,Autumn Budget 2025 (combined),2029,15.157206640035275,-0.0061201260822586374,-0.97164917,-6.7792444
 two_child_limit,2 child limit repeal,2026,4.030643917199364,-0.005456966498999001,-0.9402933,-6.3290143
 two_child_limit,2 child limit repeal,2027,4.029028366003622,-0.005578746193627632,-0.91835785,-6.4073524
 two_child_limit,2 child limit repeal,2028,4.178487934631715,-0.0057597488926745665,-0.987381,-6.9111214
 two_child_limit,2 child limit repeal,2029,4.2015976785199145,-0.005791761291371774,-0.9719906,-6.7814646
-fuel_duty_freeze,Fuel duty freeze extension,2026,49.71650826801506,-0.0021828605582929904,0.0,0.0
-fuel_duty_freeze,Fuel duty freeze extension,2027,49.146826825120016,-0.0005531684988205985,0.0,0.0
-fuel_duty_freeze,Fuel duty freeze extension,2028,49.17678950066565,-0.0005597015051780726,0.0,0.0
-fuel_duty_freeze,Fuel duty freeze extension,2029,49.14772775895554,-0.000560670693185227,0.0,0.0
+fuel_duty_freeze,Fuel duty freeze extension,2026,0.0,0.0,0.0,0.0
+fuel_duty_freeze,Fuel duty freeze extension,2027,49.55742713570717,0.0009189823915956478,0.0,0.0
+fuel_duty_freeze,Fuel duty freeze extension,2028,49.67793847673855,0.0018033362335559612,0.0,0.0
+fuel_duty_freeze,Fuel duty freeze extension,2029,49.72133101687209,0.002730458659330641,0.0,0.0
 threshold_freeze_extension,Threshold freeze extension,2026,0.0,0.0,0.0,0.0
 threshold_freeze_extension,Threshold freeze extension,2027,0.0,0.0,0.0,0.0
 threshold_freeze_extension,Threshold freeze extension,2028,14.66721003709592,-9.27943245107031e-06,0.0,0.0
@@ -31,3 +31,7 @@ zero_vat_energy,Zero-rate VAT on energy,2026,99.09171143958068,-0.00191696642183
 zero_vat_energy,Zero-rate VAT on energy,2027,99.09501718212748,-0.0019306025316981632,0.0,0.0
 zero_vat_energy,Zero-rate VAT on energy,2028,99.094984083294,-0.0019488221946367525,0.0,0.0
 zero_vat_energy,Zero-rate VAT on energy,2029,99.09494557273531,-0.0019580992536577346,0.0,0.0
+salary_sacrifice_cap,"NICs on salary sacrifice (>£2,000)",2026,0.0,0.0,0.0,0.0
+salary_sacrifice_cap,"NICs on salary sacrifice (>£2,000)",2027,0.0,0.0,0.0,0.0
+salary_sacrifice_cap,"NICs on salary sacrifice (>£2,000)",2028,0.0,0.0,0.0,0.0
+salary_sacrifice_cap,"NICs on salary sacrifice (>£2,000)",2029,4.402437666706384,0.006683786127504722,0.013558388,0.0945953
