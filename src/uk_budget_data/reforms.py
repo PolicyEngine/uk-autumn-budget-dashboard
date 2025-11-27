@@ -50,10 +50,9 @@ def _calculate_pre_autumn_budget_baseline() -> dict:
     income tax thresholds and fuel duty rates would have been without
     the November 2025 Autumn Budget.
     """
-    from policyengine_uk import Microsimulation
+    from policyengine_uk.system import system
 
-    sim = Microsimulation()
-    params = sim.tax_benefit_system.parameters
+    params = system.parameters
 
     # Get OBR inflation indices
     cpi_index = params.gov.economic_assumptions.indices.obr.cpih

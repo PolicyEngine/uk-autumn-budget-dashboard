@@ -1,7 +1,7 @@
 """Tests for reform definitions."""
 
 import numpy as np
-from policyengine_uk import Microsimulation
+from policyengine_uk.system import system
 
 
 class TestPreAutumnBudgetBaseline:
@@ -13,10 +13,7 @@ class TestPreAutumnBudgetBaseline:
 
         PRE_AUTUMN_BUDGET_BASELINE = get_pre_autumn_budget_baseline()
 
-        sim = Microsimulation()
-        cpi_index = (
-            sim.tax_benefit_system.parameters.gov.economic_assumptions.indices.obr.cpih
-        )
+        cpi_index = system.parameters.gov.economic_assumptions.indices.obr.cpih
 
         # Personal allowance was £12,570 in April 2027 (end of previous freeze)
         # Should be uprated by CPI from April 2028 onwards
@@ -53,10 +50,7 @@ class TestPreAutumnBudgetBaseline:
 
         PRE_AUTUMN_BUDGET_BASELINE = get_pre_autumn_budget_baseline()
 
-        sim = Microsimulation()
-        rpi_index = (
-            sim.tax_benefit_system.parameters.gov.economic_assumptions.indices.obr.rpi
-        )
+        rpi_index = system.parameters.gov.economic_assumptions.indices.obr.rpi
 
         # Per Spring Budget 2025, 5p cut would end March 2026 -> 57.95p
         # Then RPI uprating from April 2027
