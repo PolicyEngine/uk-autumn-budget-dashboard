@@ -217,6 +217,124 @@ class TestThresholdFreeze:
         assert reform.parameter_changes == {}
 
 
+class TestDividendTaxIncrease:
+    """Tests for dividend tax increase reform."""
+
+    def test_reform_exists(self):
+        """Dividend tax increase reform is defined."""
+        from uk_budget_data.reforms import get_reform
+
+        reform = get_reform("dividend_tax_increase_2pp")
+        assert reform is not None
+        assert reform.id == "dividend_tax_increase_2pp"
+
+    def test_reform_uses_custom_baseline(self):
+        """Reform uses pre-budget baseline rates."""
+        from uk_budget_data.reforms import get_reform
+
+        reform = get_reform("dividend_tax_increase_2pp")
+
+        # Reform uses custom baseline (pre-budget rates)
+        assert reform.has_custom_baseline()
+        assert reform.baseline_parameter_changes is not None
+
+        # Check baseline has pre-budget dividend rates
+        basic_key = "gov.hmrc.income_tax.rates.dividends.brackets[0].rate"
+        higher_key = "gov.hmrc.income_tax.rates.dividends.brackets[1].rate"
+
+        assert basic_key in reform.baseline_parameter_changes
+        assert higher_key in reform.baseline_parameter_changes
+
+        # Pre-budget rates: 8.75% basic, 33.75% higher
+        assert reform.baseline_parameter_changes[basic_key]["2026"] == 0.0875
+        assert reform.baseline_parameter_changes[higher_key]["2026"] == 0.3375
+
+        # Reform parameter_changes is empty (uses new rates from policyengine-uk)
+        assert reform.parameter_changes == {}
+
+
+class TestSavingsTaxIncrease:
+    """Tests for savings income tax increase reform."""
+
+    def test_reform_exists(self):
+        """Savings tax increase reform is defined."""
+        from uk_budget_data.reforms import get_reform
+
+        reform = get_reform("savings_tax_increase_2pp")
+        assert reform is not None
+        assert reform.id == "savings_tax_increase_2pp"
+
+    def test_reform_uses_custom_baseline(self):
+        """Reform uses pre-budget baseline rates."""
+        from uk_budget_data.reforms import get_reform
+
+        reform = get_reform("savings_tax_increase_2pp")
+
+        # Reform uses custom baseline (pre-budget rates)
+        assert reform.has_custom_baseline()
+        assert reform.baseline_parameter_changes is not None
+
+        # Check baseline has pre-budget savings rates
+        basic_key = "gov.hmrc.income_tax.rates.savings.basic"
+        higher_key = "gov.hmrc.income_tax.rates.savings.higher"
+        additional_key = "gov.hmrc.income_tax.rates.savings.additional"
+
+        assert basic_key in reform.baseline_parameter_changes
+        assert higher_key in reform.baseline_parameter_changes
+        assert additional_key in reform.baseline_parameter_changes
+
+        # Pre-budget rates: 20% basic, 40% higher, 45% additional
+        assert reform.baseline_parameter_changes[basic_key]["2027"] == 0.20
+        assert reform.baseline_parameter_changes[higher_key]["2027"] == 0.40
+        assert (
+            reform.baseline_parameter_changes[additional_key]["2027"] == 0.45
+        )
+
+        # Reform parameter_changes is empty (uses new rates from policyengine-uk)
+        assert reform.parameter_changes == {}
+
+
+class TestPropertyTaxIncrease:
+    """Tests for property income tax increase reform."""
+
+    def test_reform_exists(self):
+        """Property tax increase reform is defined."""
+        from uk_budget_data.reforms import get_reform
+
+        reform = get_reform("property_tax_increase_2pp")
+        assert reform is not None
+        assert reform.id == "property_tax_increase_2pp"
+
+    def test_reform_uses_custom_baseline(self):
+        """Reform uses pre-budget baseline rates."""
+        from uk_budget_data.reforms import get_reform
+
+        reform = get_reform("property_tax_increase_2pp")
+
+        # Reform uses custom baseline (pre-budget rates)
+        assert reform.has_custom_baseline()
+        assert reform.baseline_parameter_changes is not None
+
+        # Check baseline has pre-budget property rates
+        basic_key = "gov.hmrc.income_tax.rates.property.basic"
+        higher_key = "gov.hmrc.income_tax.rates.property.higher"
+        additional_key = "gov.hmrc.income_tax.rates.property.additional"
+
+        assert basic_key in reform.baseline_parameter_changes
+        assert higher_key in reform.baseline_parameter_changes
+        assert additional_key in reform.baseline_parameter_changes
+
+        # Pre-budget rates: 20% basic, 40% higher, 45% additional
+        assert reform.baseline_parameter_changes[basic_key]["2027"] == 0.20
+        assert reform.baseline_parameter_changes[higher_key]["2027"] == 0.40
+        assert (
+            reform.baseline_parameter_changes[additional_key]["2027"] == 0.45
+        )
+
+        # Reform parameter_changes is empty (uses new rates from policyengine-uk)
+        assert reform.parameter_changes == {}
+
+
 class TestStructuralReforms:
     """Tests for structural reforms using simulation modifiers."""
 

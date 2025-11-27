@@ -199,42 +199,144 @@ def _create_threshold_freeze_extension() -> Reform:
     )
 
 
-# Placeholder reforms - parameter paths need verification
-DIVIDEND_TAX_INCREASE = Reform(
-    id="dividend_tax_increase_2pp",
-    name="Dividend tax increase (+2pp)",
-    description=(
-        "Increases dividend tax rates by 2 percentage points from April 2026. "
-        "Basic rate: 8.75% -> 10.75%, Higher rate: 33.75% -> 35.75%."
-    ),
-    parameter_changes={
-        # TODO: Add correct parameter paths for dividend tax rates
-    },
-)
+# =============================================================================
+# INCOME SOURCE TAX RATE INCREASES (from policyengine-uk PR #1395)
+# =============================================================================
+# These reforms compare the new Autumn Budget rates (baked into policyengine-uk)
+# against the pre-budget baseline rates.
+#
+# Dividends: +2pp from April 2026 (basic 8.75%->10.75%, higher 33.75%->35.75%)
+# Savings: +2pp from April 2027 (basic 20%->22%, higher 40%->42%, add 45%->47%)
+# Property: +2pp from April 2027 (basic 20%->22%, higher 40%->42%, add 45%->47%)
 
-SAVINGS_TAX_INCREASE = Reform(
-    id="savings_tax_increase_2pp",
-    name="Savings income tax increase (+2pp)",
-    description=(
-        "Increases savings income tax rates by 2 percentage points "
-        "from April 2027."
-    ),
-    parameter_changes={
-        # TODO: Add correct parameter paths for savings tax rates
-    },
-)
 
-PROPERTY_TAX_INCREASE = Reform(
-    id="property_tax_increase_2pp",
-    name="Property income tax increase (+2pp)",
-    description=(
-        "Increases property income tax rates by 2 percentage points "
-        "from April 2027."
-    ),
-    parameter_changes={
-        # TODO: This may require a structural reform
-    },
-)
+def _create_dividend_tax_increase() -> Reform:
+    """Create the dividend tax increase reform.
+
+    Increases dividend tax rates by 2pp from April 2026:
+    - Basic rate: 8.75% -> 10.75%
+    - Higher rate: 33.75% -> 35.75%
+    - Additional rate: unchanged at 39.35%
+
+    OBR fiscal impact (Table 3.5):
+    - 2026-27: £0.3bn
+    - 2027-28: £1.0bn
+    - 2028-29: £1.0bn
+    - 2029-30: £1.0bn
+    """
+    # Pre-budget baseline: old dividend rates
+    # The policyengine-uk dividend rates use a bracket structure
+    return Reform(
+        id="dividend_tax_increase_2pp",
+        name="Dividend tax increase (+2pp)",
+        description=(
+            "Increases dividend tax rates by 2 percentage points from April "
+            "2026. Basic rate: 8.75% → 10.75%, Higher rate: 33.75% → 35.75%. "
+            "OBR estimates £1.0-1.1bn annual yield from 2027-28."
+        ),
+        baseline_parameter_changes={
+            # Pre-budget rates (8.75% basic, 33.75% higher)
+            "gov.hmrc.income_tax.rates.dividends.brackets[0].rate": {
+                "2026": 0.0875,
+                "2027": 0.0875,
+                "2028": 0.0875,
+                "2029": 0.0875,
+            },
+            "gov.hmrc.income_tax.rates.dividends.brackets[1].rate": {
+                "2026": 0.3375,
+                "2027": 0.3375,
+                "2028": 0.3375,
+                "2029": 0.3375,
+            },
+        },
+        parameter_changes={},  # Uses new rates from policyengine-uk v2.60+
+    )
+
+
+def _create_savings_tax_increase() -> Reform:
+    """Create the savings income tax increase reform.
+
+    Increases savings income tax rates by 2pp from April 2027:
+    - Basic rate: 20% -> 22%
+    - Higher rate: 40% -> 42%
+    - Additional rate: 45% -> 47%
+
+    OBR fiscal impact (Table 3.5):
+    - 2027-28: £0.0bn (starts April 2027)
+    - 2028-29: £0.5bn
+    - 2029-30: £0.5bn
+    """
+    return Reform(
+        id="savings_tax_increase_2pp",
+        name="Savings income tax increase (+2pp)",
+        description=(
+            "Increases savings income tax rates by 2 percentage points from "
+            "April 2027. Basic: 20% → 22%, Higher: 40% → 42%, Additional: "
+            "45% → 47%. OBR estimates £0.5bn annual yield from 2028-29."
+        ),
+        baseline_parameter_changes={
+            # Pre-budget rates (20% basic, 40% higher, 45% additional)
+            "gov.hmrc.income_tax.rates.savings.basic": {
+                "2027": 0.20,
+                "2028": 0.20,
+                "2029": 0.20,
+            },
+            "gov.hmrc.income_tax.rates.savings.higher": {
+                "2027": 0.40,
+                "2028": 0.40,
+                "2029": 0.40,
+            },
+            "gov.hmrc.income_tax.rates.savings.additional": {
+                "2027": 0.45,
+                "2028": 0.45,
+                "2029": 0.45,
+            },
+        },
+        parameter_changes={},  # Uses new rates from policyengine-uk v2.60+
+    )
+
+
+def _create_property_tax_increase() -> Reform:
+    """Create the property income tax increase reform.
+
+    Increases property income tax rates by 2pp from April 2027:
+    - Basic rate: 20% -> 22%
+    - Higher rate: 40% -> 42%
+    - Additional rate: 45% -> 47%
+
+    OBR fiscal impact (Table 3.5):
+    - 2027-28: £0.0bn (starts April 2027)
+    - 2028-29: £0.6bn
+    - 2029-30: £0.4bn
+    """
+    return Reform(
+        id="property_tax_increase_2pp",
+        name="Property income tax increase (+2pp)",
+        description=(
+            "Increases property income tax rates by 2 percentage points from "
+            "April 2027. Basic: 20% → 22%, Higher: 40% → 42%, Additional: "
+            "45% → 47%. OBR estimates £0.4-0.6bn annual yield from 2028-29."
+        ),
+        baseline_parameter_changes={
+            # Pre-budget rates (20% basic, 40% higher, 45% additional)
+            "gov.hmrc.income_tax.rates.property.basic": {
+                "2027": 0.20,
+                "2028": 0.20,
+                "2029": 0.20,
+            },
+            "gov.hmrc.income_tax.rates.property.higher": {
+                "2027": 0.40,
+                "2028": 0.40,
+                "2029": 0.40,
+            },
+            "gov.hmrc.income_tax.rates.property.additional": {
+                "2027": 0.45,
+                "2028": 0.45,
+                "2029": 0.45,
+            },
+        },
+        parameter_changes={},  # Uses new rates from policyengine-uk v2.60+
+    )
 
 
 # =============================================================================
@@ -372,9 +474,9 @@ def _get_autumn_budget_2025_reforms() -> list[Reform]:
             _create_two_child_limit_repeal(),
             _create_fuel_duty_freeze(),
             _create_threshold_freeze_extension(),
-            DIVIDEND_TAX_INCREASE,
-            SAVINGS_TAX_INCREASE,
-            PROPERTY_TAX_INCREASE,
+            _create_dividend_tax_increase(),
+            _create_savings_tax_increase(),
+            _create_property_tax_increase(),
             ZERO_VAT_ENERGY,
         ]
     return _AUTUMN_BUDGET_2025_REFORMS_CACHE
