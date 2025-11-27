@@ -474,11 +474,13 @@ FREEZE_STUDENT_LOAN_THRESHOLDS = Reform(
     id="freeze_student_loan_thresholds",
     name="Freeze student loan repayment thresholds",
     description=(
-        "Freezes student loan repayment thresholds at 2025 levels, "
-        "increasing repayments for Plan 2 borrowers. Estimated yield: "
-        "£0.2 billion per year."
-    ),    simulation_modifier=_slr_model(freeze_plan_2_threshold=True),
-    baseline_modifier=_slr_model(freeze_plan_2_threshold=False)
+        "Freezes Plan 2 student loan repayment thresholds for three years "
+        "from April 2027. Baseline assumes thresholds remain frozen at 2025 "
+        "levels; reform allows RPI uprating, reducing repayments. OBR costing: "
+        "+£255-380m annual cost (2027-2030)."
+    ),
+    simulation_modifier=_slr_model(freeze_plan_2_threshold=False),  # Reform: allow uprating (reduces repayments)
+    baseline_simulation_modifier=_slr_model(freeze_plan_2_threshold=True)  # Baseline: frozen (more repayments)
 )
 
 
@@ -675,7 +677,7 @@ def _get_autumn_budget_2025_reforms() -> list[Reform]:
             _create_dividend_tax_increase(),
             _create_savings_tax_increase(),
             _create_property_tax_increase(),
-            _slr_model(True),
+            FREEZE_STUDENT_LOAN_THRESHOLDS,
             ZERO_VAT_ENERGY,
         ]
     return _AUTUMN_BUDGET_2025_REFORMS_CACHE
