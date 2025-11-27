@@ -10,16 +10,23 @@ import HouseholdChart from "./components/HouseholdChart";
 import OBRComparisonTable from "./components/OBRComparisonTable";
 import "./App.css";
 
-// Policy definitions - only policies announced in the November 2025 Autumn Budget
+// Autumn Budget 2025 policy provisions
 // Note: NICs on salary-sacrificed pensions is excluded pending data calibration
 // See: https://github.com/PolicyEngine/policyengine-uk-data/issues/215
-const DEFAULT_POLICIES = [
+const POLICIES = [
   {
     id: "two_child_limit",
     name: "2 child limit repeal",
     description: "Repeal the two-child limit on benefits",
     explanation:
       "The two-child limit restricts Universal Credit and Child Tax Credit payments to a maximum number of children per family. Removing this limit allows families to claim child-related benefit payments for all children without a cap. The Government estimates this will reduce child poverty by 450,000 by 2029-30.",
+  },
+  {
+    id: "fuel_duty_freeze",
+    name: "Fuel duty freeze extension",
+    description: "Freeze fuel duty rates until September 2026",
+    explanation:
+      'The baseline assumes the 5p cut ends on 22 March 2026, returning the rate to 57.95p, followed by RPI uprating from April 2026. The announced policy (reform) maintains the freeze at 52.95p until September 2026, then implements a staggered reversal with increases of 1p, 2p, and 2p over three-month periods, reaching 57.95p by March 2027. Both then apply annual RPI uprating. See our <a href="https://policyengine.org/uk/research/fuel-duty-freeze-2025" target="_blank" rel="noopener noreferrer">research report</a> for details.',
   },
   {
     id: "threshold_freeze_extension",
@@ -29,11 +36,28 @@ const DEFAULT_POLICIES = [
       "This policy extends the freeze on income tax thresholds from 2027-28 to 2030-31. The personal allowance remains frozen at £12,570, the higher-rate threshold at £50,270, and the additional-rate threshold at £125,140. The NICs secondary threshold is also frozen. By 2030-31, the OBR estimates this will bring 5.2 million additional individuals into paying income tax.",
   },
   {
-    id: "fuel_duty_freeze",
-    name: "Fuel duty freeze extension",
-    description: "Freeze fuel duty rates until September 2026",
+    id: "dividend_tax_increase_2pp",
+    name: "Dividend tax increase (+2pp)",
+    description:
+      "Increase dividend tax rates by 2 percentage points from April 2026",
     explanation:
-      "The baseline assumes the 5p cut ends on 22 March 2026, returning the rate to 57.95p, followed by RPI uprating from April 2026. The announced policy (reform) maintains the freeze at 52.95p until September 2026, then implements a staggered reversal with increases of 1p, 2p, and 2p over three-month periods, reaching 57.95p by March 2027. Both then apply annual RPI uprating. See our <a href=\"https://policyengine.org/uk/research/fuel-duty-freeze-2025\" target=\"_blank\" rel=\"noopener noreferrer\">research report</a> for details.",
+      "Increases dividend tax rates by 2 percentage points from April 2026. Basic rate: 8.75% → 10.75%, Higher rate: 33.75% → 35.75%. The additional rate remains at 39.35%. OBR estimates this will raise £1.0-1.1bn annually from 2027-28.",
+  },
+  {
+    id: "savings_tax_increase_2pp",
+    name: "Savings income tax increase (+2pp)",
+    description:
+      "Increase savings income tax rates by 2 percentage points from April 2027",
+    explanation:
+      "Increases savings income tax rates by 2 percentage points from April 2027. Basic: 20% → 22%, Higher: 40% → 42%, Additional: 45% → 47%. OBR estimates this will raise £0.5bn annually from 2028-29. Note: FRS data may underreport savings income.",
+  },
+  {
+    id: "property_tax_increase_2pp",
+    name: "Property income tax increase (+2pp)",
+    description:
+      "Increase property income tax rates by 2 percentage points from April 2027",
+    explanation:
+      "Increases property income tax rates by 2 percentage points from April 2027. Basic: 20% → 22%, Higher: 40% → 42%, Additional: 45% → 47%. OBR estimates this will raise £0.4-0.6bn annually from 2028-29. Note: Property income may not be fully captured in FRS.",
   },
 ];
 
@@ -42,7 +66,7 @@ const PRESETS = [
   {
     id: "autumn-budget",
     name: "Autumn Budget 2025",
-    policies: DEFAULT_POLICIES.map((p) => p.id),
+    policies: POLICIES.map((p) => p.id),
   },
 ];
 
@@ -63,14 +87,14 @@ function parseCSV(csvText) {
 
 function App() {
   const [selectedPolicies, setSelectedPolicies] = useState(
-    DEFAULT_POLICIES.map((p) => p.id),
+    POLICIES.map((p) => p.id),
   );
   const [selectedYear, setSelectedYear] = useState(2026);
   const [results, setResults] = useState(null);
   const [showPolicyDetails, setShowPolicyDetails] = useState(false);
 
-  // Valid policy IDs from DEFAULT_POLICIES
-  const validPolicyIds = DEFAULT_POLICIES.map((p) => p.id);
+  // Valid policy IDs from POLICIES
+  const validPolicyIds = POLICIES.map((p) => p.id);
 
   // Initialize from URL
   useEffect(() => {
@@ -154,7 +178,7 @@ function App() {
       const budgetData = years.map((year) => {
         const dataPoint = { year };
         let netImpact = 0;
-        DEFAULT_POLICIES.forEach((policy) => {
+        POLICIES.forEach((policy) => {
           const isSelected = selectedPolicies.includes(policy.id);
           const dataRow = budgetaryData.find(
             (row) => row.reform_id === policy.id && parseInt(row.year) === year,
@@ -192,7 +216,7 @@ function App() {
       const distributionalChartData = decileOrder.map((decile) => {
         const dataPoint = { decile };
         let netChange = 0;
-        DEFAULT_POLICIES.forEach((policy) => {
+        POLICIES.forEach((policy) => {
           const isSelected = selectedPolicies.includes(policy.id);
           const dataRow = distributionalSelectedYear.find(
             (row) => row.reform_id === policy.id && row.decile === decile,
@@ -225,7 +249,7 @@ function App() {
       const waterfallData = waterfallDeciles.map((decile) => {
         const dataPoint = { decile };
         let netChange = 0;
-        DEFAULT_POLICIES.forEach((policy) => {
+        POLICIES.forEach((policy) => {
           const isSelected = selectedPolicies.includes(policy.id);
           const dataRow = waterfallSelectedYear.find(
             (row) => row.reform_id === policy.id && row.decile === decile,
@@ -304,7 +328,7 @@ function App() {
         <div className="title-row">
           <h1>UK Autumn Budget 2025</h1>
           <PolicySelector
-            policies={DEFAULT_POLICIES}
+            policies={POLICIES}
             selectedPolicies={selectedPolicies}
             onPolicyToggle={handlePolicyToggle}
           />
@@ -438,7 +462,7 @@ function App() {
                   </button>
                   {showPolicyDetails && (
                     <div className="policy-details-content">
-                      {DEFAULT_POLICIES.filter((policy) =>
+                      {POLICIES.filter((policy) =>
                         selectedPolicies.includes(policy.id),
                       ).map((policy) => (
                         <div key={policy.id} className="policy-detail">
