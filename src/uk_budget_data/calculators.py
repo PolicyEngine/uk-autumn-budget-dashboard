@@ -508,10 +508,15 @@ class IncomeCurveCalculator(BaseCalculator):
 
 @dataclass
 class HouseholdScatterCalculator(BaseCalculator):
-    """Calculates household-level scatter plot data."""
+    """Calculates household-level scatter plot data.
+
+    Samples households to keep file size manageable while maintaining
+    representativeness. Uses deterministic sampling for reproducibility.
+    """
 
     max_income: int = 150_000
     min_income: int = 0
+    sample_size: int = 2000  # Sample per reform per year
 
     def calculate(
         self,
@@ -550,24 +555,40 @@ class HouseholdScatterCalculator(BaseCalculator):
         income_changes: np.ndarray,
         weights: np.ndarray,
     ) -> list[dict]:
-        """Calculate from numpy arrays (for testing)."""
+        """Calculate from numpy arrays (for testing).
+
+        Samples households deterministically to reduce file size from ~46k
+        to ~2k per reform/year while maintaining representativeness.
+        """
         mask = (baseline_incomes >= self.min_income) & (
             baseline_incomes <= self.max_income
         )
 
+        # Get indices that pass the income filter
+        valid_indices = np.where(mask)[0]
+
+        # Deterministic sampling using a hash of the index
+        # This ensures the same households are selected each run
+        if len(valid_indices) > self.sample_size:
+            # Use a simple multiplicative hash for deterministic sampling
+            hashes = (valid_indices * 2654435761) % (2**32)
+            sorted_order = np.argsort(hashes)
+            sampled_indices = valid_indices[sorted_order[: self.sample_size]]
+        else:
+            sampled_indices = valid_indices
+
         results = []
-        for i in range(len(baseline_incomes)):
-            if mask[i]:
-                results.append(
-                    {
-                        "reform_id": reform_id,
-                        "reform_name": reform_name,
-                        "year": year,
-                        "baseline_income": baseline_incomes[i],
-                        "income_change": income_changes[i],
-                        "household_weight": weights[i],
-                    }
-                )
+        for i in sampled_indices:
+            results.append(
+                {
+                    "reform_id": reform_id,
+                    "reform_name": reform_name,
+                    "year": year,
+                    "baseline_income": baseline_incomes[i],
+                    "income_change": income_changes[i],
+                    "household_weight": weights[i],
+                }
+            )
 
         return results
 
