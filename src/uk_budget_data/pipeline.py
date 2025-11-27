@@ -432,9 +432,17 @@ def aggregate_results(
             obr_df = pd.read_csv(obr_path)
             pe_df = aggregated["budgetary_impact"].copy()
             pe_df = pe_df.rename(columns={"value": "policyengine_value"})
+            # Check if OBR data has both static and behavioural columns
+            obr_cols = ["reform_id", "year"]
+            if "obr_static_value" in obr_df.columns:
+                obr_cols.append("obr_static_value")
+            if "obr_post_behavioural_value" in obr_df.columns:
+                obr_cols.append("obr_post_behavioural_value")
+            if "obr_value" in obr_df.columns:
+                obr_cols.append("obr_value")
             comparison = pd.merge(
                 pe_df,
-                obr_df[["reform_id", "year", "obr_value"]],
+                obr_df[obr_cols],
                 on=["reform_id", "year"],
                 how="left",
             )
