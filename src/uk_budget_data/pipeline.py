@@ -153,11 +153,12 @@ class ReformProcessor:
             )
             all_income_curve.extend(income_curve)
 
-            # Household scatter
-            household_scatter = self.household_scatter_calc.calculate(
-                baseline, reformed, reform_id, reform_name, year
-            )
-            all_household_scatter.extend(household_scatter)
+            # Household scatter (skip for combined reform to keep file size down)
+            if not reform_id.endswith("_combined"):
+                household_scatter = self.household_scatter_calc.calculate(
+                    baseline, reformed, reform_id, reform_name, year
+                )
+                all_household_scatter.extend(household_scatter)
 
             # Constituency impacts (if data available)
             try:

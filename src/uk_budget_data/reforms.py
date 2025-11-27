@@ -463,6 +463,104 @@ def create_salary_sacrifice_cap_reform(
 
 
 # =============================================================================
+# COMBINED AUTUMN BUDGET REFORM
+# =============================================================================
+
+
+def _create_combined_autumn_budget_reform() -> Reform:
+    """Create a combined reform with all Autumn Budget 2025 provisions.
+
+    This reform combines:
+    - Two-child limit repeal (spending)
+    - Fuel duty freeze extension (spending)
+    - Threshold freeze extension (revenue)
+    - Dividend tax increase +2pp (revenue)
+    - Savings tax increase +2pp (revenue)
+    - Property tax increase +2pp (revenue)
+
+    Note: Zero-rate VAT on energy is NOT included as it was not in the budget.
+    """
+    baseline = get_pre_autumn_budget_baseline()
+
+    # Combine all baseline parameter changes
+    combined_baseline_params = {
+        # Fuel duty baseline (pre-budget rates)
+        "gov.hmrc.fuel_duty.petrol_and_diesel": baseline[
+            "gov.hmrc.fuel_duty.petrol_and_diesel"
+        ],
+        # Threshold baseline (CPI-indexed from 2028)
+        "gov.hmrc.income_tax.allowances.personal_allowance.amount": baseline[
+            "gov.hmrc.income_tax.allowances.personal_allowance.amount"
+        ],
+        "gov.hmrc.income_tax.rates.uk[1].threshold": baseline[
+            "gov.hmrc.income_tax.rates.uk[1].threshold"
+        ],
+        # Savings tax baseline (pre-budget rates)
+        "gov.hmrc.income_tax.rates.savings.basic": {
+            "2027": 0.20,
+            "2028": 0.20,
+            "2029": 0.20,
+        },
+        "gov.hmrc.income_tax.rates.savings.higher": {
+            "2027": 0.40,
+            "2028": 0.40,
+            "2029": 0.40,
+        },
+        "gov.hmrc.income_tax.rates.savings.additional": {
+            "2027": 0.45,
+            "2028": 0.45,
+            "2029": 0.45,
+        },
+        # Property tax baseline (pre-budget rates)
+        "gov.hmrc.income_tax.rates.property.basic": {
+            "2027": 0.20,
+            "2028": 0.20,
+            "2029": 0.20,
+        },
+        "gov.hmrc.income_tax.rates.property.higher": {
+            "2027": 0.40,
+            "2028": 0.40,
+            "2029": 0.40,
+        },
+        "gov.hmrc.income_tax.rates.property.additional": {
+            "2027": 0.45,
+            "2028": 0.45,
+            "2029": 0.45,
+        },
+    }
+
+    # Combined baseline simulation modifier for dividend rates
+    def combined_baseline_modifier(sim):
+        """Apply pre-budget dividend rates to baseline simulation."""
+        _set_pre_budget_dividend_rates(sim)
+        return sim
+
+    # Reform parameter changes (two-child limit repeal)
+    reform_params = {
+        "gov.dwp.tax_credits.child_tax_credit.limit.child_count": _years_dict(
+            np.inf
+        ),
+        "gov.dwp.universal_credit.elements.child.limit.child_count": (
+            _years_dict(np.inf)
+        ),
+    }
+
+    return Reform(
+        id="autumn_budget_2025_combined",
+        name="Autumn Budget 2025 (combined)",
+        description=(
+            "All Autumn Budget 2025 provisions combined: two-child limit "
+            "repeal, fuel duty freeze extension, threshold freeze extension, "
+            "and tax rate increases on dividends (+2pp), savings (+2pp), and "
+            "property income (+2pp). Shows full budget impact with interactions."
+        ),
+        baseline_parameter_changes=combined_baseline_params,
+        baseline_simulation_modifier=combined_baseline_modifier,
+        parameter_changes=reform_params,
+    )
+
+
+# =============================================================================
 # REFORM COLLECTIONS (lazy-loaded to avoid import-time Microsimulation)
 # =============================================================================
 
@@ -477,6 +575,7 @@ def _get_autumn_budget_2025_reforms() -> list[Reform]:
     global _AUTUMN_BUDGET_2025_REFORMS_CACHE
     if _AUTUMN_BUDGET_2025_REFORMS_CACHE is None:
         _AUTUMN_BUDGET_2025_REFORMS_CACHE = [
+            _create_combined_autumn_budget_reform(),  # Combined first
             _create_two_child_limit_repeal(),
             _create_fuel_duty_freeze(),
             _create_threshold_freeze_extension(),
