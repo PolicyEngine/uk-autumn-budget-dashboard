@@ -557,38 +557,26 @@ class HouseholdScatterCalculator(BaseCalculator):
     ) -> list[dict]:
         """Calculate from numpy arrays (for testing).
 
-        Samples households deterministically to reduce file size from ~46k
-        to ~2k per reform/year while maintaining representativeness.
+        Returns all households within income range. Sampling for git
+        is done separately via sample_household_scatter.py script.
         """
         mask = (baseline_incomes >= self.min_income) & (
             baseline_incomes <= self.max_income
         )
 
-        # Get indices that pass the income filter
-        valid_indices = np.where(mask)[0]
-
-        # Deterministic sampling using a hash of the index
-        # This ensures the same households are selected each run
-        if len(valid_indices) > self.sample_size:
-            # Use a simple multiplicative hash for deterministic sampling
-            hashes = (valid_indices * 2654435761) % (2**32)
-            sorted_order = np.argsort(hashes)
-            sampled_indices = valid_indices[sorted_order[: self.sample_size]]
-        else:
-            sampled_indices = valid_indices
-
         results = []
-        for i in sampled_indices:
-            results.append(
-                {
-                    "reform_id": reform_id,
-                    "reform_name": reform_name,
-                    "year": year,
-                    "baseline_income": baseline_incomes[i],
-                    "income_change": income_changes[i],
-                    "household_weight": weights[i],
-                }
-            )
+        for i in range(len(baseline_incomes)):
+            if mask[i]:
+                results.append(
+                    {
+                        "reform_id": reform_id,
+                        "reform_name": reform_name,
+                        "year": year,
+                        "baseline_income": baseline_incomes[i],
+                        "income_change": income_changes[i],
+                        "household_weight": weights[i],
+                    }
+                )
 
         return results
 

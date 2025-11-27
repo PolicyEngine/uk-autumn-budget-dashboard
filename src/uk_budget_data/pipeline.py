@@ -314,7 +314,7 @@ class DataPipeline:
             "winners_losers": "winners_losers.csv",
             "metrics": "metrics.csv",
             "income_curve": "income_curve.csv",
-            "household_scatter": "household_scatter.csv",
+            "household_scatter": "household_scatter_full.csv",
             "constituency": "constituency.csv",
             "demographic_constituency": "demographic_constituency.csv",
             "obr_comparison": "obr_comparison.csv",
