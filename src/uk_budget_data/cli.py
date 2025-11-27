@@ -9,7 +9,7 @@ from rich.table import Table
 from uk_budget_data.models import DataConfig, Reform
 from uk_budget_data.pipeline import generate_all_data
 from uk_budget_data.reforms import (
-    AUTUMN_BUDGET_2025_REFORMS,
+    get_autumn_budget_2025_reforms,
     get_reform,
 )
 
@@ -117,7 +117,7 @@ def print_reforms_list() -> None:
     table.add_column("Name", style="green")
     table.add_column("Type", style="yellow")
 
-    for reform in AUTUMN_BUDGET_2025_REFORMS:
+    for reform in get_autumn_budget_2025_reforms():
         reform_type = (
             "Structural" if reform.simulation_modifier else "Parameter"
         )
@@ -161,7 +161,7 @@ def main(args: list[str] = None) -> int:
             console.print("[red]Error: No valid reforms specified[/red]")
             return 1
     else:
-        reforms = AUTUMN_BUDGET_2025_REFORMS
+        reforms = get_autumn_budget_2025_reforms()
 
     # Print summary
     console.print("\n[bold]UK Budget Data Generator[/bold]")

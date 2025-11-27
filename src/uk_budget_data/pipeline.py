@@ -25,7 +25,7 @@ from uk_budget_data.calculators import (
     WinnersLosersCalculator,
 )
 from uk_budget_data.models import DataConfig, Reform, ReformResult
-from uk_budget_data.reforms import AUTUMN_BUDGET_2025_REFORMS
+from uk_budget_data.reforms import get_autumn_budget_2025_reforms
 
 console = Console()
 
@@ -230,7 +230,7 @@ class DataPipeline:
             reforms: List of reforms to process. Defaults to Autumn Budget.
             config: Data configuration. Uses defaults if not provided.
         """
-        self.reforms = reforms or AUTUMN_BUDGET_2025_REFORMS
+        self.reforms = reforms or get_autumn_budget_2025_reforms()
         self.config = config or DataConfig()
 
     def run(self, skip_input_check: bool = False) -> dict[str, pd.DataFrame]:
@@ -266,14 +266,29 @@ class DataPipeline:
                 )
 
                 # Create simulations
+                # Baseline priority: reform-specific > global config > default
+                baseline_scenario = (
+                    reform.to_baseline_scenario()
+                    or self.config.get_baseline_scenario()
+                )
+                reform_scenario = reform.to_scenario()
+
                 if dataset:
-                    baseline = Microsimulation(dataset=dataset)
+                    if baseline_scenario:
+                        baseline = Microsimulation(
+                            dataset=dataset, scenario=baseline_scenario
+                        )
+                    else:
+                        baseline = Microsimulation(dataset=dataset)
                     reformed = Microsimulation(
-                        dataset=dataset, scenario=reform.to_scenario()
+                        dataset=dataset, scenario=reform_scenario
                     )
                 else:
-                    baseline = Microsimulation()
-                    reformed = Microsimulation(scenario=reform.to_scenario())
+                    if baseline_scenario:
+                        baseline = Microsimulation(scenario=baseline_scenario)
+                    else:
+                        baseline = Microsimulation()
+                    reformed = Microsimulation(scenario=reform_scenario)
 
                 # Process reform
                 processor = ReformProcessor(reform, self.config)

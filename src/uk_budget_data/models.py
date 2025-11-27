@@ -12,6 +12,10 @@ class Reform(BaseModel):
 
     A reform can be defined either via parameter changes (simple reforms)
     or via a simulation modifier function (structural reforms).
+
+    For reforms that compare two non-default scenarios (e.g., fuel duty freeze
+    comparing higher rates vs lower rates), use baseline_parameter_changes to
+    define the baseline scenario.
     """
 
     id: str = Field(..., description="Unique identifier for the reform")
@@ -21,7 +25,14 @@ class Reform(BaseModel):
     )
     parameter_changes: Optional[dict[str, dict[str, Any]]] = Field(
         default=None,
-        description="Parameter path -> {period: value} mappings",
+        description="Parameter path -> {period: value} mappings for reform",
+    )
+    baseline_parameter_changes: Optional[dict[str, dict[str, Any]]] = Field(
+        default=None,
+        description=(
+            "Parameter changes for custom baseline scenario. "
+            "If provided, both baseline and reform will use modified parameters."
+        ),
     )
     simulation_modifier: Optional[Callable] = Field(
         default=None,
@@ -38,6 +49,20 @@ class Reform(BaseModel):
             return Scenario(parameter_changes=self.parameter_changes)
         else:
             return Scenario()
+
+    def to_baseline_scenario(self) -> Optional[Scenario]:
+        """Convert baseline parameter changes to a Scenario, if defined.
+
+        Returns:
+            Scenario object for custom baseline, or None for default baseline.
+        """
+        if self.baseline_parameter_changes is not None:
+            return Scenario(parameter_changes=self.baseline_parameter_changes)
+        return None
+
+    def has_custom_baseline(self) -> bool:
+        """Check if this reform uses a custom baseline scenario."""
+        return self.baseline_parameter_changes is not None
 
 
 class ReformResult(BaseModel):
@@ -92,5 +117,19 @@ class DataConfig(BaseModel):
         default=150_000,
         description="Max baseline income for scatter plot",
     )
+    baseline_parameter_changes: Optional[dict[str, dict[str, Any]]] = Field(
+        default=None,
+        description=(
+            "Global baseline parameter changes applied to all reforms. "
+            "Use this for pre-Autumn Budget baseline scenarios. "
+            "Reform-specific baseline_parameter_changes take precedence."
+        ),
+    )
 
     model_config = {"arbitrary_types_allowed": True}
+
+    def get_baseline_scenario(self) -> Optional[Scenario]:
+        """Get the global baseline scenario, if configured."""
+        if self.baseline_parameter_changes is not None:
+            return Scenario(parameter_changes=self.baseline_parameter_changes)
+        return None

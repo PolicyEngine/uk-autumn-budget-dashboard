@@ -3,8 +3,9 @@
 from uk_budget_data.models import DataConfig, Reform, ReformResult
 from uk_budget_data.pipeline import DataPipeline, generate_all_data
 from uk_budget_data.reforms import (
-    AUTUMN_BUDGET_2025_REFORMS,
     create_salary_sacrifice_cap_reform,
+    get_autumn_budget_2025_reforms,
+    get_pre_autumn_budget_baseline,
     get_reform,
     list_reform_ids,
 )
@@ -20,7 +21,8 @@ __all__ = [
     "DataPipeline",
     "generate_all_data",
     # Reforms
-    "AUTUMN_BUDGET_2025_REFORMS",
+    "get_autumn_budget_2025_reforms",
+    "get_pre_autumn_budget_baseline",
     "create_salary_sacrifice_cap_reform",
     "get_reform",
     "list_reform_ids",
