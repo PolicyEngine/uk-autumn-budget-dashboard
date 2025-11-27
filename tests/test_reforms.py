@@ -229,28 +229,37 @@ class TestDividendTaxIncrease:
         assert reform.id == "dividend_tax_increase_2pp"
 
     def test_reform_uses_custom_baseline(self):
-        """Reform uses pre-budget baseline rates."""
+        """Reform uses pre-budget baseline rates via simulation modifier."""
         from uk_budget_data.reforms import get_reform
 
         reform = get_reform("dividend_tax_increase_2pp")
 
-        # Reform uses custom baseline (pre-budget rates)
+        # Reform uses custom baseline (simulation_modifier for ParameterScale)
         assert reform.has_custom_baseline()
-        assert reform.baseline_parameter_changes is not None
-
-        # Check baseline has pre-budget dividend rates
-        basic_key = "gov.hmrc.income_tax.rates.dividends.brackets[0].rate"
-        higher_key = "gov.hmrc.income_tax.rates.dividends.brackets[1].rate"
-
-        assert basic_key in reform.baseline_parameter_changes
-        assert higher_key in reform.baseline_parameter_changes
-
-        # Pre-budget rates: 8.75% basic, 33.75% higher
-        assert reform.baseline_parameter_changes[basic_key]["2026"] == 0.0875
-        assert reform.baseline_parameter_changes[higher_key]["2026"] == 0.3375
+        assert reform.baseline_simulation_modifier is not None
 
         # Reform parameter_changes is empty (uses new rates from policyengine-uk)
         assert reform.parameter_changes == {}
+
+    def test_baseline_modifier_sets_pre_budget_rates(self):
+        """Baseline simulation modifier correctly sets pre-budget rates."""
+        from policyengine_uk import Microsimulation
+
+        from uk_budget_data.reforms import get_reform
+
+        reform = get_reform("dividend_tax_increase_2pp")
+
+        # Create a simulation and apply the baseline modifier
+        sim = Microsimulation()
+        reform.baseline_simulation_modifier(sim)
+
+        div = sim.tax_benefit_system.parameters.gov.hmrc.income_tax.rates
+        div = div.dividends
+
+        # Check pre-budget rates are set for 2027 (8.75% basic, 33.75% higher)
+        # The modifier replaces the 2026-04-06 entry so rates persist
+        assert div.brackets[0].rate("2027-04-06") == 0.0875
+        assert div.brackets[1].rate("2027-04-06") == 0.3375
 
 
 class TestSavingsTaxIncrease:
@@ -376,3 +385,95 @@ class TestGetReform:
 
         reform = get_reform("nonexistent_reform_xyz")
         assert reform is None
+
+
+class TestBudgetaryImpacts:
+    """Tests for budgetary impact calculations.
+
+    These tests verify that PolicyEngine estimates are within reasonable
+    range of OBR estimates. The tolerance accounts for methodological
+    differences between OBR's costing model and PolicyEngine's microsimulation.
+
+    OBR estimates from Autumn Budget 2025, Table 3.5.
+    """
+
+    def test_dividend_tax_produces_nonzero_revenue(self):
+        """Dividend tax increase should produce positive revenue.
+
+        OBR estimates £1.0bn/year from 2027-28.
+        Currently blocked by policyengine-uk bug where dividend_income_tax
+        returns 0 despite correct parameter changes.
+        """
+        from policyengine_uk import Microsimulation
+
+        from uk_budget_data.reforms import get_reform
+
+        reform = get_reform("dividend_tax_increase_2pp")
+        baseline_scenario = reform.to_baseline_scenario()
+
+        baseline = Microsimulation(scenario=baseline_scenario)
+        reformed = Microsimulation()
+
+        # Calculate revenue impact for 2027
+        base_balance = baseline.calculate("gov_balance", 2027).sum()
+        ref_balance = reformed.calculate("gov_balance", 2027).sum()
+        impact_bn = (ref_balance - base_balance) / 1e9
+
+        # Should produce positive revenue (higher tax rates = more revenue)
+        # OBR estimates £1.0bn for 2027-28
+        assert impact_bn > 0.5, (
+            f"Expected dividend tax to raise >£0.5bn, got £{impact_bn:.2f}bn. "
+            "This may indicate policyengine-uk bug with dividend_income_tax."
+        )
+
+    def test_savings_tax_produces_nonzero_revenue(self):
+        """Savings tax increase should produce positive revenue from 2028.
+
+        OBR estimates £0.5bn/year from 2028-29 (starts April 2027).
+        """
+        from policyengine_uk import Microsimulation
+
+        from uk_budget_data.reforms import get_reform
+
+        reform = get_reform("savings_tax_increase_2pp")
+        baseline_scenario = reform.to_baseline_scenario()
+
+        baseline = Microsimulation(scenario=baseline_scenario)
+        reformed = Microsimulation()
+
+        # Calculate revenue impact for 2028 (first full year)
+        base_balance = baseline.calculate("gov_balance", 2028).sum()
+        ref_balance = reformed.calculate("gov_balance", 2028).sum()
+        impact_bn = (ref_balance - base_balance) / 1e9
+
+        # Should produce positive revenue
+        # OBR estimates £0.5bn for 2028-29
+        assert (
+            impact_bn > 0.1
+        ), f"Expected savings tax to raise >£0.1bn, got £{impact_bn:.2f}bn"
+
+    def test_property_tax_produces_nonzero_revenue(self):
+        """Property tax increase should produce positive revenue from 2028.
+
+        OBR estimates £0.6bn for 2028-29 (starts April 2027).
+        """
+        from policyengine_uk import Microsimulation
+
+        from uk_budget_data.reforms import get_reform
+
+        reform = get_reform("property_tax_increase_2pp")
+        baseline_scenario = reform.to_baseline_scenario()
+
+        baseline = Microsimulation(scenario=baseline_scenario)
+        reformed = Microsimulation()
+
+        # Calculate revenue impact for 2028
+        base_balance = baseline.calculate("gov_balance", 2028).sum()
+        ref_balance = reformed.calculate("gov_balance", 2028).sum()
+        impact_bn = (ref_balance - base_balance) / 1e9
+
+        # Should produce positive revenue
+        # OBR estimates £0.6bn for 2028-29
+        assert (
+            impact_bn > 0.1
+        ), f"Expected property tax to raise >£0.1bn, got £{impact_bn:.2f}bn"

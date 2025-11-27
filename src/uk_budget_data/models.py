@@ -34,6 +34,13 @@ class Reform(BaseModel):
             "If provided, both baseline and reform will use modified parameters."
         ),
     )
+    baseline_simulation_modifier: Optional[Callable] = Field(
+        default=None,
+        description=(
+            "Function that modifies baseline simulation. Use for ParameterScale "
+            "brackets that can't be modified via parameter_changes."
+        ),
+    )
     simulation_modifier: Optional[Callable] = Field(
         default=None,
         description="Function that modifies a simulation object",
@@ -56,13 +63,20 @@ class Reform(BaseModel):
         Returns:
             Scenario object for custom baseline, or None for default baseline.
         """
-        if self.baseline_parameter_changes is not None:
+        if self.baseline_simulation_modifier is not None:
+            return Scenario(
+                simulation_modifier=self.baseline_simulation_modifier
+            )
+        elif self.baseline_parameter_changes is not None:
             return Scenario(parameter_changes=self.baseline_parameter_changes)
         return None
 
     def has_custom_baseline(self) -> bool:
         """Check if this reform uses a custom baseline scenario."""
-        return self.baseline_parameter_changes is not None
+        return (
+            self.baseline_parameter_changes is not None
+            or self.baseline_simulation_modifier is not None
+        )
 
 
 class ReformResult(BaseModel):

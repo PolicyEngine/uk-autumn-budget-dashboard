@@ -210,6 +210,26 @@ def _create_threshold_freeze_extension() -> Reform:
 # Property: +2pp from April 2027 (basic 20%->22%, higher 40%->42%, add 45%->47%)
 
 
+def _set_pre_budget_dividend_rates(sim):
+    """Set pre-budget dividend rates in the baseline simulation.
+
+    Reverts the Autumn Budget 2025 changes:
+    - Basic rate: 10.75% -> 8.75%
+    - Higher rate: 35.75% -> 33.75%
+
+    Uses simulation_modifier because dividend rates are stored in a
+    ParameterScale which requires direct bracket access. Modifies
+    values_list directly to replace the Autumn Budget rate change.
+    """
+    div = sim.tax_benefit_system.parameters.gov.hmrc.income_tax.rates.dividends
+    # Revert basic rate (bracket 0) to pre-budget 8.75%
+    # Directly modify the 2026-04-06 entry in values_list
+    div.brackets[0].rate.values_list[0].value = 0.0875
+    # Revert higher rate (bracket 1) to pre-budget 33.75%
+    div.brackets[1].rate.values_list[0].value = 0.3375
+    return sim
+
+
 def _create_dividend_tax_increase() -> Reform:
     """Create the dividend tax increase reform.
 
@@ -224,8 +244,8 @@ def _create_dividend_tax_increase() -> Reform:
     - 2028-29: £1.0bn
     - 2029-30: £1.0bn
     """
-    # Pre-budget baseline: old dividend rates
-    # The policyengine-uk dividend rates use a bracket structure
+    # Uses baseline_simulation_modifier because dividend rates are stored
+    # in a ParameterScale which requires direct bracket modification
     return Reform(
         id="dividend_tax_increase_2pp",
         name="Dividend tax increase (+2pp)",
@@ -234,22 +254,8 @@ def _create_dividend_tax_increase() -> Reform:
             "2026. Basic rate: 8.75% → 10.75%, Higher rate: 33.75% → 35.75%. "
             "OBR estimates £1.0-1.1bn annual yield from 2027-28."
         ),
-        baseline_parameter_changes={
-            # Pre-budget rates (8.75% basic, 33.75% higher)
-            "gov.hmrc.income_tax.rates.dividends.brackets[0].rate": {
-                "2026": 0.0875,
-                "2027": 0.0875,
-                "2028": 0.0875,
-                "2029": 0.0875,
-            },
-            "gov.hmrc.income_tax.rates.dividends.brackets[1].rate": {
-                "2026": 0.3375,
-                "2027": 0.3375,
-                "2028": 0.3375,
-                "2029": 0.3375,
-            },
-        },
-        parameter_changes={},  # Uses new rates from policyengine-uk v2.60+
+        baseline_simulation_modifier=_set_pre_budget_dividend_rates,
+        parameter_changes={},  # Uses new rates from policyengine-uk
     )
 
 
