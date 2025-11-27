@@ -84,10 +84,32 @@ const PRESETS = [
 
 function parseCSV(csvText) {
   const lines = csvText.trim().split("\n");
-  const headers = lines[0].split(",");
+
+  // Parse a single CSV line handling quoted fields
+  const parseLine = (line) => {
+    const values = [];
+    let current = "";
+    let inQuotes = false;
+
+    for (let i = 0; i < line.length; i++) {
+      const char = line[i];
+      if (char === '"') {
+        inQuotes = !inQuotes;
+      } else if (char === "," && !inQuotes) {
+        values.push(current.trim());
+        current = "";
+      } else {
+        current += char;
+      }
+    }
+    values.push(current.trim());
+    return values;
+  };
+
+  const headers = parseLine(lines[0]);
   const data = [];
   for (let i = 1; i < lines.length; i++) {
-    const values = lines[i].split(",");
+    const values = parseLine(lines[i]);
     const row = {};
     headers.forEach((header, idx) => {
       row[header] = values[idx];
