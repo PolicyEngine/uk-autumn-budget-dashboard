@@ -11,3 +11,15 @@ threshold_freeze_extension,Threshold freeze extension,2026,0.0
 threshold_freeze_extension,Threshold freeze extension,2027,0.0
 threshold_freeze_extension,Threshold freeze extension,2028,3.3
 threshold_freeze_extension,Threshold freeze extension,2029,7.6
+dividend_tax_increase_2pp,Dividend tax increase (+2pp),2026,0.3
+dividend_tax_increase_2pp,Dividend tax increase (+2pp),2027,1.0
+dividend_tax_increase_2pp,Dividend tax increase (+2pp),2028,1.0
+dividend_tax_increase_2pp,Dividend tax increase (+2pp),2029,1.1
+savings_tax_increase_2pp,Savings income tax increase (+2pp),2026,0.0
+savings_tax_increase_2pp,Savings income tax increase (+2pp),2027,0.0
+savings_tax_increase_2pp,Savings income tax increase (+2pp),2028,0.5
+savings_tax_increase_2pp,Savings income tax increase (+2pp),2029,0.5
+property_tax_increase_2pp,Property income tax increase (+2pp),2026,0.0
+property_tax_increase_2pp,Property income tax increase (+2pp),2027,0.0
+property_tax_increase_2pp,Property income tax increase (+2pp),2028,0.6
+property_tax_increase_2pp,Property income tax increase (+2pp),2029,0.4
