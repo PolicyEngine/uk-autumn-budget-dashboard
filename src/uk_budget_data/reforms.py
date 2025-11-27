@@ -37,33 +37,66 @@ def _years_dict(value, years: list[int] = None) -> dict[str, any]:
 # 2025 Autumn Budget. Used as baseline for comparing budget policy impacts.
 #
 # Income tax thresholds: Would have unfrozen after April 2028
-# Using OBR CPI inflation forecasts: 2.6% (2028), 2.1% (2029), 2.0% (2030)
-# Personal allowance: £12,570 -> £12,897 (2028) -> £13,168 (2029)
-# Basic rate threshold: £37,700 -> £38,680 (2028) -> £39,493 (2029)
+# Personal allowance and basic rate threshold uprated by CPI from April 2028
 #
 # Fuel duty: 5p cut would have ended March 2026 per Spring Budget 2025
-# Would return to 57.95p then RPI uprating
+# Would return to 57.95p then RPI uprating from April 2027
 
-PRE_AUTUMN_BUDGET_BASELINE = {
-    # Income tax thresholds - inflation indexed from April 2028
-    # (before Autumn Budget extended freeze to April 2031)
-    "gov.hmrc.income_tax.allowances.personal_allowance.amount": {
-        "2028": 12897,  # £12,570 * 1.026
-        "2029": 13168,  # £12,897 * 1.021
-    },
-    "gov.hmrc.income_tax.rates.uk[1].threshold": {
-        "2028": 38680,  # £37,700 * 1.026
-        "2029": 39493,  # £38,680 * 1.021
-    },
-    # Fuel duty - 5p cut ending per Spring Budget 2025
-    # (before Autumn Budget extended freeze to Sep 2026)
-    "gov.hmrc.fuel_duty.petrol_and_diesel": {
-        "2026-03-22": 0.5795,  # 5p cut ends, returns to 57.95p
-        "2027-04-01": 0.5980,  # RPI uprating ~3.2%
-        "2028-04-01": 0.6154,  # RPI uprating ~2.9%
-        "2029-04-01": 0.6334,  # RPI uprating ~2.9%
-    },
-}
+
+def _calculate_pre_autumn_budget_baseline() -> dict:
+    """Calculate pre-Autumn Budget baseline values programmatically.
+
+    Uses OBR inflation forecasts from policyengine-uk to calculate what
+    income tax thresholds and fuel duty rates would have been without
+    the November 2025 Autumn Budget.
+    """
+    from policyengine_uk import Microsimulation
+
+    sim = Microsimulation()
+    params = sim.tax_benefit_system.parameters
+
+    # Get OBR inflation indices
+    cpi_index = params.gov.economic_assumptions.indices.obr.cpih
+    rpi_index = params.gov.economic_assumptions.indices.obr.rpi
+
+    # Income tax thresholds - CPI uprating from April 2028
+    # (Previous freeze was until April 2028)
+    pa_2027 = 12570  # Personal allowance frozen at this level until Apr 2028
+    threshold_2027 = 37700  # Basic rate threshold frozen until Apr 2028
+
+    cpi_2027 = cpi_index("2027-04-01")
+    cpi_2028 = cpi_index("2028-04-01")
+    cpi_2029 = cpi_index("2029-04-01")
+
+    # Fuel duty - 5p cut would end March 2026, then RPI uprating
+    fuel_duty_base = 0.5795  # Rate after 5p cut ends (per Spring Budget 2025)
+    rpi_2026 = rpi_index("2026-04-01")
+    rpi_2027 = rpi_index("2027-04-01")
+    rpi_2028 = rpi_index("2028-04-01")
+    rpi_2029 = rpi_index("2029-04-01")
+
+    return {
+        # Income tax thresholds - CPI indexed from April 2028
+        "gov.hmrc.income_tax.allowances.personal_allowance.amount": {
+            "2028": round(pa_2027 * cpi_2028 / cpi_2027),
+            "2029": round(pa_2027 * cpi_2029 / cpi_2027),
+        },
+        "gov.hmrc.income_tax.rates.uk[1].threshold": {
+            "2028": round(threshold_2027 * cpi_2028 / cpi_2027),
+            "2029": round(threshold_2027 * cpi_2029 / cpi_2027),
+        },
+        # Fuel duty - 5p cut ends March 2026, then RPI uprating
+        "gov.hmrc.fuel_duty.petrol_and_diesel": {
+            "2026-03-22": fuel_duty_base,  # 5p cut ends
+            "2027-04-01": round(fuel_duty_base * rpi_2027 / rpi_2026, 4),
+            "2028-04-01": round(fuel_duty_base * rpi_2028 / rpi_2026, 4),
+            "2029-04-01": round(fuel_duty_base * rpi_2029 / rpi_2026, 4),
+        },
+    }
+
+
+# Calculate baseline values using OBR forecasts
+PRE_AUTUMN_BUDGET_BASELINE = _calculate_pre_autumn_budget_baseline()
 
 
 # =============================================================================

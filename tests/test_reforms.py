@@ -1,6 +1,84 @@
 """Tests for reform definitions."""
 
 import numpy as np
+from policyengine_uk import Microsimulation
+
+
+class TestPreAutumnBudgetBaseline:
+    """Tests for pre-Autumn Budget baseline calculation."""
+
+    def test_income_tax_thresholds_use_cpi_uprating(self):
+        """Pre-AB baseline thresholds should use CPI uprating from 2028."""
+        from uk_budget_data.reforms import PRE_AUTUMN_BUDGET_BASELINE
+
+        sim = Microsimulation()
+        cpi_index = (
+            sim.tax_benefit_system.parameters.gov.economic_assumptions.indices.obr.cpih
+        )
+
+        # Personal allowance was £12,570 in April 2027 (end of previous freeze)
+        # Should be uprated by CPI from April 2028 onwards
+        pa_2027 = 12570
+        cpi_2027 = cpi_index("2027-04-01")
+        cpi_2028 = cpi_index("2028-04-01")
+        cpi_2029 = cpi_index("2029-04-01")
+
+        expected_pa_2028 = round(pa_2027 * cpi_2028 / cpi_2027)
+        expected_pa_2029 = round(pa_2027 * cpi_2029 / cpi_2027)
+
+        pa_key = "gov.hmrc.income_tax.allowances.personal_allowance.amount"
+        assert PRE_AUTUMN_BUDGET_BASELINE[pa_key]["2028"] == expected_pa_2028
+        assert PRE_AUTUMN_BUDGET_BASELINE[pa_key]["2029"] == expected_pa_2029
+
+        # Basic rate threshold was £37,700 in April 2027
+        threshold_2027 = 37700
+        expected_threshold_2028 = round(threshold_2027 * cpi_2028 / cpi_2027)
+        expected_threshold_2029 = round(threshold_2027 * cpi_2029 / cpi_2027)
+
+        threshold_key = "gov.hmrc.income_tax.rates.uk[1].threshold"
+        assert (
+            PRE_AUTUMN_BUDGET_BASELINE[threshold_key]["2028"]
+            == expected_threshold_2028
+        )
+        assert (
+            PRE_AUTUMN_BUDGET_BASELINE[threshold_key]["2029"]
+            == expected_threshold_2029
+        )
+
+    def test_fuel_duty_uses_rpi_uprating(self):
+        """Pre-AB baseline fuel duty should use RPI uprating after Mar 2026."""
+        from uk_budget_data.reforms import PRE_AUTUMN_BUDGET_BASELINE
+
+        sim = Microsimulation()
+        rpi_index = (
+            sim.tax_benefit_system.parameters.gov.economic_assumptions.indices.obr.rpi
+        )
+
+        # Per Spring Budget 2025, 5p cut would end March 2026 -> 57.95p
+        # Then RPI uprating from April 2027
+        base_rate = 0.5795  # Rate after 5p cut ends
+        rpi_2026 = rpi_index("2026-04-01")
+        rpi_2027 = rpi_index("2027-04-01")
+        rpi_2028 = rpi_index("2028-04-01")
+        rpi_2029 = rpi_index("2029-04-01")
+
+        expected_2027 = round(base_rate * rpi_2027 / rpi_2026, 4)
+        expected_2028 = round(base_rate * rpi_2028 / rpi_2026, 4)
+        expected_2029 = round(base_rate * rpi_2029 / rpi_2026, 4)
+
+        fuel_key = "gov.hmrc.fuel_duty.petrol_and_diesel"
+        # March 2026: 5p cut ends
+        assert PRE_AUTUMN_BUDGET_BASELINE[fuel_key]["2026-03-22"] == 0.5795
+        # April 2027+: RPI uprating
+        assert (
+            PRE_AUTUMN_BUDGET_BASELINE[fuel_key]["2027-04-01"] == expected_2027
+        )
+        assert (
+            PRE_AUTUMN_BUDGET_BASELINE[fuel_key]["2028-04-01"] == expected_2028
+        )
+        assert (
+            PRE_AUTUMN_BUDGET_BASELINE[fuel_key]["2029-04-01"] == expected_2029
+        )
 
 
 class TestReformDefinitions:
@@ -108,7 +186,10 @@ class TestThresholdFreeze:
 
     def test_reform_uses_pre_ab_baseline(self):
         """Reform compares current law (freeze) against pre-AB baseline."""
-        from uk_budget_data.reforms import get_reform
+        from uk_budget_data.reforms import (
+            PRE_AUTUMN_BUDGET_BASELINE,
+            get_reform,
+        )
 
         reform = get_reform("threshold_freeze_extension")
 
@@ -122,10 +203,14 @@ class TestThresholdFreeze:
         assert pa_key in reform.baseline_parameter_changes
         assert threshold_key in reform.baseline_parameter_changes
 
-        # Baseline has inflation-indexed values for 2028+
-        assert reform.baseline_parameter_changes[pa_key]["2028"] == 12897
+        # Baseline has inflation-indexed values from PRE_AUTUMN_BUDGET_BASELINE
         assert (
-            reform.baseline_parameter_changes[threshold_key]["2028"] == 38680
+            reform.baseline_parameter_changes[pa_key]["2028"]
+            == PRE_AUTUMN_BUDGET_BASELINE[pa_key]["2028"]
+        )
+        assert (
+            reform.baseline_parameter_changes[threshold_key]["2028"]
+            == PRE_AUTUMN_BUDGET_BASELINE[threshold_key]["2028"]
         )
 
         # Reform parameter_changes is empty (uses default policyengine-uk params)
