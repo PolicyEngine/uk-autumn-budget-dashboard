@@ -447,7 +447,11 @@ def _slr_model(freeze_plan_2_threshold: bool = False):
                     [
                         26065 * parameter_uprating,
                         28470
-                        * (parameter_uprating if not freeze_plan_2_threshold else 1),
+                        * (
+                            parameter_uprating
+                            if not freeze_plan_2_threshold
+                            else 1
+                        ),
                         32745 * parameter_uprating,
                         25000 * parameter_uprating,
                         np.inf,
@@ -461,14 +465,15 @@ def _slr_model(freeze_plan_2_threshold: bool = False):
 
         sim.tax_benefit_system.update_variable(student_loan_plan)
         sim.tax_benefit_system.add_variable(student_loan_repayments_modelled)
-        sim.tax_benefit_system.variables["hbai_household_net_income"].subtracts.append(
-            "student_loan_repayments_modelled"
-        )
-        sim.tax_benefit_system.variables["hbai_household_net_income"].adds.append(
-            "student_loan_repayments"
-        )
+        sim.tax_benefit_system.variables[
+            "hbai_household_net_income"
+        ].subtracts.append("student_loan_repayments_modelled")
+        sim.tax_benefit_system.variables[
+            "hbai_household_net_income"
+        ].adds.append("student_loan_repayments")
 
     return modify
+
 
 FREEZE_STUDENT_LOAN_THRESHOLDS = Reform(
     id="freeze_student_loan_thresholds",
@@ -479,8 +484,12 @@ FREEZE_STUDENT_LOAN_THRESHOLDS = Reform(
         "levels; reform allows RPI uprating, reducing repayments. OBR costing: "
         "+£255-380m annual cost (2027-2030)."
     ),
-    simulation_modifier=_slr_model(freeze_plan_2_threshold=False),  # Reform: allow uprating (reduces repayments)
-    baseline_simulation_modifier=_slr_model(freeze_plan_2_threshold=True)  # Baseline: frozen (more repayments)
+    simulation_modifier=_slr_model(
+        freeze_plan_2_threshold=False
+    ),  # Reform: allow uprating (reduces repayments)
+    baseline_simulation_modifier=_slr_model(
+        freeze_plan_2_threshold=True
+    ),  # Baseline: frozen (more repayments)
 )
 
 
