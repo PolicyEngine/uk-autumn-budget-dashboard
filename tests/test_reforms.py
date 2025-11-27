@@ -160,7 +160,7 @@ class TestFuelDutyFreeze:
         assert reform is not None
 
     def test_reform_maintains_reduced_rate(self):
-        """Reform maintains the 5p cut (52.95p rate)."""
+        """Reform uses custom baseline and current law for reform."""
         from uk_budget_data.reforms import get_reform
 
         reform = get_reform("fuel_duty_freeze")
@@ -172,13 +172,13 @@ class TestFuelDutyFreeze:
         param_key = "gov.hmrc.fuel_duty.petrol_and_diesel"
         assert param_key in reform.baseline_parameter_changes
 
-        # Baseline has pre-AB values (5p cut ending, higher rates)
-        # Reform uses current law (policyengine-uk v2.59.0 has freeze baked in)
-        assert (
-            reform.baseline_parameter_changes[param_key]["2026-03-22"]
-            == 0.5795
-        )
-        # Reform parameter_changes is empty (uses default policyengine-uk params)
+        # Baseline has pre-AB values (5p cut ending March 2026, then RPI)
+        # Hardcoded because policyengine-uk 2.60.0+ has post-budget values
+        assert reform.baseline_parameter_changes[param_key]["2026"] == 0.58
+        assert reform.baseline_parameter_changes[param_key]["2027"] == 0.61
+        assert reform.baseline_parameter_changes[param_key]["2029"] == 0.64
+
+        # Reform uses current law (policyengine-uk 2.60.0+ has correct rates)
         assert reform.parameter_changes == {}
 
 

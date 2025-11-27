@@ -148,8 +148,29 @@ def _create_two_child_limit_repeal() -> Reform:
 
 
 def _create_fuel_duty_freeze() -> Reform:
-    """Create the fuel duty freeze extension reform."""
-    baseline = get_pre_autumn_budget_baseline()
+    """Create the fuel duty freeze extension reform.
+
+    Compares Autumn Budget policy against pre-budget baseline:
+    - Baseline: 5p cut ends March 2026, then RPI uprating
+    - Reform: Current law (policyengine-uk 2.60.0+) with freeze until Sept 2026,
+      staggered reversal (+1p Sep, +2p Dec, +2p Mar), then RPI uprating
+
+    Note: We hardcode the baseline because policyengine-uk 2.60.0+ has
+    post-budget values baked in. The baseline represents what would have
+    happened without the Autumn Budget (5p cut ending, then RPI).
+
+    See https://policyengine.org/uk/research/fuel-duty-freeze-2025
+    """
+    # Baseline: What would have happened without Autumn Budget
+    # 5p cut ends March 2026 → 57.95p, then RPI uprating
+    # Uses same methodology as blog post policy 95147
+    baseline_rates = {
+        "2026": 0.58,  # 5p cut ends, returns to 57.95p rounded
+        "2027": 0.61,  # RPI uprating
+        "2028": 0.63,
+        "2029": 0.64,
+    }
+
     return Reform(
         id="fuel_duty_freeze",
         name="Fuel duty freeze extension",
@@ -160,11 +181,9 @@ def _create_fuel_duty_freeze() -> Reform:
             "See https://policyengine.org/uk/research/fuel-duty-freeze-2025"
         ),
         baseline_parameter_changes={
-            "gov.hmrc.fuel_duty.petrol_and_diesel": baseline[
-                "gov.hmrc.fuel_duty.petrol_and_diesel"
-            ]
+            "gov.hmrc.fuel_duty.petrol_and_diesel": baseline_rates
         },
-        parameter_changes={},
+        parameter_changes={},  # Use current law (policyengine-uk 2.60.0+)
     )
 
 
@@ -592,12 +611,19 @@ def _create_combined_autumn_budget_reform() -> Reform:
     """
     baseline = get_pre_autumn_budget_baseline()
 
+    # Fuel duty baseline: 5p cut ends March 2026, then RPI uprating
+    # (hardcoded because policyengine-uk 2.60.0+ has post-budget values)
+    fuel_duty_baseline = {
+        "2026": 0.58,
+        "2027": 0.61,
+        "2028": 0.63,
+        "2029": 0.64,
+    }
+
     # Combine all baseline parameter changes
     combined_baseline_params = {
-        # Fuel duty baseline (pre-budget rates)
-        "gov.hmrc.fuel_duty.petrol_and_diesel": baseline[
-            "gov.hmrc.fuel_duty.petrol_and_diesel"
-        ],
+        # Fuel duty baseline (pre-budget rates - hardcoded)
+        "gov.hmrc.fuel_duty.petrol_and_diesel": fuel_duty_baseline,
         # Threshold baseline (CPI-indexed from 2028)
         "gov.hmrc.income_tax.allowances.personal_allowance.amount": baseline[
             "gov.hmrc.income_tax.allowances.personal_allowance.amount"
