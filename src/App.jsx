@@ -27,6 +27,13 @@ const POLICIES = [
       'The baseline assumes the 5p cut ends on 22 March 2026, returning the rate to 57.95p, followed by RPI uprating from April 2026. The announced policy (reform) maintains the freeze at 52.95p until September 2026, then implements a staggered reversal with increases of 1p, 2p, and 2p over three-month periods, reaching 57.95p by March 2027. Both then apply annual RPI uprating. See our <a href="https://policyengine.org/uk/research/fuel-duty-freeze-2025" target="_blank" rel="noopener noreferrer">research report</a> for details.',
   },
   {
+    id: "rail_fares_freeze",
+    name: "Rail fares freeze",
+    description: "Freeze regulated rail fares for one year from March 2026",
+    explanation:
+      'Freezes regulated rail fares in England for one year from March 2026 - the first freeze in 30 years. Without the freeze, fares would have increased by 5.8% under the RPI formula. The Government estimates this will save passengers £600 million in 2026-27, with commuters on expensive routes saving over £300 per year. See our <a href="https://policyengine.org/uk/research/rail-fares-freeze-2025" target="_blank" rel="noopener noreferrer">research report</a> for details.',
+  },
+  {
     id: "threshold_freeze_extension",
     name: "Threshold freeze extension",
     description: "Extend the freeze on income tax thresholds to 2030-31",

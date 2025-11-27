@@ -354,6 +354,56 @@ class TestPropertyTaxIncrease:
         assert reform.parameter_changes == {}
 
 
+class TestRailFaresFreeze:
+    """Tests for rail fares freeze reform."""
+
+    def test_reform_exists(self):
+        """Rail fares freeze reform is defined."""
+        from uk_budget_data.reforms import get_reform
+
+        reform = get_reform("rail_fares_freeze")
+        assert reform is not None
+        assert reform.id == "rail_fares_freeze"
+
+    def test_reform_uses_simulation_modifier(self):
+        """Reform uses simulation modifier for structural change."""
+        from uk_budget_data.reforms import get_reform
+
+        reform = get_reform("rail_fares_freeze")
+        assert reform.simulation_modifier is not None
+
+    def test_rail_fare_increase_rates_defined(self):
+        """Rail fare increase rates are defined for all budget years."""
+        from uk_budget_data.reforms import RAIL_FARE_INCREASES
+
+        expected_years = [2026, 2027, 2028, 2029]
+        for year in expected_years:
+            assert year in RAIL_FARE_INCREASES, f"Missing rate for {year}"
+            assert (
+                RAIL_FARE_INCREASES[year] > 0
+            ), f"Rate for {year} should be positive"
+            assert (
+                RAIL_FARE_INCREASES[year] < 0.10
+            ), f"Rate for {year} seems too high"
+
+        # 2026 rate should be 5.8% (the rate that was frozen)
+        assert RAIL_FARE_INCREASES[2026] == 0.058
+
+    def test_rail_freeze_costs_defined(self):
+        """Rail freeze costs match Treasury estimates."""
+        from uk_budget_data.reforms import RAIL_FREEZE_COSTS
+
+        expected_years = [2026, 2027, 2028, 2029]
+        for year in expected_years:
+            assert year in RAIL_FREEZE_COSTS, f"Missing cost for {year}"
+            assert (
+                RAIL_FREEZE_COSTS[year] > 0
+            ), f"Cost for {year} should be positive"
+
+        # 2026 cost should be £0.145bn (Treasury estimate)
+        assert RAIL_FREEZE_COSTS[2026] == 0.145
+
+
 class TestStructuralReforms:
     """Tests for structural reforms using simulation modifiers."""
 
