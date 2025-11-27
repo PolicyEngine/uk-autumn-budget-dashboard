@@ -1,13 +1,29 @@
 reform_id,reform_name,year,people_affected,gini_change,poverty_change_pp,poverty_change_pct
-two_child_limit,2 child limit repeal,2026,4.518161534781703,-0.005205923804797187,-1.0220737,-7.899147
-two_child_limit,2 child limit repeal,2027,4.647951576184144,-0.005302136281008032,-1.0731087,-8.29669
-two_child_limit,2 child limit repeal,2028,4.962842939977765,-0.005584891131576403,-1.0908098,-8.39469
-two_child_limit,2 child limit repeal,2029,5.03815743611657,-0.0056268757063142735,-1.0488319,-8.2241125
-fuel_duty_freeze,Fuel duty freeze extension,2026,0.0,0.0,0.0,0.0
-fuel_duty_freeze,Fuel duty freeze extension,2027,49.110100831569945,-0.00101190107642928,0.0,0.0
-fuel_duty_freeze,Fuel duty freeze extension,2028,49.00349447228973,-0.0008382455329451185,0.0,0.0
-fuel_duty_freeze,Fuel duty freeze extension,2029,49.008412643068596,-0.0008659787397243831,0.0,0.0
+fuel_duty_freeze,Fuel duty freeze,2026,50.54829536170057,-0.0017199783671998758,0.0,0.0
+fuel_duty_freeze,Fuel duty freeze,2027,49.17734383747208,-0.0004344385612349657,0.0,0.0
+fuel_duty_freeze,Fuel duty freeze,2028,49.23510885092196,-0.0004367033791061106,0.0,0.0
+fuel_duty_freeze,Fuel duty freeze,2029,49.233431314156306,-0.0004338329298964953,0.0,0.0
+two_child_limit,2 child limit repeal,2026,4.438016823399826,-0.003303392855016976,-1.0115595,-8.617203
+two_child_limit,2 child limit repeal,2027,4.4991790599603245,-0.0035076140223976745,-0.9871483,-8.418806
+two_child_limit,2 child limit repeal,2028,4.76436954928159,-0.0037439971537952116,-1.0253687,-8.72591
+two_child_limit,2 child limit repeal,2029,4.794246895247298,-0.0038565782733132395,-1.0187864,-8.739484
+income_tax_increase_2pp,Income tax rate increase (basic and higher rates +2pp),2026,75.56123608760795,-0.0031926790934104876,0.12965393,1.104487
+income_tax_increase_2pp,Income tax rate increase (basic and higher rates +2pp),2027,75.97117372262657,-0.002972272357229858,0.07313919,0.623761
+income_tax_increase_2pp,Income tax rate increase (basic and higher rates +2pp),2028,76.15876779886183,-0.002776667045718766,0.06557274,0.5580255
+income_tax_increase_2pp,Income tax rate increase (basic and higher rates +2pp),2029,76.22506300813117,-0.0026466952091862136,0.0844059,0.7240614
 threshold_freeze_extension,Threshold freeze extension,2026,0.0,0.0,0.0,0.0
 threshold_freeze_extension,Threshold freeze extension,2027,0.0,0.0,0.0,0.0
-threshold_freeze_extension,Threshold freeze extension,2028,82.23846792972952,0.000153775478130378,0.029358864,0.22594088
-threshold_freeze_extension,Threshold freeze extension,2029,82.92309780908506,0.00037333973129360286,0.106469154,0.83484715
+threshold_freeze_extension,Threshold freeze extension,2028,84.39805220631546,-8.800453200800581e-05,0.021650314,0.18424465
+threshold_freeze_extension,Threshold freeze extension,2029,84.7783581655556,-0.0001343621091979233,0.086102486,0.73861533
+ni_rate_reduction,National Insurance rate reduction,2026,63.6749762942314,0.0011425150879568885,-0.048859596,-0.41622174
+ni_rate_reduction,National Insurance rate reduction,2027,63.76115532588847,0.0009659755423411167,-0.057746887,-0.49248916
+ni_rate_reduction,National Insurance rate reduction,2028,63.771468632439365,0.0008706209918070269,-0.09096813,-0.77414083
+ni_rate_reduction,National Insurance rate reduction,2029,63.791879772972095,0.0008137624609621342,-0.04848194,-0.41589397
+zero_vat_energy,Zero-rate VAT on domestic energy,2026,99.69544977798805,-0.0016642661024512575,0.0,0.0
+zero_vat_energy,Zero-rate VAT on domestic energy,2027,99.6913292644812,-0.0016674594239946363,0.0,0.0
+zero_vat_energy,Zero-rate VAT on domestic energy,2028,99.68941439062866,-0.001671488278592499,0.0,0.0
+zero_vat_energy,Zero-rate VAT on domestic energy,2029,99.68804550854657,-0.0016637528858722674,0.0,0.0
+salary_sacrifice_cap,Salary sacrifice cap,2026,1.2867876803500857,0.0012435166201720399,7.6293945e-06,6.499276e-05
+salary_sacrifice_cap,Salary sacrifice cap,2027,1.2867674600575596,0.0011723250700040422,7.6293945e-06,6.506661e-05
+salary_sacrifice_cap,Salary sacrifice cap,2028,1.2868024718945106,0.0011002781202652837,6.67572e-06,5.6810528e-05
+salary_sacrifice_cap,Salary sacrifice cap,2029,1.2868287468620336,0.001036776505061887,7.6293945e-06,6.544744e-05

@@ -5,24 +5,54 @@ function OBRComparisonTable({ selectedPolicies }) {
   const [comparisonData, setComparisonData] = useState(null);
 
   useEffect(() => {
-    fetch("/data/obr_comparison.csv")
-      .then((res) => res.text())
-      .then((csvText) => {
-        const lines = csvText.trim().split("\n");
-        const data = [];
-        for (let i = 1; i < lines.length; i++) {
-          const values = lines[i].split(",");
-          data.push({
-            reform_id: values[0],
+    // Fetch both OBR comparison data and PolicyEngine budgetary impact data
+    Promise.all([
+      fetch("/data/obr_comparison.csv").then((res) => res.text()),
+      fetch("/data/budgetary_impact.csv").then((res) => res.text()),
+    ])
+      .then(([obrCsvText, peCsvText]) => {
+        // Parse OBR data
+        const obrLines = obrCsvText.trim().split("\n");
+        const obrData = {};
+        for (let i = 1; i < obrLines.length; i++) {
+          const values = obrLines[i].split(",");
+          const reform_id = values[0];
+          const year = parseInt(values[2]);
+          const obr_value = parseFloat(values[5]); // Post-behavioural OBR values
+          const key = `${reform_id}_${year}`;
+          obrData[key] = {
+            reform_id,
             reform_name: values[1],
-            year: parseInt(values[2]),
-            policyengine_value: parseFloat(values[3]),
-            obr_value: parseFloat(values[4]),
-          });
+            year,
+            obr_value,
+          };
         }
+
+        // Parse PolicyEngine budgetary impact data
+        const peLines = peCsvText.trim().split("\n");
+        const peHeaders = peLines[0].split(",");
+        const reformIdIdx = peHeaders.indexOf("reform_id");
+        const reformNameIdx = peHeaders.indexOf("reform_name");
+        const yearIdx = peHeaders.indexOf("year");
+        const valueIdx = peHeaders.indexOf("value");
+
+        for (let i = 1; i < peLines.length; i++) {
+          const values = peLines[i].split(",");
+          const reform_id = values[reformIdIdx];
+          const year = parseInt(values[yearIdx]);
+          const pe_value = parseFloat(values[valueIdx]);
+          const key = `${reform_id}_${year}`;
+
+          if (obrData[key]) {
+            obrData[key].policyengine_value = pe_value;
+          }
+        }
+
+        // Convert to array
+        const data = Object.values(obrData);
         setComparisonData(data);
       })
-      .catch((err) => console.error("Error loading OBR comparison data:", err));
+      .catch((err) => console.error("Error loading comparison data:", err));
   }, []);
 
   if (!comparisonData || selectedPolicies.length === 0) return null;

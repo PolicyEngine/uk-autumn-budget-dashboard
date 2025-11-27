@@ -3,10 +3,10 @@ two_child_limit,2 child limit repeal,2026,-2.9210139594923503,-2.1,-2.3
 two_child_limit,2 child limit repeal,2027,-3.08977162608174,-2.2,-2.5
 two_child_limit,2 child limit repeal,2028,-3.372133947604379,-2.4,-2.7
 two_child_limit,2 child limit repeal,2029,-3.4924407566705162,-2.7,-3.0
-fuel_duty_freeze,Fuel duty freeze extension,2026,0.0,0.0,0.0
-fuel_duty_freeze,Fuel duty freeze extension,2027,-1.5337913107346257,-0.9,-0.9
-fuel_duty_freeze,Fuel duty freeze extension,2028,-1.3028879383198715,-0.9,-0.9
-fuel_duty_freeze,Fuel duty freeze extension,2029,-1.3725737651035628,-0.9,-0.9
+fuel_duty_freeze,Fuel duty freeze extension,2026,0.0,-2.4,-2.4
+fuel_duty_freeze,Fuel duty freeze extension,2027,0.0,-0.9,-0.9
+fuel_duty_freeze,Fuel duty freeze extension,2028,0.0,-0.9,-0.9
+fuel_duty_freeze,Fuel duty freeze extension,2029,0.0,-0.9,-0.9
 threshold_freeze_extension,Threshold freeze extension,2026,0.0,0.0,0.0
 threshold_freeze_extension,Threshold freeze extension,2027,0.0,0.0,0.0
 threshold_freeze_extension,Threshold freeze extension,2028,3.133092773133418,3.2,3.3
