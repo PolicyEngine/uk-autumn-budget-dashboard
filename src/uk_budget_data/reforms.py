@@ -410,7 +410,8 @@ def create_salary_sacrifice_cap_reform(
     """Create a salary sacrifice cap reform with configurable parameters.
 
     This reform caps salary sacrifice pension contributions, after which
-    national insurance applies to the excess.
+    national insurance applies to the excess. Takes effect from April 2029
+    per the OBR's November 2025 Economic and Fiscal Outlook.
 
     Args:
         cap_amount: Annual cap on NI-free salary sacrifice in GBP.
@@ -421,7 +422,8 @@ def create_salary_sacrifice_cap_reform(
     """
 
     def modifier(sim: Simulation) -> Simulation:
-        for year in range(2026, 2031):
+        # Policy takes effect from April 2029 (fiscal year 2029-30)
+        for year in range(2029, 2031):
             ss_contrib = sim.calculate(
                 "pension_contributions_via_salary_sacrifice", period=year
             )
@@ -451,12 +453,14 @@ def create_salary_sacrifice_cap_reform(
 
     return Reform(
         id="salary_sacrifice_cap",
-        name=f"NICs on salary sacrifice (>{cap_amount:,.0f})",
+        name=f"NICs on salary sacrifice (>£{cap_amount:,.0f})",
         description=(
             f"Caps salary sacrifice pension contributions at £{cap_amount:,.0f} "
-            f"per year. Contributions above the cap become employment income "
-            f"subject to income tax and NICs. Employer response haircut: "
-            f"{employer_response_haircut:.0%}."
+            f"per year from April 2029. Contributions above the cap become "
+            f"employment income subject to income tax and NICs. Assumes "
+            f"employees redirect excess to regular pension contributions "
+            f"(maintaining pension savings) and employers spread increased NI "
+            f"costs across all workers ({employer_response_haircut:.0%} haircut)."
         ),
         simulation_modifier=modifier,
     )
@@ -583,6 +587,7 @@ def _get_autumn_budget_2025_reforms() -> list[Reform]:
             _create_savings_tax_increase(),
             _create_property_tax_increase(),
             ZERO_VAT_ENERGY,
+            create_salary_sacrifice_cap_reform(),
         ]
     return _AUTUMN_BUDGET_2025_REFORMS_CACHE
 

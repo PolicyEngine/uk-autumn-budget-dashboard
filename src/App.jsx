@@ -11,8 +11,6 @@ import OBRComparisonTable from "./components/OBRComparisonTable";
 import "./App.css";
 
 // Autumn Budget 2025 policy provisions
-// Note: NICs on salary-sacrificed pensions is excluded pending data calibration
-// See: https://github.com/PolicyEngine/policyengine-uk-data/issues/215
 const POLICIES = [
   {
     id: "two_child_limit",
@@ -58,6 +56,13 @@ const POLICIES = [
       "Increase property income tax rates by 2 percentage points from April 2027",
     explanation:
       "Increases property income tax rates by 2 percentage points from April 2027. Basic: 20% → 22%, Higher: 40% → 42%, Additional: 45% → 47%. OBR estimates this will raise £0.4-0.6bn annually from 2028-29. Note: Property income may not be fully captured in FRS.",
+  },
+  {
+    id: "salary_sacrifice_cap",
+    name: "NICs on salary sacrifice (>£2k)",
+    description: "Cap NI-free salary sacrifice pension contributions at £2,000",
+    explanation:
+      "Caps National Insurance-free salary sacrifice pension contributions at £2,000 per year from April 2029. Contributions above this threshold become subject to employee and employer NICs. The OBR estimates this will raise £4.7bn in 2029-30 (including timing effects), falling to around £2.6bn in subsequent years, or approximately £4.0bn after behavioural responses. See our <a href=\"https://policyengine.org/uk/research/uk-salary-sacrifice-cap\" target=\"_blank\" rel=\"noopener noreferrer\">research report</a> for details.",
   },
 ];
 

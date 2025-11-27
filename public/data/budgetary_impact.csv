@@ -1,16 +1,16 @@
 reform_id,reform_name,year,value
-autumn_budget_2025_combined,Autumn Budget 2025 (combined),2026,-5.1174734748646715
-autumn_budget_2025_combined,Autumn Budget 2025 (combined),2027,-1.6297639435951232
-autumn_budget_2025_combined,Autumn Budget 2025 (combined),2028,-1.5440706075823314
-autumn_budget_2025_combined,Autumn Budget 2025 (combined),2029,-2.297476057608006
+autumn_budget_2025_combined,Autumn Budget 2025 (combined),2026,-2.9395213733866723
+autumn_budget_2025_combined,Autumn Budget 2025 (combined),2027,-1.8249692343396806
+autumn_budget_2025_combined,Autumn Budget 2025 (combined),2028,-1.9850399134671106
+autumn_budget_2025_combined,Autumn Budget 2025 (combined),2029,-2.0650919447779983
 two_child_limit,2 child limit repeal,2026,-2.9395213733866723
 two_child_limit,2 child limit repeal,2027,-3.0910141712753205
 two_child_limit,2 child limit repeal,2028,-3.2926686380173593
 two_child_limit,2 child limit repeal,2029,-3.4132639107412723
-fuel_duty_freeze,Fuel duty freeze extension,2026,-3.226591973101088
-fuel_duty_freeze,Fuel duty freeze extension,2027,-0.8259898484552092
-fuel_duty_freeze,Fuel duty freeze extension,2028,-0.846212252146192
-fuel_duty_freeze,Fuel duty freeze extension,2029,-0.8672754030582135
+fuel_duty_freeze,Fuel duty freeze extension,2026,0.0
+fuel_duty_freeze,Fuel duty freeze extension,2027,1.3734878453138726
+fuel_duty_freeze,Fuel duty freeze extension,2028,2.737253835586452
+fuel_duty_freeze,Fuel duty freeze extension,2029,4.227611034858679
 threshold_freeze_extension,Threshold freeze extension,2026,0.0
 threshold_freeze_extension,Threshold freeze extension,2027,0.0
 threshold_freeze_extension,Threshold freeze extension,2028,0.07725403857030852
@@ -31,3 +31,7 @@ zero_vat_energy,Zero-rate VAT on energy,2026,-3.401445861672478
 zero_vat_energy,Zero-rate VAT on energy,2027,-3.482993419866819
 zero_vat_energy,Zero-rate VAT on energy,2028,-3.568262755870028
 zero_vat_energy,Zero-rate VAT on energy,2029,-3.6570767902365118
+salary_sacrifice_cap,"NICs on salary sacrifice (>£2,000)",2026,0.0
+salary_sacrifice_cap,"NICs on salary sacrifice (>£2,000)",2027,0.0
+salary_sacrifice_cap,"NICs on salary sacrifice (>£2,000)",2028,0.0
+salary_sacrifice_cap,"NICs on salary sacrifice (>£2,000)",2029,7.571529537315628
