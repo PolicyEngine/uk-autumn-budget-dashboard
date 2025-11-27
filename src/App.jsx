@@ -69,7 +69,7 @@ const POLICIES = [
     name: "NICs on salary sacrifice (>£2k)",
     description: "Cap NI-free salary sacrifice pension contributions at £2,000",
     explanation:
-      "Caps National Insurance-free salary sacrifice pension contributions at £2,000 per year from April 2029. Contributions above this threshold become subject to employee and employer NICs. The OBR estimates this will raise £4.7bn in 2029-30 (including timing effects), falling to around £2.6bn in subsequent years, or approximately £4.0bn after behavioural responses. See our <a href=\"https://policyengine.org/uk/research/uk-salary-sacrifice-cap\" target=\"_blank\" rel=\"noopener noreferrer\">research report</a> for details.",
+      "Caps National Insurance-free salary sacrifice pension contributions at £2,000 per year from April 2029. Contributions above this threshold become subject to employee and employer NICs. The OBR estimates this will raise £4.9bn (static) or £4.7bn (post-behavioural) in 2029-30. See our <a href=\"https://policyengine.org/uk/research/uk-salary-sacrifice-cap\" target=\"_blank\" rel=\"noopener noreferrer\">research report</a> for details.",
   },
 ];
 
