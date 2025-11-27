@@ -1,37 +1,37 @@
-reform_id,reform_name,year,policyengine_value,obr_value
-autumn_budget_2025_combined,Autumn Budget 2025 (combined),2026,-2.9395213733866723,
-autumn_budget_2025_combined,Autumn Budget 2025 (combined),2027,-1.8249692343396806,
-autumn_budget_2025_combined,Autumn Budget 2025 (combined),2028,-1.9850399134671106,
-autumn_budget_2025_combined,Autumn Budget 2025 (combined),2029,-2.0650919447779983,
-two_child_limit,2 child limit repeal,2026,-2.9395213733866723,-2.3
-two_child_limit,2 child limit repeal,2027,-3.0910141712753205,-2.5
-two_child_limit,2 child limit repeal,2028,-3.2926686380173593,-2.7
-two_child_limit,2 child limit repeal,2029,-3.4132639107412723,-3.0
-fuel_duty_freeze,Fuel duty freeze extension,2026,0.0,0.0
-fuel_duty_freeze,Fuel duty freeze extension,2027,1.3734878453138726,-0.9
-fuel_duty_freeze,Fuel duty freeze extension,2028,2.737253835586452,-0.9
-fuel_duty_freeze,Fuel duty freeze extension,2029,4.227611034858679,-0.9
-threshold_freeze_extension,Threshold freeze extension,2026,0.0,0.0
-threshold_freeze_extension,Threshold freeze extension,2027,0.0,0.0
-threshold_freeze_extension,Threshold freeze extension,2028,0.07725403857030852,3.3
-threshold_freeze_extension,Threshold freeze extension,2029,0.2111349314487982,7.6
-dividend_tax_increase_2pp,Dividend tax increase (+2pp),2026,0.0,0.3
-dividend_tax_increase_2pp,Dividend tax increase (+2pp),2027,1.2660449369356406,1.0
-dividend_tax_increase_2pp,Dividend tax increase (+2pp),2028,1.3076287245502485,1.0
-dividend_tax_increase_2pp,Dividend tax increase (+2pp),2029,1.3481719659632747,1.1
-savings_tax_increase_2pp,Savings income tax increase (+2pp),2026,0.0,0.0
-savings_tax_increase_2pp,Savings income tax increase (+2pp),2027,0.0,0.0
-savings_tax_increase_2pp,Savings income tax increase (+2pp),2028,0.6490838734778609,0.5
-savings_tax_increase_2pp,Savings income tax increase (+2pp),2029,0.6762159359284746,0.5
-property_tax_increase_2pp,Property income tax increase (+2pp),2026,0.0,0.0
-property_tax_increase_2pp,Property income tax increase (+2pp),2027,0.0,0.0
-property_tax_increase_2pp,Property income tax increase (+2pp),2028,0.0,0.6
-property_tax_increase_2pp,Property income tax increase (+2pp),2029,0.0,0.4
-zero_vat_energy,Zero-rate VAT on energy,2026,-3.401445861672478,
-zero_vat_energy,Zero-rate VAT on energy,2027,-3.482993419866819,
-zero_vat_energy,Zero-rate VAT on energy,2028,-3.568262755870028,
-zero_vat_energy,Zero-rate VAT on energy,2029,-3.6570767902365118,
-salary_sacrifice_cap,"NICs on salary sacrifice (>£2,000)",2026,0.0,0.0
-salary_sacrifice_cap,"NICs on salary sacrifice (>£2,000)",2027,0.0,0.0
-salary_sacrifice_cap,"NICs on salary sacrifice (>£2,000)",2028,0.0,0.0
-salary_sacrifice_cap,"NICs on salary sacrifice (>£2,000)",2029,7.571529537315628,4.0
+reform_id,reform_name,year,policyengine_value,obr_static_value,obr_post_behavioural_value
+autumn_budget_2025_combined,Autumn Budget 2025 (combined),2026,-2.9395213733866723,,
+autumn_budget_2025_combined,Autumn Budget 2025 (combined),2027,-1.8249692343396806,,
+autumn_budget_2025_combined,Autumn Budget 2025 (combined),2028,-1.9850399134671106,,
+autumn_budget_2025_combined,Autumn Budget 2025 (combined),2029,-2.0650919447779983,,
+two_child_limit,2 child limit repeal,2026,-2.9395213733866723,-2.1,-2.3
+two_child_limit,2 child limit repeal,2027,-3.0910141712753205,-2.2,-2.5
+two_child_limit,2 child limit repeal,2028,-3.2926686380173593,-2.4,-2.7
+two_child_limit,2 child limit repeal,2029,-3.4132639107412723,-2.7,-3.0
+fuel_duty_freeze,Fuel duty freeze extension,2026,0.0,0.0,0.0
+fuel_duty_freeze,Fuel duty freeze extension,2027,1.3734878453138726,-0.9,-0.9
+fuel_duty_freeze,Fuel duty freeze extension,2028,2.737253835586452,-0.9,-0.9
+fuel_duty_freeze,Fuel duty freeze extension,2029,4.227611034858679,-0.9,-0.9
+threshold_freeze_extension,Threshold freeze extension,2026,0.0,0.0,0.0
+threshold_freeze_extension,Threshold freeze extension,2027,0.0,0.0,0.0
+threshold_freeze_extension,Threshold freeze extension,2028,0.07725403857030852,3.2,3.3
+threshold_freeze_extension,Threshold freeze extension,2029,0.2111349314487982,7.4,7.6
+dividend_tax_increase_2pp,Dividend tax increase (+2pp),2026,0.0,0.0,0.3
+dividend_tax_increase_2pp,Dividend tax increase (+2pp),2027,1.2660449369356406,1.5,1.0
+dividend_tax_increase_2pp,Dividend tax increase (+2pp),2028,1.3076287245502485,1.2,1.0
+dividend_tax_increase_2pp,Dividend tax increase (+2pp),2029,1.3481719659632747,1.3,1.1
+savings_tax_increase_2pp,Savings income tax increase (+2pp),2026,0.0,0.0,0.0
+savings_tax_increase_2pp,Savings income tax increase (+2pp),2027,0.0,0.0,0.0
+savings_tax_increase_2pp,Savings income tax increase (+2pp),2028,0.6490838734778609,0.6,0.5
+savings_tax_increase_2pp,Savings income tax increase (+2pp),2029,0.6762159359284746,0.6,0.5
+property_tax_increase_2pp,Property income tax increase (+2pp),2026,0.0,0.0,0.0
+property_tax_increase_2pp,Property income tax increase (+2pp),2027,0.0,0.0,0.0
+property_tax_increase_2pp,Property income tax increase (+2pp),2028,0.0,0.6,0.6
+property_tax_increase_2pp,Property income tax increase (+2pp),2029,0.0,0.4,0.4
+zero_vat_energy,Zero-rate VAT on energy,2026,-3.401445861672478,,
+zero_vat_energy,Zero-rate VAT on energy,2027,-3.482993419866819,,
+zero_vat_energy,Zero-rate VAT on energy,2028,-3.568262755870028,,
+zero_vat_energy,Zero-rate VAT on energy,2029,-3.6570767902365118,,
+salary_sacrifice_cap,"NICs on salary sacrifice (>£2,000)",2026,0.0,0.0,0.0
+salary_sacrifice_cap,"NICs on salary sacrifice (>£2,000)",2027,0.0,0.0,0.0
+salary_sacrifice_cap,"NICs on salary sacrifice (>£2,000)",2028,0.0,0.0,0.0
+salary_sacrifice_cap,"NICs on salary sacrifice (>£2,000)",2029,7.571529537315628,4.0,4.0

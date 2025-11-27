@@ -3,6 +3,7 @@ import "./OBRComparisonTable.css";
 
 function OBRComparisonTable({ selectedPolicies }) {
   const [comparisonData, setComparisonData] = useState(null);
+  const [showBehavioural, setShowBehavioural] = useState(true);
 
   useEffect(() => {
     // Fetch both OBR comparison data and PolicyEngine budgetary impact data
@@ -13,18 +14,22 @@ function OBRComparisonTable({ selectedPolicies }) {
       .then(([obrCsvText, peCsvText]) => {
         // Parse OBR data
         const obrLines = obrCsvText.trim().split("\n");
+        const obrHeaders = obrLines[0].split(",");
+        const staticIdx = obrHeaders.indexOf("obr_static_value");
+        const behaviouralIdx = obrHeaders.indexOf("obr_post_behavioural_value");
+
         const obrData = {};
         for (let i = 1; i < obrLines.length; i++) {
           const values = obrLines[i].split(",");
           const reform_id = values[0];
           const year = parseInt(values[2]);
-          const obr_value = parseFloat(values[5]); // Post-behavioural OBR values
           const key = `${reform_id}_${year}`;
           obrData[key] = {
             reform_id,
             reform_name: values[1],
             year,
-            obr_value,
+            obr_static: staticIdx >= 0 ? parseFloat(values[staticIdx]) : null,
+            obr_behavioural: behaviouralIdx >= 0 ? parseFloat(values[behaviouralIdx]) : null,
           };
         }
 
@@ -32,7 +37,6 @@ function OBRComparisonTable({ selectedPolicies }) {
         const peLines = peCsvText.trim().split("\n");
         const peHeaders = peLines[0].split(",");
         const reformIdIdx = peHeaders.indexOf("reform_id");
-        const reformNameIdx = peHeaders.indexOf("reform_name");
         const yearIdx = peHeaders.indexOf("year");
         const valueIdx = peHeaders.indexOf("value");
 
@@ -64,6 +68,11 @@ function OBRComparisonTable({ selectedPolicies }) {
 
   if (filteredData.length === 0) return null;
 
+  // Check if we have both static and behavioural data
+  const hasBothTypes = filteredData.some(
+    (row) => row.obr_static !== null && row.obr_behavioural !== null
+  );
+
   // Group by policy
   const policiesMap = {};
   filteredData.forEach((row) => {
@@ -75,7 +84,8 @@ function OBRComparisonTable({ selectedPolicies }) {
     }
     policiesMap[row.reform_id].years[row.year] = {
       policyengine: row.policyengine_value,
-      obr: row.obr_value,
+      obr_static: row.obr_static,
+      obr_behavioural: row.obr_behavioural,
     };
   });
 
@@ -96,6 +106,17 @@ function OBRComparisonTable({ selectedPolicies }) {
     return "diff-large";
   };
 
+  const getObrValue = (yearData) => {
+    if (showBehavioural && yearData.obr_behavioural !== null) {
+      return yearData.obr_behavioural;
+    }
+    if (!showBehavioural && yearData.obr_static !== null) {
+      return yearData.obr_static;
+    }
+    // Fallback to whichever is available
+    return yearData.obr_behavioural ?? yearData.obr_static;
+  };
+
   return (
     <div className="obr-comparison-section">
       <h2>PolicyEngine vs OBR comparison</h2>
@@ -104,9 +125,28 @@ function OBRComparisonTable({ selectedPolicies }) {
         OBR's official costings from the November 2025 Economic and Fiscal
         Outlook. Values show annual budgetary impact in billions of pounds.
         Positive values indicate revenue for the Government; negative values
-        indicate costs. Differences may arise from methodological approaches,
-        behavioural assumptions, and data sources.
+        indicate costs.
       </p>
+
+      {hasBothTypes && (
+        <div className="obr-toggle-container">
+          <span className="toggle-label">Compare PolicyEngine (static) with OBR:</span>
+          <div className="toggle-buttons">
+            <button
+              className={`toggle-btn ${!showBehavioural ? "active" : ""}`}
+              onClick={() => setShowBehavioural(false)}
+            >
+              Static
+            </button>
+            <button
+              className={`toggle-btn ${showBehavioural ? "active" : ""}`}
+              onClick={() => setShowBehavioural(true)}
+            >
+              Post-behavioural
+            </button>
+          </div>
+        </div>
+      )}
 
       <div className="comparison-table-wrapper">
         <table className="comparison-table">
@@ -135,7 +175,7 @@ function OBRComparisonTable({ selectedPolicies }) {
                 {years.map((year) => {
                   const yearData = policy.years[year] || {};
                   const pe = yearData.policyengine;
-                  const obr = yearData.obr;
+                  const obr = getObrValue(yearData);
                   return (
                     <React.Fragment key={year}>
                       <td
@@ -173,11 +213,13 @@ function OBRComparisonTable({ selectedPolicies }) {
       </div>
 
       <p className="comparison-note">
-        <strong>Note:</strong> OBR costings include behavioural responses and
-        indirect effects that may not be fully captured in PolicyEngine's
-        static microsimulation. The OBR's salary sacrifice cap costing shows
-        £4.7bn in 2029-30 due to a one-off timing effect from relief-at-source
-        pension scheme switching. See{" "}
+        <strong>Note:</strong> PolicyEngine produces static microsimulation
+        estimates that do not include behavioural responses. The OBR provides
+        both static and post-behavioural costings.{" "}
+        {showBehavioural
+          ? "Post-behavioural costings include effects like tax avoidance, reduced consumption, and price pass-through."
+          : "Static costings assume no change in taxpayer behaviour."}
+        {" "}See{" "}
         <a
           href="https://obr.uk/efo/economic-and-fiscal-outlook-november-2025/"
           target="_blank"
