@@ -19,9 +19,7 @@ from policyengine_uk import Microsimulation, Simulation
 from policyengine_uk.model_api import (
     YEAR,
     Household,
-    Person,
     Variable,
-    max_,
     select,
 )
 
