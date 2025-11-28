@@ -6,6 +6,10 @@ from pathlib import Path
 from rich.console import Console
 from rich.table import Table
 
+from uk_budget_data.lifetime_impact import (
+    GRADUATE_STARTING_INCOME,
+    calculate_lifetime_impact,
+)
 from uk_budget_data.models import DataConfig, Reform
 from uk_budget_data.pipeline import generate_all_data
 from uk_budget_data.reforms import (
@@ -30,42 +34,51 @@ def parse_args(args: list[str] = None) -> argparse.Namespace:
         description="Generate data for UK Autumn Budget dashboard.",
     )
 
-    parser.add_argument(
+    subparsers = parser.add_subparsers(
+        dest="command", help="Available commands"
+    )
+
+    # Dashboard data generation command
+    generate_parser = subparsers.add_parser(
+        "generate", help="Generate dashboard data"
+    )
+
+    generate_parser.add_argument(
         "--output-dir",
         type=Path,
         default=Path("./public/data"),
         help="Output directory for CSV files (default: ./public/data)",
     )
 
-    parser.add_argument(
+    generate_parser.add_argument(
         "--data-dir",
         type=Path,
         default=Path("./data"),
         help="Directory containing input data files (default: ./data)",
     )
 
-    parser.add_argument(
+    generate_parser.add_argument(
         "--data-inputs-dir",
         type=Path,
         default=Path("./data_inputs"),
         help="Directory containing reference data (default: ./data_inputs)",
     )
 
-    parser.add_argument(
+    generate_parser.add_argument(
         "--dataset",
         type=Path,
         default=None,
         help="Path to enhanced FRS dataset (optional)",
     )
 
-    parser.add_argument(
+    generate_parser.add_argument(
         "--reforms",
         nargs="+",
         default=None,
         help="Reform IDs to process (default: all Autumn Budget reforms)",
     )
 
-    parser.add_argument(
+    generate_parser.add_argument(
         "--years",
         nargs="+",
         type=int,
@@ -73,16 +86,108 @@ def parse_args(args: list[str] = None) -> argparse.Namespace:
         help="Years to calculate (default: 2026 2027 2028 2029)",
     )
 
-    parser.add_argument(
+    generate_parser.add_argument(
         "--list-reforms",
         action="store_true",
         help="List all available reform IDs and exit",
     )
 
-    parser.add_argument(
+    generate_parser.add_argument(
         "--skip-input-check",
         action="store_true",
         help="Skip checking for input files",
+    )
+
+    # Lifetime impact command
+    lifetime_parser = subparsers.add_parser(
+        "lifetime",
+        help="Calculate lifetime impact of budget policies on a graduate",
+    )
+
+    lifetime_parser.add_argument(
+        "--income",
+        type=str,
+        choices=["p25", "p50", "p75", "p90"],
+        default="p50",
+        help=f"Graduate income percentile: p25=£{GRADUATE_STARTING_INCOME['p25']:,}, "
+        f"p50=£{GRADUATE_STARTING_INCOME['p50']:,}, p75=£{GRADUATE_STARTING_INCOME['p75']:,}, "
+        f"p90=£{GRADUATE_STARTING_INCOME['p90']:,} (default: p50)",
+    )
+
+    lifetime_parser.add_argument(
+        "--marriage-age",
+        type=int,
+        default=31,
+        help="Age of marriage (default: 31, use 0 for never married)",
+    )
+
+    lifetime_parser.add_argument(
+        "--children",
+        type=int,
+        default=2,
+        help="Number of children (default: 2, born every 2 years after marriage)",
+    )
+
+    lifetime_parser.add_argument(
+        "--student-loan",
+        type=float,
+        default=45000,
+        help="Student loan balance at graduation (default: £45,000)",
+    )
+
+    lifetime_parser.add_argument(
+        "--salary-sacrifice",
+        type=float,
+        default=0,
+        help="Annual salary sacrifice pension contributions (default: £0)",
+    )
+
+    lifetime_parser.add_argument(
+        "--rail-spending",
+        type=float,
+        default=1500,
+        help="Annual rail spending (default: £1,500)",
+    )
+
+    lifetime_parser.add_argument(
+        "--fuel-spending",
+        type=float,
+        default=1200,
+        help="Annual fuel spending (default: £1,200)",
+    )
+
+    lifetime_parser.add_argument(
+        "--dividend-income",
+        type=float,
+        default=0,
+        help="Annual dividend income (default: £0)",
+    )
+
+    lifetime_parser.add_argument(
+        "--savings-interest",
+        type=float,
+        default=500,
+        help="Annual savings interest (default: £500)",
+    )
+
+    lifetime_parser.add_argument(
+        "--property-income",
+        type=float,
+        default=0,
+        help="Annual property income (default: £0)",
+    )
+
+    lifetime_parser.add_argument(
+        "--output",
+        type=Path,
+        default=None,
+        help="Output CSV file (default: print summary only)",
+    )
+
+    lifetime_parser.add_argument(
+        "--quiet",
+        action="store_true",
+        help="Suppress progress output",
     )
 
     return parser.parse_args(args)
@@ -129,17 +234,8 @@ def print_reforms_list() -> None:
     )
 
 
-def main(args: list[str] = None) -> int:
-    """Main entry point for CLI.
-
-    Args:
-        args: Command-line arguments (uses sys.argv if None).
-
-    Returns:
-        Exit code (0 for success).
-    """
-    parsed = parse_args(args)
-
+def run_generate(parsed: argparse.Namespace) -> int:
+    """Run the generate command."""
     # Handle --list-reforms
     if parsed.list_reforms:
         print_reforms_list()
@@ -185,6 +281,62 @@ def main(args: list[str] = None) -> int:
     except Exception as e:
         console.print(f"\n[red]Unexpected error: {e}[/red]")
         raise
+
+
+def run_lifetime(parsed: argparse.Namespace) -> int:
+    """Run the lifetime impact command."""
+    marriage_age = parsed.marriage_age if parsed.marriage_age > 0 else None
+
+    df = calculate_lifetime_impact(
+        income_percentile=parsed.income,
+        marriage_age=marriage_age,
+        num_children=parsed.children,
+        student_loan_balance=parsed.student_loan,
+        salary_sacrifice=parsed.salary_sacrifice,
+        rail_spending=parsed.rail_spending,
+        fuel_spending=parsed.fuel_spending,
+        dividend_income=parsed.dividend_income,
+        savings_interest=parsed.savings_interest,
+        property_income=parsed.property_income,
+        verbose=not parsed.quiet,
+    )
+
+    if parsed.output:
+        df.to_csv(parsed.output, index=False)
+        console.print(
+            f"\n[green]Saved {len(df)} years to {parsed.output}[/green]"
+        )
+
+    return 0
+
+
+def main(args: list[str] = None) -> int:
+    """Main entry point for CLI.
+
+    Args:
+        args: Command-line arguments (uses sys.argv if None).
+
+    Returns:
+        Exit code (0 for success).
+    """
+    parsed = parse_args(args)
+
+    if parsed.command == "generate":
+        return run_generate(parsed)
+    elif parsed.command == "lifetime":
+        return run_lifetime(parsed)
+    else:
+        # Default to showing help
+        console.print("[bold]UK Budget Data CLI[/bold]\n")
+        console.print("Commands:")
+        console.print(
+            "  generate  - Generate dashboard data from microsimulation"
+        )
+        console.print("  lifetime  - Calculate lifetime impact on a graduate")
+        console.print(
+            "\nRun 'uk-budget-data <command> --help' for command options."
+        )
+        return 0
 
 
 if __name__ == "__main__":
