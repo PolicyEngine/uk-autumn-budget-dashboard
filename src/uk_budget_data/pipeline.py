@@ -39,6 +39,48 @@ def save_csv(df: pd.DataFrame, csv_path: Path) -> None:
     df.to_csv(csv_path, index=False)
 
 
+def merge_with_existing(
+    new_df: pd.DataFrame,
+    csv_path: Path,
+    key_columns: list[str],
+) -> pd.DataFrame:
+    """Merge new data with existing CSV, updating matching rows.
+
+    Args:
+        new_df: New data to merge.
+        csv_path: Path to existing CSV file.
+        key_columns: Columns that uniquely identify rows (e.g., reform_id, year).
+
+    Returns:
+        Merged DataFrame with existing data preserved and new data updated.
+    """
+    if not csv_path.exists() or len(new_df) == 0:
+        return new_df
+
+    existing_df = pd.read_csv(csv_path)
+
+    if len(existing_df) == 0:
+        return new_df
+
+    # Get the reform_ids being updated
+    new_reform_ids = set(new_df["reform_id"].unique())
+
+    # Keep rows from existing that are NOT being updated
+    existing_to_keep = existing_df[
+        ~existing_df["reform_id"].isin(new_reform_ids)
+    ]
+
+    # Combine: existing (excluding updated reforms) + new data
+    merged = pd.concat([existing_to_keep, new_df], ignore_index=True)
+
+    # Sort for consistent output (by key columns if they exist)
+    sort_cols = [c for c in key_columns if c in merged.columns]
+    if sort_cols:
+        merged = merged.sort_values(sort_cols).reset_index(drop=True)
+
+    return merged
+
+
 def check_input_data(config: DataConfig) -> None:
     """Check that required input files exist.
 
@@ -308,24 +350,54 @@ class DataPipeline:
         return aggregated
 
     def _save_all(self, data: dict[str, pd.DataFrame]) -> None:
-        """Save all DataFrames to CSV files."""
+        """Save all DataFrames to CSV files, merging with existing data."""
         output_dir = self.config.output_dir
 
+        # Define file mappings with their key columns for merging
         file_mapping = {
-            "budgetary_impact": "budgetary_impact.csv",
-            "distributional_impact": "distributional_impact.csv",
-            "winners_losers": "winners_losers.csv",
-            "metrics": "metrics.csv",
-            "income_curve": "income_curve.csv",
-            "household_scatter": "household_scatter_full.csv",
-            "constituency": "constituency.csv",
-            "demographic_constituency": "demographic_constituency.csv",
-            "obr_comparison": "obr_comparison.csv",
+            "budgetary_impact": (
+                "budgetary_impact.csv",
+                ["reform_id", "year"],
+            ),
+            "distributional_impact": (
+                "distributional_impact.csv",
+                ["reform_id", "year", "decile"],
+            ),
+            "winners_losers": (
+                "winners_losers.csv",
+                ["reform_id", "year"],
+            ),
+            "metrics": (
+                "metrics.csv",
+                ["reform_id", "year"],
+            ),
+            "income_curve": (
+                "income_curve.csv",
+                ["reform_id", "year", "employment_income"],
+            ),
+            "household_scatter": (
+                "household_scatter_full.csv",
+                ["reform_id", "year"],
+            ),
+            "constituency": (
+                "constituency.csv",
+                ["reform_id", "year", "constituency_code"],
+            ),
+            "demographic_constituency": (
+                "demographic_constituency.csv",
+                ["reform_id", "year", "constituency_code"],
+            ),
+            "obr_comparison": (
+                "obr_comparison.csv",
+                ["reform_id", "year"],
+            ),
         }
 
-        for key, filename in file_mapping.items():
+        for key, (filename, key_cols) in file_mapping.items():
             if key in data and len(data[key]) > 0:
-                save_csv(data[key], output_dir / filename)
+                csv_path = output_dir / filename
+                merged_df = merge_with_existing(data[key], csv_path, key_cols)
+                save_csv(merged_df, csv_path)
 
         # Save metadata with version info
         metadata = {
