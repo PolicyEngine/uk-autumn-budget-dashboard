@@ -1,0 +1,119 @@
+{
+  "data": [
+    {
+      "x": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10"
+      ],
+      "y": [
+        -0.004346271,
+        -5.064139,
+        -0.0061668544,
+        -0.0077901063,
+        -0.014430366,
+        -0.033690035,
+        -0.07185503,
+        -0.16696247,
+        -0.24409147,
+        -0.6690138,
+        -0.6304215
+      ],
+      "type": "bar",
+      "marker": {
+        "color": [
+          "#EF4444",
+          "#EF4444",
+          "#EF4444",
+          "#EF4444",
+          "#EF4444",
+          "#EF4444",
+          "#EF4444",
+          "#EF4444",
+          "#EF4444",
+          "#EF4444",
+          "#EF4444"
+        ],
+        "line": {
+          "width": 0
+        }
+      },
+      "hovertemplate": "Decile %{x}<br>Avg change: \u00a3%{y:,.0f}<extra></extra>",
+      "text": [
+        "\u00a3-0",
+        "\u00a3-5",
+        "\u00a3-0",
+        "\u00a3-0",
+        "\u00a3-0",
+        "\u00a3-0",
+        "\u00a3-0",
+        "\u00a3-0",
+        "\u00a3-0",
+        "\u00a3-1",
+        "\u00a3-1"
+      ],
+      "textposition": "outside",
+      "textfont": {
+        "family": "Inter, sans-serif",
+        "size": 12,
+        "color": "#000000"
+      }
+    }
+  ],
+  "layout": {
+    "xaxis": {
+      "title": {
+        "text": "Income decile",
+        "font": {
+          "family": "Inter, sans-serif",
+          "size": 14
+        }
+      },
+      "tickfont": {
+        "family": "Inter, sans-serif"
+      },
+      "showgrid": true,
+      "gridcolor": "#e0e0e0",
+      "gridwidth": 1
+    },
+    "yaxis": {
+      "title": {
+        "text": "Average change in household income (\u00a3/year)",
+        "font": {
+          "family": "Inter, sans-serif",
+          "size": 14
+        }
+      },
+      "tickfont": {
+        "family": "Inter, sans-serif"
+      },
+      "tickprefix": "\u00a3",
+      "showgrid": true,
+      "gridcolor": "#e0e0e0",
+      "gridwidth": 1,
+      "zeroline": true,
+      "zerolinecolor": "#344054",
+      "zerolinewidth": 2
+    },
+    "height": 500,
+    "margin": {
+      "l": 100,
+      "r": 40,
+      "b": 80,
+      "t": 40,
+      "pad": 4
+    },
+    "plot_bgcolor": "#FFFFFF",
+    "paper_bgcolor": "#FFFFFF",
+    "font": {
+      "family": "Inter, sans-serif"
+    }
+  }
+}

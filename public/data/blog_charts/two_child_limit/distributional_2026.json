@@ -1,0 +1,108 @@
+{
+  "data": [
+    {
+      "x": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10"
+      ],
+      "y": [
+        0.008734309,
+        0.019545826,
+        0.0047683945,
+        0.0023412369,
+        0.0024714297,
+        0.00039848503,
+        6.687426500000001e-05,
+        2.109945e-07,
+        0.0,
+        0.0
+      ],
+      "type": "bar",
+      "marker": {
+        "color": "#319795",
+        "line": {
+          "width": 0
+        }
+      },
+      "hovertemplate": "Decile %{x}<br>Change: %{y:.2%}<extra></extra>",
+      "text": [
+        "+0.87%",
+        "+1.95%",
+        "+0.48%",
+        "+0.23%",
+        "+0.25%",
+        "+0.04%",
+        "+0.01%",
+        "+0.00%",
+        "+0.00%",
+        "+0.00%"
+      ],
+      "textposition": "outside",
+      "textfont": {
+        "family": "Inter, sans-serif",
+        "size": 14,
+        "color": "#000000"
+      }
+    }
+  ],
+  "layout": {
+    "xaxis": {
+      "title": {
+        "text": "Income decile",
+        "font": {
+          "family": "Inter, sans-serif",
+          "size": 14
+        }
+      },
+      "tickfont": {
+        "family": "Inter, sans-serif"
+      },
+      "showgrid": true,
+      "gridcolor": "#e0e0e0",
+      "gridwidth": 1,
+      "tickmode": "linear",
+      "tick0": 1,
+      "dtick": 1
+    },
+    "yaxis": {
+      "title": {
+        "text": "Relative change in net income",
+        "font": {
+          "family": "Inter, sans-serif",
+          "size": 14
+        }
+      },
+      "tickfont": {
+        "family": "Inter, sans-serif"
+      },
+      "tickformat": ".2%",
+      "showgrid": true,
+      "gridcolor": "#e0e0e0",
+      "gridwidth": 1,
+      "zeroline": true,
+      "zerolinecolor": "#333",
+      "zerolinewidth": 2
+    },
+    "height": 500,
+    "margin": {
+      "l": 100,
+      "r": 40,
+      "b": 80,
+      "t": 40,
+      "pad": 4
+    },
+    "plot_bgcolor": "white",
+    "paper_bgcolor": "white",
+    "font": {
+      "family": "Inter, sans-serif"
+    }
+  }
+}

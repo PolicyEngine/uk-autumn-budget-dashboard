@@ -256,19 +256,73 @@ def create_revenue_table_data(
     return result
 
 
+def generate_charts_for_reform(
+    reform_id: str,
+    year: int,
+    output_dir: Path,
+    distributional_df: pd.DataFrame,
+    winners_losers_df: pd.DataFrame,
+    budgetary_df: pd.DataFrame,
+    obr_df: pd.DataFrame = None,
+) -> None:
+    """Generate all charts for a single reform/year combination."""
+    reform_output_dir = output_dir / reform_id
+    reform_output_dir.mkdir(parents=True, exist_ok=True)
+
+    print(f"Generating charts for {reform_id} (year {year})...")
+
+    try:
+        dist_chart = create_distributional_chart(
+            distributional_df, reform_id, year
+        )
+        with open(reform_output_dir / f"distributional_{year}.json", "w") as f:
+            json.dump(dist_chart, f, indent=2)
+        print(f"  + Distributional chart: distributional_{year}.json")
+    except ValueError as e:
+        print(f"  - Distributional chart: {e}")
+
+    try:
+        avg_chart = create_avg_change_chart(
+            winners_losers_df, reform_id, year
+        )
+        with open(reform_output_dir / f"avg_change_{year}.json", "w") as f:
+            json.dump(avg_chart, f, indent=2)
+        print(f"  + Avg change chart: avg_change_{year}.json")
+    except ValueError as e:
+        print(f"  - Avg change chart: {e}")
+
+    # Only generate revenue once per reform (not per year)
+    revenue_path = reform_output_dir / "revenue.json"
+    if not revenue_path.exists():
+        try:
+            revenue_data = create_revenue_table_data(
+                budgetary_df, reform_id, obr_df
+            )
+            with open(revenue_path, "w") as f:
+                json.dump(revenue_data, f, indent=2)
+            print(f"  + Revenue data: revenue.json")
+        except ValueError as e:
+            print(f"  - Revenue data: {e}")
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="Generate Plotly JSON charts for blog posts"
     )
     parser.add_argument(
         "reform_id",
-        help="Reform ID to generate charts for"
+        nargs="?",
+        help="Reform ID to generate charts for (omit for all reforms)"
+    )
+    parser.add_argument(
+        "--all",
+        action="store_true",
+        help="Generate charts for all reforms in the data"
     )
     parser.add_argument(
         "--year",
         type=int,
-        default=2027,
-        help="Year for distributional charts (default: 2027)"
+        help="Year for distributional charts (default: all available years)"
     )
     parser.add_argument(
         "--output-dir",
@@ -278,6 +332,9 @@ def main():
     )
 
     args = parser.parse_args()
+
+    if not args.reform_id and not args.all:
+        parser.error("Either provide a reform_id or use --all")
 
     # Read data
     data_dir = Path("public/data")
@@ -289,45 +346,39 @@ def main():
     obr_path = Path("data_inputs/obr_estimates.csv")
     obr_df = pd.read_csv(obr_path) if obr_path.exists() else None
 
-    # Create output directory
-    output_dir = args.output_dir / args.reform_id
-    output_dir.mkdir(parents=True, exist_ok=True)
+    # Determine which reforms to process
+    if args.all:
+        reform_ids = budgetary_df["reform_id"].unique().tolist()
+        # Exclude combined policies
+        reform_ids = [r for r in reform_ids if "combined" not in r]
+    else:
+        reform_ids = [args.reform_id]
+
+    # Determine which years to process
+    if args.year:
+        years = [args.year]
+    else:
+        # Get all available years from distributional data
+        years = sorted(distributional_df["year"].unique().tolist())
 
     # Generate charts
-    print(f"Generating charts for {args.reform_id} (year {args.year})...")
+    args.output_dir.mkdir(parents=True, exist_ok=True)
 
-    try:
-        dist_chart = create_distributional_chart(
-            distributional_df, args.reform_id, args.year
-        )
-        with open(output_dir / f"distributional_{args.year}.json", "w") as f:
-            json.dump(dist_chart, f, indent=2)
-        print(f"  ✓ Distributional chart: {output_dir}/distributional_{args.year}.json")
-    except ValueError as e:
-        print(f"  ✗ Distributional chart: {e}")
+    for reform_id in reform_ids:
+        for year in years:
+            generate_charts_for_reform(
+                reform_id=reform_id,
+                year=year,
+                output_dir=args.output_dir,
+                distributional_df=distributional_df,
+                winners_losers_df=winners_losers_df,
+                budgetary_df=budgetary_df,
+                obr_df=obr_df,
+            )
+        print()
 
-    try:
-        avg_chart = create_avg_change_chart(
-            winners_losers_df, args.reform_id, args.year
-        )
-        with open(output_dir / f"avg_change_{args.year}.json", "w") as f:
-            json.dump(avg_chart, f, indent=2)
-        print(f"  ✓ Avg change chart: {output_dir}/avg_change_{args.year}.json")
-    except ValueError as e:
-        print(f"  ✗ Avg change chart: {e}")
-
-    try:
-        revenue_data = create_revenue_table_data(
-            budgetary_df, args.reform_id, obr_df
-        )
-        with open(output_dir / "revenue.json", "w") as f:
-            json.dump(revenue_data, f, indent=2)
-        print(f"  ✓ Revenue data: {output_dir}/revenue.json")
-    except ValueError as e:
-        print(f"  ✗ Revenue data: {e}")
-
-    print(f"\nCharts saved to {output_dir}/")
-    print("\nTo embed in a blog post, copy the JSON content into a ```plotly code block.")
+    print(f"\nAll charts saved to {args.output_dir}/")
+    print("To embed in a blog post, copy the JSON content into a ```plotly code block.")
 
 
 if __name__ == "__main__":

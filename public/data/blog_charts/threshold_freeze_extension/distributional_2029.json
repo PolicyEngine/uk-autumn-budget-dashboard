@@ -1,0 +1,108 @@
+{
+  "data": [
+    {
+      "x": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10"
+      ],
+      "y": [
+        -0.0017041614999999998,
+        -0.002955272,
+        -0.00351714,
+        -0.0035160935,
+        -0.003972745,
+        -0.0041091228,
+        -0.0047643447,
+        -0.006719559000000001,
+        -0.0070863359999999995,
+        -0.0050453526000000005
+      ],
+      "type": "bar",
+      "marker": {
+        "color": "#319795",
+        "line": {
+          "width": 0
+        }
+      },
+      "hovertemplate": "Decile %{x}<br>Change: %{y:.2%}<extra></extra>",
+      "text": [
+        "-0.17%",
+        "-0.30%",
+        "-0.35%",
+        "-0.35%",
+        "-0.40%",
+        "-0.41%",
+        "-0.48%",
+        "-0.67%",
+        "-0.71%",
+        "-0.50%"
+      ],
+      "textposition": "outside",
+      "textfont": {
+        "family": "Inter, sans-serif",
+        "size": 14,
+        "color": "#000000"
+      }
+    }
+  ],
+  "layout": {
+    "xaxis": {
+      "title": {
+        "text": "Income decile",
+        "font": {
+          "family": "Inter, sans-serif",
+          "size": 14
+        }
+      },
+      "tickfont": {
+        "family": "Inter, sans-serif"
+      },
+      "showgrid": true,
+      "gridcolor": "#e0e0e0",
+      "gridwidth": 1,
+      "tickmode": "linear",
+      "tick0": 1,
+      "dtick": 1
+    },
+    "yaxis": {
+      "title": {
+        "text": "Relative change in net income",
+        "font": {
+          "family": "Inter, sans-serif",
+          "size": 14
+        }
+      },
+      "tickfont": {
+        "family": "Inter, sans-serif"
+      },
+      "tickformat": ".2%",
+      "showgrid": true,
+      "gridcolor": "#e0e0e0",
+      "gridwidth": 1,
+      "zeroline": true,
+      "zerolinecolor": "#333",
+      "zerolinewidth": 2
+    },
+    "height": 500,
+    "margin": {
+      "l": 100,
+      "r": 40,
+      "b": 80,
+      "t": 40,
+      "pad": 4
+    },
+    "plot_bgcolor": "white",
+    "paper_bgcolor": "white",
+    "font": {
+      "family": "Inter, sans-serif"
+    }
+  }
+}
