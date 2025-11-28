@@ -62,20 +62,10 @@ jobs:
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v2
 
-      - name: Configure Docker for GCR
-        run: gcloud auth configure-docker gcr.io
-
-      - name: Build and push Docker image
-        run: |
-          IMAGE="gcr.io/${{ env.PROJECT_ID }}/${{ env.SERVICE }}:${{ github.sha }}"
-          docker build -t "$IMAGE" .
-          docker push "$IMAGE"
-          echo "IMAGE=$IMAGE" >> $GITHUB_ENV
-
-      - name: Deploy to Cloud Run
+      - name: Deploy to Cloud Run (with source build)
         run: |
           gcloud run deploy ${{ env.SERVICE }} \
-            --image "${{ env.IMAGE }}" \
+            --source . \
             --region ${{ env.REGION }} \
             --platform managed \
             --allow-unauthenticated \
