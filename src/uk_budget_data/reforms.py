@@ -15,10 +15,11 @@ we use a pre-Autumn Budget baseline to show the impact of budget policies.
 from typing import Optional
 
 import numpy as np
-from policyengine_uk import Microsimulation, Simulation
+from policyengine_uk import Simulation
 from policyengine_uk.model_api import (
     YEAR,
     Household,
+    Person,
     Variable,
     select,
 )
@@ -421,34 +422,36 @@ def _zero_rate_energy_vat_modifier(sim: Simulation) -> Simulation:
     return sim
 
 
-def _slr_model(freeze_plan_2_threshold: bool = False):
+def _infer_student_loan_plan_modifier(sim: Simulation) -> Simulation:
+    """Add student loan plan inference based on age/university attendance.
+
+    policyengine-uk has student_loan_plan as an input variable.
+    For microsimulation we need to infer the plan from:
+    - Whether the person has reported student loan repayments
+    - When they likely attended university (based on age)
+
+    This enables the student_loan_repayment variable to calculate
+    repayments using policyengine-uk's threshold parameters.
     """
-    Configure student loan repayment threshold freeze in simulation.
+    from policyengine_uk.variables.gov.hmrc.student_loans.student_loan_plan import (
+        StudentLoanPlan,
+    )
 
-    Uses the student_loan_repayment variable from policyengine-uk (v2.60+).
+    class student_loan_plan(Variable):
+        value_type = str
+        entity = Person
+        label = "Student Loan Plan (inferred)"
+        definition_period = YEAR
+        max_length = 10
 
-    Args:
-        freeze_plan_2_threshold: If True, freeze Plan 2 threshold at 2025 levels
-                                 (removes RPI uprating for 2027-2030)
-    """
-
-    def modify(sim: Microsimulation):
-        # Infer student loan plan from reported repayments and age
-        # This sets the input for the student_loan_plan enum variable
-        for year in range(2026, 2031):
-            has_slr_reported = sim.calculate("student_loan_repayments", 2026)
-            has_slr = has_slr_reported > 0
-            age = sim.calculate("age", 2026)
-            time_attended_university = year - age + 18
-
-            # Import the enum from policyengine-uk
-            from policyengine_uk.variables.gov.hmrc.student_loans.student_loan_plan import (
-                StudentLoanPlan,
-            )
-
-            plan = select(
+        def formula(person, period, parameters):
+            has_slr_reported = person("student_loan_repayments", period) > 0
+            age = person("age", period)
+            # Estimate when they attended university (assume age 18)
+            time_attended_university = period.start.year - age + 18
+            return select(
                 [
-                    ~has_slr,
+                    ~has_slr_reported,
                     time_attended_university < 2012,
                     time_attended_university < 2023,
                     True,
@@ -461,50 +464,125 @@ def _slr_model(freeze_plan_2_threshold: bool = False):
                 ],
                 default=StudentLoanPlan.NONE,
             )
-            sim.set_input("student_loan_plan", year, plan)
 
-        # If freezing Plan 2 threshold, override the parameter
-        if freeze_plan_2_threshold:
-            # Freeze Plan 2 threshold at 2025 level (£29,385) for 2027-2030
-            p = sim.tax_benefit_system.parameters
-            plan_2_threshold = p.gov.hmrc.student_loans.thresholds.plan_2
-            # Get 2025 value and freeze it
-            frozen_value = 29_385  # April 2026 value, frozen for 2027-30
-            for year in range(2027, 2031):
-                plan_2_threshold.update(
-                    period=f"{year}-04-06", value=frozen_value
-                )
+    sim.tax_benefit_system.update_variable(student_loan_plan)
 
-        # Adjust net income calculation to use modelled repayments
-        # Subtract the policyengine-uk student_loan_repayment and add back
-        # the reported repayments from the FRS
-        sim.tax_benefit_system.variables[
-            "hbai_household_net_income"
-        ].subtracts.append("student_loan_repayment")
-        sim.tax_benefit_system.variables[
-            "hbai_household_net_income"
-        ].adds.append("student_loan_repayments")
-        return sim
+    # Connect policyengine-uk's modelled repayments to government revenue
+    # Replace reported repayments with modelled repayments
+    sim.tax_benefit_system.variables["gov_tax"].adds.remove(
+        "student_loan_repayments"
+    )
+    sim.tax_benefit_system.variables["gov_tax"].adds.append(
+        "student_loan_repayment"
+    )
 
-    return modify
+    sim.tax_benefit_system.variables["household_tax"].adds.remove(
+        "student_loan_repayments"
+    )
+    sim.tax_benefit_system.variables["household_tax"].adds.append(
+        "student_loan_repayment"
+    )
+
+    # Update HBAI household income
+    sim.tax_benefit_system.variables[
+        "hbai_household_net_income"
+    ].subtracts.append("student_loan_repayment")
+    sim.tax_benefit_system.variables["hbai_household_net_income"].adds.append(
+        "student_loan_repayments"
+    )
+    return sim
 
 
-FREEZE_STUDENT_LOAN_THRESHOLDS = Reform(
-    id="freeze_student_loan_thresholds",
-    name="Freeze student loan repayment thresholds",
-    description=(
-        "Freezes Plan 2 student loan repayment thresholds for three years "
-        "from April 2027. Baseline assumes thresholds remain frozen at 2025 "
-        "levels; reform allows RPI uprating, reducing repayments. OBR costing: "
-        "+£255-380m annual cost (2027-2030)."
-    ),
-    simulation_modifier=_slr_model(
-        freeze_plan_2_threshold=False
-    ),  # Reform: allow uprating (reduces repayments)
-    baseline_simulation_modifier=_slr_model(
-        freeze_plan_2_threshold=True
-    ),  # Baseline: frozen (more repayments)
-)
+def _calculate_pre_freeze_thresholds() -> dict:
+    """Calculate what Plan 2 thresholds would be without the freeze.
+
+    Returns baseline (counterfactual) thresholds assuming RPI uprating
+    continued from 2027 instead of the Autumn Budget freeze.
+
+    Current law (policyengine-uk):
+    - 2026: £29,385
+    - 2027-2029: £29,385 (frozen)
+    - 2030+: RPI uprating
+
+    Baseline counterfactual:
+    - 2026: £29,385
+    - 2027-2029: RPI uprating (not frozen)
+    - 2030+: RPI uprating
+    """
+    from policyengine_uk.system import system
+
+    params = system.parameters
+    rpi_index = params.gov.economic_assumptions.indices.obr.rpi
+
+    # Base threshold for 2026 is £29,385 (uprated from £28,470)
+    base_2026 = 29385
+
+    rpi_2026 = rpi_index("2026-04-06")
+    rpi_2027 = rpi_index("2027-04-06")
+    rpi_2028 = rpi_index("2028-04-06")
+    rpi_2029 = rpi_index("2029-04-06")
+
+    return {
+        # Baseline: Continue RPI uprating from 2027 (no freeze)
+        "gov.hmrc.student_loans.thresholds.plan_2": {
+            "2027-04-06": round(base_2026 * rpi_2027 / rpi_2026),
+            "2028-04-06": round(base_2026 * rpi_2028 / rpi_2026),
+            "2029-04-06": round(base_2026 * rpi_2029 / rpi_2026),
+        },
+    }
+
+
+def _create_student_loan_freeze() -> Reform:
+    """Create the student loan threshold freeze reform.
+
+    Uses policyengine-uk's student_loan_repayment variable with:
+    - Reform: Current law (frozen thresholds from policyengine-uk)
+    - Baseline: RPI uprating counterfactual
+
+    The freeze saves the government money (more repayments) as graduates
+    pay back more when thresholds don't rise with inflation.
+
+    OBR fiscal impact (Table 3.5):
+    - 2027-28: ~£0.2bn
+    - 2028-29: ~£0.3bn
+    - 2029-30: ~£0.4bn
+    """
+    baseline_thresholds = _calculate_pre_freeze_thresholds()
+
+    return Reform(
+        id="freeze_student_loan_thresholds",
+        name="Freeze student loan repayment thresholds",
+        description=(
+            "Freezes Plan 2 student loan repayment thresholds for 3 years "
+            "from April 2027 through April 2029. Threshold is £29,385 in "
+            "2026, then frozen at that level for 3 years, resuming RPI "
+            "uprating from 2030. Baseline assumes RPI uprating would have "
+            "continued. Uses policyengine-uk's student_loan_repayment "
+            "variable with threshold parameters. OBR costing: +£400m annual "
+            "revenue in medium term."
+        ),
+        # Reform: Current law (frozen) - use policyengine-uk default
+        simulation_modifier=_infer_student_loan_plan_modifier,
+        # Baseline: RPI uprating counterfactual
+        baseline_parameter_changes=baseline_thresholds,
+        baseline_simulation_modifier=_infer_student_loan_plan_modifier,
+    )
+
+
+# Lazy-loaded reform instance
+_FREEZE_STUDENT_LOAN_THRESHOLDS_CACHE: Reform | None = None
+
+
+def get_freeze_student_loan_thresholds() -> Reform:
+    """Get the student loan threshold freeze reform (lazy-loaded)."""
+    global _FREEZE_STUDENT_LOAN_THRESHOLDS_CACHE
+    if _FREEZE_STUDENT_LOAN_THRESHOLDS_CACHE is None:
+        _FREEZE_STUDENT_LOAN_THRESHOLDS_CACHE = _create_student_loan_freeze()
+    return _FREEZE_STUDENT_LOAN_THRESHOLDS_CACHE
+
+
+# Backwards-compatible alias
+FREEZE_STUDENT_LOAN_THRESHOLDS = None  # Set lazily via get function
 
 
 ZERO_VAT_ENERGY = Reform(
@@ -756,12 +834,22 @@ def _create_combined_autumn_budget_reform() -> Reform:
         },
     }
 
-    # Combined baseline simulation modifier for dividend rates
+    # Combined baseline simulation modifier for dividend rates and student loans
     def combined_baseline_modifier(sim):
-        """Apply pre-budget dividend rates to baseline simulation."""
+        """Apply pre-budget dividend rates and student loan plan inference."""
         _set_pre_budget_dividend_rates(sim)
-        _slr_model(False)(sim)
+        _infer_student_loan_plan_modifier(sim)
         return sim
+
+    # Combined reform simulation modifier
+    def combined_reform_modifier(sim):
+        """Apply student loan plan inference for reform."""
+        _infer_student_loan_plan_modifier(sim)
+        return sim
+
+    # Add student loan baseline thresholds (RPI uprating counterfactual)
+    slr_baseline = _calculate_pre_freeze_thresholds()
+    combined_baseline_params.update(slr_baseline)
 
     # Reform parameter changes (two-child limit repeal)
     reform_params = {
@@ -779,12 +867,13 @@ def _create_combined_autumn_budget_reform() -> Reform:
         description=(
             "All Autumn Budget 2025 provisions combined: two-child limit "
             "repeal, fuel duty freeze extension, threshold freeze extension, "
-            "and tax rate increases on dividends (+2pp), savings (+2pp), and "
-            "property income (+2pp). Shows full budget impact with interactions."
+            "student loan threshold freeze, and tax rate increases on "
+            "dividends (+2pp), savings (+2pp), and property income (+2pp). "
+            "Shows full budget impact with interactions."
         ),
         baseline_parameter_changes=combined_baseline_params,
         baseline_simulation_modifier=combined_baseline_modifier,
-        simulation_modifier=_slr_model(True),
+        simulation_modifier=combined_reform_modifier,
         parameter_changes=reform_params,
     )
 
@@ -812,7 +901,7 @@ def _get_autumn_budget_2025_reforms() -> list[Reform]:
             _create_dividend_tax_increase(),
             _create_savings_tax_increase(),
             _create_property_tax_increase(),
-            FREEZE_STUDENT_LOAN_THRESHOLDS,
+            get_freeze_student_loan_thresholds(),
             ZERO_VAT_ENERGY,
             create_salary_sacrifice_cap_reform(),
         ]

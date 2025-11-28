@@ -26,6 +26,9 @@ class BudgetaryImpactCalculator(BaseCalculator):
 
     years: list[int] = field(default_factory=lambda: [2026, 2027, 2028, 2029])
 
+    # Reforms that use student_loan_repayments_modelled instead of gov_balance
+    STUDENT_LOAN_REFORMS = ["freeze_student_loan_thresholds"]
+
     def calculate(
         self,
         baseline,
@@ -46,9 +49,27 @@ class BudgetaryImpactCalculator(BaseCalculator):
         """
         results = []
         for year in self.years:
-            baseline_balance = baseline.calculate("gov_balance", period=year)
-            reformed_balance = reformed.calculate("gov_balance", period=year)
-            impact = (reformed_balance - baseline_balance).sum() / 1e9
+            # Special case for student loan reforms: use student_loan_repayments_modelled
+            # since student loan repayments don't affect gov_balance directly
+            if reform_id in self.STUDENT_LOAN_REFORMS:
+                baseline_repayments = baseline.calculate(
+                    "student_loan_repayments_modelled", period=year
+                )
+                reformed_repayments = reformed.calculate(
+                    "student_loan_repayments_modelled", period=year
+                )
+                # Revenue = reformed - baseline (frozen thresholds = more repayments)
+                impact = (
+                    reformed_repayments - baseline_repayments
+                ).sum() / 1e9
+            else:
+                baseline_balance = baseline.calculate(
+                    "gov_balance", period=year
+                )
+                reformed_balance = reformed.calculate(
+                    "gov_balance", period=year
+                )
+                impact = (reformed_balance - baseline_balance).sum() / 1e9
             results.append(
                 {
                     "reform_id": reform_id,

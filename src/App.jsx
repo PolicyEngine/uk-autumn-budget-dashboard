@@ -66,6 +66,14 @@ const POLICIES = [
       "Increases property income tax rates by 2 percentage points from April 2027. Basic: 20% → 22%, Higher: 40% → 42%, Additional: 45% → 47%. OBR estimates this will raise £0.4-0.6bn annually from 2028-29. Note: Property income may not be fully captured in FRS.",
   },
   {
+    id: "freeze_student_loan_thresholds",
+    name: "Freeze student loan repayment thresholds",
+    description:
+      "Freeze Plan 2 repayment thresholds from 2027-28 to 2029-30",
+    explanation:
+      "Freezes the Plan 2 student loan repayment threshold at £29,385 for three years from April 2027, instead of allowing RPI uprating. This means graduates start repaying at a lower real income level, increasing repayments. OBR estimates this raises £255-355m annually from 2027-30. Note: The OBR also estimates £5.9bn revenue in 2026-27 from student loan revaluation (a separate policy affecting existing loan balances), but our microsimulation focuses only on the threshold freeze starting in 2027.",
+  },
+  {
     id: "salary_sacrifice_cap",
     name: "Salary sacrifice cap",
     description: "Cap NI-free salary sacrifice pension contributions at £2,000",
