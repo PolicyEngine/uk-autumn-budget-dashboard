@@ -440,7 +440,9 @@ def _slr_model(freeze_plan_2_threshold: bool = False):
             max_length = 10
 
             def formula(person, period, parameters):
-                has_slr_reported = person("student_loan_repayments", period) > 0
+                has_slr_reported = (
+                    person("student_loan_repayments", period) > 0
+                )
                 age = person("age", period)
                 time_attended_university = period.start.year - age + 18
                 return select(
@@ -489,7 +491,9 @@ def _slr_model(freeze_plan_2_threshold: bool = False):
                         plan_2_threshold = threshold_2026
                     else:
                         # Baseline: Continue uprating from 2026
-                        plan_2_threshold = threshold_2026 * (rpi(period) / rpi(2026))
+                        plan_2_threshold = threshold_2026 * (
+                            rpi(period) / rpi(2026)
+                        )
                 elif period.start.year >= 2030:
                     # 2030+: Resume RPI uprating in both scenarios
                     plan_2_threshold = 28470 * (rpi(period) / rpi(2025))
@@ -525,12 +529,20 @@ def _slr_model(freeze_plan_2_threshold: bool = False):
         sim.tax_benefit_system.add_variable(student_loan_repayments_modelled)
 
         # Connect modelled repayments to government revenue
-        sim.tax_benefit_system.variables["gov_tax"].adds.remove("student_loan_repayments")
-        sim.tax_benefit_system.variables["gov_tax"].adds.append("student_loan_repayments_modelled")
+        sim.tax_benefit_system.variables["gov_tax"].adds.remove(
+            "student_loan_repayments"
+        )
+        sim.tax_benefit_system.variables["gov_tax"].adds.append(
+            "student_loan_repayments_modelled"
+        )
 
         # Update household tax to reflect modelled repayments
-        sim.tax_benefit_system.variables["household_tax"].adds.remove("student_loan_repayments")
-        sim.tax_benefit_system.variables["household_tax"].adds.append("student_loan_repayments_modelled")
+        sim.tax_benefit_system.variables["household_tax"].adds.remove(
+            "student_loan_repayments"
+        )
+        sim.tax_benefit_system.variables["household_tax"].adds.append(
+            "student_loan_repayments_modelled"
+        )
 
         # Update HBAI household income to reflect modelled repayments
         sim.tax_benefit_system.variables[
