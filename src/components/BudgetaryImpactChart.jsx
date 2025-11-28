@@ -19,21 +19,32 @@ import "./BudgetaryImpactChart.css";
 import "./ChartExport.css";
 
 const POLICY_COLORS = {
-  // COSTS to treasury (good for households - teal spectrum)
-  "2 child limit repeal": "#0D9488", // Teal (~£3bn)
-  "Fuel duty freeze extension": "#5EEAD4", // Light teal (~£1.5bn)
+  // COSTS to treasury (good for households - teal/green spectrum)
+  "2 child limit repeal": "#0D9488", // Teal
+  "Fuel duty freeze extension": "#5EEAD4", // Light teal
+  "Rail fares freeze": "#10B981", // Emerald
 
-  // REVENUE raisers (bad for households - amber spectrum)
-  "Threshold freeze extension": "#D97706", // Amber (~£7bn)
+  // REVENUE raisers (bad for households - amber/orange spectrum)
+  "Threshold freeze extension": "#D97706", // Amber
+  "Dividend tax increase (+2pp)": "#F59E0B", // Yellow-amber
+  "Savings income tax increase (+2pp)": "#FBBF24", // Yellow
+  "Property income tax increase (+2pp)": "#FCD34D", // Light yellow
+  "NICs on salary sacrifice (>£2k)": "#B45309", // Dark amber
 };
 
-// Order: biggest magnitude closest to zero line
+// Order: revenue raisers first (positive), then costs (negative)
+// Within each group, ordered by typical magnitude
 const ALL_POLICY_NAMES = [
-  // Revenue raisers (positive for gov) - biggest at bottom (closest to zero)
+  // Revenue raisers (positive for gov)
   "Threshold freeze extension",
-  // Costs to treasury (negative for gov) - biggest at top (closest to zero)
+  "Dividend tax increase (+2pp)",
+  "Savings income tax increase (+2pp)",
+  "Property income tax increase (+2pp)",
+  "NICs on salary sacrifice (>£2k)",
+  // Costs to treasury (negative for gov)
   "2 child limit repeal",
   "Fuel duty freeze extension",
+  "Rail fares freeze",
 ];
 
 // Custom label component for net impact values
