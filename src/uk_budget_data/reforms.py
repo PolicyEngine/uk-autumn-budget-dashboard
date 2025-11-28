@@ -443,6 +443,9 @@ def _slr_model(freeze_plan_2_threshold: bool = False):
                 plan = person("student_loan_plan", period)
                 rpi = parameters.gov.economic_assumptions.indices.obr.rpi
                 parameter_uprating = rpi(period) / rpi(2025)
+                # Plan 2 threshold is £29,385 from April 2026, frozen at this level
+                # from 2027-28 to 2029-30 per Budget 2025.
+                # Source: https://www.timeshighereducation.com/news/stealth-tax-fears-student-loan-repayment-threshold-frozen
                 threshold = select(
                     [
                         plan == "PLAN_1",
@@ -453,7 +456,7 @@ def _slr_model(freeze_plan_2_threshold: bool = False):
                     ],
                     [
                         26065 * parameter_uprating,
-                        28470
+                        29385
                         * (
                             parameter_uprating
                             if not freeze_plan_2_threshold
@@ -478,6 +481,7 @@ def _slr_model(freeze_plan_2_threshold: bool = False):
         sim.tax_benefit_system.variables[
             "hbai_household_net_income"
         ].adds.append("student_loan_repayments")
+        return sim
 
     return modify
 
