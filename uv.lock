@@ -1,5 +1,5 @@
 version = 1
-revision = 2
+revision = 3
 requires-python = ">=3.13"
 
 [[package]]
@@ -900,7 +900,7 @@ wheels = [
 [[package]]
 name = "policyengine-uk"
 version = "2.61.2"
-source = { git = "https://github.com/PolicyEngine/policyengine-uk.git?rev=master#9c4693b787df58c6b425a2410ffc5109980c938b" }
+source = { git = "https://github.com/PolicyEngine/policyengine-uk.git?rev=master#394bb90e53ee2c31d9d13f5622f4651ef41b585b" }
 dependencies = [
     { name = "microdf-python" },
     { name = "policyengine-core" },
