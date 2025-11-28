@@ -23,74 +23,6 @@
         0.0,
         0.0,
         0.0,
-        0.0,
-        0.0
-      ],
-      "type": "bar",
-      "marker": {
-        "color": [
-          "#319795",
-          "#319795",
-          "#319795",
-          "#319795",
-          "#319795",
-          "#319795",
-          "#319795",
-          "#319795",
-          "#319795",
-          "#319795",
-          "#319795"
-        ],
-        "line": {
-          "width": 0
-        }
-      },
-      "hovertemplate": "Decile %{x}<br>Avg change: \u00a3%{y:,.0f}<extra></extra>",
-      "text": [
-        "\u00a3+0",
-        "\u00a3+0",
-        "\u00a3+0",
-        "\u00a3+0",
-        "\u00a3+0",
-        "\u00a3+0",
-        "\u00a3+0",
-        "\u00a3+0",
-        "\u00a3+0",
-        "\u00a3+0",
-        "\u00a3+0"
-      ],
-      "textposition": "outside",
-      "textfont": {
-        "family": "Inter, sans-serif",
-        "size": 12,
-        "color": "#000000"
-      },
-      "visible": true,
-      "name": "2026 (absolute)"
-    },
-    {
-      "x": [
-        "1",
-        "2",
-        "3",
-        "4",
-        "5",
-        "6",
-        "7",
-        "8",
-        "9",
-        "10"
-      ],
-      "y": [
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
         0.0
       ],
       "type": "bar",
@@ -119,76 +51,8 @@
         "size": 14,
         "color": "#000000"
       },
-      "visible": false,
-      "name": "2026 (relative)"
-    },
-    {
-      "x": [
-        "1",
-        "2",
-        "3",
-        "4",
-        "5",
-        "6",
-        "7",
-        "8",
-        "9",
-        "10"
-      ],
-      "y": [
-        -0.23380278,
-        -228.84155,
-        -1.4340801,
-        -1.9949204,
-        -4.7594695,
-        -10.72005,
-        -25.6203,
-        -32.266445,
-        -49.0679,
-        -88.823326,
-        -44.185127
-      ],
-      "type": "bar",
-      "marker": {
-        "color": [
-          "#EF4444",
-          "#EF4444",
-          "#EF4444",
-          "#EF4444",
-          "#EF4444",
-          "#EF4444",
-          "#EF4444",
-          "#EF4444",
-          "#EF4444",
-          "#EF4444",
-          "#EF4444"
-        ],
-        "line": {
-          "width": 0
-        }
-      },
-      "hovertemplate": "Decile %{x}<br>Avg change: \u00a3%{y:,.0f}<extra></extra>",
-      "text": [
-        "\u00a3-0",
-        "\u00a3-229",
-        "\u00a3-1",
-        "\u00a3-2",
-        "\u00a3-5",
-        "\u00a3-11",
-        "\u00a3-26",
-        "\u00a3-32",
-        "\u00a3-49",
-        "\u00a3-89",
-        "\u00a3-44"
-      ],
-      "textposition": "outside",
-      "textfont": {
-        "family": "Inter, sans-serif",
-        "size": 12,
-        "color": "#000000"
-      },
-      "visible": false,
-      "name": "2027 (absolute)"
+      "visible": true,
+      "name": "2026"
     },
     {
       "x": [
@@ -242,75 +106,7 @@
         "color": "#000000"
       },
       "visible": false,
-      "name": "2027 (relative)"
-    },
-    {
-      "x": [
-        "1",
-        "2",
-        "3",
-        "4",
-        "5",
-        "6",
-        "7",
-        "8",
-        "9",
-        "10"
-      ],
-      "y": [
-        -0.24806966,
-        -233.76215,
-        -1.5227693,
-        -2.0998738,
-        -4.9514217,
-        -11.151564,
-        -21.287949,
-        -38.86784,
-        -50.212814,
-        -92.19496,
-        -45.48704
-      ],
-      "type": "bar",
-      "marker": {
-        "color": [
-          "#EF4444",
-          "#EF4444",
-          "#EF4444",
-          "#EF4444",
-          "#EF4444",
-          "#EF4444",
-          "#EF4444",
-          "#EF4444",
-          "#EF4444",
-          "#EF4444",
-          "#EF4444"
-        ],
-        "line": {
-          "width": 0
-        }
-      },
-      "hovertemplate": "Decile %{x}<br>Avg change: \u00a3%{y:,.0f}<extra></extra>",
-      "text": [
-        "\u00a3-0",
-        "\u00a3-234",
-        "\u00a3-2",
-        "\u00a3-2",
-        "\u00a3-5",
-        "\u00a3-11",
-        "\u00a3-21",
-        "\u00a3-39",
-        "\u00a3-50",
-        "\u00a3-92",
-        "\u00a3-45"
-      ],
-      "textposition": "outside",
-      "textfont": {
-        "family": "Inter, sans-serif",
-        "size": 12,
-        "color": "#000000"
-      },
-      "visible": false,
-      "name": "2028 (absolute)"
+      "name": "2027"
     },
     {
       "x": [
@@ -364,75 +160,7 @@
         "color": "#000000"
       },
       "visible": false,
-      "name": "2028 (relative)"
-    },
-    {
-      "x": [
-        "1",
-        "2",
-        "3",
-        "4",
-        "5",
-        "6",
-        "7",
-        "8",
-        "9",
-        "10"
-      ],
-      "y": [
-        -0.27192405,
-        -239.77896,
-        -1.5484273,
-        -2.1773415,
-        -4.838494,
-        -11.988722,
-        -21.83401,
-        -36.557514,
-        -55.31775,
-        -94.45294,
-        -46.76948
-      ],
-      "type": "bar",
-      "marker": {
-        "color": [
-          "#EF4444",
-          "#EF4444",
-          "#EF4444",
-          "#EF4444",
-          "#EF4444",
-          "#EF4444",
-          "#EF4444",
-          "#EF4444",
-          "#EF4444",
-          "#EF4444",
-          "#EF4444"
-        ],
-        "line": {
-          "width": 0
-        }
-      },
-      "hovertemplate": "Decile %{x}<br>Avg change: \u00a3%{y:,.0f}<extra></extra>",
-      "text": [
-        "\u00a3-0",
-        "\u00a3-240",
-        "\u00a3-2",
-        "\u00a3-2",
-        "\u00a3-5",
-        "\u00a3-12",
-        "\u00a3-22",
-        "\u00a3-37",
-        "\u00a3-55",
-        "\u00a3-94",
-        "\u00a3-47"
-      ],
-      "textposition": "outside",
-      "textfont": {
-        "family": "Inter, sans-serif",
-        "size": 12,
-        "color": "#000000"
-      },
-      "visible": false,
-      "name": "2029 (absolute)"
+      "name": "2028"
     },
     {
       "x": [
@@ -486,7 +214,7 @@
         "color": "#000000"
       },
       "visible": false,
-      "name": "2029 (relative)"
+      "name": "2029"
     }
   ],
   "layout": {
@@ -510,7 +238,7 @@
     },
     "yaxis": {
       "title": {
-        "text": "Average change in household income (\u00a3/year)",
+        "text": "Relative change in net income",
         "font": {
           "family": "Inter, sans-serif",
           "size": 14
@@ -519,8 +247,7 @@
       "tickfont": {
         "family": "Inter, sans-serif"
       },
-      "tickformat": ",",
-      "tickprefix": "\u00a3",
+      "tickformat": ".2%",
       "showgrid": true,
       "gridcolor": "#e0e0e0",
       "gridwidth": 1,
@@ -528,12 +255,12 @@
       "zerolinecolor": "#344054",
       "zerolinewidth": 2
     },
-    "height": 600,
+    "height": 550,
     "margin": {
       "l": 100,
       "r": 40,
       "b": 120,
-      "t": 80,
+      "t": 40,
       "pad": 4
     },
     "plot_bgcolor": "#FFFFFF",
@@ -541,71 +268,6 @@
     "font": {
       "family": "Inter, sans-serif"
     },
-    "updatemenus": [
-      {
-        "type": "buttons",
-        "direction": "right",
-        "active": 0,
-        "x": 0.5,
-        "xanchor": "center",
-        "y": 1.15,
-        "yanchor": "top",
-        "buttons": [
-          {
-            "label": "Absolute (\u00a3)",
-            "method": "update",
-            "args": [
-              {
-                "visible": [
-                  true,
-                  false,
-                  false,
-                  false,
-                  false,
-                  false,
-                  false,
-                  false
-                ]
-              },
-              {
-                "yaxis.title.text": "Average change in household income (\u00a3/year)",
-                "yaxis.tickformat": ",",
-                "yaxis.tickprefix": "\u00a3"
-              }
-            ]
-          },
-          {
-            "label": "Relative (%)",
-            "method": "update",
-            "args": [
-              {
-                "visible": [
-                  false,
-                  true,
-                  false,
-                  false,
-                  false,
-                  false,
-                  false,
-                  false
-                ]
-              },
-              {
-                "yaxis.title.text": "Relative change in net income",
-                "yaxis.tickformat": ".2%",
-                "yaxis.tickprefix": ""
-              }
-            ]
-          }
-        ],
-        "showactive": true,
-        "bgcolor": "#F2F4F7",
-        "bordercolor": "#9CA3AF",
-        "font": {
-          "family": "Inter, sans-serif"
-        }
-      }
-    ],
     "sliders": [
       {
         "active": 0,
@@ -629,17 +291,8 @@
                   true,
                   false,
                   false,
-                  false,
-                  false,
-                  false,
-                  false,
                   false
                 ]
-              },
-              {
-                "yaxis.title.text": "Average change in household income (\u00a3/year)",
-                "yaxis.tickformat": ",",
-                "yaxis.tickprefix": "\u00a3"
               }
             ],
             "label": "2026"
@@ -650,19 +303,10 @@
               {
                 "visible": [
                   false,
-                  false,
                   true,
-                  false,
-                  false,
-                  false,
                   false,
                   false
                 ]
-              },
-              {
-                "yaxis.title.text": "Average change in household income (\u00a3/year)",
-                "yaxis.tickformat": ",",
-                "yaxis.tickprefix": "\u00a3"
               }
             ],
             "label": "2027"
@@ -674,18 +318,9 @@
                 "visible": [
                   false,
                   false,
-                  false,
-                  false,
                   true,
-                  false,
-                  false,
                   false
                 ]
-              },
-              {
-                "yaxis.title.text": "Average change in household income (\u00a3/year)",
-                "yaxis.tickformat": ",",
-                "yaxis.tickprefix": "\u00a3"
               }
             ],
             "label": "2028"
@@ -698,17 +333,8 @@
                   false,
                   false,
                   false,
-                  false,
-                  false,
-                  false,
-                  true,
-                  false
+                  true
                 ]
-              },
-              {
-                "yaxis.title.text": "Average change in household income (\u00a3/year)",
-                "yaxis.tickformat": ",",
-                "yaxis.tickprefix": "\u00a3"
               }
             ],
             "label": "2029"

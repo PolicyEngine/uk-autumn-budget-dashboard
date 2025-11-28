@@ -4,8 +4,9 @@ This script reads the dashboard CSV outputs and generates Plotly JSON files
 that can be directly embedded in policyengine-app-v2 blog posts.
 
 Charts include:
-- Interactive year sliders
-- Toggle between absolute (£) and relative (%) views for distributional charts
+- Distributional impact (relative %) with year slider
+- Winners and losers (absolute £) with year slider
+- Revenue comparison across years
 
 Usage:
     python scripts/generate_blog_charts.py --all
@@ -46,31 +47,22 @@ COLORS = {
 FONT_FAMILY = "Inter, sans-serif"
 
 
-def create_distributional_chart_interactive(
-    distributional_df: pd.DataFrame,
-    winners_losers_df: pd.DataFrame,
-    reform_id: str,
-    years: list
+def create_distributional_chart(
+    df: pd.DataFrame, reform_id: str, years: list
 ) -> dict:
-    """Create interactive distributional chart with year slider and abs/rel toggle.
+    """Create distributional impact chart (relative %) with year slider.
 
     Args:
-        distributional_df: DataFrame with distributional_impact.csv data (relative)
-        winners_losers_df: DataFrame with winners_losers.csv data (absolute)
+        df: DataFrame with distributional_impact.csv data
         reform_id: The reform ID to filter for
         years: List of years to include
 
     Returns:
-        Plotly JSON chart specification with slider and buttons
+        Plotly JSON chart specification with slider
     """
-    dist_data = distributional_df[
-        distributional_df["reform_id"] == reform_id
-    ].copy()
-    wl_data = winners_losers_df[
-        winners_losers_df["reform_id"] == reform_id
-    ].copy()
+    reform_data = df[df["reform_id"] == reform_id].copy()
 
-    if dist_data.empty and wl_data.empty:
+    if reform_data.empty:
         raise ValueError(f"No data found for {reform_id}")
 
     # Sort by decile order
@@ -78,114 +70,52 @@ def create_distributional_chart_interactive(
         f"{i}{'st' if i == 1 else 'nd' if i == 2 else 'rd' if i == 3 else 'th'}"
         for i in range(1, 11)
     ]
-    dist_data["decile_num"] = dist_data["decile"].apply(
+    reform_data["decile_num"] = reform_data["decile"].apply(
         lambda x: decile_order.index(x) + 1 if x in decile_order else 0
     )
 
-    # Build traces: for each year, we have 2 traces (absolute, relative)
-    # Layout: [abs_2026, rel_2026, abs_2027, rel_2027, ...]
+    # Create traces for each year
     traces = []
-    num_years = len(years)
-
     for i, year in enumerate(years):
-        # Absolute trace (from winners_losers)
-        year_wl = wl_data[wl_data["year"] == year].sort_values("decile")
-        if not year_wl.empty:
-            abs_values = year_wl["avg_change"].tolist()
-            abs_colors = [
-                COLORS["primary"] if v >= 0 else COLORS["error"]
-                for v in abs_values
-            ]
-            abs_text = [f"£{v:+,.0f}" for v in abs_values]
-        else:
-            abs_values = [0] * 10
-            abs_colors = [COLORS["primary"]] * 10
-            abs_text = ["£+0"] * 10
+        year_data = reform_data[reform_data["year"] == year].sort_values(
+            "decile_num"
+        )
+        if year_data.empty:
+            continue
+
+        values = year_data["value"].tolist()
+        values_pct = [v / 100 for v in values]
+        text_labels = [f"{v:+.2%}" for v in values_pct]
 
         traces.append({
             "x": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
-            "y": abs_values,
+            "y": values_pct,
             "type": "bar",
-            "marker": {"color": abs_colors, "line": {"width": 0}},
-            "hovertemplate": "Decile %{x}<br>Avg change: £%{y:,.0f}<extra></extra>",
-            "text": abs_text,
-            "textposition": "outside",
-            "textfont": {"family": FONT_FAMILY, "size": 12, "color": COLORS["text"]},
-            "visible": i == 0,  # First year, absolute view visible by default
-            "name": f"{year} (absolute)"
-        })
-
-        # Relative trace (from distributional)
-        year_dist = dist_data[dist_data["year"] == year].sort_values("decile_num")
-        if not year_dist.empty:
-            rel_values = [v / 100 for v in year_dist["value"].tolist()]
-            rel_text = [f"{v:+.2%}" for v in rel_values]
-        else:
-            rel_values = [0] * 10
-            rel_text = ["+0.00%"] * 10
-
-        traces.append({
-            "x": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
-            "y": rel_values,
-            "type": "bar",
-            "marker": {"color": COLORS["primary"], "line": {"width": 0}},
+            "marker": {
+                "color": COLORS["primary"],
+                "line": {"width": 0}
+            },
             "hovertemplate": "Decile %{x}<br>Change: %{y:.2%}<extra></extra>",
-            "text": rel_text,
+            "text": text_labels,
             "textposition": "outside",
-            "textfont": {"family": FONT_FAMILY, "size": 14, "color": COLORS["text"]},
-            "visible": False,  # Hidden by default
-            "name": f"{year} (relative)"
+            "textfont": {
+                "family": FONT_FAMILY,
+                "size": 14,
+                "color": COLORS["text"]
+            },
+            "visible": i == 0,
+            "name": str(year)
         })
 
-    # Create slider steps (each step shows one year, preserving abs/rel toggle state)
-    # We need to track current view mode in the visibility pattern
-    slider_steps = []
+    # Create slider steps
+    steps = []
     for i, year in enumerate(years):
-        # For each year, show absolute trace by default
-        visibility = [False] * (num_years * 2)
-        visibility[i * 2] = True  # Show absolute for this year
-        slider_steps.append({
+        visibility = [j == i for j in range(len(years))]
+        steps.append({
             "method": "update",
-            "args": [
-                {"visible": visibility},
-                {
-                    "yaxis.title.text": "Average change in household income (£/year)",
-                    "yaxis.tickformat": ",",
-                    "yaxis.tickprefix": "£"
-                }
-            ],
+            "args": [{"visible": visibility}],
             "label": str(year)
         })
-
-    # Create toggle buttons for absolute vs relative
-    # Button 0: Absolute - shows absolute trace for current year
-    # Button 1: Relative - shows relative trace for current year
-    buttons = [
-        {
-            "label": "Absolute (£)",
-            "method": "update",
-            "args": [
-                {"visible": [j % 2 == 0 and j // 2 == 0 for j in range(num_years * 2)]},
-                {
-                    "yaxis.title.text": "Average change in household income (£/year)",
-                    "yaxis.tickformat": ",",
-                    "yaxis.tickprefix": "£"
-                }
-            ]
-        },
-        {
-            "label": "Relative (%)",
-            "method": "update",
-            "args": [
-                {"visible": [j % 2 == 1 and j // 2 == 0 for j in range(num_years * 2)]},
-                {
-                    "yaxis.title.text": "Relative change in net income",
-                    "yaxis.tickformat": ".2%",
-                    "yaxis.tickprefix": ""
-                }
-            ]
-        }
-    ]
 
     return {
         "data": traces,
@@ -205,11 +135,127 @@ def create_distributional_chart_interactive(
             },
             "yaxis": {
                 "title": {
+                    "text": "Relative change in net income",
+                    "font": {"family": FONT_FAMILY, "size": 14}
+                },
+                "tickfont": {"family": FONT_FAMILY},
+                "tickformat": ".2%",
+                "showgrid": True,
+                "gridcolor": "#e0e0e0",
+                "gridwidth": 1,
+                "zeroline": True,
+                "zerolinecolor": COLORS["gray_dark"],
+                "zerolinewidth": 2
+            },
+            "height": 550,
+            "margin": {"l": 100, "r": 40, "b": 120, "t": 40, "pad": 4},
+            "plot_bgcolor": COLORS["background"],
+            "paper_bgcolor": COLORS["background"],
+            "font": {"family": FONT_FAMILY},
+            "sliders": [{
+                "active": 0,
+                "currentvalue": {
+                    "prefix": "Year: ",
+                    "font": {"family": FONT_FAMILY, "size": 16}
+                },
+                "pad": {"t": 50, "b": 10},
+                "steps": steps,
+                "x": 0.1,
+                "len": 0.8,
+                "xanchor": "left",
+                "y": 0,
+                "yanchor": "top"
+            }]
+        }
+    }
+
+
+def create_winners_losers_chart(
+    df: pd.DataFrame, reform_id: str, years: list
+) -> dict:
+    """Create winners/losers chart (absolute £) with year slider.
+
+    Args:
+        df: DataFrame with winners_losers.csv data
+        reform_id: The reform ID to filter for
+        years: List of years to include
+
+    Returns:
+        Plotly JSON chart specification with slider
+    """
+    reform_data = df[df["reform_id"] == reform_id].copy()
+
+    if reform_data.empty:
+        raise ValueError(f"No data found for {reform_id}")
+
+    # Filter out 'all' decile
+    reform_data = reform_data[reform_data["decile"] != "all"]
+
+    # Create traces for each year
+    traces = []
+    for i, year in enumerate(years):
+        year_data = reform_data[reform_data["year"] == year].sort_values(
+            "decile"
+        )
+        if year_data.empty:
+            continue
+
+        values = year_data["avg_change"].tolist()
+        bar_colors = [
+            COLORS["primary"] if v >= 0 else COLORS["error"]
+            for v in values
+        ]
+        text_labels = [f"£{v:+,.0f}" for v in values]
+
+        traces.append({
+            "x": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
+            "y": values,
+            "type": "bar",
+            "marker": {
+                "color": bar_colors,
+                "line": {"width": 0}
+            },
+            "hovertemplate": "Decile %{x}<br>Avg change: £%{y:,.0f}<extra></extra>",
+            "text": text_labels,
+            "textposition": "outside",
+            "textfont": {
+                "family": FONT_FAMILY,
+                "size": 12,
+                "color": COLORS["text"]
+            },
+            "visible": i == 0,
+            "name": str(year)
+        })
+
+    # Create slider steps
+    steps = []
+    for i, year in enumerate(years):
+        visibility = [j == i for j in range(len(years))]
+        steps.append({
+            "method": "update",
+            "args": [{"visible": visibility}],
+            "label": str(year)
+        })
+
+    return {
+        "data": traces,
+        "layout": {
+            "xaxis": {
+                "title": {
+                    "text": "Income decile",
+                    "font": {"family": FONT_FAMILY, "size": 14}
+                },
+                "tickfont": {"family": FONT_FAMILY},
+                "showgrid": True,
+                "gridcolor": "#e0e0e0",
+                "gridwidth": 1
+            },
+            "yaxis": {
+                "title": {
                     "text": "Average change in household income (£/year)",
                     "font": {"family": FONT_FAMILY, "size": 14}
                 },
                 "tickfont": {"family": FONT_FAMILY},
-                "tickformat": ",",
                 "tickprefix": "£",
                 "showgrid": True,
                 "gridcolor": "#e0e0e0",
@@ -218,25 +264,11 @@ def create_distributional_chart_interactive(
                 "zerolinecolor": COLORS["gray_dark"],
                 "zerolinewidth": 2
             },
-            "height": 600,
-            "margin": {"l": 100, "r": 40, "b": 120, "t": 80, "pad": 4},
+            "height": 550,
+            "margin": {"l": 100, "r": 40, "b": 120, "t": 40, "pad": 4},
             "plot_bgcolor": COLORS["background"],
             "paper_bgcolor": COLORS["background"],
             "font": {"family": FONT_FAMILY},
-            "updatemenus": [{
-                "type": "buttons",
-                "direction": "right",
-                "active": 0,
-                "x": 0.5,
-                "xanchor": "center",
-                "y": 1.15,
-                "yanchor": "top",
-                "buttons": buttons,
-                "showactive": True,
-                "bgcolor": COLORS["neutral"],
-                "bordercolor": COLORS["gray_light"],
-                "font": {"family": FONT_FAMILY}
-            }],
             "sliders": [{
                 "active": 0,
                 "currentvalue": {
@@ -244,7 +276,7 @@ def create_distributional_chart_interactive(
                     "font": {"family": FONT_FAMILY, "size": 16}
                 },
                 "pad": {"t": 50, "b": 10},
-                "steps": slider_steps,
+                "steps": steps,
                 "x": 0.1,
                 "len": 0.8,
                 "xanchor": "left",
@@ -380,14 +412,24 @@ def generate_charts_for_reform(
         )
 
     try:
-        dist_chart = create_distributional_chart_interactive(
-            distributional_df, winners_losers_df, reform_id, years
+        dist_chart = create_distributional_chart(
+            distributional_df, reform_id, years
         )
         with open(reform_output_dir / "distributional.json", "w") as f:
             json.dump(dist_chart, f, indent=2)
-        print("  + Distributional chart (year slider + abs/rel toggle): distributional.json")
+        print("  + Distributional chart (relative %): distributional.json")
     except ValueError as e:
         print(f"  - Distributional chart: {e}")
+
+    try:
+        wl_chart = create_winners_losers_chart(
+            winners_losers_df, reform_id, years
+        )
+        with open(reform_output_dir / "winners_losers.json", "w") as f:
+            json.dump(wl_chart, f, indent=2)
+        print("  + Winners/losers chart (absolute £): winners_losers.json")
+    except ValueError as e:
+        print(f"  - Winners/losers chart: {e}")
 
     try:
         revenue_chart = create_revenue_chart(
