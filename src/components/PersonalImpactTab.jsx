@@ -3,8 +3,15 @@ import PersonalImpactForm from "./PersonalImpactForm";
 import PersonalImpactResults from "./PersonalImpactResults";
 import "./PersonalImpactTab.css";
 
+// API URL for personal impact calculations
+// In production, this should be set via VITE_API_URL environment variable
+// For local development, falls back to localhost
 const API_URL =
   import.meta.env.VITE_API_URL || "http://localhost:5001/api/personal-impact";
+
+// Check if API is likely available (only localhost in dev, or explicit URL set)
+const API_AVAILABLE =
+  !import.meta.env.PROD || Boolean(import.meta.env.VITE_API_URL);
 
 function PersonalImpactTab() {
   const [results, setResults] = useState(null);
@@ -69,6 +76,40 @@ function PersonalImpactTab() {
       : window.location.pathname;
     window.history.replaceState({}, "", newUrl);
   };
+
+  // Show coming soon message if API is not available in production
+  if (!API_AVAILABLE) {
+    return (
+      <div className="personal-impact-tab">
+        <div className="tab-header">
+          <h2>Personal impact calculator</h2>
+          <p>
+            See how the Autumn Budget 2025 policies affect your household over
+            the next five years.
+          </p>
+        </div>
+        <div className="coming-soon-banner">
+          <svg
+            width="48"
+            height="48"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#2563eb"
+            strokeWidth="1.5"
+          >
+            <circle cx="12" cy="12" r="10" />
+            <polyline points="12 6 12 12 16 14" />
+          </svg>
+          <h3>Coming soon</h3>
+          <p>
+            The personal impact calculator is currently being deployed. Please
+            check back shortly, or explore the other tabs to see aggregate
+            budget impacts.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="personal-impact-tab">

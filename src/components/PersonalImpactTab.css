@@ -116,6 +116,40 @@
   color: #6b7280;
 }
 
+/* Coming soon banner */
+.coming-soon-banner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 40px;
+  background: linear-gradient(135deg, #eff6ff 0%, #f0fdf4 100%);
+  border: 1px solid #bfdbfe;
+  border-radius: 12px;
+  text-align: center;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.coming-soon-banner svg {
+  margin-bottom: 20px;
+}
+
+.coming-soon-banner h3 {
+  margin: 0 0 12px 0;
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #1e40af;
+}
+
+.coming-soon-banner p {
+  margin: 0;
+  font-size: 1rem;
+  color: #4b5563;
+  line-height: 1.6;
+  max-width: 400px;
+}
+
 /* Empty state */
 .empty-state {
   display: flex;
