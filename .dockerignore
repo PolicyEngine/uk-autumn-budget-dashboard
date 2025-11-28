@@ -1,0 +1,14 @@
+node_modules/
+.git/
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+dist/
+build/
+*.egg-info/
+public/
+*.md
+.github/
+tests/

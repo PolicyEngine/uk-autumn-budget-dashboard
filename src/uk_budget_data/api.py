@@ -1,14 +1,16 @@
-"""Flask API for personal impact calculations.
+"""FastAPI backend for personal impact calculations.
 
 This module provides a REST API endpoint for calculating how Autumn Budget
 policies affect individual households over time.
 """
 
 import json
+import os
 
 import numpy as np
-from flask import Flask, Response, jsonify, request
-from flask_cors import CORS
+from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field, field_validator
 
 from uk_budget_data.personal_impact import (
@@ -16,8 +18,19 @@ from uk_budget_data.personal_impact import (
     PersonalImpactCalculator,
 )
 
-app = Flask(__name__)
-CORS(app)
+app = FastAPI(
+    title="UK Budget Personal Impact API",
+    description="Calculate how Autumn Budget policies affect households",
+    version="0.1.0",
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 class APIHouseholdInput(BaseModel):
@@ -100,110 +113,6 @@ def convert_api_input_to_household(api_input: APIHouseholdInput) -> dict:
     )
 
 
-# Lazy-load calculator to avoid startup delay
-_calculator: PersonalImpactCalculator | None = None
-
-
-def get_calculator() -> PersonalImpactCalculator:
-    """Get or create the PersonalImpactCalculator (lazy singleton)."""
-    global _calculator
-    if _calculator is None:
-        _calculator = PersonalImpactCalculator()
-    return _calculator
-
-
-@app.route("/api/personal-impact", methods=["POST"])
-def calculate_personal_impact():
-    """Calculate personal impact for a household.
-
-    Request body (JSON):
-        employment_income: Annual employment income in 2025 (required)
-        income_growth_rate: Annual growth rate (default: 0)
-        is_married: Whether married/cohabiting (default: false)
-        partner_income: Partner's income (default: 0)
-        children_ages: List of children's ages in 2025 (default: [])
-        student_loan_plan: Plan type (default: null)
-        student_loan_balance: Initial balance (default: 0)
-        property_income: Annual property income (default: 0)
-        savings_income: Annual savings income (default: 0)
-        dividend_income: Annual dividend income (default: 0)
-        pension_contributions_salary_sacrifice: Annual SS contributions
-            (default: 0)
-
-    Returns:
-        JSON with year-by-year impact breakdown per policy.
-    """
-    try:
-        # Parse and validate input
-        data = request.get_json()
-        if not data:
-            return jsonify({"error": "No JSON data provided"}), 400
-
-        api_input = APIHouseholdInput(**data)
-        household_input = convert_api_input_to_household(api_input)
-
-        # Calculate impacts
-        calculator = get_calculator()
-        results = calculator.calculate(household_input)
-
-        # Convert numpy types to Python native types for JSON serialisation
-        def convert_to_native(obj):
-            if isinstance(obj, np.floating):
-                return float(obj)
-            elif isinstance(obj, np.integer):
-                return int(obj)
-            elif isinstance(obj, dict):
-                return {k: convert_to_native(v) for k, v in obj.items()}
-            elif isinstance(obj, list):
-                return [convert_to_native(item) for item in obj]
-            return obj
-
-        return jsonify(convert_to_native(results))
-
-    except ValueError as e:
-        return jsonify({"error": str(e)}), 400
-    except Exception as e:
-        return jsonify({"error": f"Calculation error: {str(e)}"}), 500
-
-
-@app.route("/api/personal-impact/stream", methods=["POST"])
-def calculate_personal_impact_stream():
-    """Stream personal impact results year-by-year using SSE.
-
-    Returns Server-Sent Events with progressive results as each year
-    is calculated. This provides faster feedback to users.
-    """
-    try:
-        data = request.get_json()
-        if not data:
-            return jsonify({"error": "No JSON data provided"}), 400
-
-        api_input = APIHouseholdInput(**data)
-        household_input = convert_api_input_to_household(api_input)
-        calculator = get_calculator()
-
-        def generate():
-            for event in calculator.calculate_streaming(household_input):
-                # Convert numpy types
-                event_data = convert_to_native(event)
-                yield f"data: {json.dumps(event_data)}\n\n"
-
-        return Response(
-            generate(),
-            mimetype="text/event-stream",
-            headers={
-                "Cache-Control": "no-cache",
-                "Connection": "keep-alive",
-                "Access-Control-Allow-Origin": "*",
-            },
-        )
-
-    except ValueError as e:
-        return jsonify({"error": str(e)}), 400
-    except Exception as e:
-        return jsonify({"error": f"Calculation error: {str(e)}"}), 500
-
-
 def convert_to_native(obj):
     """Convert numpy types to Python native types for JSON serialisation."""
     if isinstance(obj, np.floating):
@@ -217,17 +126,74 @@ def convert_to_native(obj):
     return obj
 
 
-@app.route("/api/health", methods=["GET"])
-def health_check():
+# Lazy-load calculator to avoid startup delay
+_calculator: PersonalImpactCalculator | None = None
+
+
+def get_calculator() -> PersonalImpactCalculator:
+    """Get or create the PersonalImpactCalculator (lazy singleton)."""
+    global _calculator
+    if _calculator is None:
+        _calculator = PersonalImpactCalculator()
+    return _calculator
+
+
+@app.post("/api/personal-impact")
+async def calculate_personal_impact(data: APIHouseholdInput):
+    """Calculate personal impact for a household.
+
+    Returns year-by-year impact breakdown per policy.
+    """
+    try:
+        household_input = convert_api_input_to_household(data)
+        calculator = get_calculator()
+        results = calculator.calculate(household_input)
+        return convert_to_native(results)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Calculation error: {e}")
+
+
+@app.post("/api/personal-impact/stream")
+async def calculate_personal_impact_stream(data: APIHouseholdInput):
+    """Stream personal impact results year-by-year using SSE."""
+    try:
+        household_input = convert_api_input_to_household(data)
+        calculator = get_calculator()
+
+        async def generate():
+            for event in calculator.calculate_streaming(household_input):
+                event_data = convert_to_native(event)
+                yield f"data: {json.dumps(event_data)}\n\n"
+
+        return StreamingResponse(
+            generate(),
+            media_type="text/event-stream",
+            headers={
+                "Cache-Control": "no-cache",
+                "Connection": "keep-alive",
+            },
+        )
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Calculation error: {e}")
+
+
+@app.get("/api/health")
+async def health_check():
     """Health check endpoint."""
-    return jsonify({"status": "healthy"})
+    return {"status": "healthy"}
 
 
 def main():
-    """Run the Flask development server."""
-    print("Starting UK Budget Personal Impact API...")
-    print("API available at http://localhost:5001/api/personal-impact")
-    app.run(host="0.0.0.0", port=5001, debug=True)
+    """Run the FastAPI server with uvicorn."""
+    import uvicorn
+
+    port = int(os.environ.get("PORT", 5001))
+    print(f"Starting UK Budget Personal Impact API on port {port}...")
+    uvicorn.run(app, host="0.0.0.0", port=port)
 
 
 if __name__ == "__main__":
