@@ -27,18 +27,18 @@ import pandas as pd
 # See: policyengine-app-v2/app/src/designTokens/colors.ts
 COLORS = {
     # Primary teal palette
-    "primary": "#319795",      # Teal-500 (main)
+    "primary": "#319795",  # Teal-500 (main)
     "primary_light": "#4FD1C5",  # Teal-300
-    "primary_dark": "#285E61",   # Teal-700
+    "primary_dark": "#285E61",  # Teal-700
     # Gray palette
-    "gray_light": "#9CA3AF",   # Gray-400
-    "gray": "#6B7280",         # Gray-500
-    "gray_dark": "#344054",    # Gray-700
+    "gray_light": "#9CA3AF",  # Gray-400
+    "gray": "#6B7280",  # Gray-500
+    "gray_dark": "#344054",  # Gray-700
     # Semantic
     "success": "#22C55E",
     "error": "#EF4444",
     # UI
-    "neutral": "#F2F4F7",      # Gray-100
+    "neutral": "#F2F4F7",  # Gray-100
     "background": "#FFFFFF",
     "text": "#000000",
 }
@@ -87,35 +87,36 @@ def create_distributional_chart(
         values_pct = [v / 100 for v in values]
         text_labels = [f"{v:+.2%}" for v in values_pct]
 
-        traces.append({
-            "x": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
-            "y": values_pct,
-            "type": "bar",
-            "marker": {
-                "color": COLORS["primary"],
-                "line": {"width": 0}
-            },
-            "hovertemplate": "Decile %{x}<br>Change: %{y:.2%}<extra></extra>",
-            "text": text_labels,
-            "textposition": "outside",
-            "textfont": {
-                "family": FONT_FAMILY,
-                "size": 14,
-                "color": COLORS["text"]
-            },
-            "visible": i == 0,
-            "name": str(year)
-        })
+        traces.append(
+            {
+                "x": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
+                "y": values_pct,
+                "type": "bar",
+                "marker": {"color": COLORS["primary"], "line": {"width": 0}},
+                "hovertemplate": "Decile %{x}<br>Change: %{y:.2%}<extra></extra>",
+                "text": text_labels,
+                "textposition": "outside",
+                "textfont": {
+                    "family": FONT_FAMILY,
+                    "size": 14,
+                    "color": COLORS["text"],
+                },
+                "visible": i == 0,
+                "name": str(year),
+            }
+        )
 
     # Create slider steps
     steps = []
     for i, year in enumerate(years):
         visibility = [j == i for j in range(len(years))]
-        steps.append({
-            "method": "update",
-            "args": [{"visible": visibility}],
-            "label": str(year)
-        })
+        steps.append(
+            {
+                "method": "update",
+                "args": [{"visible": visibility}],
+                "label": str(year),
+            }
+        )
 
     return {
         "data": traces,
@@ -123,7 +124,7 @@ def create_distributional_chart(
             "xaxis": {
                 "title": {
                     "text": "Income decile",
-                    "font": {"family": FONT_FAMILY, "size": 14}
+                    "font": {"family": FONT_FAMILY, "size": 14},
                 },
                 "tickfont": {"family": FONT_FAMILY},
                 "showgrid": True,
@@ -131,12 +132,12 @@ def create_distributional_chart(
                 "gridwidth": 1,
                 "tickmode": "linear",
                 "tick0": 1,
-                "dtick": 1
+                "dtick": 1,
             },
             "yaxis": {
                 "title": {
                     "text": "Relative change in net income",
-                    "font": {"family": FONT_FAMILY, "size": 14}
+                    "font": {"family": FONT_FAMILY, "size": 14},
                 },
                 "tickfont": {"family": FONT_FAMILY},
                 "tickformat": ".2%",
@@ -145,28 +146,30 @@ def create_distributional_chart(
                 "gridwidth": 1,
                 "zeroline": True,
                 "zerolinecolor": COLORS["gray_dark"],
-                "zerolinewidth": 2
+                "zerolinewidth": 2,
             },
             "height": 550,
             "margin": {"l": 100, "r": 40, "b": 120, "t": 40, "pad": 4},
             "plot_bgcolor": COLORS["background"],
             "paper_bgcolor": COLORS["background"],
             "font": {"family": FONT_FAMILY},
-            "sliders": [{
-                "active": 0,
-                "currentvalue": {
-                    "prefix": "Year: ",
-                    "font": {"family": FONT_FAMILY, "size": 16}
-                },
-                "pad": {"t": 50, "b": 10},
-                "steps": steps,
-                "x": 0.1,
-                "len": 0.8,
-                "xanchor": "left",
-                "y": 0,
-                "yanchor": "top"
-            }]
-        }
+            "sliders": [
+                {
+                    "active": 0,
+                    "currentvalue": {
+                        "prefix": "Year: ",
+                        "font": {"family": FONT_FAMILY, "size": 16},
+                    },
+                    "pad": {"t": 50, "b": 10},
+                    "steps": steps,
+                    "x": 0.1,
+                    "len": 0.8,
+                    "xanchor": "left",
+                    "y": 0,
+                    "yanchor": "top",
+                }
+            ],
+        },
     }
 
 
@@ -202,40 +205,40 @@ def create_winners_losers_chart(
 
         values = year_data["avg_change"].tolist()
         bar_colors = [
-            COLORS["primary"] if v >= 0 else COLORS["error"]
-            for v in values
+            COLORS["primary"] if v >= 0 else COLORS["error"] for v in values
         ]
         text_labels = [f"£{v:+,.0f}" for v in values]
 
-        traces.append({
-            "x": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
-            "y": values,
-            "type": "bar",
-            "marker": {
-                "color": bar_colors,
-                "line": {"width": 0}
-            },
-            "hovertemplate": "Decile %{x}<br>Avg change: £%{y:,.0f}<extra></extra>",
-            "text": text_labels,
-            "textposition": "outside",
-            "textfont": {
-                "family": FONT_FAMILY,
-                "size": 12,
-                "color": COLORS["text"]
-            },
-            "visible": i == 0,
-            "name": str(year)
-        })
+        traces.append(
+            {
+                "x": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
+                "y": values,
+                "type": "bar",
+                "marker": {"color": bar_colors, "line": {"width": 0}},
+                "hovertemplate": "Decile %{x}<br>Avg change: £%{y:,.0f}<extra></extra>",
+                "text": text_labels,
+                "textposition": "outside",
+                "textfont": {
+                    "family": FONT_FAMILY,
+                    "size": 12,
+                    "color": COLORS["text"],
+                },
+                "visible": i == 0,
+                "name": str(year),
+            }
+        )
 
     # Create slider steps
     steps = []
     for i, year in enumerate(years):
         visibility = [j == i for j in range(len(years))]
-        steps.append({
-            "method": "update",
-            "args": [{"visible": visibility}],
-            "label": str(year)
-        })
+        steps.append(
+            {
+                "method": "update",
+                "args": [{"visible": visibility}],
+                "label": str(year),
+            }
+        )
 
     return {
         "data": traces,
@@ -243,17 +246,17 @@ def create_winners_losers_chart(
             "xaxis": {
                 "title": {
                     "text": "Income decile",
-                    "font": {"family": FONT_FAMILY, "size": 14}
+                    "font": {"family": FONT_FAMILY, "size": 14},
                 },
                 "tickfont": {"family": FONT_FAMILY},
                 "showgrid": True,
                 "gridcolor": "#e0e0e0",
-                "gridwidth": 1
+                "gridwidth": 1,
             },
             "yaxis": {
                 "title": {
                     "text": "Average change in household income (£/year)",
-                    "font": {"family": FONT_FAMILY, "size": 14}
+                    "font": {"family": FONT_FAMILY, "size": 14},
                 },
                 "tickfont": {"family": FONT_FAMILY},
                 "tickprefix": "£",
@@ -262,28 +265,30 @@ def create_winners_losers_chart(
                 "gridwidth": 1,
                 "zeroline": True,
                 "zerolinecolor": COLORS["gray_dark"],
-                "zerolinewidth": 2
+                "zerolinewidth": 2,
             },
             "height": 550,
             "margin": {"l": 100, "r": 40, "b": 120, "t": 40, "pad": 4},
             "plot_bgcolor": COLORS["background"],
             "paper_bgcolor": COLORS["background"],
             "font": {"family": FONT_FAMILY},
-            "sliders": [{
-                "active": 0,
-                "currentvalue": {
-                    "prefix": "Year: ",
-                    "font": {"family": FONT_FAMILY, "size": 16}
-                },
-                "pad": {"t": 50, "b": 10},
-                "steps": steps,
-                "x": 0.1,
-                "len": 0.8,
-                "xanchor": "left",
-                "y": 0,
-                "yanchor": "top"
-            }]
-        }
+            "sliders": [
+                {
+                    "active": 0,
+                    "currentvalue": {
+                        "prefix": "Year: ",
+                        "font": {"family": FONT_FAMILY, "size": 16},
+                    },
+                    "pad": {"t": 50, "b": 10},
+                    "steps": steps,
+                    "x": 0.1,
+                    "len": 0.8,
+                    "xanchor": "left",
+                    "y": 0,
+                    "yanchor": "top",
+                }
+            ],
+        },
     }
 
 
@@ -309,14 +314,16 @@ def create_revenue_chart(
     years = reform_data["year"].tolist()
     pe_values = reform_data["value"].tolist()
 
-    traces = [{
-        "x": [str(y) for y in years],
-        "y": pe_values,
-        "type": "bar",
-        "name": "PolicyEngine",
-        "marker": {"color": COLORS["primary"]},
-        "hovertemplate": "Year %{x}<br>PolicyEngine: £%{y:.2f}bn<extra></extra>",
-    }]
+    traces = [
+        {
+            "x": [str(y) for y in years],
+            "y": pe_values,
+            "type": "bar",
+            "name": "PolicyEngine",
+            "marker": {"color": COLORS["primary"]},
+            "hovertemplate": "Year %{x}<br>PolicyEngine: £%{y:.2f}bn<extra></extra>",
+        }
+    ]
 
     # Add OBR comparison if available
     if obr_df is not None:
@@ -327,25 +334,29 @@ def create_revenue_chart(
 
             # OBR static
             if "obr_static_value" in obr_data.columns:
-                traces.append({
-                    "x": [str(y) for y in obr_years],
-                    "y": obr_data["obr_static_value"].tolist(),
-                    "type": "bar",
-                    "name": "OBR (static)",
-                    "marker": {"color": COLORS["gray_light"]},
-                    "hovertemplate": "Year %{x}<br>OBR static: £%{y:.2f}bn<extra></extra>",
-                })
+                traces.append(
+                    {
+                        "x": [str(y) for y in obr_years],
+                        "y": obr_data["obr_static_value"].tolist(),
+                        "type": "bar",
+                        "name": "OBR (static)",
+                        "marker": {"color": COLORS["gray_light"]},
+                        "hovertemplate": "Year %{x}<br>OBR static: £%{y:.2f}bn<extra></extra>",
+                    }
+                )
 
             # OBR behavioural
             if "obr_post_behavioural_value" in obr_data.columns:
-                traces.append({
-                    "x": [str(y) for y in obr_years],
-                    "y": obr_data["obr_post_behavioural_value"].tolist(),
-                    "type": "bar",
-                    "name": "OBR (behavioural)",
-                    "marker": {"color": COLORS["gray"]},
-                    "hovertemplate": "Year %{x}<br>OBR behavioural: £%{y:.2f}bn<extra></extra>",
-                })
+                traces.append(
+                    {
+                        "x": [str(y) for y in obr_years],
+                        "y": obr_data["obr_post_behavioural_value"].tolist(),
+                        "type": "bar",
+                        "name": "OBR (behavioural)",
+                        "marker": {"color": COLORS["gray"]},
+                        "hovertemplate": "Year %{x}<br>OBR behavioural: £%{y:.2f}bn<extra></extra>",
+                    }
+                )
 
     return {
         "data": traces,
@@ -353,14 +364,14 @@ def create_revenue_chart(
             "xaxis": {
                 "title": {
                     "text": "Year",
-                    "font": {"family": FONT_FAMILY, "size": 14}
+                    "font": {"family": FONT_FAMILY, "size": 14},
                 },
                 "tickfont": {"family": FONT_FAMILY},
             },
             "yaxis": {
                 "title": {
                     "text": "Budgetary impact (£bn)",
-                    "font": {"family": FONT_FAMILY, "size": 14}
+                    "font": {"family": FONT_FAMILY, "size": 14},
                 },
                 "tickfont": {"family": FONT_FAMILY},
                 "ticksuffix": "bn",
@@ -369,7 +380,7 @@ def create_revenue_chart(
                 "gridcolor": "#e0e0e0",
                 "zeroline": True,
                 "zerolinecolor": "#333",
-                "zerolinewidth": 2
+                "zerolinewidth": 2,
             },
             "height": 450,
             "margin": {"l": 100, "r": 40, "b": 80, "t": 40, "pad": 4},
@@ -382,9 +393,9 @@ def create_revenue_chart(
                 "yanchor": "bottom",
                 "y": 1.02,
                 "xanchor": "center",
-                "x": 0.5
-            }
-        }
+                "x": 0.5,
+            },
+        },
     }
 
 
@@ -406,9 +417,11 @@ def generate_charts_for_reform(
     # Get available years for this reform
     if years is None:
         years = sorted(
-            distributional_df[
-                distributional_df["reform_id"] == reform_id
-            ]["year"].unique().tolist()
+            distributional_df[distributional_df["reform_id"] == reform_id][
+                "year"
+            ]
+            .unique()
+            .tolist()
         )
 
     try:
@@ -432,9 +445,7 @@ def generate_charts_for_reform(
         print(f"  - Winners/losers chart: {e}")
 
     try:
-        revenue_chart = create_revenue_chart(
-            budgetary_df, reform_id, obr_df
-        )
+        revenue_chart = create_revenue_chart(budgetary_df, reform_id, obr_df)
         with open(reform_output_dir / "revenue.json", "w") as f:
             json.dump(revenue_chart, f, indent=2)
         print("  + Revenue chart: revenue.json")
@@ -449,18 +460,18 @@ def main():
     parser.add_argument(
         "reform_id",
         nargs="?",
-        help="Reform ID to generate charts for (omit for all reforms)"
+        help="Reform ID to generate charts for (omit for all reforms)",
     )
     parser.add_argument(
         "--all",
         action="store_true",
-        help="Generate charts for all reforms in the data"
+        help="Generate charts for all reforms in the data",
     )
     parser.add_argument(
         "--output-dir",
         type=Path,
         default=Path("public/data/blog_charts"),
-        help="Output directory for JSON files"
+        help="Output directory for JSON files",
     )
 
     args = parser.parse_args()
@@ -501,7 +512,9 @@ def main():
         print()
 
     print(f"\nAll charts saved to {args.output_dir}/")
-    print("To embed in a blog post, copy the JSON content into a ```plotly code block.")
+    print(
+        "To embed in a blog post, copy the JSON content into a ```plotly code block."
+    )
 
 
 if __name__ == "__main__":

@@ -59,10 +59,16 @@ class BudgetaryImpactCalculator(BaseCalculator):
                     "student_loan_repayments_modelled", period=year
                 )
                 # Revenue = reformed - baseline (frozen thresholds = more repayments)
-                impact = (reformed_repayments - baseline_repayments).sum() / 1e9
+                impact = (
+                    reformed_repayments - baseline_repayments
+                ).sum() / 1e9
             else:
-                baseline_balance = baseline.calculate("gov_balance", period=year)
-                reformed_balance = reformed.calculate("gov_balance", period=year)
+                baseline_balance = baseline.calculate(
+                    "gov_balance", period=year
+                )
+                reformed_balance = reformed.calculate(
+                    "gov_balance", period=year
+                )
                 impact = (reformed_balance - baseline_balance).sum() / 1e9
             results.append(
                 {
