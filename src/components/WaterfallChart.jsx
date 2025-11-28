@@ -64,8 +64,14 @@ function WaterfallChart({ rawData, selectedPolicies }) {
     { id: "rail_fares_freeze", name: "Rail fares freeze" },
     { id: "threshold_freeze_extension", name: "Threshold freeze extension" },
     { id: "dividend_tax_increase_2pp", name: "Dividend tax increase (+2pp)" },
-    { id: "savings_tax_increase_2pp", name: "Savings income tax increase (+2pp)" },
-    { id: "property_tax_increase_2pp", name: "Property income tax increase (+2pp)" },
+    {
+      id: "savings_tax_increase_2pp",
+      name: "Savings income tax increase (+2pp)",
+    },
+    {
+      id: "property_tax_increase_2pp",
+      name: "Property income tax increase (+2pp)",
+    },
     { id: "salary_sacrifice_cap", name: "NICs on salary sacrifice (>£2k)" },
   ];
 
@@ -256,123 +262,129 @@ function WaterfallChart({ rawData, selectedPolicies }) {
 
       <div ref={chartRef}>
         <ResponsiveContainer width="100%" height={420}>
-        <ComposedChart
-          data={data}
-          margin={{ top: 20, right: 30, left: 70, bottom: 20 }}
-          stackOffset="sign"
-        >
-          <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-          <XAxis
-            dataKey="decile"
-            tick={{ fontSize: 11, fill: "#666" }}
-            label={{
-              value: "Income decile",
-              position: "insideBottom",
-              offset: -10,
-              style: { fill: "#374151", fontSize: 12, fontWeight: 500 },
-            }}
-          />
-          <YAxis
-            domain={yAxisDomain}
-            tickFormatter={formatCurrency}
-            tick={{ fontSize: 11, fill: "#666" }}
-            label={{
-              value: "Average change per household (£)",
-              angle: -90,
-              position: "insideLeft",
-              dx: -30,
-              style: {
-                textAnchor: "middle",
-                fill: "#374151",
-                fontSize: 12,
-                fontWeight: 500,
-              },
-            }}
-            ticks={(() => {
-              const [min, max] = yAxisDomain;
-              const range = max - min;
-              let interval = 100;
-              if (range > 1000) interval = 250;
-              if (range > 2000) interval = 500;
-              if (range > 5000) interval = 1000;
-              const ticks = [];
-              for (let i = min; i <= max + 0.001; i += interval) {
-                ticks.push(Math.round(i));
-              }
-              if (!ticks.includes(0)) ticks.push(0);
-              return ticks.sort((a, b) => a - b);
-            })()}
-          />
-          <ReferenceLine y={0} stroke="#666" strokeWidth={1} />
-          <Tooltip
-            formatter={(value, name) => [
-              formatCurrency(value),
-              name === "netChange" ? "Net change" : name,
-            ]}
-            labelFormatter={(label) => `Decile: ${label}`}
-            contentStyle={{
-              background: "white",
-              border: "1px solid #e5e7eb",
-              borderRadius: "6px",
-              fontSize: "12px",
-            }}
-            wrapperStyle={{
-              top: "-120px",
-              left: "50%",
-              transform: "translateX(-50%)",
-            }}
-            cursor={{ fill: "rgba(49, 151, 149, 0.1)" }}
-          />
-          <Legend
-            wrapperStyle={{ paddingTop: "20px", paddingRight: "140px" }}
-            iconType="rect"
-            formatter={(value) => (
-              <span style={{ color: "#374151", fontSize: "13px", fontWeight: 500 }}>
-                {value}
-              </span>
-            )}
-            payload={[
-              ...ALL_POLICY_NAMES.map((name) => ({
-                value: name,
-                type: "rect",
-                color: POLICY_COLORS[name],
-              })),
-              ...(activePolicies.length > 1
-                ? [
-                    {
-                      value: "Net change",
-                      type: "line",
-                      color: "#FBBF24",
-                    },
-                  ]
-                : []),
-            ]}
-          />
-          {ALL_POLICY_NAMES.map((policyName) => (
-            <Bar
-              key={policyName}
-              dataKey={policyName}
-              fill={POLICY_COLORS[policyName]}
-              name={policyName}
-              stackId="stack"
-              animationDuration={500}
-              animationBegin={0}
-              hide={!hasNonZeroValues(policyName)}
+          <ComposedChart
+            data={data}
+            margin={{ top: 20, right: 30, left: 70, bottom: 20 }}
+            stackOffset="sign"
+          >
+            <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+            <XAxis
+              dataKey="decile"
+              tick={{ fontSize: 11, fill: "#666" }}
+              label={{
+                value: "Income decile",
+                position: "insideBottom",
+                offset: -10,
+                style: { fill: "#374151", fontSize: 12, fontWeight: 500 },
+              }}
             />
-          ))}
-          <Line
-            type="monotone"
-            dataKey="netChange"
-            stroke="#FBBF24"
-            strokeWidth={3}
-            dot={{ fill: "#FBBF24", stroke: "#92400E", strokeWidth: 2, r: 5 }}
-            name="netChange"
-            animationDuration={500}
-            hide={activePolicies.length <= 1}
-          />
-          <Customized component={PolicyEngineLogo} />
-        </ComposedChart>
-      </ResponsiveContainer>
+            <YAxis
+              domain={yAxisDomain}
+              tickFormatter={formatCurrency}
+              tick={{ fontSize: 11, fill: "#666" }}
+              label={{
+                value: "Average change per household (£)",
+                angle: -90,
+                position: "insideLeft",
+                dx: -30,
+                style: {
+                  textAnchor: "middle",
+                  fill: "#374151",
+                  fontSize: 12,
+                  fontWeight: 500,
+                },
+              }}
+              ticks={(() => {
+                const [min, max] = yAxisDomain;
+                const range = max - min;
+                let interval = 100;
+                if (range > 1000) interval = 250;
+                if (range > 2000) interval = 500;
+                if (range > 5000) interval = 1000;
+                const ticks = [];
+                for (let i = min; i <= max + 0.001; i += interval) {
+                  ticks.push(Math.round(i));
+                }
+                if (!ticks.includes(0)) ticks.push(0);
+                return ticks.sort((a, b) => a - b);
+              })()}
+            />
+            <ReferenceLine y={0} stroke="#666" strokeWidth={1} />
+            <Tooltip
+              formatter={(value, name) => [
+                formatCurrency(value),
+                name === "netChange" ? "Net change" : name,
+              ]}
+              labelFormatter={(label) => `Decile: ${label}`}
+              contentStyle={{
+                background: "white",
+                border: "1px solid #e5e7eb",
+                borderRadius: "6px",
+                fontSize: "12px",
+              }}
+              wrapperStyle={{
+                top: "-120px",
+                left: "50%",
+                transform: "translateX(-50%)",
+              }}
+              cursor={{ fill: "rgba(49, 151, 149, 0.1)" }}
+            />
+            <Legend
+              wrapperStyle={{ paddingTop: "20px", paddingRight: "140px" }}
+              iconType="rect"
+              formatter={(value) => (
+                <span
+                  style={{
+                    color: "#374151",
+                    fontSize: "13px",
+                    fontWeight: 500,
+                  }}
+                >
+                  {value}
+                </span>
+              )}
+              payload={[
+                ...ALL_POLICY_NAMES.map((name) => ({
+                  value: name,
+                  type: "rect",
+                  color: POLICY_COLORS[name],
+                })),
+                ...(activePolicies.length > 1
+                  ? [
+                      {
+                        value: "Net change",
+                        type: "line",
+                        color: "#FBBF24",
+                      },
+                    ]
+                  : []),
+              ]}
+            />
+            {ALL_POLICY_NAMES.map((policyName) => (
+              <Bar
+                key={policyName}
+                dataKey={policyName}
+                fill={POLICY_COLORS[policyName]}
+                name={policyName}
+                stackId="stack"
+                animationDuration={500}
+                animationBegin={0}
+                hide={!hasNonZeroValues(policyName)}
+              />
+            ))}
+            <Line
+              type="monotone"
+              dataKey="netChange"
+              stroke="#FBBF24"
+              strokeWidth={3}
+              dot={{ fill: "#FBBF24", stroke: "#92400E", strokeWidth: 2, r: 5 }}
+              name="netChange"
+              animationDuration={500}
+              hide={activePolicies.length <= 1}
+            />
+            <Customized component={PolicyEngineLogo} />
+          </ComposedChart>
+        </ResponsiveContainer>
       </div>
 
       <YearSlider selectedYear={internalYear} onYearChange={setInternalYear} />

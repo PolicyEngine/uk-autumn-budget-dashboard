@@ -25,6 +25,8 @@ dependencies = [
     "microdf-python>=0.3.0",
     "pydantic>=2.0.0",
     "rich>=13.0.0",
+    "flask>=3.0.0",
+    "flask-cors>=4.0.0",
 ]
 
 [project.optional-dependencies]
@@ -37,6 +39,7 @@ dev = [
 
 [project.scripts]
 uk-budget-data = "uk_budget_data.cli:main"
+uk-budget-api = "uk_budget_data.api:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

@@ -99,7 +99,13 @@ function wrapTextSimple(text, maxCharsPerLine = 100) {
  * @returns {number} - Header height in pixels
  */
 function calculateHeaderHeight(title, description) {
-  const { padding, titleFontSize, descriptionFontSize, lineHeight, titleDescGap } = STYLES;
+  const {
+    padding,
+    titleFontSize,
+    descriptionFontSize,
+    lineHeight,
+    titleDescGap,
+  } = STYLES;
 
   let height = padding; // Top padding
 
@@ -147,7 +153,7 @@ function createDescription(description, y) {
   const textElement = createSvgElement("text", { x: padding, y });
   textElement.setAttribute(
     "style",
-    `font-family: ${DEFAULT_FONT}; font-size: ${descriptionFontSize}px; font-weight: 400; fill: ${colors.description};`
+    `font-family: ${DEFAULT_FONT}; font-size: ${descriptionFontSize}px; font-weight: 400; fill: ${colors.description};`,
   );
 
   const lines = wrapTextSimple(description);
@@ -172,7 +178,12 @@ function createDescription(description, y) {
  * @returns {string} - The gradient ID for reference
  */
 function createGradientLegend(svg, centerX, y) {
-  const { legendGradientWidth, legendGradientHeight, legendLabelFontSize, colors } = STYLES;
+  const {
+    legendGradientWidth,
+    legendGradientHeight,
+    legendLabelFontSize,
+    colors,
+  } = STYLES;
   const legendX = centerX - legendGradientWidth / 2;
 
   // Create gradient definition
@@ -240,7 +251,8 @@ function createGradientLegend(svg, centerX, y) {
  * @param {number} y - Y position
  */
 function createTooltipCard(svg, data, x, y) {
-  const { tooltipWidth, tooltipHeight, tooltipPadding, tooltipRadius, colors } = STYLES;
+  const { tooltipWidth, tooltipHeight, tooltipPadding, tooltipRadius, colors } =
+    STYLES;
 
   // Background with border
   const bg = createSvgElement("rect", {
@@ -256,9 +268,10 @@ function createTooltipCard(svg, data, x, y) {
   svg.appendChild(bg);
 
   // Constituency name (truncated if needed)
-  const name = data.constituency_name.length > 22
-    ? data.constituency_name.substring(0, 20) + "..."
-    : data.constituency_name;
+  const name =
+    data.constituency_name.length > 22
+      ? data.constituency_name.substring(0, 20) + "..."
+      : data.constituency_name;
 
   const nameText = createSvgText(name, {
     x: x + tooltipPadding,
@@ -271,7 +284,9 @@ function createTooltipCard(svg, data, x, y) {
 
   // Average gain value
   const gainColor = data.average_gain >= 0 ? colors.positive : colors.negative;
-  const absGain = Math.abs(data.average_gain).toLocaleString("en-GB", { maximumFractionDigits: 0 });
+  const absGain = Math.abs(data.average_gain).toLocaleString("en-GB", {
+    maximumFractionDigits: 0,
+  });
   const gainValue = `${data.average_gain < 0 ? "-" : ""}£${absGain}`;
 
   const gainText = createSvgText(gainValue, {
@@ -294,7 +309,8 @@ function createTooltipCard(svg, data, x, y) {
   svg.appendChild(gainLabel);
 
   // Relative change value
-  const relColor = data.relative_change >= 0 ? colors.positive : colors.negative;
+  const relColor =
+    data.relative_change >= 0 ? colors.positive : colors.negative;
   const relValue = `${data.relative_change >= 0 ? "+" : ""}${data.relative_change.toFixed(2)}%`;
 
   const relText = createSvgText(relValue, {
@@ -332,7 +348,11 @@ function createTooltipCard(svg, data, x, y) {
  * @param {Object} options.tooltipData - Selected constituency data for tooltip
  * @returns {Promise<boolean>} - True if export was successful
  */
-export async function exportMapAsSvg(svgElement, filename = "map", options = {}) {
+export async function exportMapAsSvg(
+  svgElement,
+  filename = "map",
+  options = {},
+) {
   const { title, description, logo, tooltipData } = options;
 
   if (!svgElement) {
@@ -352,7 +372,9 @@ export async function exportMapAsSvg(svgElement, filename = "map", options = {})
   // Remove existing image elements with relative URLs (won't work in standalone SVG)
   const existingImages = clonedSvg.querySelectorAll("image");
   existingImages.forEach((img) => {
-    const href = img.getAttribute("href") || img.getAttributeNS("http://www.w3.org/1999/xlink", "href");
+    const href =
+      img.getAttribute("href") ||
+      img.getAttributeNS("http://www.w3.org/1999/xlink", "href");
     if (href && !href.startsWith("data:")) {
       img.remove();
     }
@@ -375,7 +397,9 @@ export async function exportMapAsSvg(svgElement, filename = "map", options = {})
 
   // Wrap existing content and translate down
   const existingContent = Array.from(clonedSvg.childNodes);
-  const contentGroup = createSvgGroup({ transform: `translate(0, ${headerHeight})` });
+  const contentGroup = createSvgGroup({
+    transform: `translate(0, ${headerHeight})`,
+  });
   existingContent.forEach((child) => contentGroup.appendChild(child));
   clonedSvg.appendChild(contentGroup);
 
@@ -399,7 +423,10 @@ export async function exportMapAsSvg(svgElement, filename = "map", options = {})
 
   // Add description
   if (description) {
-    const descElement = createDescription(description, currentY + STYLES.descriptionFontSize);
+    const descElement = createDescription(
+      description,
+      currentY + STYLES.descriptionFontSize,
+    );
     clonedSvg.insertBefore(descElement, contentGroup);
   }
 
@@ -419,7 +446,11 @@ export async function exportMapAsSvg(svgElement, filename = "map", options = {})
       });
       // Set both href and xlink:href for maximum browser compatibility
       logoImage.setAttribute("href", base64Logo);
-      logoImage.setAttributeNS("http://www.w3.org/1999/xlink", "xlink:href", base64Logo);
+      logoImage.setAttributeNS(
+        "http://www.w3.org/1999/xlink",
+        "xlink:href",
+        base64Logo,
+      );
       clonedSvg.appendChild(logoImage);
     } catch (error) {
       console.warn("exportMapAsSvg: Failed to embed logo", error);
