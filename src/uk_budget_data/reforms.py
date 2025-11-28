@@ -546,6 +546,13 @@ def create_salary_sacrifice_cap_reform(
         Reform object configured with the specified parameters.
     """
 
+    def baseline_modifier(sim: Simulation) -> Simulation:
+        for year in range(2029, 2031):
+            hh_net_income = sim.calculate("household_net_income", period=year)
+            employee_pension = sim.calculate("employee_pension_contributions", period=year, map_to="household")
+            sim.set_input("household_net_income", year, hh_net_income - employee_pension)
+        return sim
+
     def modifier(sim: Simulation) -> Simulation:
         # Policy takes effect from April 2029 (fiscal year 2029-30)
         for year in range(2029, 2031):
@@ -574,6 +581,11 @@ def create_salary_sacrifice_cap_reform(
                 "pension_contributions_via_salary_sacrifice", year, new_ss
             )
 
+            # Subtract employee pension contributions from household net income
+            hh_net_income = sim.calculate("household_net_income", period=year)
+            employee_pension_hh = sim.calculate("employee_pension_contributions", period=year, map_to="household")
+            sim.set_input("household_net_income", year, hh_net_income - employee_pension_hh)
+
         return sim
 
     return Reform(
@@ -587,6 +599,7 @@ def create_salary_sacrifice_cap_reform(
             f"(maintaining pension savings) and employers spread increased NI "
             f"costs across all workers ({employer_response_haircut:.0%} haircut)."
         ),
+        baseline_simulation_modifier=baseline_modifier,
         simulation_modifier=modifier,
     )
 
