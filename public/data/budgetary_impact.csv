@@ -35,7 +35,7 @@ zero_vat_energy,Zero-rate VAT on energy,2026,-3.1606945637113535
 zero_vat_energy,Zero-rate VAT on energy,2027,-3.2364716772964224
 zero_vat_energy,Zero-rate VAT on energy,2028,-3.3157071169647945
 zero_vat_energy,Zero-rate VAT on energy,2029,-3.398234326218848
-salary_sacrifice_cap,"NICs on salary sacrifice (>£2,000)",2026,0.0
-salary_sacrifice_cap,"NICs on salary sacrifice (>£2,000)",2027,0.0
-salary_sacrifice_cap,"NICs on salary sacrifice (>£2,000)",2028,0.0
-salary_sacrifice_cap,"NICs on salary sacrifice (>£2,000)",2029,3.1921979704841723
+salary_sacrifice_cap,Salary sacrifice cap,2026,0.0
+salary_sacrifice_cap,Salary sacrifice cap,2027,0.0
+salary_sacrifice_cap,Salary sacrifice cap,2028,0.0
+salary_sacrifice_cap,Salary sacrifice cap,2029,3.1921979704841723

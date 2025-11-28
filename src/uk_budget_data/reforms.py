@@ -578,7 +578,7 @@ def create_salary_sacrifice_cap_reform(
 
     return Reform(
         id="salary_sacrifice_cap",
-        name=f"NICs on salary sacrifice (>£{cap_amount:,.0f})",
+        name="Salary sacrifice cap",
         description=(
             f"Caps salary sacrifice pension contributions at £{cap_amount:,.0f} "
             f"per year from April 2029. Contributions above the cap become "

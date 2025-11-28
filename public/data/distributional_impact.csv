@@ -359,43 +359,43 @@ zero_vat_energy,Zero-rate VAT on energy,2029,7th,0.20835987
 zero_vat_energy,Zero-rate VAT on energy,2029,8th,0.2434642
 zero_vat_energy,Zero-rate VAT on energy,2029,9th,0.16357851
 zero_vat_energy,Zero-rate VAT on energy,2029,10th,0.11193767
-salary_sacrifice_cap,"NICs on salary sacrifice (>£2,000)",2026,1st,0.0
-salary_sacrifice_cap,"NICs on salary sacrifice (>£2,000)",2026,2nd,0.0
-salary_sacrifice_cap,"NICs on salary sacrifice (>£2,000)",2026,3rd,0.0
-salary_sacrifice_cap,"NICs on salary sacrifice (>£2,000)",2026,4th,0.0
-salary_sacrifice_cap,"NICs on salary sacrifice (>£2,000)",2026,5th,0.0
-salary_sacrifice_cap,"NICs on salary sacrifice (>£2,000)",2026,6th,0.0
-salary_sacrifice_cap,"NICs on salary sacrifice (>£2,000)",2026,7th,0.0
-salary_sacrifice_cap,"NICs on salary sacrifice (>£2,000)",2026,8th,0.0
-salary_sacrifice_cap,"NICs on salary sacrifice (>£2,000)",2026,9th,0.0
-salary_sacrifice_cap,"NICs on salary sacrifice (>£2,000)",2026,10th,0.0
-salary_sacrifice_cap,"NICs on salary sacrifice (>£2,000)",2027,1st,0.0
-salary_sacrifice_cap,"NICs on salary sacrifice (>£2,000)",2027,2nd,0.0
-salary_sacrifice_cap,"NICs on salary sacrifice (>£2,000)",2027,3rd,0.0
-salary_sacrifice_cap,"NICs on salary sacrifice (>£2,000)",2027,4th,0.0
-salary_sacrifice_cap,"NICs on salary sacrifice (>£2,000)",2027,5th,0.0
-salary_sacrifice_cap,"NICs on salary sacrifice (>£2,000)",2027,6th,0.0
-salary_sacrifice_cap,"NICs on salary sacrifice (>£2,000)",2027,7th,0.0
-salary_sacrifice_cap,"NICs on salary sacrifice (>£2,000)",2027,8th,0.0
-salary_sacrifice_cap,"NICs on salary sacrifice (>£2,000)",2027,9th,0.0
-salary_sacrifice_cap,"NICs on salary sacrifice (>£2,000)",2027,10th,0.0
-salary_sacrifice_cap,"NICs on salary sacrifice (>£2,000)",2028,1st,0.0
-salary_sacrifice_cap,"NICs on salary sacrifice (>£2,000)",2028,2nd,0.0
-salary_sacrifice_cap,"NICs on salary sacrifice (>£2,000)",2028,3rd,0.0
-salary_sacrifice_cap,"NICs on salary sacrifice (>£2,000)",2028,4th,0.0
-salary_sacrifice_cap,"NICs on salary sacrifice (>£2,000)",2028,5th,0.0
-salary_sacrifice_cap,"NICs on salary sacrifice (>£2,000)",2028,6th,0.0
-salary_sacrifice_cap,"NICs on salary sacrifice (>£2,000)",2028,7th,0.0
-salary_sacrifice_cap,"NICs on salary sacrifice (>£2,000)",2028,8th,0.0
-salary_sacrifice_cap,"NICs on salary sacrifice (>£2,000)",2028,9th,0.0
-salary_sacrifice_cap,"NICs on salary sacrifice (>£2,000)",2028,10th,0.0
-salary_sacrifice_cap,"NICs on salary sacrifice (>£2,000)",2029,1st,0.025888067
-salary_sacrifice_cap,"NICs on salary sacrifice (>£2,000)",2029,2nd,0.021774817
-salary_sacrifice_cap,"NICs on salary sacrifice (>£2,000)",2029,3rd,1.9451296
-salary_sacrifice_cap,"NICs on salary sacrifice (>£2,000)",2029,4th,0.25908625
-salary_sacrifice_cap,"NICs on salary sacrifice (>£2,000)",2029,5th,0.20931491
-salary_sacrifice_cap,"NICs on salary sacrifice (>£2,000)",2029,6th,0.13043538
-salary_sacrifice_cap,"NICs on salary sacrifice (>£2,000)",2029,7th,0.49460715
-salary_sacrifice_cap,"NICs on salary sacrifice (>£2,000)",2029,8th,0.81171703
-salary_sacrifice_cap,"NICs on salary sacrifice (>£2,000)",2029,9th,0.59706026
-salary_sacrifice_cap,"NICs on salary sacrifice (>£2,000)",2029,10th,1.024922
+salary_sacrifice_cap,Salary sacrifice cap,2026,1st,0.0
+salary_sacrifice_cap,Salary sacrifice cap,2026,2nd,0.0
+salary_sacrifice_cap,Salary sacrifice cap,2026,3rd,0.0
+salary_sacrifice_cap,Salary sacrifice cap,2026,4th,0.0
+salary_sacrifice_cap,Salary sacrifice cap,2026,5th,0.0
+salary_sacrifice_cap,Salary sacrifice cap,2026,6th,0.0
+salary_sacrifice_cap,Salary sacrifice cap,2026,7th,0.0
+salary_sacrifice_cap,Salary sacrifice cap,2026,8th,0.0
+salary_sacrifice_cap,Salary sacrifice cap,2026,9th,0.0
+salary_sacrifice_cap,Salary sacrifice cap,2026,10th,0.0
+salary_sacrifice_cap,Salary sacrifice cap,2027,1st,0.0
+salary_sacrifice_cap,Salary sacrifice cap,2027,2nd,0.0
+salary_sacrifice_cap,Salary sacrifice cap,2027,3rd,0.0
+salary_sacrifice_cap,Salary sacrifice cap,2027,4th,0.0
+salary_sacrifice_cap,Salary sacrifice cap,2027,5th,0.0
+salary_sacrifice_cap,Salary sacrifice cap,2027,6th,0.0
+salary_sacrifice_cap,Salary sacrifice cap,2027,7th,0.0
+salary_sacrifice_cap,Salary sacrifice cap,2027,8th,0.0
+salary_sacrifice_cap,Salary sacrifice cap,2027,9th,0.0
+salary_sacrifice_cap,Salary sacrifice cap,2027,10th,0.0
+salary_sacrifice_cap,Salary sacrifice cap,2028,1st,0.0
+salary_sacrifice_cap,Salary sacrifice cap,2028,2nd,0.0
+salary_sacrifice_cap,Salary sacrifice cap,2028,3rd,0.0
+salary_sacrifice_cap,Salary sacrifice cap,2028,4th,0.0
+salary_sacrifice_cap,Salary sacrifice cap,2028,5th,0.0
+salary_sacrifice_cap,Salary sacrifice cap,2028,6th,0.0
+salary_sacrifice_cap,Salary sacrifice cap,2028,7th,0.0
+salary_sacrifice_cap,Salary sacrifice cap,2028,8th,0.0
+salary_sacrifice_cap,Salary sacrifice cap,2028,9th,0.0
+salary_sacrifice_cap,Salary sacrifice cap,2028,10th,0.0
+salary_sacrifice_cap,Salary sacrifice cap,2029,1st,0.025888067
+salary_sacrifice_cap,Salary sacrifice cap,2029,2nd,0.021774817
+salary_sacrifice_cap,Salary sacrifice cap,2029,3rd,1.9451296
+salary_sacrifice_cap,Salary sacrifice cap,2029,4th,0.25908625
+salary_sacrifice_cap,Salary sacrifice cap,2029,5th,0.20931491
+salary_sacrifice_cap,Salary sacrifice cap,2029,6th,0.13043538
+salary_sacrifice_cap,Salary sacrifice cap,2029,7th,0.49460715
+salary_sacrifice_cap,Salary sacrifice cap,2029,8th,0.81171703
+salary_sacrifice_cap,Salary sacrifice cap,2029,9th,0.59706026
+salary_sacrifice_cap,Salary sacrifice cap,2029,10th,1.024922
