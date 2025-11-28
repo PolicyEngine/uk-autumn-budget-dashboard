@@ -35,7 +35,10 @@ export function createSvgElement(tagName, attributes = {}) {
  * @param {string} options.fill - Text colour
  * @returns {SVGTextElement}
  */
-export function createSvgText(content, { x, y, fontSize, fontWeight = "400", fill = "#374151" }) {
+export function createSvgText(
+  content,
+  { x, y, fontSize, fontWeight = "400", fill = "#374151" },
+) {
   const text = createSvgElement("text", {
     x,
     y,
@@ -47,7 +50,7 @@ export function createSvgText(content, { x, y, fontSize, fontWeight = "400", fil
   // Also set via style attribute for broader compatibility
   text.setAttribute(
     "style",
-    `font-family: ${DEFAULT_FONT}; font-size: ${fontSize}px; font-weight: ${fontWeight}; fill: ${fill};`
+    `font-family: ${DEFAULT_FONT}; font-size: ${fontSize}px; font-weight: ${fontWeight}; fill: ${fill};`,
   );
   text.textContent = content;
   return text;

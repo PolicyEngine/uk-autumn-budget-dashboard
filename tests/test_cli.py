@@ -10,42 +10,70 @@ class TestCLI:
 
         assert callable(main)
 
-    def test_parse_args_default(self):
-        """parse_args returns defaults when no args."""
+    def test_parse_args_generate_default(self):
+        """parse_args returns defaults for generate subcommand."""
         from uk_budget_data.cli import parse_args
 
-        args = parse_args([])
+        args = parse_args(["generate"])
+        assert args.command == "generate"
         assert args.output_dir is not None
         assert args.years is not None
 
-    def test_parse_args_custom_output(self):
-        """parse_args accepts custom output directory."""
+    def test_parse_args_generate_custom_output(self):
+        """parse_args accepts custom output directory for generate."""
         from uk_budget_data.cli import parse_args
 
-        args = parse_args(["--output-dir", "/tmp/output"])
+        args = parse_args(["generate", "--output-dir", "/tmp/output"])
         assert str(args.output_dir) == "/tmp/output"
 
-    def test_parse_args_reforms(self):
-        """parse_args accepts reform IDs."""
+    def test_parse_args_generate_reforms(self):
+        """parse_args accepts reform IDs for generate."""
         from uk_budget_data.cli import parse_args
 
-        args = parse_args(["--reforms", "two_child_limit", "fuel_duty_freeze"])
+        args = parse_args(
+            ["generate", "--reforms", "two_child_limit", "fuel_duty_freeze"]
+        )
         assert "two_child_limit" in args.reforms
         assert "fuel_duty_freeze" in args.reforms
 
-    def test_parse_args_years(self):
-        """parse_args accepts years."""
+    def test_parse_args_generate_years(self):
+        """parse_args accepts years for generate."""
         from uk_budget_data.cli import parse_args
 
-        args = parse_args(["--years", "2026", "2027"])
+        args = parse_args(["generate", "--years", "2026", "2027"])
         assert args.years == [2026, 2027]
 
     def test_list_reforms_option(self):
-        """parse_args accepts --list-reforms."""
+        """parse_args accepts --list-reforms for generate."""
         from uk_budget_data.cli import parse_args
 
-        args = parse_args(["--list-reforms"])
+        args = parse_args(["generate", "--list-reforms"])
         assert args.list_reforms is True
+
+    def test_parse_args_no_command(self):
+        """parse_args with no command returns None command."""
+        from uk_budget_data.cli import parse_args
+
+        args = parse_args([])
+        assert args.command is None
+
+    def test_parse_args_lifetime(self):
+        """parse_args accepts lifetime subcommand."""
+        from uk_budget_data.cli import parse_args
+
+        args = parse_args(["lifetime"])
+        assert args.command == "lifetime"
+        assert args.income == "p50"  # default
+
+    def test_parse_args_lifetime_with_options(self):
+        """parse_args accepts lifetime options."""
+        from uk_budget_data.cli import parse_args
+
+        args = parse_args(
+            ["lifetime", "--income", "p75", "--student-loan", "60000"]
+        )
+        assert args.income == "p75"
+        assert args.student_loan == 60000
 
 
 class TestReformSelection:

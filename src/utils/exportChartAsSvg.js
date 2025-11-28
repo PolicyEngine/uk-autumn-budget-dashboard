@@ -92,7 +92,9 @@ function inlineComputedStyles(clonedElement, originalElement) {
 
   const styleValues = SVG_STYLE_PROPERTIES.map((prop) => {
     const value = computedStyle.getPropertyValue(prop);
-    return value && value !== "none" && value !== "normal" ? `${prop}: ${value}` : null;
+    return value && value !== "none" && value !== "normal"
+      ? `${prop}: ${value}`
+      : null;
   }).filter(Boolean);
 
   if (styleValues.length > 0) {
@@ -107,7 +109,11 @@ function inlineComputedStyles(clonedElement, originalElement) {
   const clonedChildren = clonedElement.children;
   const originalChildren = originalElement.children;
 
-  for (let i = 0; i < clonedChildren.length && i < originalChildren.length; i++) {
+  for (
+    let i = 0;
+    i < clonedChildren.length && i < originalChildren.length;
+    i++
+  ) {
     inlineComputedStyles(clonedChildren[i], originalChildren[i]);
   }
 }
@@ -119,14 +125,20 @@ function inlineComputedStyles(clonedElement, originalElement) {
  * @returns {number} Total width in pixels
  */
 function calculateLegendWidth(items) {
-  const { legendFontSize, legendIconSize, legendIconTextGap, legendItemGap } = STYLES;
+  const { legendFontSize, legendIconSize, legendIconTextGap, legendItemGap } =
+    STYLES;
 
   const itemWidths = items.map((item) => {
-    const textWidth = measureTextWidth(item.label, { fontSize: legendFontSize });
+    const textWidth = measureTextWidth(item.label, {
+      fontSize: legendFontSize,
+    });
     return legendIconSize + legendIconTextGap + textWidth;
   });
 
-  return itemWidths.reduce((sum, w) => sum + w, 0) + (items.length - 1) * legendItemGap;
+  return (
+    itemWidths.reduce((sum, w) => sum + w, 0) +
+    (items.length - 1) * legendItemGap
+  );
 }
 
 /**
@@ -138,11 +150,19 @@ function calculateLegendWidth(items) {
  * @returns {SVGGElement}
  */
 function createLegend(items, startX, yPosition) {
-  const { legendFontSize, legendIconSize, legendIconTextGap, legendItemGap, colors } = STYLES;
+  const {
+    legendFontSize,
+    legendIconSize,
+    legendIconTextGap,
+    legendItemGap,
+    colors,
+  } = STYLES;
 
   // Calculate item widths
   const itemWidths = items.map((item) => {
-    const textWidth = measureTextWidth(item.label, { fontSize: legendFontSize });
+    const textWidth = measureTextWidth(item.label, {
+      fontSize: legendFontSize,
+    });
     return legendIconSize + legendIconTextGap + textWidth;
   });
 
@@ -223,10 +243,12 @@ function createDescription(description, y, maxWidth) {
   const textElement = createSvgElement("text", { x: padding, y });
   textElement.setAttribute(
     "style",
-    `font-family: system-ui, -apple-system, sans-serif; font-size: ${descriptionFontSize}px; font-weight: 400; fill: ${colors.description};`
+    `font-family: system-ui, -apple-system, sans-serif; font-size: ${descriptionFontSize}px; font-weight: 400; fill: ${colors.description};`,
   );
 
-  const lines = wrapText(description, maxWidth, { fontSize: descriptionFontSize });
+  const lines = wrapText(description, maxWidth, {
+    fontSize: descriptionFontSize,
+  });
 
   lines.forEach((line, index) => {
     const tspan = createSvgTspan(line, {
@@ -247,7 +269,13 @@ function createDescription(description, y, maxWidth) {
  * @returns {number} - Header height in pixels
  */
 function calculateHeaderHeight({ title, description }, chartWidth) {
-  const { padding, titleFontSize, descriptionFontSize, lineHeight, titleDescGap } = STYLES;
+  const {
+    padding,
+    titleFontSize,
+    descriptionFontSize,
+    lineHeight,
+    titleDescGap,
+  } = STYLES;
   let height = 0;
 
   if (title) {
@@ -286,7 +314,11 @@ function calculateHeaderHeight({ title, description }, chartWidth) {
  * @param {number} options.logo.padding - Padding from edges
  * @returns {Promise<boolean>} - True if export was successful
  */
-export async function exportChartAsSvg(containerRef, filename = "chart", options = {}) {
+export async function exportChartAsSvg(
+  containerRef,
+  filename = "chart",
+  options = {},
+) {
   const { title, description, legendItems = [], logo } = options;
 
   if (!containerRef?.current) {
@@ -295,7 +327,8 @@ export async function exportChartAsSvg(containerRef, filename = "chart", options
   }
 
   // Find the SVG element within the Recharts container
-  const rechartsWrapper = containerRef.current.querySelector(".recharts-wrapper");
+  const rechartsWrapper =
+    containerRef.current.querySelector(".recharts-wrapper");
   const svgElement = rechartsWrapper?.querySelector("svg");
 
   if (!svgElement) {
@@ -321,14 +354,19 @@ export async function exportChartAsSvg(containerRef, filename = "chart", options
   // Remove existing image elements with relative URLs (won't work in standalone SVG)
   const existingImages = clonedSvg.querySelectorAll("image");
   existingImages.forEach((img) => {
-    const href = img.getAttribute("href") || img.getAttributeNS("http://www.w3.org/1999/xlink", "href");
+    const href =
+      img.getAttribute("href") ||
+      img.getAttributeNS("http://www.w3.org/1999/xlink", "href");
     if (href && !href.startsWith("data:")) {
       img.remove();
     }
   });
 
   // Calculate layout - no extra footer height needed since chart already has legend space
-  const headerHeight = calculateHeaderHeight({ title, description }, chartWidth);
+  const headerHeight = calculateHeaderHeight(
+    { title, description },
+    chartWidth,
+  );
   const totalHeight = chartHeight + headerHeight;
 
   // Update SVG dimensions
@@ -339,7 +377,9 @@ export async function exportChartAsSvg(containerRef, filename = "chart", options
 
   // Wrap existing content and translate down
   const existingContent = Array.from(clonedSvg.childNodes);
-  const contentGroup = createSvgGroup({ transform: `translate(0, ${headerHeight})` });
+  const contentGroup = createSvgGroup({
+    transform: `translate(0, ${headerHeight})`,
+  });
   existingContent.forEach((child) => contentGroup.appendChild(child));
   clonedSvg.appendChild(contentGroup);
 
@@ -364,7 +404,11 @@ export async function exportChartAsSvg(containerRef, filename = "chart", options
   // Add description
   if (description) {
     const maxWidth = chartWidth - STYLES.padding * 2;
-    const descElement = createDescription(description, currentY + STYLES.descriptionFontSize, maxWidth);
+    const descElement = createDescription(
+      description,
+      currentY + STYLES.descriptionFontSize,
+      maxWidth,
+    );
     clonedSvg.insertBefore(descElement, contentGroup);
   }
 
@@ -376,11 +420,14 @@ export async function exportChartAsSvg(containerRef, filename = "chart", options
   const logoRightPadding = 10;
 
   // Calculate logo position (anchored to right)
-  const logoX = logo?.href ? chartWidth - logo.width - logoRightPadding : chartWidth;
+  const logoX = logo?.href
+    ? chartWidth - logo.width - logoRightPadding
+    : chartWidth;
 
   // Calculate available space for legend (from left edge to logo)
   const availableWidth = logo?.href ? logoX : chartWidth;
-  const legendWidth = legendItems.length > 0 ? calculateLegendWidth(legendItems) : 0;
+  const legendWidth =
+    legendItems.length > 0 ? calculateLegendWidth(legendItems) : 0;
 
   // Center legend within the available space (left of logo)
   const legendStartX = (availableWidth - legendWidth) / 2;
@@ -402,7 +449,11 @@ export async function exportChartAsSvg(containerRef, filename = "chart", options
       });
       // Set both href and xlink:href for maximum browser compatibility
       logoImage.setAttribute("href", base64Logo);
-      logoImage.setAttributeNS("http://www.w3.org/1999/xlink", "xlink:href", base64Logo);
+      logoImage.setAttributeNS(
+        "http://www.w3.org/1999/xlink",
+        "xlink:href",
+        base64Logo,
+      );
 
       // Position logo vertically centered with legend
       const logoY = footerY - logo.height / 2;

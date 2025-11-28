@@ -122,8 +122,9 @@
 }
 
 .value-cell {
-  font-family: "SF Mono", "Monaco", "Inconsolata", "Fira Mono",
-    "Droid Sans Mono", "Source Code Pro", monospace;
+  font-family:
+    "SF Mono", "Monaco", "Inconsolata", "Fira Mono", "Droid Sans Mono",
+    "Source Code Pro", monospace;
   font-size: 0.8125rem;
 }
 

@@ -19,7 +19,7 @@ import "./ChartExport.css";
 
 // Chart metadata for export
 const CHART_DESCRIPTION =
-  "This chart plots net income change against baseline income for 1,000 sampled households. Green dots indicate gains, red shows losses, and grey shows minimal change. Dot size represents household weight in the population.";
+  "This chart plots net income change against baseline income for 500 sampled households. Green dots indicate gains, red shows losses, and grey shows minimal change. Dot size represents household weight in the population.";
 
 // Format year for display (e.g., 2026 -> "2026-27")
 const formatYearRange = (year) => `${year}-${(year + 1).toString().slice(-2)}`;
@@ -84,7 +84,8 @@ function HouseholdChart({ rawData, selectedPolicies }) {
 
     // Get data for the first reform to establish household indices
     const firstReformId = selectedPolicies[0];
-    const firstYearData = dataByReformAndYear[firstReformId]?.[internalYear] || [];
+    const firstYearData =
+      dataByReformAndYear[firstReformId]?.[internalYear] || [];
 
     if (firstYearData.length === 0) return [];
 
@@ -444,7 +445,7 @@ function HouseholdChart({ rawData, selectedPolicies }) {
         <div>
           <h2>{chartTitle}</h2>
           <p className="chart-description">
-            This chart plots net income change against baseline income for 1,000
+            This chart plots net income change against baseline income for 500
             sampled households. Green dots indicate gains, red shows losses, and
             grey shows minimal change. Dot size represents household weight in
             the population.
@@ -476,183 +477,187 @@ function HouseholdChart({ rawData, selectedPolicies }) {
 
       <div ref={exportRef}>
         <div
-        style={{
-          position: "relative",
-          cursor: isDragging ? "crosshair" : "default",
-        }}
-        ref={chartRef}
-        onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
-        onMouseLeave={handleMouseUp}
-      >
-        {/* Zoom controls */}
-        <div className="household-zoom-controls">
-          <button
-            className="zoom-control-btn"
-            onClick={handleZoomIn}
-            title="Zoom in"
-            aria-label="Zoom in"
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-              <circle
-                cx="10"
-                cy="10"
-                r="7"
-                stroke="currentColor"
-                strokeWidth="2"
-              />
-              <path
-                d="M10 7V13M7 10H13"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-              />
-              <path
-                d="M15 15L20 20"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-              />
-            </svg>
-          </button>
-          <button
-            className="zoom-control-btn"
-            onClick={handleZoomOut}
-            title="Zoom out"
-            aria-label="Zoom out"
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-              <circle
-                cx="10"
-                cy="10"
-                r="7"
-                stroke="currentColor"
-                strokeWidth="2"
-              />
-              <path
-                d="M7 10H13"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-              />
-              <path
-                d="M15 15L20 20"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-              />
-            </svg>
-          </button>
-          <button
-            className="zoom-control-btn"
-            onClick={handleResetZoom}
-            title="Reset zoom"
-            aria-label="Reset zoom"
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-              <path
-                d="M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C14.8273 3 17.35 4.30367 19 6.34267"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-              />
-              <path
-                d="M21 3V8H16"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </button>
-        </div>
-
-        {/* Selection box overlay */}
-        {selectionBox && (
-          <div
-            className="selection-box"
-            style={{
-              position: "absolute",
-              left: `${selectionBox.left}px`,
-              top: `${selectionBox.top}px`,
-              width: `${selectionBox.width}px`,
-              height: `${selectionBox.height}px`,
-              border: "2px dashed #319795",
-              backgroundColor: "rgba(49, 151, 149, 0.1)",
-              pointerEvents: "none",
-              zIndex: 5,
-            }}
-          />
-        )}
-
-        <ResponsiveContainer width="100%" height={500}>
-          <ScatterChart margin={{ top: 20, right: 30, left: 80, bottom: 60 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-
-            <XAxis
-              type="number"
-              dataKey="x"
-              name="Income change"
-              domain={xDomain}
-              tickFormatter={(value) => {
-                const absVal = Math.abs(value).toLocaleString("en-GB", {
-                  maximumFractionDigits: 0,
-                });
-                return value < 0 ? `-£${absVal}` : `£${absVal}`;
-              }}
-              tick={{ fontSize: 11, fill: "#666" }}
-              label={{
-                value: "Net income change (£)",
-                position: "bottom",
-                offset: 40,
-                style: { fontSize: 12, fill: "#374151" },
-              }}
-            />
-
-            <YAxis
-              type="number"
-              dataKey="y"
-              name="Baseline income"
-              domain={yDomain}
-              tickFormatter={(value) => {
-                const absVal = Math.abs(value).toLocaleString("en-GB", {
-                  maximumFractionDigits: 0,
-                });
-                return value < 0 ? `-£${absVal}` : `£${absVal}`;
-              }}
-              tick={{ fontSize: 11, fill: "#666" }}
-              label={{
-                value: "Baseline household net income (£)",
-                angle: -90,
-                position: "insideLeft",
-                dx: -35,
-                style: { textAnchor: "middle", fontSize: 12, fill: "#374151" },
-              }}
-            />
-
-            <Tooltip
-              content={<CustomTooltip />}
-              cursor={{ strokeDasharray: "3 3" }}
-            />
-
-            {/* Zero line */}
-            <ReferenceLine x={0} stroke="#666" strokeWidth={2} />
-
-            {/* Single scatter with colored cells based on category */}
-            <Scatter data={chartData} fill="#319795">
-              {chartData.map((entry, index) => (
-                <Cell
-                  key={`cell-${index}`}
-                  fill={getColor(entry.category)}
-                  fillOpacity={entry.opacity}
-                  strokeWidth={0}
+          style={{
+            position: "relative",
+            cursor: isDragging ? "crosshair" : "default",
+          }}
+          ref={chartRef}
+          onMouseDown={handleMouseDown}
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUp}
+          onMouseLeave={handleMouseUp}
+        >
+          {/* Zoom controls */}
+          <div className="household-zoom-controls">
+            <button
+              className="zoom-control-btn"
+              onClick={handleZoomIn}
+              title="Zoom in"
+              aria-label="Zoom in"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                <circle
+                  cx="10"
+                  cy="10"
+                  r="7"
+                  stroke="currentColor"
+                  strokeWidth="2"
                 />
-              ))}
-            </Scatter>
-            <Customized component={PolicyEngineLogo} />
-          </ScatterChart>
-        </ResponsiveContainer>
+                <path
+                  d="M10 7V13M7 10H13"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                />
+                <path
+                  d="M15 15L20 20"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                />
+              </svg>
+            </button>
+            <button
+              className="zoom-control-btn"
+              onClick={handleZoomOut}
+              title="Zoom out"
+              aria-label="Zoom out"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                <circle
+                  cx="10"
+                  cy="10"
+                  r="7"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                />
+                <path
+                  d="M7 10H13"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                />
+                <path
+                  d="M15 15L20 20"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                />
+              </svg>
+            </button>
+            <button
+              className="zoom-control-btn"
+              onClick={handleResetZoom}
+              title="Reset zoom"
+              aria-label="Reset zoom"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C14.8273 3 17.35 4.30367 19 6.34267"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                />
+                <path
+                  d="M21 3V8H16"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </button>
+          </div>
+
+          {/* Selection box overlay */}
+          {selectionBox && (
+            <div
+              className="selection-box"
+              style={{
+                position: "absolute",
+                left: `${selectionBox.left}px`,
+                top: `${selectionBox.top}px`,
+                width: `${selectionBox.width}px`,
+                height: `${selectionBox.height}px`,
+                border: "2px dashed #319795",
+                backgroundColor: "rgba(49, 151, 149, 0.1)",
+                pointerEvents: "none",
+                zIndex: 5,
+              }}
+            />
+          )}
+
+          <ResponsiveContainer width="100%" height={500}>
+            <ScatterChart margin={{ top: 20, right: 30, left: 80, bottom: 60 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+
+              <XAxis
+                type="number"
+                dataKey="x"
+                name="Income change"
+                domain={xDomain}
+                tickFormatter={(value) => {
+                  const absVal = Math.abs(value).toLocaleString("en-GB", {
+                    maximumFractionDigits: 0,
+                  });
+                  return value < 0 ? `-£${absVal}` : `£${absVal}`;
+                }}
+                tick={{ fontSize: 11, fill: "#666" }}
+                label={{
+                  value: "Net income change (£)",
+                  position: "bottom",
+                  offset: 40,
+                  style: { fontSize: 12, fill: "#374151" },
+                }}
+              />
+
+              <YAxis
+                type="number"
+                dataKey="y"
+                name="Baseline income"
+                domain={yDomain}
+                tickFormatter={(value) => {
+                  const absVal = Math.abs(value).toLocaleString("en-GB", {
+                    maximumFractionDigits: 0,
+                  });
+                  return value < 0 ? `-£${absVal}` : `£${absVal}`;
+                }}
+                tick={{ fontSize: 11, fill: "#666" }}
+                label={{
+                  value: "Baseline household net income (£)",
+                  angle: -90,
+                  position: "insideLeft",
+                  dx: -35,
+                  style: {
+                    textAnchor: "middle",
+                    fontSize: 12,
+                    fill: "#374151",
+                  },
+                }}
+              />
+
+              <Tooltip
+                content={<CustomTooltip />}
+                cursor={{ strokeDasharray: "3 3" }}
+              />
+
+              {/* Zero line */}
+              <ReferenceLine x={0} stroke="#666" strokeWidth={2} />
+
+              {/* Single scatter with colored cells based on category */}
+              <Scatter data={chartData} fill="#319795">
+                {chartData.map((entry, index) => (
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={getColor(entry.category)}
+                    fillOpacity={entry.opacity}
+                    strokeWidth={0}
+                  />
+                ))}
+              </Scatter>
+              <Customized component={PolicyEngineLogo} />
+            </ScatterChart>
+          </ResponsiveContainer>
         </div>
       </div>
 
@@ -675,7 +680,9 @@ function HouseholdChart({ rawData, selectedPolicies }) {
               borderRadius: "50%",
             }}
           ></div>
-          <span style={{ color: "#374151", fontSize: "13px", fontWeight: 500 }}>Gains</span>
+          <span style={{ color: "#374151", fontSize: "13px", fontWeight: 500 }}>
+            Gains
+          </span>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
           <div
@@ -686,7 +693,9 @@ function HouseholdChart({ rawData, selectedPolicies }) {
               borderRadius: "50%",
             }}
           ></div>
-          <span style={{ color: "#374151", fontSize: "13px", fontWeight: 500 }}>Losses</span>
+          <span style={{ color: "#374151", fontSize: "13px", fontWeight: 500 }}>
+            Losses
+          </span>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
           <div
@@ -697,7 +706,9 @@ function HouseholdChart({ rawData, selectedPolicies }) {
               borderRadius: "50%",
             }}
           ></div>
-          <span style={{ color: "#374151", fontSize: "13px", fontWeight: 500 }}>No change</span>
+          <span style={{ color: "#374151", fontSize: "13px", fontWeight: 500 }}>
+            No change
+          </span>
         </div>
       </div>
 
