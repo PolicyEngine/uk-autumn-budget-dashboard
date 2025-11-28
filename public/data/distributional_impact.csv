@@ -139,26 +139,26 @@ property_tax_increase_2pp,Property income tax increase (+2pp),2027,6th,0.0
 property_tax_increase_2pp,Property income tax increase (+2pp),2027,7th,0.0
 property_tax_increase_2pp,Property income tax increase (+2pp),2027,8th,0.0
 property_tax_increase_2pp,Property income tax increase (+2pp),2027,9th,0.0
-property_tax_increase_2pp,Property income tax increase (+2pp),2028,10th,0.0
-property_tax_increase_2pp,Property income tax increase (+2pp),2028,1st,0.0
-property_tax_increase_2pp,Property income tax increase (+2pp),2028,2nd,0.0
-property_tax_increase_2pp,Property income tax increase (+2pp),2028,3rd,0.0
-property_tax_increase_2pp,Property income tax increase (+2pp),2028,4th,0.0
-property_tax_increase_2pp,Property income tax increase (+2pp),2028,5th,0.0
-property_tax_increase_2pp,Property income tax increase (+2pp),2028,6th,0.0
-property_tax_increase_2pp,Property income tax increase (+2pp),2028,7th,0.0
-property_tax_increase_2pp,Property income tax increase (+2pp),2028,8th,0.0
-property_tax_increase_2pp,Property income tax increase (+2pp),2028,9th,0.0
-property_tax_increase_2pp,Property income tax increase (+2pp),2029,10th,0.0
-property_tax_increase_2pp,Property income tax increase (+2pp),2029,1st,0.0
-property_tax_increase_2pp,Property income tax increase (+2pp),2029,2nd,0.0
-property_tax_increase_2pp,Property income tax increase (+2pp),2029,3rd,0.0
-property_tax_increase_2pp,Property income tax increase (+2pp),2029,4th,0.0
-property_tax_increase_2pp,Property income tax increase (+2pp),2029,5th,0.0
-property_tax_increase_2pp,Property income tax increase (+2pp),2029,6th,0.0
-property_tax_increase_2pp,Property income tax increase (+2pp),2029,7th,0.0
-property_tax_increase_2pp,Property income tax increase (+2pp),2029,8th,0.0
-property_tax_increase_2pp,Property income tax increase (+2pp),2029,9th,0.0
+property_tax_increase_2pp,Property income tax increase (+2pp),2028,10th,-0.086341492831707
+property_tax_increase_2pp,Property income tax increase (+2pp),2028,1st,-0.06101885810494423
+property_tax_increase_2pp,Property income tax increase (+2pp),2028,2nd,-0.008271194994449615
+property_tax_increase_2pp,Property income tax increase (+2pp),2028,3rd,-0.023858066648244858
+property_tax_increase_2pp,Property income tax increase (+2pp),2028,4th,-0.013074914924800396
+property_tax_increase_2pp,Property income tax increase (+2pp),2028,5th,-0.017245501279830933
+property_tax_increase_2pp,Property income tax increase (+2pp),2028,6th,-0.017514575272798538
+property_tax_increase_2pp,Property income tax increase (+2pp),2028,7th,-0.07651595026254654
+property_tax_increase_2pp,Property income tax increase (+2pp),2028,8th,-0.028577519580721855
+property_tax_increase_2pp,Property income tax increase (+2pp),2028,9th,-0.05152324587106705
+property_tax_increase_2pp,Property income tax increase (+2pp),2029,10th,-0.08757074177265167
+property_tax_increase_2pp,Property income tax increase (+2pp),2029,1st,-0.061672013252973557
+property_tax_increase_2pp,Property income tax increase (+2pp),2029,2nd,-0.008888671174645424
+property_tax_increase_2pp,Property income tax increase (+2pp),2029,3rd,-0.024463701993227005
+property_tax_increase_2pp,Property income tax increase (+2pp),2029,4th,-0.013802850618958473
+property_tax_increase_2pp,Property income tax increase (+2pp),2029,5th,-0.014456210657954216
+property_tax_increase_2pp,Property income tax increase (+2pp),2029,6th,-0.019522910937666893
+property_tax_increase_2pp,Property income tax increase (+2pp),2029,7th,-0.08001212030649185
+property_tax_increase_2pp,Property income tax increase (+2pp),2029,8th,-0.029195362702012062
+property_tax_increase_2pp,Property income tax increase (+2pp),2029,9th,-0.0525418259203434
 rail_fares_freeze,Rail fares freeze,2026,10th,0.0014662147
 rail_fares_freeze,Rail fares freeze,2026,1st,0.019708103
 rail_fares_freeze,Rail fares freeze,2026,2nd,0.019907922
@@ -259,26 +259,26 @@ savings_tax_increase_2pp,Savings income tax increase (+2pp),2027,6th,0.0
 savings_tax_increase_2pp,Savings income tax increase (+2pp),2027,7th,0.0
 savings_tax_increase_2pp,Savings income tax increase (+2pp),2027,8th,0.0
 savings_tax_increase_2pp,Savings income tax increase (+2pp),2027,9th,0.0
-savings_tax_increase_2pp,Savings income tax increase (+2pp),2028,10th,-0.004349526949226856
+savings_tax_increase_2pp,Savings income tax increase (+2pp),2028,10th,-0.0043495269492268
 savings_tax_increase_2pp,Savings income tax increase (+2pp),2028,1st,-2.562787449278403e-05
 savings_tax_increase_2pp,Savings income tax increase (+2pp),2028,2nd,-2.3374535885523073e-05
 savings_tax_increase_2pp,Savings income tax increase (+2pp),2028,3rd,-2.5095627279370092e-05
 savings_tax_increase_2pp,Savings income tax increase (+2pp),2028,4th,-4.739492942462675e-05
 savings_tax_increase_2pp,Savings income tax increase (+2pp),2028,5th,-7.766007911413908e-05
-savings_tax_increase_2pp,Savings income tax increase (+2pp),2028,6th,-0.0001762669562594965
-savings_tax_increase_2pp,Savings income tax increase (+2pp),2028,7th,-0.0003118526074104011
-savings_tax_increase_2pp,Savings income tax increase (+2pp),2028,8th,-0.00044630319462157786
-savings_tax_increase_2pp,Savings income tax increase (+2pp),2028,9th,-0.000908065412659198
-savings_tax_increase_2pp,Savings income tax increase (+2pp),2029,10th,-0.004481159616261721
+savings_tax_increase_2pp,Savings income tax increase (+2pp),2028,6th,-0.0001762669562594
+savings_tax_increase_2pp,Savings income tax increase (+2pp),2028,7th,-0.0003118526074104
+savings_tax_increase_2pp,Savings income tax increase (+2pp),2028,8th,-0.0004463031946215
+savings_tax_increase_2pp,Savings income tax increase (+2pp),2028,9th,-0.0009080654126591
+savings_tax_increase_2pp,Savings income tax increase (+2pp),2029,10th,-0.0044811596162617
 savings_tax_increase_2pp,Savings income tax increase (+2pp),2029,1st,-3.580462725949474e-05
-savings_tax_increase_2pp,Savings income tax increase (+2pp),2029,2nd,-2.0793890143977478e-05
+savings_tax_increase_2pp,Savings income tax increase (+2pp),2029,2nd,-2.079389014397748e-05
 savings_tax_increase_2pp,Savings income tax increase (+2pp),2029,3rd,-3.580940392566845e-05
 savings_tax_increase_2pp,Savings income tax increase (+2pp),2029,4th,-5.2245770348235965e-05
 savings_tax_increase_2pp,Savings income tax increase (+2pp),2029,5th,-8.38070991449058e-05
-savings_tax_increase_2pp,Savings income tax increase (+2pp),2029,6th,-0.00019771569350268692
-savings_tax_increase_2pp,Savings income tax increase (+2pp),2029,7th,-0.000402465695515275
-savings_tax_increase_2pp,Savings income tax increase (+2pp),2029,8th,-0.00047351844841614366
-savings_tax_increase_2pp,Savings income tax increase (+2pp),2029,9th,-0.0010023376671597362
+savings_tax_increase_2pp,Savings income tax increase (+2pp),2029,6th,-0.0001977156935026
+savings_tax_increase_2pp,Savings income tax increase (+2pp),2029,7th,-0.0004024656955152
+savings_tax_increase_2pp,Savings income tax increase (+2pp),2029,8th,-0.0004735184484161
+savings_tax_increase_2pp,Savings income tax increase (+2pp),2029,9th,-0.0010023376671597
 threshold_freeze_extension,Threshold freeze extension,2026,10th,0.0
 threshold_freeze_extension,Threshold freeze extension,2026,1st,0.0
 threshold_freeze_extension,Threshold freeze extension,2026,2nd,0.0

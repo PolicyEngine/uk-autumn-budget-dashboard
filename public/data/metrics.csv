@@ -13,8 +13,8 @@ fuel_duty_freeze,Fuel duty freeze extension,2028,49.008437323266826,-0.000814796
 fuel_duty_freeze,Fuel duty freeze extension,2029,48.59007636207265,-0.0004820583712906,0.0,0.0
 property_tax_increase_2pp,Property income tax increase (+2pp),2026,0.0,0.0,0.0,0.0
 property_tax_increase_2pp,Property income tax increase (+2pp),2027,0.0,0.0,0.0,0.0
-property_tax_increase_2pp,Property income tax increase (+2pp),2028,0.0,0.0,0.0,0.0
-property_tax_increase_2pp,Property income tax increase (+2pp),2029,0.0,0.0,0.0,0.0
+property_tax_increase_2pp,Property income tax increase (+2pp),2028,6.92211674276531,-0.0001178758830264422,1.049041748046875e-05,8.191781671484932e-05
+property_tax_increase_2pp,Property income tax increase (+2pp),2029,6.9312114620247085,-0.00013200781515320553,2.47955322265625e-05,0.00019458416500128806
 rail_fares_freeze,Rail fares freeze,2026,4.149935032067219,1.7207076351292756e-06,0.0,0.0
 rail_fares_freeze,Rail fares freeze,2027,4.149696604041953,3.384148242366868e-07,0.0,0.0
 rail_fares_freeze,Rail fares freeze,2028,4.151114499128905,-3.210515991904068e-06,0.0,0.0

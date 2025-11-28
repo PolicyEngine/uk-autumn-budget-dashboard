@@ -13,8 +13,8 @@ fuel_duty_freeze,Fuel duty freeze extension,2028,-1.474301293575977,-0.9,-0.9
 fuel_duty_freeze,Fuel duty freeze extension,2029,-0.8850673996726718,-0.9,-0.9
 property_tax_increase_2pp,Property income tax increase (+2pp),2026,0.0,0.0,0.0
 property_tax_increase_2pp,Property income tax increase (+2pp),2027,0.0,0.0,0.0
-property_tax_increase_2pp,Property income tax increase (+2pp),2028,0.0,0.6,0.6
-property_tax_increase_2pp,Property income tax increase (+2pp),2029,0.0,0.4,0.4
+property_tax_increase_2pp,Property income tax increase (+2pp),2028,0.7475001703182836,0.6,0.6
+property_tax_increase_2pp,Property income tax increase (+2pp),2029,0.7745573523032261,0.4,0.4
 rail_fares_freeze,Rail fares freeze,2026,-0.1450000951637561,-0.15,-0.15
 rail_fares_freeze,Rail fares freeze,2027,-0.1549996597797834,-0.16,-0.16
 rail_fares_freeze,Rail fares freeze,2028,-0.1600001206615772,-0.16,-0.16
@@ -25,8 +25,8 @@ salary_sacrifice_cap,Salary sacrifice cap,2028,0.0,0.0,0.0
 salary_sacrifice_cap,Salary sacrifice cap,2029,3.1921979704841723,4.9,4.7
 savings_tax_increase_2pp,Savings income tax increase (+2pp),2026,0.0,0.0,0.0
 savings_tax_increase_2pp,Savings income tax increase (+2pp),2027,0.0,0.0,0.0
-savings_tax_increase_2pp,Savings income tax increase (+2pp),2028,0.020528661110816634,0.6,0.5
-savings_tax_increase_2pp,Savings income tax increase (+2pp),2029,0.021923063395328044,0.6,0.5
+savings_tax_increase_2pp,Savings income tax increase (+2pp),2028,0.0205286611108166,0.6,0.5
+savings_tax_increase_2pp,Savings income tax increase (+2pp),2029,0.021923063395328,0.6,0.5
 threshold_freeze_extension,Threshold freeze extension,2026,0.0,0.0,0.0
 threshold_freeze_extension,Threshold freeze extension,2027,0.0,0.0,0.0
 threshold_freeze_extension,Threshold freeze extension,2028,3.7469519146733425,3.2,3.3
