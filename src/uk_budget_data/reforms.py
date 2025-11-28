@@ -468,9 +468,10 @@ def _slr_model(freeze_plan_2_threshold: bool = False):
                 plan = person("student_loan_plan", period)
                 rpi = parameters.gov.economic_assumptions.indices.obr.rpi
                 parameter_uprating = rpi(period) / rpi(2025)
-                # Plan 2 threshold is £29,385 from April 2026, frozen at this level
-                # from 2027-28 to 2029-30 per Budget 2025.
-                # Source: https://www.timeshighereducation.com/news/stealth-tax-fears-student-loan-repayment-threshold-frozen
+                # Plan 2 threshold is £28,470 from April 2025, frozen at this level
+                # for 3 years from April 2026 through April 2029 per Budget 2025.
+                # From 2029-30 onwards, normal RPI uprating resumes.
+                # Source: OBR Economic and Fiscal Outlook November 2025
                 threshold = select(
                     [
                         plan == "PLAN_1",
@@ -481,7 +482,7 @@ def _slr_model(freeze_plan_2_threshold: bool = False):
                     ],
                     [
                         26065 * parameter_uprating,
-                        29385
+                        28470
                         * (
                             parameter_uprating
                             if not freeze_plan_2_threshold
@@ -516,9 +517,9 @@ FREEZE_STUDENT_LOAN_THRESHOLDS = Reform(
     name="Freeze student loan repayment thresholds",
     description=(
         "Freezes Plan 2 student loan repayment thresholds for three years "
-        "from April 2027. Baseline assumes RPI uprating would have continued; "
-        "reform freezes thresholds, increasing repayments. OBR costing: "
-        "+£255-380m annual revenue (2027-2030)."
+        "from April 2026 through April 2029. Baseline assumes RPI uprating "
+        "would have continued; reform freezes thresholds at £28,470, "
+        "increasing repayments. OBR costing: +£285-355m annual revenue (2026-2029)."
     ),
     simulation_modifier=_slr_model(
         freeze_plan_2_threshold=True
