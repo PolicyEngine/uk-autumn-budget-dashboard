@@ -3,8 +3,12 @@ import PersonalImpactForm from "./PersonalImpactForm";
 import PersonalImpactResults from "./PersonalImpactResults";
 import "./PersonalImpactTab.css";
 
-const API_URL =
-  import.meta.env.VITE_API_URL || "http://localhost:5001/api/personal-impact";
+// API URL - set VITE_PERSONAL_IMPACT_API_URL in production environment
+// Cloud Run service: uk-autumn-budget-dashboard in europe-west1
+const API_BASE_URL =
+  import.meta.env.VITE_PERSONAL_IMPACT_API_URL ||
+  "http://localhost:5001";
+const API_URL = `${API_BASE_URL}/api/personal-impact`;
 
 function PersonalImpactTab() {
   const [results, setResults] = useState(null);
