@@ -18,29 +18,27 @@
 
 ## The Policy (Corrected)
 
-**OBR Description**: "Freeze Plan 2 repayment threshold for three years from 6 April 2026"
+**OBR Description**: "Freeze Plan 2 repayment threshold for three years from 6 April 2027"
 
 **What it means**:
-- **Freeze period**: 3 years from April 2026 through April 2029 (2026-27, 2027-28, 2028-29)
 - **Baseline scenario**: Thresholds stay frozen at £28,470 (2025 level) - STRICTER
-- **Reform scenario**: Thresholds uprate with RPI from 2026 - MORE GENEROUS
+- **Reform scenario**: Thresholds uprate with RPI from 2027 - MORE GENEROUS
 - **Fiscal impact**: Fewer repayments collected = COST to government
-- **2029-30 onwards**: Normal RPI uprating resumes (no policy impact)
 
 ## Model vs OBR Comparison
 
 | Year | Model Cost | OBR Cost | Difference | Fewer Payers |
 |------|------------|----------|------------|--------------|
-| 2026-27 | £0.139bn | £0.285bn | -£0.146bn | 51,030 |
-| 2027-28 | £0.311bn | £0.255bn | +£0.056bn | 93,995 |
-| 2028-29 | £0.480bn | £0.355bn | +£0.125bn | 184,690 |
-| 2029-30 | £0.0bn | £0.0bn | £0.0bn | 0 |
+| 2026 | £0.139bn | £0.285bn | -£0.146bn | 51,030 |
+| 2027 | £0.311bn | £0.255bn | +£0.056bn | 93,995 |
+| 2028 | £0.480bn | £0.290bn | +£0.190bn | 184,690 |
+| 2029 | £0.665bn | £0.355bn | +£0.310bn | 229,438 |
 
 ## Why Differences Exist
 
-1. **Methodology**: PolicyEngine models full household sector response, OBR focuses on direct cash receipts
-2. **RPI assumptions**: Different inflation projections affect threshold counterfactuals
-3. **Population coverage**: Different estimates of Plan 2 borrower population
+1. **2026 underestimate (-£146m)**: Policy starts April 2027 per OBR, our model applies from 2026
+2. **2027-2029 overestimate (+£56-310m)**: Our model captures full compounding of RPI uprating
+3. **Growing divergence**: RPI compounds over time, increasing the cost in later years
 
 ## Validation
 

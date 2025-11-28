@@ -465,14 +465,12 @@ def _slr_model(freeze_plan_2_threshold: bool = False):
 
         # If freezing Plan 2 threshold, override the parameter
         if freeze_plan_2_threshold:
-            # Freeze Plan 2 threshold at 2025 level (£28,470) for 2026-2029
-            # The freeze is for 3 years from April 2026, ending in April 2029
-            # From 2029-30 onwards, normal RPI uprating resumes
+            # Freeze Plan 2 threshold at 2025 level (£29,385) for 2027-2030
             p = sim.tax_benefit_system.parameters
             plan_2_threshold = p.gov.hmrc.student_loans.thresholds.plan_2
             # Get 2025 value and freeze it
-            frozen_value = 28_470  # April 2025 value, frozen for 2026-29
-            for year in range(2026, 2029):
+            frozen_value = 29_385  # April 2026 value, frozen for 2027-30
+            for year in range(2027, 2031):
                 plan_2_threshold.update(
                     period=f"{year}-04-06", value=frozen_value
                 )
@@ -496,9 +494,9 @@ FREEZE_STUDENT_LOAN_THRESHOLDS = Reform(
     name="Freeze student loan repayment thresholds",
     description=(
         "Freezes Plan 2 student loan repayment thresholds for three years "
-        "from April 2026 through April 2029. Baseline assumes thresholds "
-        "remain frozen at £28,470; reform allows RPI uprating, reducing "
-        "repayments. OBR costing: +£285-355m annual cost (2026-2029)."
+        "from April 2027. Baseline assumes thresholds remain frozen at 2025 "
+        "levels; reform allows RPI uprating, reducing repayments. OBR costing: "
+        "+£255-380m annual cost (2027-2030)."
     ),
     simulation_modifier=_slr_model(
         freeze_plan_2_threshold=False
