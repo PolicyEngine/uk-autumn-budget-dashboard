@@ -400,84 +400,64 @@ def _zero_rate_energy_vat_modifier(sim: Simulation) -> Simulation:
 
 def _slr_model(freeze_plan_2_threshold: bool = False):
     """
-    Add student loan repayment model to simulation.
+    Configure student loan repayment threshold freeze in simulation.
+
+    Uses the student_loan_repayment variable from policyengine-uk (v2.60+).
 
     Args:
         freeze_plan_2_threshold: If True, freeze Plan 2 threshold at 2025 levels
+                                 (removes RPI uprating for 2027-2030)
     """
 
     def modify(sim: Microsimulation):
-        class student_loan_plan(Variable):
-            value_type = str
-            entity = Person
-            label = "Student Loan Plan"
-            definition_period = YEAR
+        # Infer student loan plan from reported repayments and age
+        # This sets the input for the student_loan_plan enum variable
+        for year in range(2026, 2031):
+            has_slr_reported = sim.calculate("student_loan_repayments", 2026)
+            has_slr = has_slr_reported > 0
+            age = sim.calculate("age", 2026)
+            time_attended_university = year - age + 18
 
-            def formula(person, period, parameters):
-                has_slr_reported = person("student_loan_repayments", 2026) > 0
-                age = person("age", 2026)
-                time_attended_university = period.start.year - age + 18
-                return select(
-                    [
-                        ~has_slr_reported,
-                        time_attended_university < 2012,
-                        time_attended_university < 2023,
-                        True,
-                    ],
-                    [
-                        "NONE",
-                        "PLAN_1",
-                        "PLAN_2",
-                        "PLAN_5",
-                    ],
-                    default="NONE",
+            # Import the enum from policyengine-uk
+            from policyengine_uk.variables.gov.hmrc.student_loans.student_loan_plan import (
+                StudentLoanPlan,
+            )
+
+            plan = select(
+                [
+                    ~has_slr,
+                    time_attended_university < 2012,
+                    time_attended_university < 2023,
+                    True,
+                ],
+                [
+                    StudentLoanPlan.NONE,
+                    StudentLoanPlan.PLAN_1,
+                    StudentLoanPlan.PLAN_2,
+                    StudentLoanPlan.PLAN_5,
+                ],
+                default=StudentLoanPlan.NONE,
+            )
+            sim.set_input("student_loan_plan", year, plan)
+
+        # If freezing Plan 2 threshold, override the parameter
+        if freeze_plan_2_threshold:
+            # Freeze Plan 2 threshold at 2025 level (£29,385) for 2027-2030
+            p = sim.tax_benefit_system.parameters
+            plan_2_threshold = p.gov.hmrc.student_loans.thresholds.plan_2
+            # Get 2025 value and freeze it
+            frozen_value = 29_385  # April 2026 value, frozen for 2027-30
+            for year in range(2027, 2031):
+                plan_2_threshold.update(
+                    period=f"{year}-04-06", value=frozen_value
                 )
 
-        class student_loan_repayments_modelled(Variable):
-            value_type = float
-            entity = Person
-            label = "Student Loan Debt"
-            definition_period = YEAR
-
-            def formula(person, period, parameters):
-                plan = person("student_loan_plan", period)
-                rpi = parameters.gov.economic_assumptions.indices.obr.rpi
-                parameter_uprating = rpi(period) / rpi(2025)
-                # Plan 2 threshold is £29,385 from April 2026, frozen at this level
-                # from 2027-28 to 2029-30 per Budget 2025.
-                # Source: https://www.timeshighereducation.com/news/stealth-tax-fears-student-loan-repayment-threshold-frozen
-                threshold = select(
-                    [
-                        plan == "PLAN_1",
-                        plan == "PLAN_2",
-                        plan == "PLAN_4",
-                        plan == "PLAN_5",
-                        True,
-                    ],
-                    [
-                        26065 * parameter_uprating,
-                        29385
-                        * (
-                            parameter_uprating
-                            if not freeze_plan_2_threshold
-                            else 1
-                        ),
-                        32745 * parameter_uprating,
-                        25000 * parameter_uprating,
-                        np.inf,
-                    ],
-                )
-                income = person("adjusted_net_income", period)
-
-                repayment_rate = 0.09
-                repayment = repayment_rate * max_(0, income - threshold)
-                return repayment
-
-        sim.tax_benefit_system.update_variable(student_loan_plan)
-        sim.tax_benefit_system.add_variable(student_loan_repayments_modelled)
+        # Adjust net income calculation to use modelled repayments
+        # Subtract the policyengine-uk student_loan_repayment and add back
+        # the reported repayments from the FRS
         sim.tax_benefit_system.variables[
             "hbai_household_net_income"
-        ].subtracts.append("student_loan_repayments_modelled")
+        ].subtracts.append("student_loan_repayment")
         sim.tax_benefit_system.variables[
             "hbai_household_net_income"
         ].adds.append("student_loan_repayments")
