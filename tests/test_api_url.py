@@ -1,7 +1,5 @@
 """Test that API URL is correctly configured for production."""
 
-import pytest
-
 
 def test_api_url_configured_for_production():
     """Test that the frontend uses a production API URL, not localhost."""
@@ -21,10 +19,14 @@ def test_api_url_configured_for_production():
     # For now, localhost is acceptable as dev fallback
     # but production must be configurable via env var
     lines = content.split("\n")
-    api_url_lines = [l for l in lines if "API_URL" in l or "API_BASE_URL" in l]
+    api_url_lines = [
+        line for line in lines if "API_URL" in line or "API_BASE_URL" in line
+    ]
 
     # Verify the pattern allows for production override
-    has_env_var_check = any("import.meta.env" in l for l in api_url_lines)
+    has_env_var_check = any(
+        "import.meta.env" in line for line in api_url_lines
+    )
     assert (
         has_env_var_check
     ), "API URL should be configurable via environment variable"
