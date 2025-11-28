@@ -5,14 +5,12 @@ households over time (2025-2029).
 """
 
 from dataclasses import dataclass, field
-from typing import Any, Callable
+from typing import Callable
 
-import numpy as np
 from policyengine_uk import Simulation
 
 from uk_budget_data.reforms import (
     get_autumn_budget_2025_reforms,
-    get_reform,
 )
 
 
@@ -103,7 +101,7 @@ def build_situation(household: HouseholdInput, year: int) -> dict:
         child_age = child_age_2025 + years_from_base
         # Only include children under 25 (after which they're not dependents)
         if child_age < 25:
-            child_id = f"child_{i+1}"
+            child_id = f"child_{i + 1}"
             people[child_id] = {
                 "age": {year: child_age},
                 "employment_income": {year: 0},

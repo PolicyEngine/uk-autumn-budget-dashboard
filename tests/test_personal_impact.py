@@ -3,11 +3,11 @@
 import pytest
 
 from uk_budget_data.personal_impact import (
+    POLICY_IDS,
+    YEARS,
     HouseholdInput,
     PersonalImpactCalculator,
     build_situation,
-    YEARS,
-    POLICY_IDS,
 )
 
 
@@ -84,10 +84,14 @@ class TestBuildSituation:
         # Use pytest.approx for floating point comparison
         assert situation_2026["people"]["adult"]["employment_income"][
             2026
-        ] == pytest.approx(55000)  # 50000 * 1.10
+        ] == pytest.approx(
+            55000
+        )  # 50000 * 1.10
         assert situation_2027["people"]["adult"]["employment_income"][
             2027
-        ] == pytest.approx(60500)  # 50000 * 1.10^2
+        ] == pytest.approx(
+            60500
+        )  # 50000 * 1.10^2
 
     def test_married_couple(self):
         """Test situation building for married couple."""
@@ -99,7 +103,9 @@ class TestBuildSituation:
         situation = build_situation(household, 2025)
 
         assert "partner" in situation["people"]
-        assert situation["people"]["partner"]["employment_income"][2025] == 30000
+        assert (
+            situation["people"]["partner"]["employment_income"][2025] == 30000
+        )
         assert "partner" in situation["benunits"]["benunit"]["members"]
 
     def test_children_aged_correctly(self):
@@ -206,7 +212,9 @@ class TestPersonalImpactCalculator:
         results = calculator.calculate(household)
 
         # Threshold freeze should have negative impact at £50k income
-        threshold_policy = results["policies"].get("threshold_freeze_extension")
+        threshold_policy = results["policies"].get(
+            "threshold_freeze_extension"
+        )
         if threshold_policy:
             # From 2028 onwards (when CPI indexing would have kicked in)
             assert threshold_policy["years"][2028]["net_income_change"] < 0
@@ -270,7 +278,10 @@ class TestAPIIntegration:
 
     def test_api_input_to_household_conversion(self):
         """Test conversion from API input to HouseholdInput."""
-        from uk_budget_data.api import APIHouseholdInput, convert_api_input_to_household
+        from uk_budget_data.api import (
+            APIHouseholdInput,
+            convert_api_input_to_household,
+        )
 
         api_input = APIHouseholdInput(
             employment_income=60000,
