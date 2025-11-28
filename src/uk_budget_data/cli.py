@@ -6,15 +6,15 @@ from pathlib import Path
 from rich.console import Console
 from rich.table import Table
 
+from uk_budget_data.lifetime_impact import (
+    GRADUATE_STARTING_INCOME,
+    calculate_lifetime_impact,
+)
 from uk_budget_data.models import DataConfig, Reform
 from uk_budget_data.pipeline import generate_all_data
 from uk_budget_data.reforms import (
     get_autumn_budget_2025_reforms,
     get_reform,
-)
-from uk_budget_data.lifetime_impact import (
-    calculate_lifetime_impact,
-    GRADUATE_STARTING_INCOME,
 )
 
 console = Console()
@@ -34,7 +34,9 @@ def parse_args(args: list[str] = None) -> argparse.Namespace:
         description="Generate data for UK Autumn Budget dashboard.",
     )
 
-    subparsers = parser.add_subparsers(dest="command", help="Available commands")
+    subparsers = parser.add_subparsers(
+        dest="command", help="Available commands"
+    )
 
     # Dashboard data generation command
     generate_parser = subparsers.add_parser(
@@ -98,7 +100,8 @@ def parse_args(args: list[str] = None) -> argparse.Namespace:
 
     # Lifetime impact command
     lifetime_parser = subparsers.add_parser(
-        "lifetime", help="Calculate lifetime impact of budget policies on a graduate"
+        "lifetime",
+        help="Calculate lifetime impact of budget policies on a graduate",
     )
 
     lifetime_parser.add_argument(
@@ -300,7 +303,9 @@ def run_lifetime(parsed: argparse.Namespace) -> int:
 
     if parsed.output:
         df.to_csv(parsed.output, index=False)
-        console.print(f"\n[green]Saved {len(df)} years to {parsed.output}[/green]")
+        console.print(
+            f"\n[green]Saved {len(df)} years to {parsed.output}[/green]"
+        )
 
     return 0
 
@@ -324,9 +329,13 @@ def main(args: list[str] = None) -> int:
         # Default to showing help
         console.print("[bold]UK Budget Data CLI[/bold]\n")
         console.print("Commands:")
-        console.print("  generate  - Generate dashboard data from microsimulation")
+        console.print(
+            "  generate  - Generate dashboard data from microsimulation"
+        )
         console.print("  lifetime  - Calculate lifetime impact on a graduate")
-        console.print("\nRun 'uk-budget-data <command> --help' for command options.")
+        console.print(
+            "\nRun 'uk-budget-data <command> --help' for command options."
+        )
         return 0
 
 

@@ -16,7 +16,6 @@ from rich.table import Table
 
 from uk_budget_data.reforms import get_autumn_budget_2025_reforms
 
-
 # Graduate starting income by percentile (age 22, 2025 prices)
 # Based on IFS research on graduate earnings
 GRADUATE_STARTING_INCOME = {
@@ -257,7 +256,9 @@ class LifetimeImpactCalculator:
         self.verbose = verbose
         self.console = Console() if verbose else None
         self.reforms = {
-            r.id: r for r in get_autumn_budget_2025_reforms() if r.id != "autumn_budget_2025_combined"
+            r.id: r
+            for r in get_autumn_budget_2025_reforms()
+            if r.id != "autumn_budget_2025_combined"
         }
 
     def _log(self, message: str) -> None:
@@ -274,7 +275,7 @@ class LifetimeImpactCalculator:
         Returns:
             DataFrame with row for each year containing all impacts.
         """
-        self._log(f"[bold]Calculating lifetime impact[/bold]")
+        self._log("[bold]Calculating lifetime impact[/bold]")
         self._log(f"  Income percentile: {inputs.income_percentile}")
         self._log(f"  Marriage age: {inputs.marriage_age or 'Never'}")
         self._log(f"  Children: {len(inputs.children_ages_at_birth)}")
@@ -283,16 +284,24 @@ class LifetimeImpactCalculator:
         if inputs.starting_income is not None:
             starting_income = inputs.starting_income
         else:
-            starting_income = GRADUATE_STARTING_INCOME[inputs.income_percentile]
+            starting_income = GRADUATE_STARTING_INCOME[
+                inputs.income_percentile
+            ]
 
         results: list[YearResult] = []
-        student_loan_balance = inputs.student_loan_balance if inputs.has_plan_2_loan else 0
+        student_loan_balance = (
+            inputs.student_loan_balance if inputs.has_plan_2_loan else 0
+        )
 
         # Track when first child is born
         first_child_year = None
         if inputs.marriage_age and inputs.children_ages_at_birth:
             # First child typically 2 years after marriage
-            first_child_year = inputs.start_year + (inputs.marriage_age - inputs.graduation_age) + 2
+            first_child_year = (
+                inputs.start_year
+                + (inputs.marriage_age - inputs.graduation_age)
+                + 2
+            )
 
         for year in range(inputs.start_year, inputs.end_year + 1):
             age = inputs.graduation_age + (year - inputs.start_year)
@@ -302,11 +311,17 @@ class LifetimeImpactCalculator:
 
             # Calculate employment income
             base_multiplier = interpolate_earnings_multiplier(age)
-            years_growth = (1 + inputs.income_growth_rate) ** (year - inputs.start_year)
-            employment_income = starting_income * base_multiplier * years_growth
+            years_growth = (1 + inputs.income_growth_rate) ** (
+                year - inputs.start_year
+            )
+            employment_income = (
+                starting_income * base_multiplier * years_growth
+            )
 
             # Determine life events
-            is_married = inputs.marriage_age is not None and age >= inputs.marriage_age
+            is_married = (
+                inputs.marriage_age is not None and age >= inputs.marriage_age
+            )
 
             # Calculate children's ages
             children_ages = []
@@ -320,7 +335,9 @@ class LifetimeImpactCalculator:
             # Student loan calculations
             # Write off after 40 years from graduation (age 22 + 40 = 62)
             years_since_graduation = age - inputs.graduation_age
-            loan_written_off = years_since_graduation >= STUDENT_LOAN_WRITE_OFF_YEARS
+            loan_written_off = (
+                years_since_graduation >= STUDENT_LOAN_WRITE_OFF_YEARS
+            )
 
             if student_loan_balance > 0 and not loan_written_off:
                 repayment, interest = calculate_student_loan_repayment(
@@ -366,7 +383,9 @@ class LifetimeImpactCalculator:
             self._calculate_policy_impacts(result, inputs, situation, sim_year)
 
             # Update reformed net income
-            result.reformed_net_income = baseline_net + result.total_policy_impact
+            result.reformed_net_income = (
+                baseline_net + result.total_policy_impact
+            )
 
             results.append(result)
             student_loan_balance = new_balance
@@ -394,13 +413,19 @@ class LifetimeImpactCalculator:
         year: int,
     ) -> None:
         """Calculate impact of each policy for a year."""
-        # Two child limit - only affects families with 3+ children
+        # Two child limit repeal - affects families with 3+ children who claim UC/TC
+        # Note: Most graduates won't benefit as their incomes exceed UC thresholds
+        # Only applicable for very low earners (p25 or below, single parent)
         if result.num_children >= 3:
-            reform = self.reforms.get("two_child_limit")
-            if reform:
-                result.two_child_limit_impact = self._calculate_single_reform_impact(
-                    situation, year, reform
-                )
+            # UC eligibility roughly ends around £40k for families
+            # More generous threshold for single parents
+            income_threshold = 35_000 if not result.is_married else 25_000
+
+            if result.employment_income < income_threshold:
+                extra_children = result.num_children - 2
+                # UC child element ~£3,300/year, but tapers at 55%
+                # Estimate net gain ~£1,500 per child for working families
+                result.two_child_limit_impact = extra_children * 1500
 
         # Fuel duty freeze - affects those with fuel spending
         # Autumn Budget extends 5p cut until Sep 2026, then staggered reversal
@@ -409,9 +434,13 @@ class LifetimeImpactCalculator:
         if inputs.fuel_spending > 0:
             litres_per_year = inputs.fuel_spending / 1.40
             if year == 2026:
-                result.fuel_duty_freeze_impact = litres_per_year * 0.05  # Full 5p saving
+                result.fuel_duty_freeze_impact = (
+                    litres_per_year * 0.05
+                )  # Full 5p saving
             elif year == 2027:
-                result.fuel_duty_freeze_impact = litres_per_year * 0.02  # Reduced benefit
+                result.fuel_duty_freeze_impact = (
+                    litres_per_year * 0.02
+                )  # Reduced benefit
             # No benefit from 2028+ as rates converge
 
         # Rail fares freeze - one-year freeze in 2026 only
@@ -426,8 +455,10 @@ class LifetimeImpactCalculator:
         if year >= 2028:
             reform = self.reforms.get("threshold_freeze_extension")
             if reform:
-                result.threshold_freeze_impact = self._calculate_single_reform_impact(
-                    situation, year, reform
+                result.threshold_freeze_impact = (
+                    self._calculate_single_reform_impact(
+                        situation, year, reform
+                    )
                 )
 
         # Dividend tax increase
@@ -451,20 +482,26 @@ class LifetimeImpactCalculator:
         if inputs.salary_sacrifice_amount > 2000 and year >= 2029:
             reform = self.reforms.get("salary_sacrifice_cap")
             if reform:
-                result.salary_sacrifice_cap_impact = self._calculate_single_reform_impact(
-                    situation, year, reform
+                result.salary_sacrifice_cap_impact = (
+                    self._calculate_single_reform_impact(
+                        situation, year, reform
+                    )
                 )
 
         # Student loan threshold freeze
         # The threshold freeze means higher repayments than if thresholds rose with inflation
         if result.student_loan_balance_start > 0 and year <= 2027:
             # Without freeze, threshold would rise ~3% per year
-            unfrozen_threshold = STUDENT_LOAN_THRESHOLD_2025 * (1.03 ** (year - 2025))
+            unfrozen_threshold = STUDENT_LOAN_THRESHOLD_2025 * (
+                1.03 ** (year - 2025)
+            )
             # Extra repayment due to frozen threshold
             extra_income_above = max(
                 0, unfrozen_threshold - STUDENT_LOAN_THRESHOLD_2025
             )
-            result.student_loan_threshold_impact = -extra_income_above * STUDENT_LOAN_RATE
+            result.student_loan_threshold_impact = (
+                -extra_income_above * STUDENT_LOAN_RATE
+            )
 
     def _calculate_single_reform_impact(
         self,
@@ -533,7 +570,9 @@ class LifetimeImpactCalculator:
             "Savings tax": df["savings_tax_impact"].sum(),
             "Property tax": df["property_tax_impact"].sum(),
             "Salary sacrifice cap": df["salary_sacrifice_cap_impact"].sum(),
-            "Student loan threshold": df["student_loan_threshold_impact"].sum(),
+            "Student loan threshold": df[
+                "student_loan_threshold_impact"
+            ].sum(),
         }
 
         table.add_row("Years modelled", str(len(df)))
@@ -545,7 +584,10 @@ class LifetimeImpactCalculator:
                 table.add_row(f"  {name}", f"£{value:,.0f}")
 
         table.add_row("", "")
-        table.add_row("Peak earnings year", str(df.loc[df["employment_income"].idxmax(), "year"]))
+        table.add_row(
+            "Peak earnings year",
+            str(df.loc[df["employment_income"].idxmax(), "year"]),
+        )
         table.add_row(
             "Peak earnings",
             f"£{df['employment_income'].max():,.0f}",
