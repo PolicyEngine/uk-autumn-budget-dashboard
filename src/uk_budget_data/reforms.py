@@ -437,10 +437,11 @@ def _slr_model(freeze_plan_2_threshold: bool = False):
             entity = Person
             label = "Student Loan Plan"
             definition_period = YEAR
+            max_length = 10
 
             def formula(person, period, parameters):
-                has_slr_reported = person("student_loan_repayments", 2026) > 0
-                age = person("age", 2026)
+                has_slr_reported = person("student_loan_repayments", period) > 0
+                age = person("age", period)
                 time_attended_university = period.start.year - age + 18
                 return select(
                     [
@@ -450,12 +451,12 @@ def _slr_model(freeze_plan_2_threshold: bool = False):
                         True,
                     ],
                     [
-                        "NONE",
-                        "PLAN_1",
-                        "PLAN_2",
-                        "PLAN_5",
+                        b"NONE",
+                        b"PLAN_1",
+                        b"PLAN_2",
+                        b"PLAN_5",
                     ],
-                    default="NONE",
+                    default=b"NONE",
                 )
 
         class student_loan_repayments_modelled(Variable):
@@ -467,27 +468,48 @@ def _slr_model(freeze_plan_2_threshold: bool = False):
             def formula(person, period, parameters):
                 plan = person("student_loan_plan", period)
                 rpi = parameters.gov.economic_assumptions.indices.obr.rpi
+
+                # Plan 2 threshold policy:
+                # - April 2025: £28,470
+                # - April 2026: Uprated to £29,385 (RPI from 2025)
+                # - April 2027-2029: FROZEN at £29,385 for 3 years (Budget 2025 policy)
+                # - April 2030+: Resume RPI uprating
+                # - Baseline counterfactual: Would continue RPI uprating from 2026
+                # Source: Autumn Budget 2025 announcement
+
+                # Calculate Plan 2 threshold
+                if period.start.year == 2026:
+                    # 2026: Apply RPI uprating in both baseline and reform
+                    plan_2_threshold = 28470 * (rpi(2026) / rpi(2025))
+                elif 2027 <= period.start.year <= 2029:
+                    # 2027-2029: 3-year freeze in reform, continue uprating in baseline
+                    threshold_2026 = 28470 * (rpi(2026) / rpi(2025))
+                    if freeze_plan_2_threshold:
+                        # Reform: Freeze at 2026 level
+                        plan_2_threshold = threshold_2026
+                    else:
+                        # Baseline: Continue uprating from 2026
+                        plan_2_threshold = threshold_2026 * (rpi(period) / rpi(2026))
+                elif period.start.year >= 2030:
+                    # 2030+: Resume RPI uprating in both scenarios
+                    plan_2_threshold = 28470 * (rpi(period) / rpi(2025))
+                else:
+                    # Pre-2026: Use base level with uprating
+                    plan_2_threshold = 28470 * (rpi(period) / rpi(2025))
+
+                # Other plans continue with normal RPI uprating
                 parameter_uprating = rpi(period) / rpi(2025)
-                # Plan 2 threshold is £28,470 from April 2025, frozen at this level
-                # for 3 years from April 2026 through April 2029 per Budget 2025.
-                # From 2029-30 onwards, normal RPI uprating resumes.
-                # Source: OBR Economic and Fiscal Outlook November 2025
                 threshold = select(
                     [
-                        plan == "PLAN_1",
-                        plan == "PLAN_2",
-                        plan == "PLAN_4",
-                        plan == "PLAN_5",
+                        plan == b"PLAN_1",
+                        plan == b"PLAN_2",
+                        plan == b"PLAN_4",
+                        plan == b"PLAN_5",
                         True,
                     ],
                     [
                         26065 * parameter_uprating,
-                        28470
-                        * (
-                            parameter_uprating
-                            if not freeze_plan_2_threshold
-                            else 1
-                        ),
+                        plan_2_threshold,
                         32745 * parameter_uprating,
                         25000 * parameter_uprating,
                         np.inf,
@@ -501,6 +523,16 @@ def _slr_model(freeze_plan_2_threshold: bool = False):
 
         sim.tax_benefit_system.update_variable(student_loan_plan)
         sim.tax_benefit_system.add_variable(student_loan_repayments_modelled)
+
+        # Connect modelled repayments to government revenue
+        sim.tax_benefit_system.variables["gov_tax"].adds.remove("student_loan_repayments")
+        sim.tax_benefit_system.variables["gov_tax"].adds.append("student_loan_repayments_modelled")
+
+        # Update household tax to reflect modelled repayments
+        sim.tax_benefit_system.variables["household_tax"].adds.remove("student_loan_repayments")
+        sim.tax_benefit_system.variables["household_tax"].adds.append("student_loan_repayments_modelled")
+
+        # Update HBAI household income to reflect modelled repayments
         sim.tax_benefit_system.variables[
             "hbai_household_net_income"
         ].subtracts.append("student_loan_repayments_modelled")
@@ -516,10 +548,11 @@ FREEZE_STUDENT_LOAN_THRESHOLDS = Reform(
     id="freeze_student_loan_thresholds",
     name="Freeze student loan repayment thresholds",
     description=(
-        "Freezes Plan 2 student loan repayment thresholds for three years "
-        "from April 2026 through April 2029. Baseline assumes RPI uprating "
-        "would have continued; reform freezes thresholds at £28,470, "
-        "increasing repayments. OBR costing: +£285-355m annual revenue (2026-2029)."
+        "Freezes Plan 2 student loan repayment thresholds for 3 years from April 2027 "
+        "through April 2029. Threshold rises to £29,385 in 2026 (RPI uprating), then frozen "
+        "at that level for 3 years, resuming RPI uprating from 2030. Baseline assumes RPI "
+        "uprating would have continued from 2026 level. OBR costing: +£400m annual revenue "
+        "in medium term."
     ),
     simulation_modifier=_slr_model(
         freeze_plan_2_threshold=True

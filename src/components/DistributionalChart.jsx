@@ -29,6 +29,7 @@ const POLICY_COLORS = {
   "Dividend tax increase (+2pp)": "#F59E0B", // Yellow-amber
   "Savings income tax increase (+2pp)": "#FBBF24", // Yellow
   "Property income tax increase (+2pp)": "#FCD34D", // Light yellow
+  "Freeze student loan repayment thresholds": "#EA580C", // Orange
   "NICs on salary sacrifice (>£2k)": "#B45309", // Dark amber
 };
 
@@ -43,6 +44,7 @@ const ALL_POLICY_NAMES = [
   "Dividend tax increase (+2pp)",
   "Savings income tax increase (+2pp)",
   "Property income tax increase (+2pp)",
+  "Freeze student loan repayment thresholds",
   "NICs on salary sacrifice (>£2k)",
 ];
 
@@ -78,6 +80,10 @@ function DistributionalChart({ rawData, selectedPolicies }) {
     {
       id: "property_tax_increase_2pp",
       name: "Property income tax increase (+2pp)",
+    },
+    {
+      id: "freeze_student_loan_thresholds",
+      name: "Freeze student loan repayment thresholds",
     },
     { id: "salary_sacrifice_cap", name: "NICs on salary sacrifice (>£2k)" },
   ];
