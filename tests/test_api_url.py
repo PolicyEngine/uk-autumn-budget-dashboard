@@ -14,9 +14,9 @@ def test_api_url_configured_for_production():
     # 2. Have a hardcoded production URL
 
     # Check that we're not hardcoding localhost as the only fallback
-    assert "VITE_PERSONAL_IMPACT_API_URL" in content, (
-        "Should use VITE_PERSONAL_IMPACT_API_URL environment variable"
-    )
+    assert (
+        "VITE_PERSONAL_IMPACT_API_URL" in content
+    ), "Should use VITE_PERSONAL_IMPACT_API_URL environment variable"
 
     # For now, localhost is acceptable as dev fallback
     # but production must be configurable via env var
@@ -25,4 +25,6 @@ def test_api_url_configured_for_production():
 
     # Verify the pattern allows for production override
     has_env_var_check = any("import.meta.env" in l for l in api_url_lines)
-    assert has_env_var_check, "API URL should be configurable via environment variable"
+    assert (
+        has_env_var_check
+    ), "API URL should be configurable via environment variable"
