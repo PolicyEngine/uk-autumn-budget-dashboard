@@ -8,7 +8,7 @@ import "./PersonalImpactTab.css";
 // e.g., https://uk-autumn-budget-dashboard-HASH-ew.a.run.app
 // Falls back to localhost for local development
 const API_BASE_URL =
-  import.meta.env.VITE_PERSONAL_IMPACT_API_URL || "https://https://uk-autumn-budget-dashboard-578039519715.europe-west1.run.app/";
+  import.meta.env.VITE_PERSONAL_IMPACT_API_URL || "https://https://uk-autumn-budget-dashboard-578039519715.europe-west1.run.app";
 const API_URL = `${API_BASE_URL}/api/personal-impact`;
 
 function PersonalImpactTab() {
