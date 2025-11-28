@@ -19,21 +19,31 @@ import "./WaterfallChart.css";
 import "./ChartExport.css";
 
 const POLICY_COLORS = {
-  // GOOD for households (teal spectrum)
+  // GOOD for households (teal/green spectrum) - spending/cost items
   "2 child limit repeal": "#0D9488", // Teal
   "Fuel duty freeze extension": "#5EEAD4", // Light teal
+  "Rail fares freeze": "#10B981", // Emerald
 
-  // BAD for households (amber spectrum) - these decrease household income
+  // BAD for households (amber spectrum) - revenue raisers
   "Threshold freeze extension": "#D97706", // Amber
+  "Dividend tax increase (+2pp)": "#F59E0B", // Yellow-amber
+  "Savings income tax increase (+2pp)": "#FBBF24", // Yellow
+  "Property income tax increase (+2pp)": "#FCD34D", // Light yellow
+  "NICs on salary sacrifice (>£2k)": "#B45309", // Dark amber
 };
 
-// Order: biggest magnitude closest to zero line
+// Order: good for households first, then bad for households
 const ALL_POLICY_NAMES = [
-  // Good for households (positive, teal)
+  // Good for households (positive, teal/green)
   "2 child limit repeal",
   "Fuel duty freeze extension",
+  "Rail fares freeze",
   // Bad for households (negative, amber)
   "Threshold freeze extension",
+  "Dividend tax increase (+2pp)",
+  "Savings income tax increase (+2pp)",
+  "Property income tax increase (+2pp)",
+  "NICs on salary sacrifice (>£2k)",
 ];
 
 // Chart metadata for export
@@ -50,8 +60,13 @@ function WaterfallChart({ rawData, selectedPolicies }) {
   // Build chart data for internal year
   const POLICIES = [
     { id: "two_child_limit", name: "2 child limit repeal" },
-    { id: "threshold_freeze_extension", name: "Threshold freeze extension" },
     { id: "fuel_duty_freeze", name: "Fuel duty freeze extension" },
+    { id: "rail_fares_freeze", name: "Rail fares freeze" },
+    { id: "threshold_freeze_extension", name: "Threshold freeze extension" },
+    { id: "dividend_tax_increase_2pp", name: "Dividend tax increase (+2pp)" },
+    { id: "savings_tax_increase_2pp", name: "Savings income tax increase (+2pp)" },
+    { id: "property_tax_increase_2pp", name: "Property income tax increase (+2pp)" },
+    { id: "salary_sacrifice_cap", name: "NICs on salary sacrifice (>£2k)" },
   ];
 
   const waterfallDeciles = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"];

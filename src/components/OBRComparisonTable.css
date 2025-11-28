@@ -15,7 +15,53 @@
   font-size: 0.95rem;
   color: #4b5563;
   line-height: 1.6;
-  margin-bottom: 24px;
+  margin-bottom: 16px;
+}
+
+/* Static/Behavioural Toggle */
+.obr-toggle-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.toggle-label {
+  font-size: 0.875rem;
+  color: #4b5563;
+  font-weight: 500;
+}
+
+.toggle-buttons {
+  display: flex;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.toggle-btn {
+  padding: 6px 14px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  background: white;
+  border: none;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.toggle-btn:first-child {
+  border-right: 1px solid #d1d5db;
+}
+
+.toggle-btn:hover:not(.active) {
+  background: #f3f4f6;
+}
+
+.toggle-btn.active {
+  background: #319795;
+  color: white;
 }
 
 .comparison-table-wrapper {

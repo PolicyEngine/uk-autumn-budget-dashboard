@@ -160,7 +160,7 @@ class TestFuelDutyFreeze:
         assert reform is not None
 
     def test_reform_maintains_reduced_rate(self):
-        """Reform maintains the 5p cut (52.95p rate)."""
+        """Reform uses custom baseline and current law for reform."""
         from uk_budget_data.reforms import get_reform
 
         reform = get_reform("fuel_duty_freeze")
@@ -172,13 +172,13 @@ class TestFuelDutyFreeze:
         param_key = "gov.hmrc.fuel_duty.petrol_and_diesel"
         assert param_key in reform.baseline_parameter_changes
 
-        # Baseline has pre-AB values (5p cut ending, higher rates)
-        # Reform uses current law (policyengine-uk v2.59.0 has freeze baked in)
-        assert (
-            reform.baseline_parameter_changes[param_key]["2026-03-22"]
-            == 0.5795
-        )
-        # Reform parameter_changes is empty (uses default policyengine-uk params)
+        # Baseline has pre-AB values (5p cut ending March 2026, then RPI)
+        # Hardcoded because policyengine-uk 2.60.0+ has post-budget values
+        assert reform.baseline_parameter_changes[param_key]["2026"] == 0.58
+        assert reform.baseline_parameter_changes[param_key]["2027"] == 0.61
+        assert reform.baseline_parameter_changes[param_key]["2029"] == 0.64
+
+        # Reform uses current law (policyengine-uk 2.60.0+ has correct rates)
         assert reform.parameter_changes == {}
 
 
@@ -193,7 +193,13 @@ class TestThresholdFreeze:
         assert reform is not None
 
     def test_reform_uses_pre_ab_baseline(self):
-        """Reform compares current law (freeze) against pre-AB baseline."""
+        """Reform compares frozen thresholds against pre-AB baseline (CPI-indexed).
+
+        policyengine-uk 2.60.0+ has frozen thresholds (Autumn Budget policy).
+        This reform sets CPI-indexed values as baseline to show impact.
+        - Baseline: CPI-indexed from 2028 (pre-budget)
+        - Reform: Frozen at £12,570 PA and £37,700 threshold (policyengine-uk default)
+        """
         from uk_budget_data.reforms import (
             get_pre_autumn_budget_baseline,
             get_reform,
@@ -202,17 +208,13 @@ class TestThresholdFreeze:
         reform = get_reform("threshold_freeze_extension")
         pre_ab_baseline = get_pre_autumn_budget_baseline()
 
-        # Reform uses custom baseline (pre-Autumn Budget values)
-        assert reform.has_custom_baseline()
-        assert reform.baseline_parameter_changes is not None
-
         pa_key = "gov.hmrc.income_tax.allowances.personal_allowance.amount"
         threshold_key = "gov.hmrc.income_tax.rates.uk[1].threshold"
 
+        # Baseline has CPI-indexed values (pre-Autumn Budget)
         assert pa_key in reform.baseline_parameter_changes
         assert threshold_key in reform.baseline_parameter_changes
 
-        # Baseline has inflation-indexed values from PRE_AUTUMN_BUDGET_BASELINE
         assert (
             reform.baseline_parameter_changes[pa_key]["2028"]
             == pre_ab_baseline[pa_key]["2028"]
@@ -222,7 +224,7 @@ class TestThresholdFreeze:
             == pre_ab_baseline[threshold_key]["2028"]
         )
 
-        # Reform parameter_changes is empty (uses default policyengine-uk params)
+        # Reform parameter_changes is empty (uses policyengine-uk frozen values)
         assert reform.parameter_changes == {}
 
 
@@ -352,6 +354,56 @@ class TestPropertyTaxIncrease:
 
         # Reform parameter_changes is empty (uses new rates from policyengine-uk)
         assert reform.parameter_changes == {}
+
+
+class TestRailFaresFreeze:
+    """Tests for rail fares freeze reform."""
+
+    def test_reform_exists(self):
+        """Rail fares freeze reform is defined."""
+        from uk_budget_data.reforms import get_reform
+
+        reform = get_reform("rail_fares_freeze")
+        assert reform is not None
+        assert reform.id == "rail_fares_freeze"
+
+    def test_reform_uses_simulation_modifier(self):
+        """Reform uses simulation modifier for structural change."""
+        from uk_budget_data.reforms import get_reform
+
+        reform = get_reform("rail_fares_freeze")
+        assert reform.simulation_modifier is not None
+
+    def test_rail_fare_increase_rates_defined(self):
+        """Rail fare increase rates are defined for all budget years."""
+        from uk_budget_data.reforms import RAIL_FARE_INCREASES
+
+        expected_years = [2026, 2027, 2028, 2029]
+        for year in expected_years:
+            assert year in RAIL_FARE_INCREASES, f"Missing rate for {year}"
+            assert (
+                RAIL_FARE_INCREASES[year] > 0
+            ), f"Rate for {year} should be positive"
+            assert (
+                RAIL_FARE_INCREASES[year] < 0.10
+            ), f"Rate for {year} seems too high"
+
+        # 2026 rate should be 5.8% (the rate that was frozen)
+        assert RAIL_FARE_INCREASES[2026] == 0.058
+
+    def test_rail_freeze_costs_defined(self):
+        """Rail freeze costs match Treasury estimates."""
+        from uk_budget_data.reforms import RAIL_FREEZE_COSTS
+
+        expected_years = [2026, 2027, 2028, 2029]
+        for year in expected_years:
+            assert year in RAIL_FREEZE_COSTS, f"Missing cost for {year}"
+            assert (
+                RAIL_FREEZE_COSTS[year] > 0
+            ), f"Cost for {year} should be positive"
+
+        # 2026 cost should be £0.145bn (Treasury estimate)
+        assert RAIL_FREEZE_COSTS[2026] == 0.145
 
 
 class TestStructuralReforms:

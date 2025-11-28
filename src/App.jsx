@@ -11,8 +11,6 @@ import OBRComparisonTable from "./components/OBRComparisonTable";
 import "./App.css";
 
 // Autumn Budget 2025 policy provisions
-// Note: NICs on salary-sacrificed pensions is excluded pending data calibration
-// See: https://github.com/PolicyEngine/policyengine-uk-data/issues/215
 const POLICIES = [
   {
     id: "two_child_limit",
@@ -27,6 +25,13 @@ const POLICIES = [
     description: "Freeze fuel duty rates until September 2026",
     explanation:
       'The baseline assumes the 5p cut ends on 22 March 2026, returning the rate to 57.95p, followed by RPI uprating from April 2026. The announced policy (reform) maintains the freeze at 52.95p until September 2026, then implements a staggered reversal with increases of 1p, 2p, and 2p over three-month periods, reaching 57.95p by March 2027. Both then apply annual RPI uprating. See our <a href="https://policyengine.org/uk/research/fuel-duty-freeze-2025" target="_blank" rel="noopener noreferrer">research report</a> for details.',
+  },
+  {
+    id: "rail_fares_freeze",
+    name: "Rail fares freeze",
+    description: "Freeze regulated rail fares for one year from March 2026",
+    explanation:
+      'Freezes regulated rail fares in England for one year from March 2026 - the first freeze in 30 years. Without the freeze, fares would have increased by 5.8% under the RPI formula. The Government estimates this will save passengers £600 million in 2026-27, with commuters on expensive routes saving over £300 per year. See our <a href="https://policyengine.org/uk/research/rail-fares-freeze-2025" target="_blank" rel="noopener noreferrer">research report</a> for details.',
   },
   {
     id: "threshold_freeze_extension",
@@ -59,6 +64,13 @@ const POLICIES = [
     explanation:
       "Increases property income tax rates by 2 percentage points from April 2027. Basic: 20% → 22%, Higher: 40% → 42%, Additional: 45% → 47%. OBR estimates this will raise £0.4-0.6bn annually from 2028-29. Note: Property income may not be fully captured in FRS.",
   },
+  {
+    id: "salary_sacrifice_cap",
+    name: "Salary sacrifice cap",
+    description: "Cap NI-free salary sacrifice pension contributions at £2,000",
+    explanation:
+      "Caps National Insurance-free salary sacrifice pension contributions at £2,000 per year from April 2029. Contributions above this threshold become subject to employee and employer NICs. PolicyEngine estimates this will raise £3.3bn in 2029-30, assuming employers spread costs and employees maintain pension contributions. The OBR estimates £4.9bn (static) or £4.7bn (post-behavioural). See our <a href=\"https://policyengine.org/uk/research/uk-salary-sacrifice-cap\" target=\"_blank\" rel=\"noopener noreferrer\">research report</a> for details.",
+  },
 ];
 
 // Preset policy combinations
@@ -72,10 +84,32 @@ const PRESETS = [
 
 function parseCSV(csvText) {
   const lines = csvText.trim().split("\n");
-  const headers = lines[0].split(",");
+
+  // Parse a single CSV line handling quoted fields
+  const parseLine = (line) => {
+    const values = [];
+    let current = "";
+    let inQuotes = false;
+
+    for (let i = 0; i < line.length; i++) {
+      const char = line[i];
+      if (char === '"') {
+        inQuotes = !inQuotes;
+      } else if (char === "," && !inQuotes) {
+        values.push(current.trim());
+        current = "";
+      } else {
+        current += char;
+      }
+    }
+    values.push(current.trim());
+    return values;
+  };
+
+  const headers = parseLine(lines[0]);
   const data = [];
   for (let i = 1; i < lines.length; i++) {
-    const values = lines[i].split(",");
+    const values = parseLine(lines[i]);
     const row = {};
     headers.forEach((header, idx) => {
       row[header] = values[idx];
