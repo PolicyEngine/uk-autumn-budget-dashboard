@@ -40,6 +40,46 @@
   margin: 0;
 }
 
+/* Tab Navigation */
+.tab-navigation {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 0;
+}
+
+.tab-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #6b7280;
+  cursor: pointer;
+  transition:
+    color 0.2s,
+    border-color 0.2s;
+  margin-bottom: -1px;
+}
+
+.tab-button:hover {
+  color: #374151;
+}
+
+.tab-button.active {
+  color: #319795;
+  border-bottom-color: #319795;
+}
+
+.tab-button svg {
+  flex-shrink: 0;
+}
+
 .dashboard-intro {
   font-size: 1rem;
   color: #4b5563;

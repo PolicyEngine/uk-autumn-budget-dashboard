@@ -8,6 +8,7 @@ import EmploymentIncomeChart from "./components/EmploymentIncomeChart";
 import EmploymentIncomeDiffChart from "./components/EmploymentIncomeDiffChart";
 import HouseholdChart from "./components/HouseholdChart";
 import OBRComparisonTable from "./components/OBRComparisonTable";
+import PersonalImpactTab from "./components/PersonalImpactTab";
 import "./App.css";
 
 // Autumn Budget 2025 policy provisions
@@ -77,7 +78,7 @@ const POLICIES = [
     name: "Salary sacrifice cap",
     description: "Cap NI-free salary sacrifice pension contributions at £2,000",
     explanation:
-      "Caps National Insurance-free salary sacrifice pension contributions at £2,000 per year from April 2029. Contributions above this threshold become subject to employee and employer NICs. PolicyEngine estimates this will raise £3.3bn in 2029-30, assuming employers spread costs and employees maintain pension contributions. The OBR estimates £4.9bn (static) or £4.7bn (post-behavioural). See our <a href=\"https://policyengine.org/uk/research/uk-salary-sacrifice-cap\" target=\"_blank\" rel=\"noopener noreferrer\">research report</a> for details.",
+      'Caps National Insurance-free salary sacrifice pension contributions at £2,000 per year from April 2029. Contributions above this threshold become subject to employee and employer NICs. PolicyEngine estimates this will raise £3.3bn in 2029-30, assuming employers spread costs and employees maintain pension contributions. The OBR estimates £4.9bn (static) or £4.7bn (post-behavioural). See our <a href="https://policyengine.org/uk/research/uk-salary-sacrifice-cap" target="_blank" rel="noopener noreferrer">research report</a> for details.',
   },
 ];
 
@@ -134,6 +135,7 @@ function App() {
   const [selectedYear, setSelectedYear] = useState(2026);
   const [results, setResults] = useState(null);
   const [showPolicyDetails, setShowPolicyDetails] = useState(false);
+  const [activeTab, setActiveTab] = useState("dashboard");
 
   // Valid policy IDs from POLICIES
   const validPolicyIds = POLICIES.map((p) => p.id);
@@ -142,6 +144,11 @@ function App() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const policiesParam = params.get("policies");
+    const tabParam = params.get("tab");
+
+    if (tabParam === "personal") {
+      setActiveTab("personal");
+    }
 
     if (policiesParam) {
       // Filter to only include valid policy IDs
@@ -152,16 +159,35 @@ function App() {
     }
   }, []);
 
-  // Update URL when policies change
+  // Update URL when policies or tab change
   useEffect(() => {
-    if (selectedPolicies.length === 0) {
-      window.history.replaceState({}, "", window.location.pathname);
+    const params = new URLSearchParams(window.location.search);
+
+    // Preserve personal impact data if present
+    const personalParam = params.get("personal");
+
+    if (activeTab === "personal") {
+      params.set("tab", "personal");
+      params.delete("policies");
     } else {
-      const params = new URLSearchParams();
-      params.set("policies", selectedPolicies.join(","));
-      window.history.replaceState({}, "", `?${params.toString()}`);
+      params.delete("tab");
+      if (selectedPolicies.length > 0) {
+        params.set("policies", selectedPolicies.join(","));
+      } else {
+        params.delete("policies");
+      }
     }
-  }, [selectedPolicies]);
+
+    // Re-add personal param if it was there
+    if (personalParam) {
+      params.set("personal", personalParam);
+    }
+
+    const newUrl = params.toString()
+      ? `?${params.toString()}`
+      : window.location.pathname;
+    window.history.replaceState({}, "", newUrl);
+  }, [selectedPolicies, activeTab]);
 
   // Run analysis when policies or year change
   useEffect(() => {
@@ -363,165 +389,217 @@ function App() {
     setSelectedPolicies(presetPolicies);
   };
 
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+  };
+
   return (
     <div className="app">
       <main className="main-content">
         {/* Title row with controls */}
         <div className="title-row">
           <h1>UK Autumn Budget 2025</h1>
-          <PolicySelector
-            policies={POLICIES}
-            selectedPolicies={selectedPolicies}
-            onPolicyToggle={handlePolicyToggle}
-          />
+          {activeTab === "dashboard" && (
+            <PolicySelector
+              policies={POLICIES}
+              selectedPolicies={selectedPolicies}
+              onPolicyToggle={handlePolicyToggle}
+            />
+          )}
         </div>
 
-        {/* Dashboard description */}
-        <p className="dashboard-intro">
-          Explore the fiscal and distributional impacts of potential UK budget
-          policies. Select policies to see how they affect government revenue,
-          household incomes, and inequality across income groups.{" "}
-          {selectedPolicies.length > 0 && (
-            <a
-              href="#policy-details"
-              onClick={(e) => {
-                e.preventDefault();
-                setShowPolicyDetails(true);
-                document
-                  .getElementById("policy-details")
-                  ?.scrollIntoView({ behavior: "smooth" });
-              }}
+        {/* Tab navigation */}
+        <div className="tab-navigation">
+          <button
+            className={`tab-button ${activeTab === "dashboard" ? "active" : ""}`}
+            onClick={() => handleTabChange("dashboard")}
+          >
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
             >
-              See policy descriptions below.
-            </a>
-          )}
-        </p>
+              <rect x="3" y="3" width="7" height="9" />
+              <rect x="14" y="3" width="7" height="5" />
+              <rect x="14" y="12" width="7" height="9" />
+              <rect x="3" y="16" width="7" height="5" />
+            </svg>
+            Population impact
+          </button>
+          <button
+            className={`tab-button ${activeTab === "personal" ? "active" : ""}`}
+            onClick={() => handleTabChange("personal")}
+          >
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+              <circle cx="12" cy="7" r="4" />
+            </svg>
+            Personal impact
+          </button>
+        </div>
 
-        {selectedPolicies.length === 0 ? (
-          <div className="empty-state">
-            <p>
-              Select policies to analyse their impact on government revenue and
-              household incomes.
-            </p>
-            <div className="preset-buttons">
-              {PRESETS.map((preset) => (
-                <button
-                  key={preset.id}
-                  className="preset-button"
-                  onClick={() => handlePresetClick(preset.policies)}
-                >
-                  {preset.name}
-                </button>
-              ))}
-            </div>
-          </div>
+        {activeTab === "personal" ? (
+          <PersonalImpactTab />
         ) : (
-          <div className="results-container">
-            {results && (
-              <>
-                {/* Hero Chart: Revenue Impact */}
-                <div className="hero-chart">
-                  <BudgetaryImpactChart data={results.budgetData} />
-                </div>
+          <>
+            {/* Dashboard description */}
+            <p className="dashboard-intro">
+              Explore the fiscal and distributional impacts of potential UK
+              budget policies. Select policies to see how they affect government
+              revenue, household incomes, and inequality across income groups.{" "}
+              {selectedPolicies.length > 0 && (
+                <a
+                  href="#policy-details"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setShowPolicyDetails(true);
+                    document
+                      .getElementById("policy-details")
+                      ?.scrollIntoView({ behavior: "smooth" });
+                  }}
+                >
+                  See policy descriptions below.
+                </a>
+              )}
+            </p>
 
-                {/* Row 1: Absolute and Relative Impact */}
-                <div className="charts-grid">
-                  <WaterfallChart
-                    rawData={results.rawWinnersLosers}
-                    selectedPolicies={selectedPolicies}
-                  />
-                  <DistributionalChart
-                    rawData={results.rawDistributional}
-                    selectedPolicies={selectedPolicies}
-                  />
-                </div>
-
-                {/* Row 2: Constituency Map and Scatter */}
-                <div className="charts-grid charts-row-2">
-                  <ConstituencyMap selectedPolicies={selectedPolicies} />
-                  {results.rawHouseholdScatter && (
-                    <HouseholdChart
-                      rawData={results.rawHouseholdScatter}
-                      selectedPolicies={selectedPolicies}
-                    />
-                  )}
-                </div>
-
-                {/* Row 3: Net Income Analysis Charts */}
-                <div className="charts-grid charts-row-3">
-                  <EmploymentIncomeChart
-                    selectedPolicies={selectedPolicies}
-                    selectedYear={2026}
-                  />
-                  <EmploymentIncomeDiffChart
-                    selectedPolicies={selectedPolicies}
-                    selectedYear={2026}
-                  />
-                </div>
-
-                {/* OBR Comparison Table */}
-                <OBRComparisonTable selectedPolicies={selectedPolicies} />
-
-                {/* Policy Details Footer */}
-                <div id="policy-details" className="policy-details-footer">
-                  <button
-                    className="policy-details-toggle"
-                    onClick={() => setShowPolicyDetails(!showPolicyDetails)}
-                  >
-                    <svg
-                      width="16"
-                      height="16"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
+            {selectedPolicies.length === 0 ? (
+              <div className="empty-state">
+                <p>
+                  Select policies to analyse their impact on government revenue
+                  and household incomes.
+                </p>
+                <div className="preset-buttons">
+                  {PRESETS.map((preset) => (
+                    <button
+                      key={preset.id}
+                      className="preset-button"
+                      onClick={() => handlePresetClick(preset.policies)}
                     >
-                      <circle cx="12" cy="12" r="10"></circle>
-                      <line x1="12" y1="16" x2="12" y2="12"></line>
-                      <line x1="12" y1="8" x2="12.01" y2="8"></line>
-                    </svg>
-                    About selected policies
-                    <svg
-                      width="16"
-                      height="16"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      style={{
-                        transform: showPolicyDetails
-                          ? "rotate(180deg)"
-                          : "rotate(0deg)",
-                        transition: "transform 0.2s",
-                      }}
-                    >
-                      <polyline points="6 9 12 15 18 9"></polyline>
-                    </svg>
-                  </button>
-                  {showPolicyDetails && (
-                    <div className="policy-details-content">
-                      {POLICIES.filter((policy) =>
-                        selectedPolicies.includes(policy.id),
-                      ).map((policy) => (
-                        <div key={policy.id} className="policy-detail">
-                          <strong>{policy.name}:</strong>{" "}
-                          <span
-                            dangerouslySetInnerHTML={{
-                              __html: policy.explanation,
-                            }}
-                          />
-                        </div>
-                      ))}
+                      {preset.name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <div className="results-container">
+                {results && (
+                  <>
+                    {/* Hero Chart: Revenue Impact */}
+                    <div className="hero-chart">
+                      <BudgetaryImpactChart data={results.budgetData} />
                     </div>
-                  )}
-                </div>
-              </>
+
+                    {/* Row 1: Absolute and Relative Impact */}
+                    <div className="charts-grid">
+                      <WaterfallChart
+                        rawData={results.rawWinnersLosers}
+                        selectedPolicies={selectedPolicies}
+                      />
+                      <DistributionalChart
+                        rawData={results.rawDistributional}
+                        selectedPolicies={selectedPolicies}
+                      />
+                    </div>
+
+                    {/* Row 2: Constituency Map and Scatter */}
+                    <div className="charts-grid charts-row-2">
+                      <ConstituencyMap selectedPolicies={selectedPolicies} />
+                      {results.rawHouseholdScatter && (
+                        <HouseholdChart
+                          rawData={results.rawHouseholdScatter}
+                          selectedPolicies={selectedPolicies}
+                        />
+                      )}
+                    </div>
+
+                    {/* Row 3: Net Income Analysis Charts */}
+                    <div className="charts-grid charts-row-3">
+                      <EmploymentIncomeChart
+                        selectedPolicies={selectedPolicies}
+                        selectedYear={2026}
+                      />
+                      <EmploymentIncomeDiffChart
+                        selectedPolicies={selectedPolicies}
+                        selectedYear={2026}
+                      />
+                    </div>
+
+                    {/* OBR Comparison Table */}
+                    <OBRComparisonTable selectedPolicies={selectedPolicies} />
+
+                    {/* Policy Details Footer */}
+                    <div id="policy-details" className="policy-details-footer">
+                      <button
+                        className="policy-details-toggle"
+                        onClick={() => setShowPolicyDetails(!showPolicyDetails)}
+                      >
+                        <svg
+                          width="16"
+                          height="16"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <circle cx="12" cy="12" r="10"></circle>
+                          <line x1="12" y1="16" x2="12" y2="12"></line>
+                          <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                        </svg>
+                        About selected policies
+                        <svg
+                          width="16"
+                          height="16"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          style={{
+                            transform: showPolicyDetails
+                              ? "rotate(180deg)"
+                              : "rotate(0deg)",
+                            transition: "transform 0.2s",
+                          }}
+                        >
+                          <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                      </button>
+                      {showPolicyDetails && (
+                        <div className="policy-details-content">
+                          {POLICIES.filter((policy) =>
+                            selectedPolicies.includes(policy.id),
+                          ).map((policy) => (
+                            <div key={policy.id} className="policy-detail">
+                              <strong>{policy.name}:</strong>{" "}
+                              <span
+                                dangerouslySetInnerHTML={{
+                                  __html: policy.explanation,
+                                }}
+                              />
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </>
+                )}
+              </div>
             )}
-          </div>
+          </>
         )}
       </main>
     </div>

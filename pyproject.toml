@@ -18,13 +18,15 @@ classifiers = [
     "Programming Language :: Python :: 3.13",
 ]
 dependencies = [
-    "policyengine-uk>=2.59.0",
+    "policyengine-uk @ git+https://github.com/PolicyEngine/policyengine-uk.git@master",
     "pandas>=2.0.0",
     "numpy>=1.24.0",
     "h5py>=3.0.0",
     "microdf-python>=0.3.0",
     "pydantic>=2.0.0",
     "rich>=13.0.0",
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.32.0",
 ]
 
 [project.optional-dependencies]
@@ -37,6 +39,7 @@ dev = [
 
 [project.scripts]
 uk-budget-data = "uk_budget_data.cli:main"
+uk-budget-api = "uk_budget_data.api:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

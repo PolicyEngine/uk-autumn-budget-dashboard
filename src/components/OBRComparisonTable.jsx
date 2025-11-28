@@ -29,7 +29,8 @@ function OBRComparisonTable({ selectedPolicies }) {
             reform_name: values[1],
             year,
             obr_static: staticIdx >= 0 ? parseFloat(values[staticIdx]) : null,
-            obr_behavioural: behaviouralIdx >= 0 ? parseFloat(values[behaviouralIdx]) : null,
+            obr_behavioural:
+              behaviouralIdx >= 0 ? parseFloat(values[behaviouralIdx]) : null,
           };
         }
 
@@ -70,7 +71,7 @@ function OBRComparisonTable({ selectedPolicies }) {
 
   // Check if we have both static and behavioural data
   const hasBothTypes = filteredData.some(
-    (row) => row.obr_static !== null && row.obr_behavioural !== null
+    (row) => row.obr_static !== null && row.obr_behavioural !== null,
   );
 
   // Group by policy
@@ -130,7 +131,9 @@ function OBRComparisonTable({ selectedPolicies }) {
 
       {hasBothTypes && (
         <div className="obr-toggle-container">
-          <span className="toggle-label">Compare PolicyEngine (static) with OBR:</span>
+          <span className="toggle-label">
+            Compare PolicyEngine (static) with OBR:
+          </span>
           <div className="toggle-buttons">
             <button
               className={`toggle-btn ${!showBehavioural ? "active" : ""}`}
@@ -218,8 +221,8 @@ function OBRComparisonTable({ selectedPolicies }) {
         both static and post-behavioural costings.{" "}
         {showBehavioural
           ? "Post-behavioural costings include effects like tax avoidance, reduced consumption, and price pass-through."
-          : "Static costings assume no change in taxpayer behaviour."}
-        {" "}See{" "}
+          : "Static costings assume no change in taxpayer behaviour."}{" "}
+        See{" "}
         <a
           href="https://obr.uk/efo/economic-and-fiscal-outlook-november-2025/"
           target="_blank"

@@ -29,7 +29,10 @@ function getContext() {
  * @param {string} options.fontFamily - Font family (default system fonts)
  * @returns {number} - The width in pixels
  */
-export function measureTextWidth(text, { fontSize, fontWeight = "400", fontFamily = DEFAULT_FONT }) {
+export function measureTextWidth(
+  text,
+  { fontSize, fontWeight = "400", fontFamily = DEFAULT_FONT },
+) {
   const context = getContext();
   context.font = `${fontWeight} ${fontSize}px ${fontFamily}`;
   return context.measureText(text).width;
@@ -46,7 +49,11 @@ export function measureTextWidth(text, { fontSize, fontWeight = "400", fontFamil
  * @param {string} options.fontFamily - Font family (default system fonts)
  * @returns {string[]} - Array of lines
  */
-export function wrapText(text, maxWidth, { fontSize, fontWeight = "400", fontFamily = DEFAULT_FONT }) {
+export function wrapText(
+  text,
+  maxWidth,
+  { fontSize, fontWeight = "400", fontFamily = DEFAULT_FONT },
+) {
   const context = getContext();
   context.font = `${fontWeight} ${fontSize}px ${fontFamily}`;
 
@@ -84,7 +91,11 @@ export function wrapText(text, maxWidth, { fontSize, fontWeight = "400", fontFam
  * @param {string} options.fontWeight - Font weight (default "400")
  * @returns {number} - Estimated height in pixels
  */
-export function estimateTextHeight(text, maxWidth, { fontSize, lineHeight = 1.5, fontWeight = "400" }) {
+export function estimateTextHeight(
+  text,
+  maxWidth,
+  { fontSize, lineHeight = 1.5, fontWeight = "400" },
+) {
   const lines = wrapText(text, maxWidth, { fontSize, fontWeight });
   return lines.length * fontSize * lineHeight;
 }

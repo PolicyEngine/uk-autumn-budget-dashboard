@@ -438,8 +438,8 @@ export default function ConstituencyMap({ selectedPolicies = [] }) {
             <h2>Constituency-level impacts, {formatYearRange(internalYear)}</h2>
             <p className="chart-description">
               This map shows the average annual change in household net income
-              across all 650 UK constituencies. Green shading indicates gains, red
-              indicates losses, measured as a percentage of baseline income.
+              across all 650 UK constituencies. Green shading indicates gains,
+              red indicates losses, measured as a percentage of baseline income.
             </p>
           </div>
           <button
