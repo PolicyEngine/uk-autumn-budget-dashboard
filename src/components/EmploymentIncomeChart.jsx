@@ -175,99 +175,107 @@ function EmploymentIncomeChart({ selectedPolicies, selectedYear = 2026 }) {
       <div ref={chartRef}>
         <ResponsiveContainer width="100%" height={430}>
           <LineChart
-          data={data}
-          margin={{ top: 25, right: 30, left: 20, bottom: 60 }}
-        >
-          <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-          <XAxis
-            dataKey="employment"
-            type="number"
-            label={{
-              value: "Household head employment income",
-              position: "insideBottom",
-              offset: -5,
-              style: {
-                textAnchor: "middle",
-                fill: "#374151",
-                fontSize: 13,
-                fontWeight: 500,
-              },
-            }}
-            tickFormatter={formatCurrency}
-            tick={{ fontSize: 12, fill: "#6b7280" }}
-            height={60}
-            ticks={[0, 20000, 40000, 60000, 80000, 100000]}
-            domain={[0, 100000]}
-          />
-          <YAxis
-            label={{
-              value: "Household net income",
-              angle: -90,
-              position: "insideLeft",
-              dx: 10,
-              style: {
-                textAnchor: "middle",
-                fill: "#374151",
-                fontSize: 13,
-                fontWeight: 500,
-              },
-            }}
-            tickFormatter={formatCurrency}
-            tick={{ fontSize: 12, fill: "#6b7280" }}
-            width={80}
-            ticks={[0, 20000, 40000, 60000, 80000]}
-            domain={[0, 80000]}
-          />
-          <Tooltip
-            formatter={(value) => formatCurrency(value)}
-            labelFormatter={(label) =>
-              `Employment income: ${formatCurrency(label)}`
-            }
-            contentStyle={{
-              background: "white",
-              border: "1px solid #d1d5db",
-              borderRadius: "8px",
-              padding: "12px",
-              boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
-            }}
-            labelStyle={{ fontWeight: 600, marginBottom: "4px" }}
-          />
-          <Legend
-            wrapperStyle={{ paddingTop: "15px", paddingBottom: "0px", paddingRight: "140px" }}
-            iconType="line"
-            iconSize={18}
-            formatter={(value) => (
-              <span
-                style={{ fontSize: "13px", fontWeight: 500, color: "#374151" }}
-              >
-                {value}
-              </span>
-            )}
-            verticalAlign="bottom"
-            align="center"
-          />
-          <Line
-            type="monotone"
-            dataKey="baseline"
-            stroke="#9CA3AF"
-            strokeWidth={3}
-            dot={false}
-            name="Baseline"
-            animationDuration={500}
-            animationBegin={0}
-          />
-          <Line
-            type="monotone"
-            dataKey="reform"
-            stroke="#319795"
-            strokeWidth={3}
-            strokeDasharray="8 4"
-            dot={false}
-            name="Reform"
-            animationDuration={500}
-            animationBegin={0}
-          />
-          <Customized component={PolicyEngineLogo} />
+            data={data}
+            margin={{ top: 25, right: 30, left: 20, bottom: 60 }}
+          >
+            <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+            <XAxis
+              dataKey="employment"
+              type="number"
+              label={{
+                value: "Household head employment income",
+                position: "insideBottom",
+                offset: -5,
+                style: {
+                  textAnchor: "middle",
+                  fill: "#374151",
+                  fontSize: 13,
+                  fontWeight: 500,
+                },
+              }}
+              tickFormatter={formatCurrency}
+              tick={{ fontSize: 12, fill: "#6b7280" }}
+              height={60}
+              ticks={[0, 20000, 40000, 60000, 80000, 100000]}
+              domain={[0, 100000]}
+            />
+            <YAxis
+              label={{
+                value: "Household net income",
+                angle: -90,
+                position: "insideLeft",
+                dx: 10,
+                style: {
+                  textAnchor: "middle",
+                  fill: "#374151",
+                  fontSize: 13,
+                  fontWeight: 500,
+                },
+              }}
+              tickFormatter={formatCurrency}
+              tick={{ fontSize: 12, fill: "#6b7280" }}
+              width={80}
+              ticks={[0, 20000, 40000, 60000, 80000]}
+              domain={[0, 80000]}
+            />
+            <Tooltip
+              formatter={(value) => formatCurrency(value)}
+              labelFormatter={(label) =>
+                `Employment income: ${formatCurrency(label)}`
+              }
+              contentStyle={{
+                background: "white",
+                border: "1px solid #d1d5db",
+                borderRadius: "8px",
+                padding: "12px",
+                boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
+              }}
+              labelStyle={{ fontWeight: 600, marginBottom: "4px" }}
+            />
+            <Legend
+              wrapperStyle={{
+                paddingTop: "15px",
+                paddingBottom: "0px",
+                paddingRight: "140px",
+              }}
+              iconType="line"
+              iconSize={18}
+              formatter={(value) => (
+                <span
+                  style={{
+                    fontSize: "13px",
+                    fontWeight: 500,
+                    color: "#374151",
+                  }}
+                >
+                  {value}
+                </span>
+              )}
+              verticalAlign="bottom"
+              align="center"
+            />
+            <Line
+              type="monotone"
+              dataKey="baseline"
+              stroke="#9CA3AF"
+              strokeWidth={3}
+              dot={false}
+              name="Baseline"
+              animationDuration={500}
+              animationBegin={0}
+            />
+            <Line
+              type="monotone"
+              dataKey="reform"
+              stroke="#319795"
+              strokeWidth={3}
+              strokeDasharray="8 4"
+              dot={false}
+              name="Reform"
+              animationDuration={500}
+              animationBegin={0}
+            />
+            <Customized component={PolicyEngineLogo} />
           </LineChart>
         </ResponsiveContainer>
       </div>

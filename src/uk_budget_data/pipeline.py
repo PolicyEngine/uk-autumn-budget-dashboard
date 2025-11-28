@@ -4,6 +4,9 @@ This module provides the main pipeline for generating all dashboard data
 from a list of reforms.
 """
 
+import json
+from datetime import datetime
+from importlib.metadata import version as get_version
 from pathlib import Path
 from typing import Optional
 
@@ -323,6 +326,16 @@ class DataPipeline:
         for key, filename in file_mapping.items():
             if key in data and len(data[key]) > 0:
                 save_csv(data[key], output_dir / filename)
+
+        # Save metadata with version info
+        metadata = {
+            "policyengine_uk_version": get_version("policyengine-uk"),
+            "generated_at": datetime.now().isoformat(),
+        }
+        metadata_path = output_dir / "metadata.json"
+        metadata_path.parent.mkdir(parents=True, exist_ok=True)
+        with open(metadata_path, "w") as f:
+            json.dump(metadata, f, indent=2)
 
         console.print(f"[green]Saved results to {output_dir}/[/green]")
 

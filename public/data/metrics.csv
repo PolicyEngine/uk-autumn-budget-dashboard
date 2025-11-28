@@ -1,41 +1,9 @@
 reform_id,reform_name,year,people_affected,gini_change,poverty_change_pp,poverty_change_pct
-autumn_budget_2025_combined,Autumn Budget 2025 (combined),2026,4.437990068807215,-0.005655031586271407,-0.8289385,-6.513343
-autumn_budget_2025_combined,Autumn Budget 2025 (combined),2027,14.953123323652463,-0.00645169565995691,-0.8608818,-6.766739
-autumn_budget_2025_combined,Autumn Budget 2025 (combined),2028,15.193274540715326,-0.006791312004872393,-1.0356522,-8.0470705
-autumn_budget_2025_combined,Autumn Budget 2025 (combined),2029,15.312364226325315,-0.006911064006012662,-1.0092144,-7.862454
-two_child_limit,2 child limit repeal,2026,4.437990068807215,-0.005655031586271407,-0.8289385,-6.513343
-two_child_limit,2 child limit repeal,2027,4.4837551126030935,-0.005781867486214232,-0.8608818,-6.766739
-two_child_limit,2 child limit repeal,2028,4.665651174966674,-0.0061262747536823745,-1.0365238,-8.053298
-two_child_limit,2 child limit repeal,2029,4.6693539988757164,-0.006257499862274041,-1.0092144,-7.862454
-fuel_duty_freeze,Fuel duty freeze extension,2026,49.42309267443197,-0.0019310872093507086,0.0,0.0
-fuel_duty_freeze,Fuel duty freeze extension,2027,49.1861387707328,-0.0008555808254490362,0.0,0.0
-fuel_duty_freeze,Fuel duty freeze extension,2028,49.008437323266826,-0.000814796052975878,0.0,0.0
-fuel_duty_freeze,Fuel duty freeze extension,2029,48.59007636207265,-0.00048205837129067035,0.0,0.0
-rail_fares_freeze,Rail fares freeze,2026,4.149935032067219,1.7207076351292756e-06,0.0,0.0
-rail_fares_freeze,Rail fares freeze,2027,4.149696604041953,3.384148242366868e-07,0.0,0.0
-rail_fares_freeze,Rail fares freeze,2028,4.151114499128905,-3.210515991904068e-06,0.0,0.0
-rail_fares_freeze,Rail fares freeze,2029,4.150963582320631,-5.8670794289817455e-06,0.0,0.0
-threshold_freeze_extension,Threshold freeze extension,2026,0.0,0.0,0.0,0.0
-threshold_freeze_extension,Threshold freeze extension,2027,0.0,0.0,0.0,0.0
-threshold_freeze_extension,Threshold freeze extension,2028,83.59274381740718,-0.00010897490193212907,0.027148247,0.21137483
-threshold_freeze_extension,Threshold freeze extension,2029,83.91705481210681,-0.00014614924957476798,0.022729874,0.17739502
-dividend_tax_increase_2pp,Dividend tax increase (+2pp),2026,0.0,0.0,0.0,0.0
-dividend_tax_increase_2pp,Dividend tax increase (+2pp),2027,10.541575798009154,-0.0006737235540545628,0.0,0.0
-dividend_tax_increase_2pp,Dividend tax increase (+2pp),2028,10.608437935725453,-0.0006691365656388576,0.0008716583,0.0067728297
-dividend_tax_increase_2pp,Dividend tax increase (+2pp),2029,10.723828191347613,-0.0006576795735797171,0.0,0.0
-savings_tax_increase_2pp,Savings income tax increase (+2pp),2026,0.0,0.0,0.0,0.0
-savings_tax_increase_2pp,Savings income tax increase (+2pp),2027,0.0,0.0,0.0,0.0
-savings_tax_increase_2pp,Savings income tax increase (+2pp),2028,1.2659088080322087,-1.2186347210277051e-05,0.0,0.0
-savings_tax_increase_2pp,Savings income tax increase (+2pp),2029,1.3635306582129136,-1.2223921888751618e-05,0.0,0.0
 property_tax_increase_2pp,Property income tax increase (+2pp),2026,0.0,0.0,0.0,0.0
 property_tax_increase_2pp,Property income tax increase (+2pp),2027,0.0,0.0,0.0,0.0
-property_tax_increase_2pp,Property income tax increase (+2pp),2028,0.0,0.0,0.0,0.0
-property_tax_increase_2pp,Property income tax increase (+2pp),2029,0.0,0.0,0.0,0.0
-zero_vat_energy,Zero-rate VAT on energy,2026,99.4222351156906,-0.0016356133631443511,0.0,0.0
-zero_vat_energy,Zero-rate VAT on energy,2027,99.41141322390375,-0.0016445505317616734,0.0,0.0
-zero_vat_energy,Zero-rate VAT on energy,2028,99.41254797952284,-0.0016458080573222079,0.0,0.0
-zero_vat_energy,Zero-rate VAT on energy,2029,99.41266085124212,-0.0016590408014329205,0.0,0.0
-salary_sacrifice_cap,Salary sacrifice cap,2026,0.0,0.0,0.0,0.0
-salary_sacrifice_cap,Salary sacrifice cap,2027,0.0,0.0,0.0,0.0
-salary_sacrifice_cap,Salary sacrifice cap,2028,0.0,0.0,0.0,0.0
-salary_sacrifice_cap,Salary sacrifice cap,2029,10.05881521551555,-3.7851062198253906e-05,0.0045957565,0.03580401
+property_tax_increase_2pp,Property income tax increase (+2pp),2028,6.92211674276531,-0.0001178758830264422,1.04904175e-05,8.191782e-05
+property_tax_increase_2pp,Property income tax increase (+2pp),2029,6.9312114620247085,-0.00013200781515320553,2.4795532e-05,0.00019458417
+savings_tax_increase_2pp,Savings income tax increase (+2pp),2026,0.0,0.0,0.0,0.0
+savings_tax_increase_2pp,Savings income tax increase (+2pp),2027,0.0,0.0,0.0,0.0
+savings_tax_increase_2pp,Savings income tax increase (+2pp),2028,1.304053038534056,-1.1196471008615082e-05,0.0,0.0
+savings_tax_increase_2pp,Savings income tax increase (+2pp),2029,1.3902716775460837,-1.1285512615469178e-05,0.0,0.0

@@ -303,6 +303,25 @@
   color: #1e293b;
 }
 
+/* App Footer */
+.app-footer {
+  text-align: center;
+  padding: 24px;
+  margin-top: 40px;
+  font-size: 0.85rem;
+  color: #666;
+  border-top: 1px solid #e2e8f0;
+}
+
+.app-footer a {
+  color: #319795;
+  text-decoration: none;
+}
+
+.app-footer a:hover {
+  text-decoration: underline;
+}
+
 /* Animations */
 @keyframes fadeIn {
   from {

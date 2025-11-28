@@ -69,7 +69,7 @@ const POLICIES = [
     name: "Salary sacrifice cap",
     description: "Cap NI-free salary sacrifice pension contributions at £2,000",
     explanation:
-      "Caps National Insurance-free salary sacrifice pension contributions at £2,000 per year from April 2029. Contributions above this threshold become subject to employee and employer NICs. PolicyEngine estimates this will raise £3.3bn in 2029-30, assuming employers spread costs and employees maintain pension contributions. The OBR estimates £4.9bn (static) or £4.7bn (post-behavioural). See our <a href=\"https://policyengine.org/uk/research/uk-salary-sacrifice-cap\" target=\"_blank\" rel=\"noopener noreferrer\">research report</a> for details.",
+      'Caps National Insurance-free salary sacrifice pension contributions at £2,000 per year from April 2029. Contributions above this threshold become subject to employee and employer NICs. PolicyEngine estimates this will raise £3.3bn in 2029-30, assuming employers spread costs and employees maintain pension contributions. The OBR estimates £4.9bn (static) or £4.7bn (post-behavioural). See our <a href="https://policyengine.org/uk/research/uk-salary-sacrifice-cap" target="_blank" rel="noopener noreferrer">research report</a> for details.',
   },
 ];
 
@@ -126,6 +126,15 @@ function App() {
   const [selectedYear, setSelectedYear] = useState(2026);
   const [results, setResults] = useState(null);
   const [showPolicyDetails, setShowPolicyDetails] = useState(false);
+  const [metadata, setMetadata] = useState(null);
+
+  // Load metadata on mount
+  useEffect(() => {
+    fetch("/data/metadata.json")
+      .then((res) => res.json())
+      .then((data) => setMetadata(data))
+      .catch((err) => console.warn("Could not load metadata:", err));
+  }, []);
 
   // Valid policy IDs from POLICIES
   const validPolicyIds = POLICIES.map((p) => p.id);
@@ -516,6 +525,21 @@ function App() {
           </div>
         )}
       </main>
+      {metadata && (
+        <footer className="app-footer">
+          <span>
+            Powered by{" "}
+            <a
+              href="https://github.com/PolicyEngine/policyengine-uk"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              policyengine-uk
+            </a>{" "}
+            v{metadata.policyengine_uk_version}
+          </span>
+        </footer>
+      )}
     </div>
   );
 }
