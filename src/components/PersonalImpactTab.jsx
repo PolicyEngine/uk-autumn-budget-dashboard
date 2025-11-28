@@ -3,8 +3,13 @@ import PersonalImpactForm from "./PersonalImpactForm";
 import PersonalImpactResults from "./PersonalImpactResults";
 import "./PersonalImpactTab.css";
 
-const API_URL =
-  import.meta.env.VITE_API_URL || "http://localhost:5001/api/personal-impact";
+// API URL configuration
+// Set VITE_PERSONAL_IMPACT_API_URL in Vercel to the Cloud Run URL
+// e.g., https://uk-autumn-budget-dashboard-HASH-ew.a.run.app
+// Falls back to localhost for local development
+const API_BASE_URL =
+  import.meta.env.VITE_PERSONAL_IMPACT_API_URL || "http://localhost:5001";
+const API_URL = `${API_BASE_URL}/api/personal-impact`;
 
 function PersonalImpactTab() {
   const [results, setResults] = useState(null);
