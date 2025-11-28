@@ -2,8 +2,8 @@
 """Sample household scatter data for git storage.
 
 The full household_scatter_full.csv (~100MB) contains all ~46k households
-per reform/year. This script samples it to ~2k households using weighted
-sampling to create household_scatter.csv (~5MB) for git.
+per reform/year. This script samples it to ~500 households using weighted
+sampling to create household_scatter.csv for git.
 
 Usage:
     python scripts/sample_household_scatter.py

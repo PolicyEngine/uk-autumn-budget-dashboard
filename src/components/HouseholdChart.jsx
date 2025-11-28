@@ -19,7 +19,7 @@ import "./ChartExport.css";
 
 // Chart metadata for export
 const CHART_DESCRIPTION =
-  "This chart plots net income change against baseline income for 1,000 sampled households. Green dots indicate gains, red shows losses, and grey shows minimal change. Dot size represents household weight in the population.";
+  "This chart plots net income change against baseline income for 500 sampled households. Green dots indicate gains, red shows losses, and grey shows minimal change. Dot size represents household weight in the population.";
 
 // Format year for display (e.g., 2026 -> "2026-27")
 const formatYearRange = (year) => `${year}-${(year + 1).toString().slice(-2)}`;
@@ -444,7 +444,7 @@ function HouseholdChart({ rawData, selectedPolicies }) {
         <div>
           <h2>{chartTitle}</h2>
           <p className="chart-description">
-            This chart plots net income change against baseline income for 1,000
+            This chart plots net income change against baseline income for 500
             sampled households. Green dots indicate gains, red shows losses, and
             grey shows minimal change. Dot size represents household weight in
             the population.
