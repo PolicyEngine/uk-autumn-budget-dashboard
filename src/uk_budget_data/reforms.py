@@ -19,9 +19,7 @@ from policyengine_uk import Simulation
 from policyengine_uk.model_api import (
     YEAR,
     Household,
-    Person,
     Variable,
-    select,
 )
 
 from uk_budget_data.models import Reform
@@ -422,51 +420,15 @@ def _zero_rate_energy_vat_modifier(sim: Simulation) -> Simulation:
     return sim
 
 
-def _infer_student_loan_plan_modifier(sim: Simulation) -> Simulation:
-    """Add student loan plan inference based on age/university attendance.
+def _connect_student_loan_variables(sim: Simulation) -> Simulation:
+    """Connect policyengine-uk's modelled student loan repayments to revenue.
 
-    policyengine-uk has student_loan_plan as an input variable.
-    For microsimulation we need to infer the plan from:
-    - Whether the person has reported student loan repayments
-    - When they likely attended university (based on age)
+    The microdata (policyengine-uk-data) now includes student_loan_plan imputed
+    based on age and reported repayments. This modifier just connects the
+    policyengine-uk student_loan_repayment variable to the tax/revenue totals.
 
-    This enables the student_loan_repayment variable to calculate
-    repayments using policyengine-uk's threshold parameters.
+    Note: Requires policyengine-uk-data with student_loan_plan imputation.
     """
-    from policyengine_uk.variables.gov.hmrc.student_loans.student_loan_plan import (
-        StudentLoanPlan,
-    )
-
-    class student_loan_plan(Variable):
-        value_type = str
-        entity = Person
-        label = "Student Loan Plan (inferred)"
-        definition_period = YEAR
-        max_length = 10
-
-        def formula(person, period, parameters):
-            has_slr_reported = person("student_loan_repayments", period) > 0
-            age = person("age", period)
-            # Estimate when they attended university (assume age 18)
-            time_attended_university = period.start.year - age + 18
-            return select(
-                [
-                    ~has_slr_reported,
-                    time_attended_university < 2012,
-                    time_attended_university < 2023,
-                    True,
-                ],
-                [
-                    StudentLoanPlan.NONE,
-                    StudentLoanPlan.PLAN_1,
-                    StudentLoanPlan.PLAN_2,
-                    StudentLoanPlan.PLAN_5,
-                ],
-                default=StudentLoanPlan.NONE,
-            )
-
-    sim.tax_benefit_system.update_variable(student_loan_plan)
-
     # Connect policyengine-uk's modelled repayments to government revenue
     # Replace reported repayments with modelled repayments
     sim.tax_benefit_system.variables["gov_tax"].adds.remove(
@@ -562,10 +524,10 @@ def _create_student_loan_freeze() -> Reform:
             "revenue in medium term."
         ),
         # Reform: Current law (frozen) - use policyengine-uk default
-        simulation_modifier=_infer_student_loan_plan_modifier,
+        simulation_modifier=_connect_student_loan_variables,
         # Baseline: RPI uprating counterfactual
         baseline_parameter_changes=baseline_thresholds,
-        baseline_simulation_modifier=_infer_student_loan_plan_modifier,
+        baseline_simulation_modifier=_connect_student_loan_variables,
     )
 
 
@@ -836,15 +798,15 @@ def _create_combined_autumn_budget_reform() -> Reform:
 
     # Combined baseline simulation modifier for dividend rates and student loans
     def combined_baseline_modifier(sim):
-        """Apply pre-budget dividend rates and student loan plan inference."""
+        """Apply pre-budget dividend rates and connect student loan variables."""
         _set_pre_budget_dividend_rates(sim)
-        _infer_student_loan_plan_modifier(sim)
+        _connect_student_loan_variables(sim)
         return sim
 
     # Combined reform simulation modifier
     def combined_reform_modifier(sim):
-        """Apply student loan plan inference for reform."""
-        _infer_student_loan_plan_modifier(sim)
+        """Connect student loan variables for reform."""
+        _connect_student_loan_variables(sim)
         return sim
 
     # Add student loan baseline thresholds (RPI uprating counterfactual)
