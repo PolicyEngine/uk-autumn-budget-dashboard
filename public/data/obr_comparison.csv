@@ -31,10 +31,10 @@ property_tax_increase_2pp,Property income tax increase (+2pp),2026,0.0,0.0,0.0
 property_tax_increase_2pp,Property income tax increase (+2pp),2027,0.0,0.0,0.0
 property_tax_increase_2pp,Property income tax increase (+2pp),2028,0.7548992609294458,0.6,0.6
 property_tax_increase_2pp,Property income tax increase (+2pp),2029,0.7820241568564467,0.4,0.4
-freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2026,0.0,0.0,0.0
-freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2027,0.13303174458565348,0.3,0.3
-freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2028,0.2624384381986746,0.4,0.4
-freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2029,0.39998240839749727,0.4,0.4
+freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2026,0.0,5.915,5.915
+freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2027,0.13303174458565348,0.255,0.255
+freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2028,0.2624384381986746,0.29,0.29
+freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2029,0.39998240839749727,0.355,0.355
 zero_vat_energy,Zero-rate VAT on energy,2026,-3.194486930102285,,
 zero_vat_energy,Zero-rate VAT on energy,2027,-3.2710739385599146,,
 zero_vat_energy,Zero-rate VAT on energy,2028,-3.3511572040962108,,
