@@ -119,37 +119,78 @@ function inlineComputedStyles(clonedElement, originalElement) {
 }
 
 /**
- * Calculate the total width of legend items.
+ * Calculate the width of a single legend item.
  *
- * @param {Array<{color: string, label: string, type: string}>} items - Legend items
- * @returns {number} Total width in pixels
+ * @param {Object} item - Legend item with label
+ * @returns {number} Width in pixels
  */
-function calculateLegendWidth(items) {
-  const { legendFontSize, legendIconSize, legendIconTextGap, legendItemGap } =
-    STYLES;
-
-  const itemWidths = items.map((item) => {
-    const textWidth = measureTextWidth(item.label, {
-      fontSize: legendFontSize,
-    });
-    return legendIconSize + legendIconTextGap + textWidth;
+function calculateItemWidth(item) {
+  const { legendFontSize, legendIconSize, legendIconTextGap } = STYLES;
+  const textWidth = measureTextWidth(item.label, {
+    fontSize: legendFontSize,
   });
-
-  return (
-    itemWidths.reduce((sum, w) => sum + w, 0) +
-    (items.length - 1) * legendItemGap
-  );
+  return legendIconSize + legendIconTextGap + textWidth;
 }
 
 /**
- * Create an SVG legend from legend items.
+ * Calculate legend layout with multi-row wrapping.
+ * Returns an array of rows, each containing items that fit within maxWidth.
  *
  * @param {Array<{color: string, label: string, type: string}>} items - Legend items
- * @param {number} startX - Starting X position for the legend
- * @param {number} yPosition - Y position for the legend
- * @returns {SVGGElement}
+ * @param {number} maxWidth - Maximum width available for legend
+ * @returns {Array<Array<Object>>} Array of rows, each row is an array of items with computed widths
  */
-function createLegend(items, startX, yPosition) {
+function calculateLegendLayout(items, maxWidth) {
+  const { legendItemGap } = STYLES;
+
+  if (items.length === 0) return [];
+
+  const rows = [];
+  let currentRow = [];
+  let currentRowWidth = 0;
+
+  items.forEach((item) => {
+    const itemWidth = calculateItemWidth(item);
+    const gapWidth = currentRow.length > 0 ? legendItemGap : 0;
+    const widthWithItem = currentRowWidth + gapWidth + itemWidth;
+
+    if (currentRow.length > 0 && widthWithItem > maxWidth) {
+      // Start a new row
+      rows.push({
+        items: currentRow,
+        width: currentRowWidth,
+      });
+      currentRow = [{ ...item, width: itemWidth }];
+      currentRowWidth = itemWidth;
+    } else {
+      // Add to current row
+      currentRow.push({ ...item, width: itemWidth });
+      currentRowWidth = widthWithItem;
+    }
+  });
+
+  // Don't forget the last row
+  if (currentRow.length > 0) {
+    rows.push({
+      items: currentRow,
+      width: currentRowWidth,
+    });
+  }
+
+  return rows;
+}
+
+/**
+ * Create an SVG legend from legend items with multi-row support.
+ *
+ * @param {Array<{color: string, label: string, type: string}>} items - Legend items
+ * @param {number} maxWidth - Maximum width available for legend (used for centering rows)
+ * @param {number} yPosition - Y position for the first row of the legend
+ * @param {Object} options - Additional options
+ * @param {number} options.legendAreaWidth - Width of the area to center legend within
+ * @returns {{element: SVGGElement, height: number}} Legend group and total height
+ */
+function createLegend(items, maxWidth, yPosition, options = {}) {
   const {
     legendFontSize,
     legendIconSize,
@@ -158,58 +199,68 @@ function createLegend(items, startX, yPosition) {
     colors,
   } = STYLES;
 
-  // Calculate item widths
-  const itemWidths = items.map((item) => {
-    const textWidth = measureTextWidth(item.label, {
-      fontSize: legendFontSize,
-    });
-    return legendIconSize + legendIconTextGap + textWidth;
-  });
+  const legendRowGap = 8; // Vertical gap between rows
+  const legendAreaWidth = options.legendAreaWidth || maxWidth;
 
-  // Create legend group, starting from startX
+  // Calculate multi-row layout
+  const rows = calculateLegendLayout(items, maxWidth);
+
+  // Create legend group
   const legendGroup = createSvgGroup({ className: "exported-legend" });
-  let currentX = startX;
+  let currentY = yPosition;
 
-  items.forEach((item, index) => {
-    const itemGroup = createSvgGroup();
+  rows.forEach((row) => {
+    // Center this row within the legend area
+    const rowStartX = (legendAreaWidth - row.width) / 2;
+    let currentX = rowStartX;
 
-    // Draw icon based on type
-    if (item.type === "line") {
-      const line = createSvgLine({
-        x1: currentX,
-        y1: yPosition,
-        x2: currentX + legendIconSize,
-        y2: yPosition,
-        stroke: item.color,
-        strokeWidth: 2,
+    row.items.forEach((item) => {
+      const itemGroup = createSvgGroup();
+
+      // Draw icon based on type
+      if (item.type === "line") {
+        const line = createSvgLine({
+          x1: currentX,
+          y1: currentY,
+          x2: currentX + legendIconSize,
+          y2: currentY,
+          stroke: item.color,
+          strokeWidth: 2,
+        });
+        itemGroup.appendChild(line);
+      } else {
+        const rect = createSvgRect({
+          x: currentX,
+          y: currentY - legendIconSize / 2,
+          width: legendIconSize,
+          height: legendIconSize,
+          fill: item.color,
+        });
+        itemGroup.appendChild(rect);
+      }
+
+      // Draw label with proper font styling (matching axis titles)
+      const text = createSvgText(item.label, {
+        x: currentX + legendIconSize + legendIconTextGap,
+        y: currentY + legendFontSize / 3,
+        fontSize: legendFontSize,
+        fontWeight: "500",
+        fill: colors.legendText,
       });
-      itemGroup.appendChild(line);
-    } else {
-      const rect = createSvgRect({
-        x: currentX,
-        y: yPosition - legendIconSize / 2,
-        width: legendIconSize,
-        height: legendIconSize,
-        fill: item.color,
-      });
-      itemGroup.appendChild(rect);
-    }
+      itemGroup.appendChild(text);
 
-    // Draw label with proper font styling (matching axis titles)
-    const text = createSvgText(item.label, {
-      x: currentX + legendIconSize + legendIconTextGap,
-      y: yPosition + legendFontSize / 3,
-      fontSize: legendFontSize,
-      fontWeight: "500",
-      fill: colors.legendText,
+      legendGroup.appendChild(itemGroup);
+      currentX += item.width + legendItemGap;
     });
-    itemGroup.appendChild(text);
 
-    legendGroup.appendChild(itemGroup);
-    currentX += itemWidths[index] + legendItemGap;
+    currentY += legendFontSize + legendRowGap;
   });
 
-  return legendGroup;
+  // Calculate total height of legend
+  const totalHeight =
+    rows.length > 0 ? rows.length * (legendFontSize + legendRowGap) : 0;
+
+  return { element: legendGroup, height: totalHeight };
 }
 
 /**
@@ -345,10 +396,21 @@ export async function exportChartAsSvg(
   const clonedSvg = svgElement.cloneNode(true);
   inlineComputedStyles(clonedSvg, svgElement);
 
-  // Remove the original Recharts legend (we'll add our own in the footer)
-  const originalLegend = clonedSvg.querySelector(".recharts-legend-wrapper");
-  if (originalLegend) {
-    originalLegend.remove();
+  // Find and measure the original Recharts legend before removing it
+  // We need to know how much space it occupied so we can position our legend correctly
+  const originalLegendWrapper = svgElement
+    .closest(".recharts-wrapper")
+    ?.querySelector(".recharts-legend-wrapper");
+  let originalLegendHeight = 60; // Default fallback
+  if (originalLegendWrapper) {
+    const legendRect = originalLegendWrapper.getBoundingClientRect();
+    originalLegendHeight = legendRect.height;
+  }
+
+  // Remove the original Recharts legend from the clone (we'll add our own in the footer)
+  const clonedLegend = clonedSvg.querySelector(".recharts-legend-wrapper");
+  if (clonedLegend) {
+    clonedLegend.remove();
   }
 
   // Remove existing image elements with relative URLs (won't work in standalone SVG)
@@ -412,31 +474,68 @@ export async function exportChartAsSvg(
     clonedSvg.insertBefore(descElement, contentGroup);
   }
 
-  // Add legend and logo inline in the footer area (using existing chart legend space)
-  // Layout: legend centered in remaining space, logo anchored to right
-  // Position near bottom of chart area with small padding
-  const footerBottomPadding = 20;
-  const footerY = headerHeight + chartHeight - footerBottomPadding;
+  // Footer layout: legend (auto width, centered) | logo (fixed width, right-aligned)
+  // The legend wraps to multiple rows if needed, and the footer height adjusts dynamically
+  const footerPadding = 20;
   const logoRightPadding = 10;
+  const legendLogoGap = 20; // Gap between legend area and logo
 
-  // Calculate logo position (anchored to right)
-  const logoX = logo?.href
-    ? chartWidth - logo.width - logoRightPadding
-    : chartWidth;
+  // Calculate logo dimensions
+  const logoWidth = logo?.href ? logo.width : 0;
+  const logoHeight = logo?.href ? logo.height : 0;
 
-  // Calculate available space for legend (from left edge to logo)
-  const availableWidth = logo?.href ? logoX : chartWidth;
-  const legendWidth =
-    legendItems.length > 0 ? calculateLegendWidth(legendItems) : 0;
+  // Calculate available width for legend (chart width minus logo space)
+  const legendAreaWidth = logo?.href
+    ? chartWidth - logoWidth - logoRightPadding - legendLogoGap
+    : chartWidth - STYLES.padding * 2;
 
-  // Center legend within the available space (left of logo)
-  const legendStartX = (availableWidth - legendWidth) / 2;
-
-  // Add legend (centered in space left of logo)
+  // Pre-calculate legend layout to determine footer height
+  let legendResult = null;
   if (legendItems.length > 0) {
-    const legendGroup = createLegend(legendItems, legendStartX, footerY);
+    // Create a temporary legend to measure its height
+    // Use a smaller max width to ensure wrapping works well
+    const maxLegendWidth = legendAreaWidth - STYLES.padding;
+    legendResult = createLegend(legendItems, maxLegendWidth, 0, {
+      legendAreaWidth: legendAreaWidth,
+    });
+  }
+
+  const legendHeight = legendResult ? legendResult.height : 0;
+  const footerContentHeight = Math.max(legendHeight, logoHeight);
+  const footerHeight = footerContentHeight + footerPadding * 2;
+
+  // The chart already has legend space built in (originalLegendHeight).
+  // We need to add extra height only if our new footer is taller than what was there.
+  const extraFooterHeight = Math.max(0, footerHeight - originalLegendHeight);
+
+  // Update SVG dimensions with the new footer height
+  const finalTotalHeight = headerHeight + chartHeight + extraFooterHeight;
+  clonedSvg.setAttribute("height", finalTotalHeight);
+  clonedSvg.setAttribute("viewBox", `0 0 ${chartWidth} ${finalTotalHeight}`);
+
+  // Update background to cover the full height
+  background.setAttribute("height", finalTotalHeight);
+
+  // Calculate footer Y position - place legend where the original legend space started
+  const footerY =
+    headerHeight + chartHeight - originalLegendHeight + footerPadding;
+
+  // Add legend (centered in the legend area, left of logo)
+  if (legendItems.length > 0 && legendResult) {
+    // Recreate the legend at the correct Y position
+    const maxLegendWidth = legendAreaWidth - STYLES.padding;
+    const { element: legendGroup } = createLegend(
+      legendItems,
+      maxLegendWidth,
+      footerY,
+      { legendAreaWidth: legendAreaWidth },
+    );
     clonedSvg.appendChild(legendGroup);
   }
+
+  // Calculate logo position (anchored to right, vertically centered with legend)
+  const logoX = chartWidth - logoWidth - logoRightPadding;
+  const logoY = footerY + (legendHeight - logoHeight) / 2;
 
   // Embed logo on the right
   if (logo?.href) {
@@ -455,8 +554,7 @@ export async function exportChartAsSvg(
         base64Logo,
       );
 
-      // Position logo vertically centered with legend
-      const logoY = footerY - logo.height / 2;
+      // Position logo (logoX and logoY calculated above)
       logoImage.setAttribute("x", logoX);
       logoImage.setAttribute("y", logoY);
 

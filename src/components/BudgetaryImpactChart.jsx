@@ -113,9 +113,9 @@ function BudgetaryImpactChart({ data }) {
   // Narrowed to +/-10bn for the 3 announced policies
   const yAxisDomain = [-10, 10];
 
-  // Build legend items for export
+  // Build legend items for export - include ALL policies for consistency across exports
   const legendItems = [
-    ...activePolicies.map((name) => ({
+    ...ALL_POLICY_NAMES.map((name) => ({
       color: POLICY_COLORS[name],
       label: name,
       type: "rect",
