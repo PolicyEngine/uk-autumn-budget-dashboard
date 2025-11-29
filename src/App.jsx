@@ -71,7 +71,7 @@ const POLICIES = [
     description:
       "Freeze Plan 2 repayment thresholds from 2027-28 to 2029-30",
     explanation:
-      "Freezes the Plan 2 student loan repayment threshold at £29,385 for three years from April 2027, instead of allowing RPI uprating. This means graduates start repaying at a lower real income level, increasing repayments. OBR estimates this raises £255-355m annually from 2027-30. Note: The OBR also estimates £5.9bn revenue in 2026-27 from student loan revaluation (a separate policy affecting existing loan balances), but our microsimulation focuses only on the threshold freeze starting in 2027.",
+      "Freezes the Plan 2 student loan repayment threshold at £29,385 for three years from April 2027, instead of allowing RPI uprating. This means graduates start repaying at a lower real income level, increasing repayments. OBR estimates this raises £255-355m annually from 2027-30. Note: The OBR figure for 2026-27 (£5.9bn) is significantly higher because it includes a one-off student loan revaluation that year, where the Government revalued existing student loan balances. Our microsimulation focuses only on the threshold freeze starting in 2027.",
   },
   {
     id: "salary_sacrifice_cap",
