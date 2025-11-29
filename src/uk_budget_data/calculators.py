@@ -24,7 +24,9 @@ class BaseCalculator(ABC):
 class BudgetaryImpactCalculator(BaseCalculator):
     """Calculates budgetary impact (cost/revenue) of reforms."""
 
-    years: list[int] = field(default_factory=lambda: [2026, 2027, 2028, 2029])
+    years: list[int] = field(
+        default_factory=lambda: [2026, 2027, 2028, 2029, 2030]
+    )
 
     # Reforms that use student_loan_repayments_modelled instead of gov_balance
     STUDENT_LOAN_REFORMS = ["freeze_student_loan_thresholds"]
@@ -779,7 +781,7 @@ def get_standard_calculators(
     Returns:
         Dict mapping calculator name to calculator instance.
     """
-    years = years or [2026, 2027, 2028, 2029]
+    years = years or [2026, 2027, 2028, 2029, 2030]
 
     return {
         "budgetary": BudgetaryImpactCalculator(years=years),
