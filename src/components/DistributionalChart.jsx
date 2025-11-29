@@ -216,9 +216,9 @@ function DistributionalChart({ rawData, selectedPolicies }) {
 
   const activePolicies = ALL_POLICY_NAMES.filter(hasNonZeroValues);
 
-  // Build legend items for export
+  // Build legend items for export - include ALL policies for consistency across exports
   const legendItems = [
-    ...activePolicies.map((name) => ({
+    ...ALL_POLICY_NAMES.map((name) => ({
       color: POLICY_COLORS[name],
       label: name,
       type: "rect",
