@@ -50,7 +50,16 @@ class Reform(BaseModel):
 
     def to_scenario(self) -> Scenario:
         """Convert this reform to a PolicyEngine Scenario object."""
-        if self.simulation_modifier is not None:
+        if (
+            self.simulation_modifier is not None
+            and self.parameter_changes is not None
+        ):
+            # Both modifier and parameter changes - include both
+            return Scenario(
+                simulation_modifier=self.simulation_modifier,
+                parameter_changes=self.parameter_changes,
+            )
+        elif self.simulation_modifier is not None:
             return Scenario(simulation_modifier=self.simulation_modifier)
         elif self.parameter_changes is not None:
             return Scenario(parameter_changes=self.parameter_changes)
@@ -63,7 +72,16 @@ class Reform(BaseModel):
         Returns:
             Scenario object for custom baseline, or None for default baseline.
         """
-        if self.baseline_simulation_modifier is not None:
+        if (
+            self.baseline_simulation_modifier is not None
+            and self.baseline_parameter_changes is not None
+        ):
+            # Both modifier and parameter changes - include both
+            return Scenario(
+                simulation_modifier=self.baseline_simulation_modifier,
+                parameter_changes=self.baseline_parameter_changes,
+            )
+        elif self.baseline_simulation_modifier is not None:
             return Scenario(
                 simulation_modifier=self.baseline_simulation_modifier
             )

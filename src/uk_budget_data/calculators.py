@@ -49,14 +49,14 @@ class BudgetaryImpactCalculator(BaseCalculator):
         """
         results = []
         for year in self.years:
-            # Special case for student loan reforms: use student_loan_repayments_modelled
-            # since student loan repayments don't affect gov_balance directly
+            # Special case for student loan reforms: use student_loan_repayment
+            # (policyengine-uk's calculated variable using threshold parameters)
             if reform_id in self.STUDENT_LOAN_REFORMS:
                 baseline_repayments = baseline.calculate(
-                    "student_loan_repayments_modelled", period=year
+                    "student_loan_repayment", period=year
                 )
                 reformed_repayments = reformed.calculate(
-                    "student_loan_repayments_modelled", period=year
+                    "student_loan_repayment", period=year
                 )
                 # Revenue = reformed - baseline (frozen thresholds = more repayments)
                 impact = (

@@ -486,10 +486,11 @@ def _calculate_pre_freeze_thresholds() -> dict:
 
     return {
         # Baseline: Continue RPI uprating from 2027 (no freeze)
+        # Use January 1 dates since calculations use period.start.year
         "gov.hmrc.student_loans.thresholds.plan_2": {
-            "2027-04-06": round(base_2026 * rpi_2027 / rpi_2026),
-            "2028-04-06": round(base_2026 * rpi_2028 / rpi_2026),
-            "2029-04-06": round(base_2026 * rpi_2029 / rpi_2026),
+            "2027-01-01": round(base_2026 * rpi_2027 / rpi_2026),
+            "2028-01-01": round(base_2026 * rpi_2028 / rpi_2026),
+            "2029-01-01": round(base_2026 * rpi_2029 / rpi_2026),
         },
     }
 
@@ -504,10 +505,11 @@ def _create_student_loan_freeze() -> Reform:
     The freeze saves the government money (more repayments) as graduates
     pay back more when thresholds don't rise with inflation.
 
-    OBR fiscal impact (Table 3.5):
-    - 2027-28: ~£0.2bn
-    - 2028-29: ~£0.3bn
-    - 2029-30: ~£0.4bn
+    HMT fiscal impact:
+    - 2026-27: +£5.9bn (one-off revaluation of student loan book)
+    - 2027-28: +£0.3bn
+    - 2028-29: +£0.3bn
+    - 2029-30: +£0.4bn
     """
     baseline_thresholds = _calculate_pre_freeze_thresholds()
 
@@ -516,12 +518,15 @@ def _create_student_loan_freeze() -> Reform:
         name="Freeze student loan repayment thresholds",
         description=(
             "Freezes Plan 2 student loan repayment thresholds for 3 years "
-            "from April 2027 through April 2029. Threshold is £29,385 in "
+            "from 6 April 2027 through April 2029. Threshold is £29,385 in "
             "2026, then frozen at that level for 3 years, resuming RPI "
-            "uprating from 2030. Baseline assumes RPI uprating would have "
-            "continued. Uses policyengine-uk's student_loan_repayment "
-            "variable with threshold parameters. OBR costing: +£400m annual "
-            "revenue in medium term."
+            "uprating from 2030. In 2026, the government revalued the student "
+            "loan book resulting in a one-off £5.9bn fiscal impact. Ongoing "
+            "annual revenue of ~£0.3bn/year from 2027-2029 as graduates repay "
+            "more when thresholds don't rise with inflation. Reform uses "
+            "current law (frozen thresholds); baseline assumes RPI uprating "
+            "would have continued. HMT costing: +£5.9bn (2026), +£0.3bn/year "
+            "thereafter."
         ),
         # Reform: Current law (frozen) - use policyengine-uk default
         simulation_modifier=_connect_student_loan_variables,

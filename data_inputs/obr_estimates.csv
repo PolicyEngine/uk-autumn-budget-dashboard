@@ -31,7 +31,7 @@ salary_sacrifice_cap,NICs on salary sacrifice (>£2k),2026,0.0,0.0
 salary_sacrifice_cap,NICs on salary sacrifice (>£2k),2027,0.0,0.0
 salary_sacrifice_cap,NICs on salary sacrifice (>£2k),2028,0.0,0.0
 salary_sacrifice_cap,NICs on salary sacrifice (>£2k),2029,4.9,4.7
-freeze_student_loan_thresholds,Student loan threshold freeze,2026,0.0,0.0
-freeze_student_loan_thresholds,Student loan threshold freeze,2027,0.3,0.3
-freeze_student_loan_thresholds,Student loan threshold freeze,2028,0.4,0.4
-freeze_student_loan_thresholds,Student loan threshold freeze,2029,0.4,0.4
+freeze_student_loan_thresholds,Student loan threshold freeze (HMT),2026,5.915,5.915
+freeze_student_loan_thresholds,Student loan threshold freeze (HMT),2027,0.255,0.255
+freeze_student_loan_thresholds,Student loan threshold freeze (HMT),2028,0.29,0.29
+freeze_student_loan_thresholds,Student loan threshold freeze (HMT),2029,0.355,0.355
