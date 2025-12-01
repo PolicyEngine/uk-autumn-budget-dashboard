@@ -418,6 +418,45 @@
   line-height: 1;
 }
 
+/* Policy breakdown section */
+.tooltip-breakdown {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.tooltip-breakdown-header {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #6b7280;
+  margin: 0 0 8px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.tooltip-breakdown-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 0;
+  gap: 12px;
+}
+
+.tooltip-breakdown-name {
+  font-size: 0.8rem;
+  color: #374151;
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tooltip-breakdown-value {
+  font-size: 0.85rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
 /* Loading state */
 .constituency-loading {
   display: flex;

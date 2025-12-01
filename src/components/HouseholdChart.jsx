@@ -32,7 +32,9 @@ const LEGEND_ITEMS = [
 ];
 
 function HouseholdChart({ rawData, selectedPolicies }) {
-  const [internalYear, setInternalYear] = useState(2026);
+  // Default to 2029 so more policies have visible impact
+  // (threshold_freeze starts 2028, salary_sacrifice_cap starts 2029)
+  const [internalYear, setInternalYear] = useState(2029);
 
   // Zoom state
   const [zoomDomain, setZoomDomain] = useState(null);
@@ -54,67 +56,74 @@ function HouseholdChart({ rawData, selectedPolicies }) {
   };
 
   // Process pre-sampled data from backend (no frontend sampling needed)
-  // Backend samples ~2k households per reform/year using deterministic hashing
+  // Backend samples the SAME 500 households across all reforms for consistency
+  // Uses household_id to match households across reforms
   const data = useMemo(() => {
     if (!rawData) return [];
 
-    // Group data by reform_id and year
-    const dataByReformAndYear = {};
+    // Group data by reform_id, year, and household_id for easy lookup
+    const dataByReformYearHousehold = {};
     rawData.forEach((row) => {
       const reformId = row.reform_id;
       const year = parseInt(row.year);
+      const householdId = row.household_id;
 
       if (!selectedPolicies.includes(reformId)) return;
 
-      if (!dataByReformAndYear[reformId]) {
-        dataByReformAndYear[reformId] = {};
+      if (!dataByReformYearHousehold[reformId]) {
+        dataByReformYearHousehold[reformId] = {};
       }
-      if (!dataByReformAndYear[reformId][year]) {
-        dataByReformAndYear[reformId][year] = [];
+      if (!dataByReformYearHousehold[reformId][year]) {
+        dataByReformYearHousehold[reformId][year] = {};
       }
 
-      dataByReformAndYear[reformId][year].push({
+      dataByReformYearHousehold[reformId][year][householdId] = {
         baseline_income: parseFloat(row.baseline_income),
         income_change: parseFloat(row.income_change),
         household_weight: parseFloat(row.household_weight),
-        year: year,
-        index: dataByReformAndYear[reformId][year].length,
-      });
+        household_id: householdId,
+      };
     });
 
-    // Get data for the first reform to establish household indices
-    const firstReformId = selectedPolicies[0];
-    const firstYearData =
-      dataByReformAndYear[firstReformId]?.[internalYear] || [];
+    // Collect ALL unique household IDs from all selected policies for this year
+    const allHouseholdIds = new Set();
+    selectedPolicies.forEach((reformId) => {
+      const yearData = dataByReformYearHousehold[reformId]?.[internalYear] || {};
+      Object.keys(yearData).forEach((id) => allHouseholdIds.add(id));
+    });
 
-    if (firstYearData.length === 0) return [];
+    if (allHouseholdIds.size === 0) return [];
 
     // Combine income changes from all selected policies for each household
     const filteredData = [];
-    firstYearData.forEach((_, idx) => {
+    allHouseholdIds.forEach((householdId) => {
       let combinedIncomeChange = 0;
       let baselineIncome = 0;
       let householdWeight = 0;
+      let foundInAnyPolicy = false;
 
       // Sum income changes from all selected policies for this household
       selectedPolicies.forEach((reformId) => {
-        const yearData = dataByReformAndYear[reformId]?.[internalYear] || [];
-        if (yearData[idx]) {
-          combinedIncomeChange += yearData[idx].income_change;
+        const householdData =
+          dataByReformYearHousehold[reformId]?.[internalYear]?.[householdId];
+        if (householdData) {
+          foundInAnyPolicy = true;
+          combinedIncomeChange += householdData.income_change;
           // Baseline income and weight should be the same across policies
           if (baselineIncome === 0) {
-            baselineIncome = yearData[idx].baseline_income;
-            householdWeight = yearData[idx].household_weight;
+            baselineIncome = householdData.baseline_income;
+            householdWeight = householdData.household_weight;
           }
         }
       });
 
-      // Only add if we have valid data
-      if (baselineIncome > 0 || combinedIncomeChange !== 0) {
+      // Only add if we found this household in at least one policy
+      if (foundInAnyPolicy && (baselineIncome > 0 || combinedIncomeChange !== 0)) {
         filteredData.push({
           baseline_income: baselineIncome,
           income_change: combinedIncomeChange,
           household_weight: householdWeight,
+          household_id: householdId,
           year: internalYear,
         });
       }

@@ -132,7 +132,8 @@ function App() {
   const [selectedPolicies, setSelectedPolicies] = useState(
     POLICIES.map((p) => p.id),
   );
-  const [selectedYear, setSelectedYear] = useState(2026);
+  // Default to 2029 so more policies have visible impact
+  const [selectedYear, setSelectedYear] = useState(2029);
   const [results, setResults] = useState(null);
   const [showPolicyDetails, setShowPolicyDetails] = useState(false);
   const [activeTab, setActiveTab] = useState("dashboard");

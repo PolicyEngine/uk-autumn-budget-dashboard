@@ -11,11 +11,27 @@ const CHART_TITLE = "Constituency-level impacts";
 const CHART_DESCRIPTION =
   "This map shows the average annual change in household net income across all 650 UK constituencies. Green shading indicates gains, red indicates losses, measured as a percentage of baseline income.";
 
+// Mapping from reform_id to display name
+const REFORM_NAMES = {
+  two_child_limit: "2 child limit repeal",
+  fuel_duty_freeze: "Fuel duty freeze extension",
+  rail_fares_freeze: "Rail fares freeze",
+  threshold_freeze_extension: "Threshold freeze extension",
+  dividend_tax_increase_2pp: "Dividend tax increase (+2pp)",
+  savings_tax_increase_2pp: "Savings tax increase (+2pp)",
+  property_tax_increase_2pp: "Property tax increase (+2pp)",
+  freeze_student_loan_thresholds: "Student loan threshold freeze",
+  salary_sacrifice_cap: "Salary sacrifice NICs cap",
+  zero_vat_energy: "Zero VAT on energy",
+  autumn_budget_2025_combined: "Autumn Budget 2025 (combined)",
+};
+
 // Format year for display (e.g., 2026 -> "2026-27")
 const formatYearRange = (year) => `${year}-${(year + 1).toString().slice(-2)}`;
 
 export default function ConstituencyMap({ selectedPolicies = [] }) {
-  const [internalYear, setInternalYear] = useState(2026);
+  // Default to 2029 so more policies have visible impact
+  const [internalYear, setInternalYear] = useState(2029);
   const svgRef = useRef(null);
   const tooltipRef = useRef(null);
   const [selectedConstituency, setSelectedConstituency] = useState(null);
@@ -105,12 +121,20 @@ export default function ConstituencyMap({ selectedPolicies = [] }) {
           constituency_name: row.constituency_name,
           average_gain: 0,
           relative_change: 0,
+          // Track per-policy breakdown
+          policyBreakdown: {},
         });
       }
 
       const existing = constituencyMap.get(key);
       existing.average_gain += row.average_gain;
       existing.relative_change += row.relative_change;
+
+      // Store individual policy contribution
+      existing.policyBreakdown[row.reform_id] = {
+        average_gain: row.average_gain,
+        relative_change: row.relative_change,
+      };
     });
 
     return Array.from(constituencyMap.values());
@@ -662,6 +686,36 @@ export default function ConstituencyMap({ selectedPolicies = [] }) {
                 {tooltipData.relative_change.toFixed(2)}%
               </p>
               <p className="tooltip-label">Relative change</p>
+
+              {/* Policy breakdown - only show if multiple policies selected */}
+              {tooltipData.policyBreakdown &&
+                Object.keys(tooltipData.policyBreakdown).length > 1 && (
+                  <div className="tooltip-breakdown">
+                    <p className="tooltip-breakdown-header">By provision:</p>
+                    {Object.entries(tooltipData.policyBreakdown)
+                      .sort((a, b) => b[1].average_gain - a[1].average_gain)
+                      .map(([reformId, data]) => (
+                        <div key={reformId} className="tooltip-breakdown-row">
+                          <span className="tooltip-breakdown-name">
+                            {REFORM_NAMES[reformId] || reformId}
+                          </span>
+                          <span
+                            className="tooltip-breakdown-value"
+                            style={{
+                              color:
+                                data.average_gain >= 0 ? "#16a34a" : "#dc2626",
+                            }}
+                          >
+                            {data.average_gain < 0 ? "-" : ""}£
+                            {Math.abs(data.average_gain).toLocaleString(
+                              "en-GB",
+                              { maximumFractionDigits: 0 }
+                            )}
+                          </span>
+                        </div>
+                      ))}
+                  </div>
+                )}
             </div>
           )}
         </div>
