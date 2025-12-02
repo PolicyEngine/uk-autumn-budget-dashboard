@@ -5,7 +5,7 @@ function YearSelector({ selectedYear, onYearChange }) {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
 
-  const years = [2026, 2027, 2028, 2029];
+  const years = [2026, 2027, 2028, 2029, 2030];
 
   useEffect(() => {
     const handleClickOutside = (event) => {
