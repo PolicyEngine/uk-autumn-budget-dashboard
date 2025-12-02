@@ -529,9 +529,9 @@ export default function ConstituencyMap({ selectedPolicies = [] }) {
           <div className="legend-horizontal-content">
             <div className="legend-gradient-horizontal" />
             <div className="legend-labels-horizontal">
-              <span>Loss</span>
+              <span>-3%</span>
               <span className="legend-zero">0%</span>
-              <span>Gain</span>
+              <span>+3%</span>
             </div>
           </div>
         </div>
@@ -721,7 +721,9 @@ export default function ConstituencyMap({ selectedPolicies = [] }) {
         </div>
       </div>
 
-      <YearSlider selectedYear={internalYear} onYearChange={setInternalYear} />
+      <div style={{ marginTop: "5px" }}>
+        <YearSlider selectedYear={internalYear} onYearChange={setInternalYear} />
+      </div>
     </div>
   );
 }

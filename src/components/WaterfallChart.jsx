@@ -394,7 +394,9 @@ function WaterfallChart({ rawData, selectedPolicies }) {
         </ResponsiveContainer>
       </div>
 
-      <YearSlider selectedYear={internalYear} onYearChange={setInternalYear} />
+      <div style={{ marginTop: "20px" }}>
+        <YearSlider selectedYear={internalYear} onYearChange={setInternalYear} />
+      </div>
     </div>
   );
 }

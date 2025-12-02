@@ -425,7 +425,7 @@ function HouseholdChart({ rawData, selectedPolicies }) {
           }}
         >
           <p style={{ margin: "2px 0", color: "#374151" }}>
-            <strong>Baseline income:</strong> {formatValue(data.y)}
+            <strong>Household income:</strong> {formatValue(data.y)}
           </p>
           <p style={{ margin: "2px 0 6px 0", color: "#374151" }}>
             <strong>Total change:</strong> {formatValue(data.x)}
@@ -674,7 +674,7 @@ function HouseholdChart({ rawData, selectedPolicies }) {
                 tickFormatter={(value) => value / 1000}
                 tick={{ fontSize: 11, fill: "#666" }}
                 label={{
-                  value: "Baseline household net income (£k)",
+                  value: "Household net income (£k)",
                   angle: -90,
                   position: "insideLeft",
                   dx: -35,
