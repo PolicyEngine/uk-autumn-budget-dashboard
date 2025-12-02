@@ -211,7 +211,7 @@ function HouseholdChart({ rawData, selectedPolicies }) {
 
     // Fixed axes that cover all data across all years
     return {
-      xDomain: [-15000, 15000],
+      xDomain: [-5000, 5000],
       yDomain: [0, 150000],
     };
   }, [dataExtent, zoomDomain]);
@@ -362,7 +362,7 @@ function HouseholdChart({ rawData, selectedPolicies }) {
     const newYDomain = [yCenter - yRange / 2, yCenter + yRange / 2];
 
     // Don't zoom out beyond the initial view
-    const maxXDomain = [-15000, 15000];
+    const maxXDomain = [-5000, 5000];
     const maxYDomain = [0, 150000];
 
     if (
@@ -653,7 +653,7 @@ function HouseholdChart({ rawData, selectedPolicies }) {
                 name="Income change"
                 domain={xDomain}
                 allowDataOverflow={true}
-                ticks={[-15000, -10000, -5000, 0, 5000, 10000, 15000]}
+                ticks={[-5000, -2500, 0, 2500, 5000]}
                 tickFormatter={(value) => value / 1000}
                 tick={{ fontSize: 11, fill: "#666" }}
                 label={{

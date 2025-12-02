@@ -48,9 +48,13 @@ def sample_scatter_data(
     # Check if stable household_id is available (from updated pipeline)
     # If not, fall back to baseline_income + household_weight combo
     if "household_id" not in df.columns:
-        print("  Note: Using baseline_income + weight as household_id (legacy mode)")
+        print(
+            "  Note: Using baseline_income + weight as household_id (legacy mode)"
+        )
         df["household_id"] = (
-            df["baseline_income"].astype(str) + "_" + df["household_weight"].astype(str)
+            df["baseline_income"].astype(str)
+            + "_"
+            + df["household_weight"].astype(str)
         )
     else:
         # Convert to int for consistent matching
@@ -73,14 +77,18 @@ def sample_scatter_data(
     # Find households present in ALL years
     common_households = households_by_year[years[0]]
     for year in years[1:]:
-        common_households = common_households.intersection(households_by_year[year])
+        common_households = common_households.intersection(
+            households_by_year[year]
+        )
 
     print(f"  Households present in ALL years: {len(common_households)}")
 
     # Step 2: Sample from households that exist in all years
     # Use weights from first year for sampling
     first_year_data = df[df["year"] == years[0]]
-    common_df = first_year_data[first_year_data["household_id"].isin(common_households)].copy()
+    common_df = first_year_data[
+        first_year_data["household_id"].isin(common_households)
+    ].copy()
 
     n_common = len(common_df)
     if n_common <= sample_size:
@@ -111,12 +119,18 @@ def sample_scatter_data(
 
     # Verify consistency
     years_per_hh = result.groupby("household_id")["year"].nunique()
-    reforms_per_hh_year = result.groupby(["year", "household_id"])["reform_id"].nunique()
+    reforms_per_hh_year = result.groupby(["year", "household_id"])[
+        "reform_id"
+    ].nunique()
 
     print(f"\n  Total rows after sampling: {len(result):,}")
     print(f"  Unique households: {result['household_id'].nunique()}")
-    print(f"  Years per household: min={years_per_hh.min()}, max={years_per_hh.max()}, avg={years_per_hh.mean():.1f}")
-    print(f"  Reforms per household/year: avg={reforms_per_hh_year.mean():.1f}, max={reforms_per_hh_year.max()}")
+    print(
+        f"  Years per household: min={years_per_hh.min()}, max={years_per_hh.max()}, avg={years_per_hh.mean():.1f}"
+    )
+    print(
+        f"  Reforms per household/year: avg={reforms_per_hh_year.mean():.1f}, max={reforms_per_hh_year.max()}"
+    )
 
     print(f"Writing {output_path}...")
     print(f"  {len(result):,} rows (sampled from {len(df):,})")
