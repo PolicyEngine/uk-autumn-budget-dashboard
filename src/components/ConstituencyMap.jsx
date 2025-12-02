@@ -11,6 +11,11 @@ const CHART_TITLE = "Constituency-level impacts";
 const CHART_DESCRIPTION =
   "This map shows the average annual change in household net income across all 650 UK constituencies. Green shading indicates gains, red indicates losses, measured as a percentage of baseline income.";
 
+// Fixed color scale extent - consistent across all years
+// Based on actual data range: min -0.80%, max +0.73% across all reforms/years
+// Using 1% as a nice round number that covers all values
+const FIXED_COLOR_EXTENT = 1;
+
 // Mapping from reform_id to display name
 const REFORM_NAMES = {
   two_child_limit: "2 child limit repeal",
@@ -211,14 +216,12 @@ export default function ConstituencyMap({ selectedPolicies = [] }) {
     // Color scale - diverging with white at 0, red for losses, green for gains
     // Use relative_change (percentage of constituency's average income)
     const getValue = (d) => d.relative_change;
-    const extent = d3.extent(aggregatedData, getValue);
-    const maxAbsValue =
-      Math.max(Math.abs(extent[0] || 0), Math.abs(extent[1] || 0)) || 1;
 
     // Custom interpolator: red -> light grey -> teal (matching chart palette)
+    // Use fixed extent so colors are consistent across all years
     const colorScale = d3
       .scaleDiverging()
-      .domain([-maxAbsValue, 0, maxAbsValue])
+      .domain([-FIXED_COLOR_EXTENT, 0, FIXED_COLOR_EXTENT])
       .interpolator((t) => {
         if (t < 0.5) {
           // Red to grey (losses to zero)
@@ -529,9 +532,9 @@ export default function ConstituencyMap({ selectedPolicies = [] }) {
           <div className="legend-horizontal-content">
             <div className="legend-gradient-horizontal" />
             <div className="legend-labels-horizontal">
-              <span>-3%</span>
+              <span>-{FIXED_COLOR_EXTENT}%</span>
               <span className="legend-zero">0%</span>
-              <span>+3%</span>
+              <span>+{FIXED_COLOR_EXTENT}%</span>
             </div>
           </div>
         </div>
