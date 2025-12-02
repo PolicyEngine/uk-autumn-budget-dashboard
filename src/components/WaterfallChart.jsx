@@ -56,7 +56,8 @@ const CHART_DESCRIPTION =
 const formatYearRange = (year) => `${year}-${(year + 1).toString().slice(-2)}`;
 
 function WaterfallChart({ rawData, selectedPolicies }) {
-  const [internalYear, setInternalYear] = useState(2026);
+  // Default to 2029 so more policies have visible impact
+  const [internalYear, setInternalYear] = useState(2029);
   const chartRef = useRef(null);
 
   // Build chart data for internal year
