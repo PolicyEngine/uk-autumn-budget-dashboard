@@ -559,6 +559,11 @@ class HouseholdScatterCalculator(BaseCalculator):
         household_weight = baseline.calculate(
             "household_weight", period=year, map_to="household"
         )
+        # Use stable household_id from the FRS microdata
+        # This ensures consistent household identification across reforms
+        household_id = baseline.calculate(
+            "household_id", period=year, map_to="household"
+        )
 
         return self.calculate_from_arrays(
             reform_id=reform_id,
@@ -567,6 +572,7 @@ class HouseholdScatterCalculator(BaseCalculator):
             baseline_incomes=baseline_income.values,
             income_changes=(reform_income - baseline_income).values,
             weights=household_weight.values,
+            household_ids=household_id.values,
         )
 
     def calculate_from_arrays(
@@ -577,11 +583,21 @@ class HouseholdScatterCalculator(BaseCalculator):
         baseline_incomes: np.ndarray,
         income_changes: np.ndarray,
         weights: np.ndarray,
+        household_ids: np.ndarray = None,
     ) -> list[dict]:
         """Calculate from numpy arrays (for testing).
 
         Returns all households within income range. Sampling for git
         is done separately via sample_household_scatter.py script.
+
+        Args:
+            reform_id: Unique reform identifier
+            reform_name: Human-readable reform name
+            year: Year for the calculation
+            baseline_incomes: Household net incomes under baseline
+            income_changes: Change in income (reform - baseline)
+            weights: Household weights
+            household_ids: Stable FRS household IDs (optional, for testing)
         """
         mask = (baseline_incomes >= self.min_income) & (
             baseline_incomes <= self.max_income
@@ -590,16 +606,18 @@ class HouseholdScatterCalculator(BaseCalculator):
         results = []
         for i in range(len(baseline_incomes)):
             if mask[i]:
-                results.append(
-                    {
-                        "reform_id": reform_id,
-                        "reform_name": reform_name,
-                        "year": year,
-                        "baseline_income": baseline_incomes[i],
-                        "income_change": income_changes[i],
-                        "household_weight": weights[i],
-                    }
-                )
+                row = {
+                    "reform_id": reform_id,
+                    "reform_name": reform_name,
+                    "year": year,
+                    "baseline_income": baseline_incomes[i],
+                    "income_change": income_changes[i],
+                    "household_weight": weights[i],
+                }
+                # Include stable household_id if provided
+                if household_ids is not None:
+                    row["household_id"] = int(household_ids[i])
+                results.append(row)
 
         return results
 
