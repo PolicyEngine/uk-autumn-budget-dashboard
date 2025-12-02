@@ -90,7 +90,7 @@ function OBRComparisonTable({ selectedPolicies }) {
     };
   });
 
-  const years = [2026, 2027, 2028, 2029];
+  const years = [2026, 2027, 2028, 2029, 2030];
   const policies = Object.entries(policiesMap);
 
   const formatValue = (value) => {

@@ -32,7 +32,7 @@ class HouseholdInput:
 
 
 # Years to calculate (2025 is base year, 2026-2029 are policy years)
-YEARS = [2025, 2026, 2027, 2028, 2029]
+YEARS = [2025, 2026, 2027, 2028, 2029, 2030]
 
 # Policies to analyse (excluding combined which would double-count)
 POLICY_IDS = [

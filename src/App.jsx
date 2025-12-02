@@ -133,7 +133,7 @@ function App() {
     POLICIES.map((p) => p.id),
   );
   // Default to 2029 so more policies have visible impact
-  const [selectedYear, setSelectedYear] = useState(2029);
+  const [selectedYear, setSelectedYear] = useState(2030);
   const [results, setResults] = useState(null);
   const [showPolicyDetails, setShowPolicyDetails] = useState(false);
   const [activeTab, setActiveTab] = useState("dashboard");
@@ -243,7 +243,7 @@ function App() {
 
       // Build budgetary impact data for chart (2026-2029)
       // Always include all policy keys for smooth animations
-      const years = [2026, 2027, 2028, 2029];
+      const years = [2026, 2027, 2028, 2029, 2030];
       const budgetData = years.map((year) => {
         const dataPoint = { year };
         let netImpact = 0;

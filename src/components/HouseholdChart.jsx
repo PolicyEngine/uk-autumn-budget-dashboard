@@ -19,7 +19,7 @@ import "./ChartExport.css";
 
 // Chart metadata for export
 const CHART_DESCRIPTION =
-  "This chart plots net income change against baseline income for 500 sampled households. Green dots indicate gains, red shows losses, and grey shows minimal change. Dot size represents household weight in the population.";
+  "This chart plots net income change against baseline income for 500 sampled households. Green dots indicate gains, red shows losses, and grey shows minimal change. Dot opacity represents household weight in the population.";
 
 // Format year for display (e.g., 2026 -> "2026-27")
 const formatYearRange = (year) => `${year}-${(year + 1).toString().slice(-2)}`;
@@ -101,6 +101,7 @@ function HouseholdChart({ rawData, selectedPolicies }) {
       let baselineIncome = 0;
       let householdWeight = 0;
       let foundInAnyPolicy = false;
+      const policyBreakdown = {}; // Store change per policy
 
       // Sum income changes from all selected policies for this household
       selectedPolicies.forEach((reformId) => {
@@ -109,6 +110,10 @@ function HouseholdChart({ rawData, selectedPolicies }) {
         if (householdData) {
           foundInAnyPolicy = true;
           combinedIncomeChange += householdData.income_change;
+          // Store non-zero changes for tooltip breakdown
+          if (Math.abs(householdData.income_change) > 0.01) {
+            policyBreakdown[reformId] = householdData.income_change;
+          }
           // Baseline income and weight should be the same across policies
           if (baselineIncome === 0) {
             baselineIncome = householdData.baseline_income;
@@ -125,6 +130,7 @@ function HouseholdChart({ rawData, selectedPolicies }) {
           household_weight: householdWeight,
           household_id: householdId,
           year: internalYear,
+          policyBreakdown, // Include breakdown for tooltip
         });
       }
     });
@@ -179,6 +185,8 @@ function HouseholdChart({ rawData, selectedPolicies }) {
             ? "losses"
             : "noChange",
       weight: d.household_weight,
+      householdId: d.household_id,
+      policyBreakdown: d.policyBreakdown || {},
     }));
 
     return {
@@ -201,10 +209,10 @@ function HouseholdChart({ rawData, selectedPolicies }) {
       return zoomDomain;
     }
 
-    // Fixed symmetric x-axis domain around 0
+    // Fixed axes that cover all data across all years
     return {
-      xDomain: [-10000, 10000],
-      yDomain: [0, 160000],
+      xDomain: [-5000, 5000],
+      yDomain: [0, 150000],
     };
   }, [dataExtent, zoomDomain]);
 
@@ -354,8 +362,8 @@ function HouseholdChart({ rawData, selectedPolicies }) {
     const newYDomain = [yCenter - yRange / 2, yCenter + yRange / 2];
 
     // Don't zoom out beyond the initial view
-    const maxXDomain = [-10000, 10000];
-    const maxYDomain = [0, 160000];
+    const maxXDomain = [-5000, 5000];
+    const maxYDomain = [0, 150000];
 
     if (
       newXDomain[0] <= maxXDomain[0] &&
@@ -376,6 +384,21 @@ function HouseholdChart({ rawData, selectedPolicies }) {
     setZoomDomain(null);
   };
 
+  // Policy name mapping for tooltip
+  const policyNames = {
+    two_child_limit: "2 child limit repeal",
+    fuel_duty_freeze: "Fuel duty freeze",
+    rail_fares_freeze: "Rail fares freeze",
+    threshold_freeze_extension: "Threshold freeze",
+    dividend_tax_increase_2pp: "Dividend tax +2pp",
+    savings_tax_increase_2pp: "Savings tax +2pp",
+    property_tax_increase_2pp: "Property tax +2pp",
+    freeze_student_loan_thresholds: "Student loan freeze",
+    zero_vat_energy: "Zero VAT on energy",
+    salary_sacrifice_cap: "Salary sacrifice cap",
+    autumn_budget_2025_combined: "Autumn Budget (combined)",
+  };
+
   // Custom tooltip
   const CustomTooltip = ({ active, payload }) => {
     if (active && payload && payload.length) {
@@ -386,6 +409,10 @@ function HouseholdChart({ rawData, selectedPolicies }) {
         });
         return val < 0 ? `-£${absVal}` : `£${absVal}`;
       };
+
+      // Get policy breakdown entries (non-zero only)
+      const breakdownEntries = Object.entries(data.policyBreakdown || {});
+
       return (
         <div
           style={{
@@ -394,14 +421,34 @@ function HouseholdChart({ rawData, selectedPolicies }) {
             border: "1px solid #ccc",
             borderRadius: "4px",
             fontSize: "12px",
+            maxWidth: "280px",
           }}
         >
           <p style={{ margin: "2px 0", color: "#374151" }}>
-            <strong>Income change:</strong> {formatValue(data.x)}
+            <strong>Household income:</strong> {formatValue(data.y)}
           </p>
-          <p style={{ margin: "2px 0", color: "#374151" }}>
-            <strong>Baseline income:</strong> {formatValue(data.y)}
+          <p style={{ margin: "2px 0 6px 0", color: "#374151" }}>
+            <strong>Total change:</strong> {formatValue(data.x)}
           </p>
+          {breakdownEntries.length > 0 && (
+            <div style={{ borderTop: "1px solid #e0e0e0", paddingTop: "6px" }}>
+              <p style={{ margin: "0 0 4px 0", color: "#666", fontSize: "11px" }}>
+                Breakdown by policy:
+              </p>
+              {breakdownEntries.map(([policyId, change]) => (
+                <p
+                  key={policyId}
+                  style={{
+                    margin: "2px 0",
+                    color: change > 0 ? "#319795" : "#E53E3E",
+                    fontSize: "11px",
+                  }}
+                >
+                  {policyNames[policyId] || policyId}: {formatValue(change)}
+                </p>
+              ))}
+            </div>
+          )}
         </div>
       );
     }
@@ -456,8 +503,8 @@ function HouseholdChart({ rawData, selectedPolicies }) {
           <p className="chart-description">
             This chart plots net income change against baseline income for 500
             sampled households. Green dots indicate gains, red shows losses, and
-            grey shows minimal change. Dot size represents household weight in
-            the population.
+            grey shows minimal change. Dot opacity represents household weight
+            in the population.
           </p>
         </div>
         <button
@@ -605,15 +652,12 @@ function HouseholdChart({ rawData, selectedPolicies }) {
                 dataKey="x"
                 name="Income change"
                 domain={xDomain}
-                tickFormatter={(value) => {
-                  const absVal = Math.abs(value).toLocaleString("en-GB", {
-                    maximumFractionDigits: 0,
-                  });
-                  return value < 0 ? `-£${absVal}` : `£${absVal}`;
-                }}
+                allowDataOverflow={true}
+                ticks={[-5000, -2500, 0, 2500, 5000]}
+                tickFormatter={(value) => value / 1000}
                 tick={{ fontSize: 11, fill: "#666" }}
                 label={{
-                  value: "Net income change (£)",
+                  value: "Net income change (£k)",
                   position: "bottom",
                   offset: 40,
                   style: { fontSize: 12, fill: "#374151" },
@@ -625,15 +669,12 @@ function HouseholdChart({ rawData, selectedPolicies }) {
                 dataKey="y"
                 name="Baseline income"
                 domain={yDomain}
-                tickFormatter={(value) => {
-                  const absVal = Math.abs(value).toLocaleString("en-GB", {
-                    maximumFractionDigits: 0,
-                  });
-                  return value < 0 ? `-£${absVal}` : `£${absVal}`;
-                }}
+                allowDataOverflow={true}
+                ticks={[0, 20000, 40000, 60000, 80000, 100000, 120000, 140000]}
+                tickFormatter={(value) => value / 1000}
                 tick={{ fontSize: 11, fill: "#666" }}
                 label={{
-                  value: "Baseline household net income (£)",
+                  value: "Household net income (£k)",
                   angle: -90,
                   position: "insideLeft",
                   dx: -35,
@@ -650,11 +691,22 @@ function HouseholdChart({ rawData, selectedPolicies }) {
                 cursor={{ strokeDasharray: "3 3" }}
               />
 
-              {/* Zero line */}
-              <ReferenceLine x={0} stroke="#666" strokeWidth={2} />
+              {/* Zero line - fixed at x=0 (no income change) */}
+              <ReferenceLine
+                x={0}
+                stroke="#666"
+                strokeWidth={2}
+                ifOverflow="extendDomain"
+              />
 
               {/* Single scatter with colored cells based on category */}
-              <Scatter data={chartData} fill="#319795">
+              <Scatter
+                data={chartData}
+                fill="#319795"
+                isAnimationActive={true}
+                animationDuration={800}
+                animationEasing="ease-out"
+              >
                 {chartData.map((entry, index) => (
                   <Cell
                     key={`cell-${index}`}

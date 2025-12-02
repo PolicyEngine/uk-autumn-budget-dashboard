@@ -117,7 +117,7 @@ function WaterfallChart({ rawData, selectedPolicies }) {
 
   // Calculate y-axis domain across ALL years, symmetrical around zero
   const calculateYAxisDomain = () => {
-    const allYears = [2026, 2027, 2028, 2029];
+    const allYears = [2026, 2027, 2028, 2029, 2030];
     let minValue = 0;
     let maxValue = 0;
 
@@ -217,7 +217,7 @@ function WaterfallChart({ rawData, selectedPolicies }) {
       type: "rect",
     })),
     ...(activePolicies.length > 1
-      ? [{ color: "#FBBF24", label: "Net change", type: "line" }]
+      ? [{ color: "#000000", label: "Net change", type: "line" }]
       : []),
   ];
 
@@ -361,7 +361,7 @@ function WaterfallChart({ rawData, selectedPolicies }) {
                       {
                         value: "Net change",
                         type: "line",
-                        color: "#FBBF24",
+                        color: "#000000",
                       },
                     ]
                   : []),
@@ -382,9 +382,9 @@ function WaterfallChart({ rawData, selectedPolicies }) {
             <Line
               type="monotone"
               dataKey="netChange"
-              stroke="#FBBF24"
+              stroke="#000000"
               strokeWidth={3}
-              dot={{ fill: "#FBBF24", stroke: "#92400E", strokeWidth: 2, r: 5 }}
+              dot={{ fill: "#000000", stroke: "#000000", strokeWidth: 1, r: 3 }}
               name="netChange"
               animationDuration={500}
               hide={activePolicies.length <= 1}
@@ -394,7 +394,9 @@ function WaterfallChart({ rawData, selectedPolicies }) {
         </ResponsiveContainer>
       </div>
 
-      <YearSlider selectedYear={internalYear} onYearChange={setInternalYear} />
+      <div style={{ marginTop: "20px" }}>
+        <YearSlider selectedYear={internalYear} onYearChange={setInternalYear} />
+      </div>
     </div>
   );
 }

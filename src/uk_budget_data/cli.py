@@ -1,6 +1,8 @@
 """Command-line interface for UK Budget Data generation."""
 
 import argparse
+import subprocess
+import sys
 from pathlib import Path
 
 from rich.console import Console
@@ -82,8 +84,8 @@ def parse_args(args: list[str] = None) -> argparse.Namespace:
         "--years",
         nargs="+",
         type=int,
-        default=[2026, 2027, 2028, 2029],
-        help="Years to calculate (default: 2026 2027 2028 2029)",
+        default=[2026, 2027, 2028, 2029, 2030],
+        help="Years to calculate (default: 2026 2027 2028 2029 2030)",
     )
 
     generate_parser.add_argument(
@@ -273,6 +275,26 @@ def run_generate(parsed: argparse.Namespace) -> int:
             config=config,
             skip_input_check=parsed.skip_input_check,
         )
+        console.print("\n[bold green]Data generation complete![/bold green]")
+
+        # Run household scatter sampling script
+        sampling_script = Path("scripts/sample_household_scatter.py")
+        if sampling_script.exists():
+            console.print(
+                "\n[bold]Running household scatter sampling...[/bold]"
+            )
+            result = subprocess.run(
+                [sys.executable, str(sampling_script)],
+                capture_output=True,
+                text=True,
+            )
+            if result.returncode == 0:
+                console.print("[green]Sampling complete![/green]")
+            else:
+                console.print(
+                    f"[yellow]Sampling warning: {result.stderr}[/yellow]"
+                )
+
         console.print("\n[bold green]Done![/bold green]")
         return 0
     except FileNotFoundError as e:

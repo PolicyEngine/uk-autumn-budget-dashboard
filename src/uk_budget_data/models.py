@@ -118,7 +118,7 @@ class DataConfig(BaseModel):
     """Configuration for the data generation pipeline."""
 
     years: list[int] = Field(
-        default=[2026, 2027, 2028, 2029],
+        default=[2026, 2027, 2028, 2029, 2030],
         description="Years to calculate metrics for",
     )
     output_dir: Path = Field(

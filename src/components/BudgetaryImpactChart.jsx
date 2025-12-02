@@ -121,7 +121,7 @@ function BudgetaryImpactChart({ data }) {
       type: "rect",
     })),
     ...(activePolicies.length > 1
-      ? [{ color: "#FBBF24", label: "Net impact", type: "line" }]
+      ? [{ color: "#000000", label: "Net impact", type: "line" }]
       : []),
   ];
 
@@ -178,7 +178,11 @@ function BudgetaryImpactChart({ data }) {
             stackOffset="sign"
           >
             <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-            <XAxis dataKey="year" tick={{ fontSize: 11, fill: "#666" }} />
+            <XAxis
+              dataKey="year"
+              tick={{ fontSize: 11, fill: "#666" }}
+              tickFormatter={(year) => `${year}-${(year + 1).toString().slice(-2)}`}
+            />
             <YAxis
               domain={yAxisDomain}
               label={{
@@ -213,7 +217,7 @@ function BudgetaryImpactChart({ data }) {
                 formatCurrencyTooltip(value),
                 name === "netImpact" ? "Net impact" : name,
               ]}
-              labelFormatter={(label) => `Year: ${label}`}
+              labelFormatter={(year) => `${year}-${(year + 1).toString().slice(-2)}`}
               contentStyle={{
                 background: "white",
                 border: "1px solid #e5e7eb",
@@ -251,7 +255,7 @@ function BudgetaryImpactChart({ data }) {
                       {
                         value: "Net impact",
                         type: "line",
-                        color: "#FBBF24",
+                        color: "#000000",
                       },
                     ]
                   : []),
@@ -272,9 +276,9 @@ function BudgetaryImpactChart({ data }) {
             <Line
               type="monotone"
               dataKey="netImpact"
-              stroke="#FBBF24"
+              stroke="#000000"
               strokeWidth={3}
-              dot={{ fill: "#FBBF24", stroke: "#92400E", strokeWidth: 2, r: 5 }}
+              dot={{ fill: "#000000", stroke: "#000000", strokeWidth: 1, r: 3 }}
               name="netImpact"
               animationDuration={500}
               hide={activePolicies.length <= 1}
