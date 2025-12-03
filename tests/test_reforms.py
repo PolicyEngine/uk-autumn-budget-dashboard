@@ -2,7 +2,6 @@
 
 import os
 
-import numpy as np
 import pytest
 from policyengine_uk.system import system
 
