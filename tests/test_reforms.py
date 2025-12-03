@@ -439,17 +439,17 @@ class TestStructuralReforms:
         reform = create_salary_sacrifice_cap_reform(cap_amount=2000)
         assert reform is not None
         assert reform.id == "salary_sacrifice_cap"
-        # Now uses baseline_parameter_changes instead of simulation_modifier
+        # Uses baseline_parameter_changes and simulation_modifier
         assert reform.baseline_parameter_changes is not None
-        assert reform.parameter_changes == {}
+        assert reform.simulation_modifier is not None
 
     def test_salary_sacrifice_cap_uses_baseline(self):
-        """Salary sacrifice cap uses baseline (no cap) vs reform (pe-uk defaults).
+        """Salary sacrifice cap uses baseline (no cap) vs reform (pe-uk + modifier).
 
         policyengine-uk (post PR #1432) has the salary sacrifice cap baked in
         as current law from April 2029. The reform compares:
         - Baseline: Pre-budget policy (no cap, infinity)
-        - Reform: policyengine-uk defaults (£2,000 cap)
+        - Reform: pe-uk defaults (£2,000 cap) + behavioural modifier (13% haircut)
         """
         from uk_budget_data.reforms import create_salary_sacrifice_cap_reform
 
@@ -462,8 +462,9 @@ class TestStructuralReforms:
         assert reform.baseline_parameter_changes[cap_key]["2029"] == np.inf
         assert reform.baseline_parameter_changes[cap_key]["2030"] == np.inf
 
-        # Reform parameter_changes should be empty (uses pe-uk defaults)
+        # Reform uses pe-uk defaults (empty) + simulation_modifier
         assert reform.parameter_changes == {}
+        assert reform.simulation_modifier is not None
 
 
 class TestGetReform:
