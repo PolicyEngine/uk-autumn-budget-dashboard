@@ -19480,7 +19480,7 @@ two_child_limit,2 child limit repeal,2026,13774.0,0.0,14781.118,291
 two_child_limit,2 child limit repeal,2026,20306.0,0.0,2211.978,324
 two_child_limit,2 child limit repeal,2026,41070.0,0.0,998.4762,343
 two_child_limit,2 child limit repeal,2026,22920.0,0.0,419.1728,355
-two_child_limit,2 child limit repeal,2026,55855.0,0.0,15778.282,443
+two_child_limit,2 child limit repeal,2026,55855.0,3635.0,15778.282,443
 two_child_limit,2 child limit repeal,2026,46689.0,0.0,51204.098,444
 two_child_limit,2 child limit repeal,2026,106719.0,0.0,6244.1797,458
 two_child_limit,2 child limit repeal,2026,48661.0,0.0,60669.945,462
@@ -19568,7 +19568,7 @@ two_child_limit,2 child limit repeal,2026,34808.0,0.0,735.83386,3973
 two_child_limit,2 child limit repeal,2026,49890.0,0.0,1234.1832,4006
 two_child_limit,2 child limit repeal,2026,52086.0,0.0,3206.4504,4026
 two_child_limit,2 child limit repeal,2026,35541.0,0.0,28234.297,4086
-two_child_limit,2 child limit repeal,2026,46443.0,0.0,11721.65,4116
+two_child_limit,2 child limit repeal,2026,46443.0,7270.0,11721.65,4116
 two_child_limit,2 child limit repeal,2026,82004.0,0.0,1922.9883,4132
 two_child_limit,2 child limit repeal,2026,29944.0,0.0,9053.796,4254
 two_child_limit,2 child limit repeal,2026,58232.0,0.0,763.3234,4281
@@ -19602,7 +19602,7 @@ two_child_limit,2 child limit repeal,2026,86632.0,0.0,6919.5386,5451
 two_child_limit,2 child limit repeal,2026,39751.0,0.0,6810.98,5610
 two_child_limit,2 child limit repeal,2026,33612.0,0.0,245787.72,5672
 two_child_limit,2 child limit repeal,2026,55238.0,0.0,1977.9016,5683
-two_child_limit,2 child limit repeal,2026,75372.0,0.0,3501.1648,5783
+two_child_limit,2 child limit repeal,2026,75372.0,7269.0,3501.1648,5783
 two_child_limit,2 child limit repeal,2026,45555.0,0.0,4817.92,5795
 two_child_limit,2 child limit repeal,2026,73825.0,0.0,827.04083,5837
 two_child_limit,2 child limit repeal,2026,6901.0,0.0,519.14923,5855
@@ -19690,7 +19690,7 @@ two_child_limit,2 child limit repeal,2026,15460.0,0.0,11599.279,8789
 two_child_limit,2 child limit repeal,2026,73654.0,0.0,1488.7291,8819
 two_child_limit,2 child limit repeal,2026,27898.0,0.0,2311.193,8923
 two_child_limit,2 child limit repeal,2026,37243.0,0.0,1179.1632,8924
-two_child_limit,2 child limit repeal,2026,57972.0,0.0,17527.805,8939
+two_child_limit,2 child limit repeal,2026,57972.0,7270.0,17527.805,8939
 two_child_limit,2 child limit repeal,2026,77250.0,0.0,24336.46,9031
 two_child_limit,2 child limit repeal,2026,130062.0,0.0,1547.8527,9073
 two_child_limit,2 child limit repeal,2026,31262.0,0.0,7777.4155,9079
@@ -19734,8 +19734,8 @@ two_child_limit,2 child limit repeal,2026,34019.0,0.0,1043.9281,10289
 two_child_limit,2 child limit repeal,2026,29664.0,0.0,1685.8608,10517
 two_child_limit,2 child limit repeal,2026,25817.0,0.0,4061.6033,10538
 two_child_limit,2 child limit repeal,2026,20725.0,0.0,2130.8987,10635
-two_child_limit,2 child limit repeal,2026,62589.0,0.0,10890.381,10656
-two_child_limit,2 child limit repeal,2026,43685.0,0.0,1977.096,10754
+two_child_limit,2 child limit repeal,2026,62589.0,7270.0,10890.381,10656
+two_child_limit,2 child limit repeal,2026,43685.0,7270.0,1977.096,10754
 two_child_limit,2 child limit repeal,2026,28673.0,0.0,1080.6201,10781
 two_child_limit,2 child limit repeal,2026,26062.0,0.0,8156.4253,10789
 two_child_limit,2 child limit repeal,2026,43645.0,0.0,5327.3467,10791
@@ -19829,7 +19829,7 @@ two_child_limit,2 child limit repeal,2026,76330.0,0.0,11061.793,14293
 two_child_limit,2 child limit repeal,2026,57041.0,0.0,5553.37,14306
 two_child_limit,2 child limit repeal,2026,52249.0,0.0,10780.728,14370
 two_child_limit,2 child limit repeal,2026,68014.0,0.0,1676.2145,14433
-two_child_limit,2 child limit repeal,2026,40615.0,0.0,477.80414,14493
+two_child_limit,2 child limit repeal,2026,40615.0,3635.0,477.80414,14493
 two_child_limit,2 child limit repeal,2026,32387.0,0.0,1376.1338,14591
 two_child_limit,2 child limit repeal,2026,15758.0,0.0,537.0506,14595
 two_child_limit,2 child limit repeal,2026,30090.0,0.0,118633.67,14627

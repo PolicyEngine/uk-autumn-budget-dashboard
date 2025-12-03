@@ -138,6 +138,9 @@ def _create_two_child_limit_repeal() -> Reform:
     Since policyengine-uk v2.63.0+, the two-child limit repeal is in baseline
     (child_count = infinity from April 2026). This reform compares against
     the pre-budget baseline where the limit was 2.
+
+    Note: For 2026, we explicitly set infinity in reform to capture full-year
+    impact, since pe-uk only has infinity from April 6, 2026.
     """
     return Reform(
         id="two_child_limit",
@@ -157,8 +160,16 @@ def _create_two_child_limit_repeal() -> Reform:
                 _years_dict(2)
             ),
         },
-        # Reform: Current law (policyengine-uk v2.63.0+ has infinity from 2026)
-        parameter_changes={},
+        # Reform: Explicitly set 2026 to infinity for full-year impact
+        # (pe-uk has infinity from April 6, 2026 only)
+        parameter_changes={
+            "gov.dwp.tax_credits.child_tax_credit.limit.child_count": {
+                "2026": np.inf,
+            },
+            "gov.dwp.universal_credit.elements.child.limit.child_count": {
+                "2026": np.inf,
+            },
+        },
     )
 
 

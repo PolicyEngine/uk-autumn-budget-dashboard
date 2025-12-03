@@ -129,10 +129,11 @@ class TestTwoChildLimitRepeal:
         assert reform.id == "two_child_limit"
 
     def test_reform_removes_child_limit(self):
-        """Reform uses baseline with limit of 2, current law has infinity.
+        """Reform uses baseline with limit of 2, reform has infinity.
 
         Since policyengine-uk v2.63.0+, the two-child limit repeal is in
-        baseline. The reform compares against pre-budget baseline (limit=2).
+        baseline from April 2026. For 2026, we explicitly set infinity in
+        reform to capture full-year impact.
         """
         from uk_budget_data.reforms import get_reform
 
@@ -152,8 +153,12 @@ class TestTwoChildLimitRepeal:
         for year_val in reform.baseline_parameter_changes[uc_key].values():
             assert year_val == 2
 
-        # Reform parameter_changes should be empty (uses current law)
-        assert reform.parameter_changes == {}
+        # Reform explicitly sets 2026 to infinity for full-year impact
+        assert reform.parameter_changes is not None
+        assert tc_key in reform.parameter_changes
+        assert uc_key in reform.parameter_changes
+        assert reform.parameter_changes[tc_key]["2026"] == np.inf
+        assert reform.parameter_changes[uc_key]["2026"] == np.inf
 
 
 class TestFuelDutyFreeze:
