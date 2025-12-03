@@ -899,13 +899,17 @@ wheels = [
 
 [[package]]
 name = "policyengine-uk"
-version = "2.63.0"
-source = { git = "https://github.com/PolicyEngine/policyengine-uk.git?rev=master#a18241330f014dca78db119f4aa1753f4bf13b15" }
+version = "2.65.0"
+source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "microdf-python" },
     { name = "policyengine-core" },
     { name = "pydantic" },
     { name = "tables" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/07/f2/c846ebf77aa95f94430895f69e62e8d3d9943b6470c15b1a73aa38bdcb38/policyengine_uk-2.65.0.tar.gz", hash = "sha256:4e478974e7d889acd2ff735f81906a14920b70551676ae5e2d82c6fa3ffffab5", size = 1072226, upload-time = "2025-12-03T16:18:24.249Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/11/63/003a33bc79018526a1ef7364bdd49c1941162b10e082cb3e979eec5dd8a1/policyengine_uk-2.65.0-py3-none-any.whl", hash = "sha256:088a68ccf2ed79654aad63eb1e95c9a2dc2c8b01cc54d682ff5f274362fec5a2", size = 1654553, upload-time = "2025-12-03T16:18:23.031Z" },
 ]
 
 [[package]]
@@ -1409,7 +1413,7 @@ requires-dist = [
     { name = "microdf-python", specifier = ">=0.3.0" },
     { name = "numpy", specifier = ">=1.24.0" },
     { name = "pandas", specifier = ">=2.0.0" },
-    { name = "policyengine-uk", git = "https://github.com/PolicyEngine/policyengine-uk.git?rev=master" },
+    { name = "policyengine-uk", specifier = ">=2.65.0" },
     { name = "pydantic", specifier = ">=2.0.0" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=7.0.0" },
     { name = "pytest-cov", marker = "extra == 'dev'", specifier = ">=4.0.0" },

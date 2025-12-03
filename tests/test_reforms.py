@@ -155,13 +155,9 @@ class TestTwoChildLimitRepeal:
         for year_val in reform.baseline_parameter_changes[uc_key].values():
             assert year_val == 2
 
-        # Reform parameter_changes should set infinity (no limit)
-        assert tc_key in reform.parameter_changes
-        assert uc_key in reform.parameter_changes
-        for year_val in reform.parameter_changes[tc_key].values():
-            assert year_val == np.inf
-        for year_val in reform.parameter_changes[uc_key].values():
-            assert year_val == np.inf
+        # Reform uses current law (policyengine-uk v2.65.0+ has repeal baked in)
+        # With fiscal year conversion, annual queries return April 30 value (inf)
+        assert reform.parameter_changes == {}
 
 
 class TestFuelDutyFreeze:
@@ -446,17 +442,16 @@ class TestStructuralReforms:
         reform = create_salary_sacrifice_cap_reform(cap_amount=2000)
         assert reform is not None
         assert reform.id == "salary_sacrifice_cap"
-        # Uses both baseline_parameter_changes and parameter_changes
+        # Uses baseline_parameter_changes only; reform uses policyengine-uk default
         assert reform.baseline_parameter_changes is not None
-        assert reform.parameter_changes is not None
 
         cap_key = "gov.hmrc.national_insurance.salary_sacrifice_pension_cap"
         # Baseline has infinity (no cap)
         assert reform.baseline_parameter_changes[cap_key]["2029"] == np.inf
         assert reform.baseline_parameter_changes[cap_key]["2030"] == np.inf
-        # Reform has £2000 cap
-        assert reform.parameter_changes[cap_key]["2029"] == 2000
-        assert reform.parameter_changes[cap_key]["2030"] == 2000
+        # Reform uses current law (policyengine-uk v2.65.0+ has cap baked in)
+        # With fiscal year conversion, annual queries return April 30 value (2000)
+        assert reform.parameter_changes == {}
 
 
 class TestGetReform:

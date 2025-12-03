@@ -8,10 +8,11 @@ Reforms are organised into:
 - Tax measures (revenue raisers)
 - Structural reforms (using simulation modifiers)
 
-Since policyengine-uk v2.63.0+ includes the Autumn Budget parameter updates
+policyengine-uk v2.65.0+ includes the Autumn Budget parameter updates
 (including two-child limit repeal from April 2026 and salary sacrifice pension
-cap of £2,000 from April 2029), we use a pre-Autumn Budget baseline to show
-the impact of budget policies.
+cap of £2,000 from April 2029) with proper fiscal year conversion that ensures
+annual queries return April 30 values. We use a pre-Autumn Budget baseline to
+show the impact of budget policies.
 """
 
 from typing import Optional
@@ -140,13 +141,11 @@ def _get_pre_ab_baseline_key(key: str) -> dict:
 def _create_two_child_limit_repeal() -> Reform:
     """Create the two-child limit repeal reform.
 
-    Removes the two-child limit on benefits from April 2026. Since simulations
-    use January 1 as the reference date for annual periods, we need to
-    explicitly set both baseline and reform parameters to capture the impact.
+    Removes the two-child limit on benefits from April 2026.
 
-    Note: policyengine-uk v2.63.0+ has the repeal in baseline (infinity from
-    April 6, 2026), but annual calculations use Jan 1 reference. We override
-    both to ensure the comparison captures the policy impact.
+    policyengine-uk v2.65.0+ has the repeal baked in (infinity from April 6,
+    2026) and fiscal year conversion ensures annual queries like param("2026")
+    return the April 30 value. We only need to set the pre-budget baseline.
     """
     return Reform(
         id="two_child_limit",
@@ -165,15 +164,8 @@ def _create_two_child_limit_repeal() -> Reform:
                 _years_dict(2)
             ),
         },
-        # Reform: Repeal (no limit = infinity)
-        parameter_changes={
-            "gov.dwp.tax_credits.child_tax_credit.limit.child_count": (
-                _years_dict(np.inf)
-            ),
-            "gov.dwp.universal_credit.elements.child.limit.child_count": (
-                _years_dict(np.inf)
-            ),
-        },
+        # Reform: Use current law (policyengine-uk v2.65.0+ with repeal)
+        parameter_changes={},
     )
 
 
@@ -275,14 +267,20 @@ def _set_pre_budget_dividend_rates(sim):
 
     Uses simulation_modifier because dividend rates are stored in a
     ParameterScale which requires direct bracket access. Modifies
-    values_list directly to replace the Autumn Budget rate change.
+    values_list entries for 2026+ to revert to pre-budget rates.
     """
     div = sim.tax_benefit_system.parameters.gov.hmrc.income_tax.rates.dividends
-    # Revert basic rate (bracket 0) to pre-budget 8.75%
-    # Directly modify the 2026-04-06 entry in values_list
-    div.brackets[0].rate.values_list[0].value = 0.0875
-    # Revert higher rate (bracket 1) to pre-budget 33.75%
-    div.brackets[1].rate.values_list[0].value = 0.3375
+
+    # Find and modify all entries from 2026 onwards to pre-budget rates
+    # values_list is ordered most recent first, so iterate through all
+    for val_entry in div.brackets[0].rate.values_list:
+        if val_entry.instant_str >= "2026":
+            val_entry.value = 0.0875  # Pre-budget basic rate
+
+    for val_entry in div.brackets[1].rate.values_list:
+        if val_entry.instant_str >= "2026":
+            val_entry.value = 0.3375  # Pre-budget higher rate
+
     return sim
 
 
@@ -706,9 +704,9 @@ def create_salary_sacrifice_cap_reform(
 ) -> Reform:
     """Create a salary sacrifice cap reform with configurable parameters.
 
-    Since policyengine-uk v2.63.0+, the salary sacrifice pension cap of £2,000
-    from April 2029 is in baseline. This reform compares against the pre-budget
-    baseline where there was no cap (infinity).
+    policyengine-uk v2.65.0+ has the salary sacrifice pension cap of £2,000
+    from April 2029 baked in, and fiscal year conversion ensures annual queries
+    return the April 30 value. We only need to set the pre-budget baseline.
 
     Args:
         cap_amount: Annual cap on NI-free salary sacrifice in GBP (for display).
@@ -722,25 +720,19 @@ def create_salary_sacrifice_cap_reform(
         description=(
             f"Caps salary sacrifice pension contributions at £{cap_amount:,.0f} "
             f"per year from April 2029. Contributions above the cap become "
-            f"subject to employee and employer NICs. policyengine-uk v2.63.0+ "
+            f"subject to employee and employer NICs. policyengine-uk v2.65.0+ "
             f"includes this in baseline via the salary_sacrifice_pension_cap "
             f"parameter."
         ),
         # Baseline: Pre-budget (no cap, infinity)
-        # Use year keys to ensure Jan 1 reference dates are captured
         baseline_parameter_changes={
             "gov.hmrc.national_insurance.salary_sacrifice_pension_cap": {
                 "2029": np.inf,
                 "2030": np.inf,
             },
         },
-        # Reform: Explicitly set cap for consistency with Jan 1 reference dates
-        parameter_changes={
-            "gov.hmrc.national_insurance.salary_sacrifice_pension_cap": {
-                "2029": 2000,
-                "2030": 2000,
-            },
-        },
+        # Reform: Use current law (policyengine-uk v2.65.0+ with cap)
+        parameter_changes={},
     )
 
 
@@ -761,8 +753,9 @@ def _create_combined_autumn_budget_reform() -> Reform:
     - Savings tax increase +2pp (revenue)
     - Property tax increase +2pp (revenue)
 
-    Since policyengine-uk v2.63.0+, two-child limit repeal and salary sacrifice
-    cap are in baseline. This reform compares against pre-budget baseline.
+    policyengine-uk v2.65.0+ has the Autumn Budget changes baked in, and
+    fiscal year conversion ensures annual queries return April 30 values.
+    We only need to set the pre-budget baseline values.
 
     Note: Zero-rate VAT on energy is NOT included as it was not in the budget.
     """
@@ -790,7 +783,6 @@ def _create_combined_autumn_budget_reform() -> Reform:
             "gov.hmrc.income_tax.rates.uk[1].threshold"
         ],
         # Two-child limit baseline (pre-budget: limit of 2)
-        # Must use _years_dict() to set all years including 2026 at Jan 1
         "gov.dwp.tax_credits.child_tax_credit.limit.child_count": _years_dict(
             2
         ),
@@ -798,7 +790,6 @@ def _create_combined_autumn_budget_reform() -> Reform:
             2
         ),
         # Salary sacrifice pension cap baseline (pre-budget: no cap)
-        # Use year keys to ensure Jan 1 reference dates are captured
         "gov.hmrc.national_insurance.salary_sacrifice_pension_cap": {
             "2029": np.inf,
             "2030": np.inf,
@@ -873,22 +864,8 @@ def _create_combined_autumn_budget_reform() -> Reform:
         baseline_parameter_changes=combined_baseline_params,
         baseline_simulation_modifier=combined_baseline_modifier,
         simulation_modifier=combined_reform_modifier,
-        # Reform: explicitly set post-budget values to capture impacts
-        # (since annual calculations use Jan 1 reference date)
-        parameter_changes={
-            # Two-child limit repeal (no limit = infinity)
-            "gov.dwp.tax_credits.child_tax_credit.limit.child_count": (
-                _years_dict(np.inf)
-            ),
-            "gov.dwp.universal_credit.elements.child.limit.child_count": (
-                _years_dict(np.inf)
-            ),
-            # Salary sacrifice pension cap (£2000 from 2029)
-            "gov.hmrc.national_insurance.salary_sacrifice_pension_cap": {
-                "2029": 2000,
-                "2030": 2000,
-            },
-        },
+        # Reform: Use current law (policyengine-uk v2.65.0+ with all changes)
+        parameter_changes={},
     )
 
 
