@@ -648,7 +648,6 @@ def _create_rail_fares_freeze() -> Reform:
 
 
 def create_salary_sacrifice_cap_reform(
-    cap_amount: float = None,
     employer_response_haircut: float = 0.13,
 ) -> Reform:
     """Create a salary sacrifice cap reform with configurable parameters.
@@ -657,12 +656,10 @@ def create_salary_sacrifice_cap_reform(
     from April 2029 is in baseline. This reform compares against the pre-budget
     baseline where there was no cap (infinity).
 
-    The simulation_modifier applies a behavioural response: employers spread
-    increased NI costs across all workers, so only (1 - haircut) of the excess
-    becomes taxable income.
+    The simulation_modifier applies the cap manually (since pe-uk's parameter
+    doesn't affect the calculation) and includes a 13% employer response haircut.
 
     Args:
-        cap_amount: Annual cap on NI-free salary sacrifice in GBP.
         employer_response_haircut: Proportion of excess that employers absorb.
 
     Returns:
@@ -670,66 +667,49 @@ def create_salary_sacrifice_cap_reform(
 
     OBR costing: £4.9bn in 2029-30 (static), £4.7bn (post-behavioural)
     """
-    # Read cap from pe-uk if not provided
-    if cap_amount is None:
-        from policyengine_uk.system import system
+    from policyengine_uk.system import system
 
-        cap_param = (
-            system.parameters.gov.hmrc.national_insurance.salary_sacrifice_pension_cap
-        )
-        cap_amount = cap_param("2029-04-06")
+    cap_param = (
+        system.parameters.gov.hmrc.national_insurance.salary_sacrifice_pension_cap
+    )
+
+    def get_cap_for_year(year: int) -> float:
+        """Read cap from pe-uk for the given year (April for 2029, Jan otherwise)."""
+        if year == 2029:
+            return cap_param("2029-04-06")
+        else:
+            return cap_param(f"{year}-01-01")
+
+    # Get cap for description (use 2029 value)
+    cap_amount = get_cap_for_year(2029)
 
     def modifier(sim: Simulation) -> Simulation:
-        """Apply salary sacrifice cap with employer response haircut.
+        """Apply salary sacrifice cap with employer response haircut."""
+        for year in range(2029, 2031):
+            year_cap = get_cap_for_year(year)
 
-        For 2029: pe-uk cap starts April 6 so doesn't affect annual calc.
-                  Apply full cap + haircut via modifier.
-        For 2030: pe-uk applies cap natively. Only apply 13% haircut reduction.
-        """
-        # 2029: Apply full cap + haircut (pe-uk doesn't affect this year)
-        year = 2029
-        ss_contrib = sim.calculate(
-            "pension_contributions_via_salary_sacrifice", period=year
-        )
-        excess_ss_contrib = np.maximum(ss_contrib - cap_amount, 0)
-        taxable_excess = excess_ss_contrib * (1 - employer_response_haircut)
+            ss_contrib = sim.calculate(
+                "pension_contributions_via_salary_sacrifice", period=year
+            )
+            excess_ss_contrib = np.maximum(ss_contrib - year_cap, 0)
+            taxable_excess = excess_ss_contrib * (1 - employer_response_haircut)
 
-        emp_income = sim.calculate("employment_income", period=year)
-        sim.set_input("employment_income", year, emp_income + taxable_excess)
+            emp_income = sim.calculate("employment_income", period=year)
+            sim.set_input("employment_income", year, emp_income + taxable_excess)
 
-        employee_pension = sim.calculate(
-            "employee_pension_contributions", period=year
-        )
-        sim.set_input(
-            "employee_pension_contributions", year, employee_pension + taxable_excess
-        )
-        sim.set_input(
-            "pension_contributions_via_salary_sacrifice",
-            year,
-            ss_contrib - excess_ss_contrib,
-        )
-
-        # 2030: pe-uk applies cap natively, just apply 13% haircut reduction
-        # The haircut reduces the tax impact (employers absorb some cost)
-        year = 2030
-        ss_contrib_2030 = sim.calculate(
-            "pension_contributions_via_salary_sacrifice", period=year
-        )
-        excess_2030 = np.maximum(ss_contrib_2030 - cap_amount, 0)
-        # Reduce employment income by haircut amount (employers absorb this)
-        haircut_reduction = excess_2030 * employer_response_haircut
-
-        emp_income_2030 = sim.calculate("employment_income", period=year)
-        sim.set_input("employment_income", year, emp_income_2030 - haircut_reduction)
-
-        employee_pension_2030 = sim.calculate(
-            "employee_pension_contributions", period=year
-        )
-        sim.set_input(
-            "employee_pension_contributions",
-            year,
-            employee_pension_2030 - haircut_reduction,
-        )
+            employee_pension = sim.calculate(
+                "employee_pension_contributions", period=year
+            )
+            sim.set_input(
+                "employee_pension_contributions",
+                year,
+                employee_pension + taxable_excess,
+            )
+            sim.set_input(
+                "pension_contributions_via_salary_sacrifice",
+                year,
+                ss_contrib - excess_ss_contrib,
+            )
 
         return sim
 
@@ -740,18 +720,9 @@ def create_salary_sacrifice_cap_reform(
             f"Caps salary sacrifice pension contributions at £{cap_amount:,.0f} "
             f"per year from April 2029. Contributions above the cap become "
             f"employment income subject to income tax and NICs. Assumes "
-            f"employees redirect excess to regular pension contributions "
-            f"(maintaining pension savings) and employers spread increased NI "
-            f"costs across all workers ({employer_response_haircut:.0%} haircut)."
+            f"employers spread increased NI costs across all workers "
+            f"({employer_response_haircut:.0%} haircut)."
         ),
-        # Baseline: No cap (pre-budget)
-        baseline_parameter_changes={
-            "gov.hmrc.national_insurance.salary_sacrifice_pension_cap": {
-                "2029": np.inf,
-                "2030": np.inf,
-            },
-        },
-        # Reform: Apply cap via modifier (reads £2k from pe-uk)
         simulation_modifier=modifier,
     )
 
