@@ -144,9 +144,18 @@ def _create_two_child_limit_repeal() -> Reform:
     """
     # Read child_count limit from pe-uk (infinity after April 2026)
     from policyengine_uk.system import system
+
     params = system.parameters
-    child_count_tc = params.gov.dwp.tax_credits.child_tax_credit.limit.child_count("2026-04-06")
-    child_count_uc = params.gov.dwp.universal_credit.elements.child.limit.child_count("2026-04-06")
+    child_count_tc = (
+        params.gov.dwp.tax_credits.child_tax_credit.limit.child_count(
+            "2026-04-06"
+        )
+    )
+    child_count_uc = (
+        params.gov.dwp.universal_credit.elements.child.limit.child_count(
+            "2026-04-06"
+        )
+    )
 
     return Reform(
         id="two_child_limit",
@@ -636,7 +645,10 @@ def create_salary_sacrifice_cap_reform(
     # Read cap from pe-uk if not provided
     if cap_amount is None:
         from policyengine_uk.system import system
-        cap_param = system.parameters.gov.hmrc.national_insurance.salary_sacrifice_pension_cap
+
+        cap_param = (
+            system.parameters.gov.hmrc.national_insurance.salary_sacrifice_pension_cap
+        )
         cap_amount = cap_param("2029-04-06")
 
     def modifier(sim: Simulation) -> Simulation:
