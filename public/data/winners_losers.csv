@@ -1,15 +1,15 @@
 reform_id,reform_name,year,decile,avg_change
-autumn_budget_2025_combined,Autumn Budget 2025 (combined),2026,1,263.22903
-autumn_budget_2025_combined,Autumn Budget 2025 (combined),2026,2,532.1748
-autumn_budget_2025_combined,Autumn Budget 2025 (combined),2026,3,205.37627
-autumn_budget_2025_combined,Autumn Budget 2025 (combined),2026,4,191.76813
-autumn_budget_2025_combined,Autumn Budget 2025 (combined),2026,5,142.22829
-autumn_budget_2025_combined,Autumn Budget 2025 (combined),2026,6,118.78613
-autumn_budget_2025_combined,Autumn Budget 2025 (combined),2026,7,124.55103
-autumn_budget_2025_combined,Autumn Budget 2025 (combined),2026,8,151.69572
-autumn_budget_2025_combined,Autumn Budget 2025 (combined),2026,9,159.68417
-autumn_budget_2025_combined,Autumn Budget 2025 (combined),2026,10,159.52278
-autumn_budget_2025_combined,Autumn Budget 2025 (combined),2026,all,201.14677
+autumn_budget_2025_combined,Autumn Budget 2025 (combined),2026,1,68.22219
+autumn_budget_2025_combined,Autumn Budget 2025 (combined),2026,2,88.44844
+autumn_budget_2025_combined,Autumn Budget 2025 (combined),2026,3,65.72428
+autumn_budget_2025_combined,Autumn Budget 2025 (combined),2026,4,81.50899
+autumn_budget_2025_combined,Autumn Budget 2025 (combined),2026,5,101.27537
+autumn_budget_2025_combined,Autumn Budget 2025 (combined),2026,6,100.5033
+autumn_budget_2025_combined,Autumn Budget 2025 (combined),2026,7,121.0754
+autumn_budget_2025_combined,Autumn Budget 2025 (combined),2026,8,151.69278
+autumn_budget_2025_combined,Autumn Budget 2025 (combined),2026,9,159.68376
+autumn_budget_2025_combined,Autumn Budget 2025 (combined),2026,10,159.52274
+autumn_budget_2025_combined,Autumn Budget 2025 (combined),2026,all,109.36087
 autumn_budget_2025_combined,Autumn Budget 2025 (combined),2027,1,235.51463
 autumn_budget_2025_combined,Autumn Budget 2025 (combined),2027,2,523.49493
 autumn_budget_2025_combined,Autumn Budget 2025 (combined),2027,3,171.98547
@@ -25,13 +25,13 @@ autumn_budget_2025_combined,Autumn Budget 2025 (combined),2028,1,163.38187
 autumn_budget_2025_combined,Autumn Budget 2025 (combined),2028,2,606.4868
 autumn_budget_2025_combined,Autumn Budget 2025 (combined),2028,3,105.562546
 autumn_budget_2025_combined,Autumn Budget 2025 (combined),2028,4,109.510765
-autumn_budget_2025_combined,Autumn Budget 2025 (combined),2028,5,6.034848
+autumn_budget_2025_combined,Autumn Budget 2025 (combined),2028,5,6.0348644
 autumn_budget_2025_combined,Autumn Budget 2025 (combined),2028,6,-43.324085
-autumn_budget_2025_combined,Autumn Budget 2025 (combined),2028,7,-114.18043
+autumn_budget_2025_combined,Autumn Budget 2025 (combined),2028,7,-114.1798
 autumn_budget_2025_combined,Autumn Budget 2025 (combined),2028,8,-153.80556
 autumn_budget_2025_combined,Autumn Budget 2025 (combined),2028,9,-272.67996
-autumn_budget_2025_combined,Autumn Budget 2025 (combined),2028,10,-452.17175
-autumn_budget_2025_combined,Autumn Budget 2025 (combined),2028,all,-9.56428
+autumn_budget_2025_combined,Autumn Budget 2025 (combined),2028,10,-452.17154
+autumn_budget_2025_combined,Autumn Budget 2025 (combined),2028,all,-9.564197
 autumn_budget_2025_combined,Autumn Budget 2025 (combined),2029,1,144.3443
 autumn_budget_2025_combined,Autumn Budget 2025 (combined),2029,2,585.292
 autumn_budget_2025_combined,Autumn Budget 2025 (combined),2029,3,41.73833
@@ -41,30 +41,30 @@ autumn_budget_2025_combined,Autumn Budget 2025 (combined),2029,6,-158.20827
 autumn_budget_2025_combined,Autumn Budget 2025 (combined),2029,7,-268.45905
 autumn_budget_2025_combined,Autumn Budget 2025 (combined),2029,8,-382.20444
 autumn_budget_2025_combined,Autumn Budget 2025 (combined),2029,9,-578.08014
-autumn_budget_2025_combined,Autumn Budget 2025 (combined),2029,10,-825.1245
-autumn_budget_2025_combined,Autumn Budget 2025 (combined),2029,all,-154.94185
-autumn_budget_2025_combined,Autumn Budget 2025 (combined),2030,1,159.79199
-autumn_budget_2025_combined,Autumn Budget 2025 (combined),2030,2,523.5991
-autumn_budget_2025_combined,Autumn Budget 2025 (combined),2030,3,41.378704
-autumn_budget_2025_combined,Autumn Budget 2025 (combined),2030,4,-16.246641
-autumn_budget_2025_combined,Autumn Budget 2025 (combined),2030,5,-164.67725
-autumn_budget_2025_combined,Autumn Budget 2025 (combined),2030,6,-237.27605
-autumn_budget_2025_combined,Autumn Budget 2025 (combined),2030,7,-392.34827
-autumn_budget_2025_combined,Autumn Budget 2025 (combined),2030,8,-580.2847
-autumn_budget_2025_combined,Autumn Budget 2025 (combined),2030,9,-838.7282
-autumn_budget_2025_combined,Autumn Budget 2025 (combined),2030,10,-1160.544
-autumn_budget_2025_combined,Autumn Budget 2025 (combined),2030,all,-270.59393
-two_child_limit,2 child limit repeal,2026,1,194.74147
-two_child_limit,2 child limit repeal,2026,2,444.26904
-two_child_limit,2 child limit repeal,2026,3,140.0342
-two_child_limit,2 child limit repeal,2026,4,110.11041
-two_child_limit,2 child limit repeal,2026,5,40.757065
-two_child_limit,2 child limit repeal,2026,6,18.248802
-two_child_limit,2 child limit repeal,2026,7,3.438594
-two_child_limit,2 child limit repeal,2026,8,0.0038774062
+autumn_budget_2025_combined,Autumn Budget 2025 (combined),2029,10,-825.1242
+autumn_budget_2025_combined,Autumn Budget 2025 (combined),2029,all,-154.94182
+autumn_budget_2025_combined,Autumn Budget 2025 (combined),2030,1,163.01202
+autumn_budget_2025_combined,Autumn Budget 2025 (combined),2030,2,529.03564
+autumn_budget_2025_combined,Autumn Budget 2025 (combined),2030,3,505.1516
+autumn_budget_2025_combined,Autumn Budget 2025 (combined),2030,4,38.556427
+autumn_budget_2025_combined,Autumn Budget 2025 (combined),2030,5,-87.541985
+autumn_budget_2025_combined,Autumn Budget 2025 (combined),2030,6,-157.1811
+autumn_budget_2025_combined,Autumn Budget 2025 (combined),2030,7,-235.12929
+autumn_budget_2025_combined,Autumn Budget 2025 (combined),2030,8,-232.02289
+autumn_budget_2025_combined,Autumn Budget 2025 (combined),2030,9,-604.99536
+autumn_budget_2025_combined,Autumn Budget 2025 (combined),2030,10,-416.3674
+autumn_budget_2025_combined,Autumn Budget 2025 (combined),2030,all,-50.17514
+two_child_limit,2 child limit repeal,2026,1,0.0
+two_child_limit,2 child limit repeal,2026,2,0.0
+two_child_limit,2 child limit repeal,2026,3,0.0
+two_child_limit,2 child limit repeal,2026,4,0.0
+two_child_limit,2 child limit repeal,2026,5,0.0
+two_child_limit,2 child limit repeal,2026,6,0.0
+two_child_limit,2 child limit repeal,2026,7,0.0
+two_child_limit,2 child limit repeal,2026,8,0.0
 two_child_limit,2 child limit repeal,2026,9,0.0
 two_child_limit,2 child limit repeal,2026,10,0.0
-two_child_limit,2 child limit repeal,2026,all,91.79161
+two_child_limit,2 child limit repeal,2026,all,0.0
 two_child_limit,2 child limit repeal,2027,1,204.51341
 two_child_limit,2 child limit repeal,2027,2,475.8099
 two_child_limit,2 child limit repeal,2027,3,147.7673
@@ -75,7 +75,7 @@ two_child_limit,2 child limit repeal,2027,7,3.5440817
 two_child_limit,2 child limit repeal,2027,8,0.004082778
 two_child_limit,2 child limit repeal,2027,9,0.0
 two_child_limit,2 child limit repeal,2027,10,0.0
-two_child_limit,2 child limit repeal,2027,all,97.49264
+two_child_limit,2 child limit repeal,2027,all,97.492645
 two_child_limit,2 child limit repeal,2028,1,160.61665
 two_child_limit,2 child limit repeal,2028,2,596.02576
 two_child_limit,2 child limit repeal,2028,3,145.55849
@@ -86,7 +86,7 @@ two_child_limit,2 child limit repeal,2028,7,3.6592896
 two_child_limit,2 child limit repeal,2028,8,0.004459857
 two_child_limit,2 child limit repeal,2028,9,0.0
 two_child_limit,2 child limit repeal,2028,10,0.0
-two_child_limit,2 child limit repeal,2028,all,105.61112
+two_child_limit,2 child limit repeal,2028,all,105.61116
 two_child_limit,2 child limit repeal,2029,1,162.87468
 two_child_limit,2 child limit repeal,2029,2,632.3566
 two_child_limit,2 child limit repeal,2029,3,147.75372
@@ -98,127 +98,127 @@ two_child_limit,2 child limit repeal,2029,8,0.004979466
 two_child_limit,2 child limit repeal,2029,9,0.0
 two_child_limit,2 child limit repeal,2029,10,0.0
 two_child_limit,2 child limit repeal,2029,all,109.50035
-two_child_limit,2 child limit repeal,2030,1,179.82077
-two_child_limit,2 child limit repeal,2030,2,598.18634
-two_child_limit,2 child limit repeal,2030,3,197.92535
-two_child_limit,2 child limit repeal,2030,4,135.43167
-two_child_limit,2 child limit repeal,2030,5,54.057655
-two_child_limit,2 child limit repeal,2030,6,27.822216
-two_child_limit,2 child limit repeal,2030,7,3.7820668
-two_child_limit,2 child limit repeal,2030,8,0.004574154
+two_child_limit,2 child limit repeal,2030,1,180.47733
+two_child_limit,2 child limit repeal,2030,2,577.0609
+two_child_limit,2 child limit repeal,2030,3,199.90367
+two_child_limit,2 child limit repeal,2030,4,134.63011
+two_child_limit,2 child limit repeal,2030,5,54.743526
+two_child_limit,2 child limit repeal,2030,6,28.151539
+two_child_limit,2 child limit repeal,2030,7,3.6862237
+two_child_limit,2 child limit repeal,2030,8,0.0046082526
 two_child_limit,2 child limit repeal,2030,9,0.0
 two_child_limit,2 child limit repeal,2030,10,0.0
-two_child_limit,2 child limit repeal,2030,all,113.72503
-fuel_duty_freeze,Fuel duty freeze extension,2026,1,68.17912
-fuel_duty_freeze,Fuel duty freeze extension,2026,2,88.872696
+two_child_limit,2 child limit repeal,2030,all,113.725
+fuel_duty_freeze,Fuel duty freeze extension,2026,1,68.17945
+fuel_duty_freeze,Fuel duty freeze extension,2026,2,88.87272
 fuel_duty_freeze,Fuel duty freeze extension,2026,3,65.046745
-fuel_duty_freeze,Fuel duty freeze extension,2026,4,82.180504
-fuel_duty_freeze,Fuel duty freeze extension,2026,5,100.424095
+fuel_duty_freeze,Fuel duty freeze extension,2026,4,82.18007
+fuel_duty_freeze,Fuel duty freeze extension,2026,5,100.42408
 fuel_duty_freeze,Fuel duty freeze extension,2026,6,100.940346
 fuel_duty_freeze,Fuel duty freeze extension,2026,7,121.349045
-fuel_duty_freeze,Fuel duty freeze extension,2026,8,150.12224
-fuel_duty_freeze,Fuel duty freeze extension,2026,9,161.85329
-fuel_duty_freeze,Fuel duty freeze extension,2026,10,158.7906
-fuel_duty_freeze,Fuel duty freeze extension,2026,all,109.320595
-fuel_duty_freeze,Fuel duty freeze extension,2027,1,30.250454
-fuel_duty_freeze,Fuel duty freeze extension,2027,2,39.476994
-fuel_duty_freeze,Fuel duty freeze extension,2027,3,26.526653
-fuel_duty_freeze,Fuel duty freeze extension,2027,4,39.079906
-fuel_duty_freeze,Fuel duty freeze extension,2027,5,44.327415
-fuel_duty_freeze,Fuel duty freeze extension,2027,6,43.90097
-fuel_duty_freeze,Fuel duty freeze extension,2027,7,55.555954
-fuel_duty_freeze,Fuel duty freeze extension,2027,8,66.71568
-fuel_duty_freeze,Fuel duty freeze extension,2027,9,70.94612
-fuel_duty_freeze,Fuel duty freeze extension,2027,10,70.8361
-fuel_duty_freeze,Fuel duty freeze extension,2027,all,48.538357
-fuel_duty_freeze,Fuel duty freeze extension,2028,1,29.36878
-fuel_duty_freeze,Fuel duty freeze extension,2028,2,39.14295
-fuel_duty_freeze,Fuel duty freeze extension,2028,3,25.872526
-fuel_duty_freeze,Fuel duty freeze extension,2028,4,37.398834
-fuel_duty_freeze,Fuel duty freeze extension,2028,5,44.411453
-fuel_duty_freeze,Fuel duty freeze extension,2028,6,43.397423
-fuel_duty_freeze,Fuel duty freeze extension,2028,7,53.050556
-fuel_duty_freeze,Fuel duty freeze extension,2028,8,62.615616
-fuel_duty_freeze,Fuel duty freeze extension,2028,9,71.30458
-fuel_duty_freeze,Fuel duty freeze extension,2028,10,68.535446
-fuel_duty_freeze,Fuel duty freeze extension,2028,all,47.278614
-fuel_duty_freeze,Fuel duty freeze extension,2029,1,17.270245
-fuel_duty_freeze,Fuel duty freeze extension,2029,2,23.439964
-fuel_duty_freeze,Fuel duty freeze extension,2029,3,15.225845
-fuel_duty_freeze,Fuel duty freeze extension,2029,4,22.391928
-fuel_duty_freeze,Fuel duty freeze extension,2029,5,26.49606
-fuel_duty_freeze,Fuel duty freeze extension,2029,6,25.48654
-fuel_duty_freeze,Fuel duty freeze extension,2029,7,31.814222
-fuel_duty_freeze,Fuel duty freeze extension,2029,8,37.004536
+fuel_duty_freeze,Fuel duty freeze extension,2026,8,150.12317
+fuel_duty_freeze,Fuel duty freeze extension,2026,9,161.85287
+fuel_duty_freeze,Fuel duty freeze extension,2026,10,158.79057
+fuel_duty_freeze,Fuel duty freeze extension,2026,all,109.32063
+fuel_duty_freeze,Fuel duty freeze extension,2027,1,30.544216
+fuel_duty_freeze,Fuel duty freeze extension,2027,2,40.152653
+fuel_duty_freeze,Fuel duty freeze extension,2027,3,26.884012
+fuel_duty_freeze,Fuel duty freeze extension,2027,4,38.824142
+fuel_duty_freeze,Fuel duty freeze extension,2027,5,44.51439
+fuel_duty_freeze,Fuel duty freeze extension,2027,6,43.927242
+fuel_duty_freeze,Fuel duty freeze extension,2027,7,55.646404
+fuel_duty_freeze,Fuel duty freeze extension,2027,8,66.62122
+fuel_duty_freeze,Fuel duty freeze extension,2027,9,70.94464
+fuel_duty_freeze,Fuel duty freeze extension,2027,10,70.83752
+fuel_duty_freeze,Fuel duty freeze extension,2027,all,48.538944
+fuel_duty_freeze,Fuel duty freeze extension,2028,1,29.44729
+fuel_duty_freeze,Fuel duty freeze extension,2028,2,36.637856
+fuel_duty_freeze,Fuel duty freeze extension,2028,3,28.250996
+fuel_duty_freeze,Fuel duty freeze extension,2028,4,37.84299
+fuel_duty_freeze,Fuel duty freeze extension,2028,5,43.838737
+fuel_duty_freeze,Fuel duty freeze extension,2028,6,43.38931
+fuel_duty_freeze,Fuel duty freeze extension,2028,7,53.185837
+fuel_duty_freeze,Fuel duty freeze extension,2028,8,62.491932
+fuel_duty_freeze,Fuel duty freeze extension,2028,9,71.30421
+fuel_duty_freeze,Fuel duty freeze extension,2028,10,68.5361
+fuel_duty_freeze,Fuel duty freeze extension,2028,all,47.274807
+fuel_duty_freeze,Fuel duty freeze extension,2029,1,17.623192
+fuel_duty_freeze,Fuel duty freeze extension,2029,2,21.189178
+fuel_duty_freeze,Fuel duty freeze extension,2029,3,17.086452
+fuel_duty_freeze,Fuel duty freeze extension,2029,4,21.75713
+fuel_duty_freeze,Fuel duty freeze extension,2029,5,26.748137
+fuel_duty_freeze,Fuel duty freeze extension,2029,6,25.45926
+fuel_duty_freeze,Fuel duty freeze extension,2029,7,31.873829
+fuel_duty_freeze,Fuel duty freeze extension,2029,8,36.9507
 fuel_duty_freeze,Fuel duty freeze extension,2029,9,42.25783
 fuel_duty_freeze,Fuel duty freeze extension,2029,10,40.807693
-fuel_duty_freeze,Fuel duty freeze extension,2029,all,28.069096
-fuel_duty_freeze,Fuel duty freeze extension,2030,1,26.846516
-fuel_duty_freeze,Fuel duty freeze extension,2030,2,35.270084
-fuel_duty_freeze,Fuel duty freeze extension,2030,3,22.9748
-fuel_duty_freeze,Fuel duty freeze extension,2030,4,34.500187
-fuel_duty_freeze,Fuel duty freeze extension,2030,5,39.899982
-fuel_duty_freeze,Fuel duty freeze extension,2030,6,40.08541
-fuel_duty_freeze,Fuel duty freeze extension,2030,7,48.457184
-fuel_duty_freeze,Fuel duty freeze extension,2030,8,56.30084
-fuel_duty_freeze,Fuel duty freeze extension,2030,9,64.43733
-fuel_duty_freeze,Fuel duty freeze extension,2030,10,62.42993
-fuel_duty_freeze,Fuel duty freeze extension,2030,all,42.88566
-rail_fares_freeze,Rail fares freeze,2026,1,5.6959977
-rail_fares_freeze,Rail fares freeze,2026,2,6.515106
-rail_fares_freeze,Rail fares freeze,2026,3,3.2565815
-rail_fares_freeze,Rail fares freeze,2026,4,2.237419
-rail_fares_freeze,Rail fares freeze,2026,5,1.9193828
-rail_fares_freeze,Rail fares freeze,2026,6,3.3315377
-rail_fares_freeze,Rail fares freeze,2026,7,1.6167325
-rail_fares_freeze,Rail fares freeze,2026,8,16.21832
-rail_fares_freeze,Rail fares freeze,2026,9,2.0412176
-rail_fares_freeze,Rail fares freeze,2026,10,3.2329862
-rail_fares_freeze,Rail fares freeze,2026,all,4.514373
-rail_fares_freeze,Rail fares freeze,2027,1,6.072421
-rail_fares_freeze,Rail fares freeze,2027,2,7.0229287
-rail_fares_freeze,Rail fares freeze,2027,3,2.862024
-rail_fares_freeze,Rail fares freeze,2027,4,2.9321063
-rail_fares_freeze,Rail fares freeze,2027,5,1.9543357
-rail_fares_freeze,Rail fares freeze,2027,6,3.5902617
-rail_fares_freeze,Rail fares freeze,2027,7,1.7600151
-rail_fares_freeze,Rail fares freeze,2027,8,17.301746
-rail_fares_freeze,Rail fares freeze,2027,9,2.2812557
-rail_fares_freeze,Rail fares freeze,2027,10,3.413457
-rail_fares_freeze,Rail fares freeze,2027,all,4.8098683
-rail_fares_freeze,Rail fares freeze,2028,1,6.259776
-rail_fares_freeze,Rail fares freeze,2028,2,7.356501
-rail_fares_freeze,Rail fares freeze,2028,3,2.8894165
-rail_fares_freeze,Rail fares freeze,2028,4,3.0340137
-rail_fares_freeze,Rail fares freeze,2028,5,2.0817409
-rail_fares_freeze,Rail fares freeze,2028,6,3.4810236
-rail_fares_freeze,Rail fares freeze,2028,7,1.8660507
-rail_fares_freeze,Rail fares freeze,2028,8,17.32109
-rail_fares_freeze,Rail fares freeze,2028,9,2.5819914
-rail_fares_freeze,Rail fares freeze,2028,10,3.5220423
-rail_fares_freeze,Rail fares freeze,2028,all,4.944636
-rail_fares_freeze,Rail fares freeze,2029,1,6.3348265
-rail_fares_freeze,Rail fares freeze,2029,2,7.6189237
-rail_fares_freeze,Rail fares freeze,2029,3,3.1065493
-rail_fares_freeze,Rail fares freeze,2029,4,3.044001
-rail_fares_freeze,Rail fares freeze,2029,5,2.0955772
-rail_fares_freeze,Rail fares freeze,2029,6,3.6380408
-rail_fares_freeze,Rail fares freeze,2029,7,1.8878046
-rail_fares_freeze,Rail fares freeze,2029,8,17.7569
-rail_fares_freeze,Rail fares freeze,2029,9,2.857432
-rail_fares_freeze,Rail fares freeze,2029,10,3.579834
-rail_fares_freeze,Rail fares freeze,2029,all,5.0749674
-rail_fares_freeze,Rail fares freeze,2030,1,5.7512217
-rail_fares_freeze,Rail fares freeze,2030,2,6.8902645
-rail_fares_freeze,Rail fares freeze,2030,3,2.7842114
-rail_fares_freeze,Rail fares freeze,2030,4,2.751352
-rail_fares_freeze,Rail fares freeze,2030,5,1.9877799
-rail_fares_freeze,Rail fares freeze,2030,6,3.2656171
-rail_fares_freeze,Rail fares freeze,2030,7,1.7037283
-rail_fares_freeze,Rail fares freeze,2030,8,15.977383
-rail_fares_freeze,Rail fares freeze,2030,9,2.685329
-rail_fares_freeze,Rail fares freeze,2030,10,3.1089058
-rail_fares_freeze,Rail fares freeze,2030,all,4.5926743
+fuel_duty_freeze,Fuel duty freeze extension,2029,all,28.066473
+fuel_duty_freeze,Fuel duty freeze extension,2030,1,26.739084
+fuel_duty_freeze,Fuel duty freeze extension,2030,2,35.82584
+fuel_duty_freeze,Fuel duty freeze extension,2030,3,22.670925
+fuel_duty_freeze,Fuel duty freeze extension,2030,4,35.186016
+fuel_duty_freeze,Fuel duty freeze extension,2030,5,39.39788
+fuel_duty_freeze,Fuel duty freeze extension,2030,6,41.613056
+fuel_duty_freeze,Fuel duty freeze extension,2030,7,39.20668
+fuel_duty_freeze,Fuel duty freeze extension,2030,8,64.84695
+fuel_duty_freeze,Fuel duty freeze extension,2030,9,63.76029
+fuel_duty_freeze,Fuel duty freeze extension,2030,10,62.21586
+fuel_duty_freeze,Fuel duty freeze extension,2030,all,42.878986
+rail_fares_freeze,Rail fares freeze,2026,1,0.0
+rail_fares_freeze,Rail fares freeze,2026,2,0.0
+rail_fares_freeze,Rail fares freeze,2026,3,0.0
+rail_fares_freeze,Rail fares freeze,2026,4,0.0
+rail_fares_freeze,Rail fares freeze,2026,5,0.0
+rail_fares_freeze,Rail fares freeze,2026,6,0.0
+rail_fares_freeze,Rail fares freeze,2026,7,0.0
+rail_fares_freeze,Rail fares freeze,2026,8,0.0
+rail_fares_freeze,Rail fares freeze,2026,9,0.0
+rail_fares_freeze,Rail fares freeze,2026,10,0.0
+rail_fares_freeze,Rail fares freeze,2026,all,0.0
+rail_fares_freeze,Rail fares freeze,2027,1,0.0
+rail_fares_freeze,Rail fares freeze,2027,2,0.0
+rail_fares_freeze,Rail fares freeze,2027,3,0.0
+rail_fares_freeze,Rail fares freeze,2027,4,0.0
+rail_fares_freeze,Rail fares freeze,2027,5,0.0
+rail_fares_freeze,Rail fares freeze,2027,6,0.0
+rail_fares_freeze,Rail fares freeze,2027,7,0.0
+rail_fares_freeze,Rail fares freeze,2027,8,0.0
+rail_fares_freeze,Rail fares freeze,2027,9,0.0
+rail_fares_freeze,Rail fares freeze,2027,10,0.0
+rail_fares_freeze,Rail fares freeze,2027,all,0.0
+rail_fares_freeze,Rail fares freeze,2028,1,0.0
+rail_fares_freeze,Rail fares freeze,2028,2,0.0
+rail_fares_freeze,Rail fares freeze,2028,3,0.0
+rail_fares_freeze,Rail fares freeze,2028,4,0.0
+rail_fares_freeze,Rail fares freeze,2028,5,0.0
+rail_fares_freeze,Rail fares freeze,2028,6,0.0
+rail_fares_freeze,Rail fares freeze,2028,7,0.0
+rail_fares_freeze,Rail fares freeze,2028,8,0.0
+rail_fares_freeze,Rail fares freeze,2028,9,0.0
+rail_fares_freeze,Rail fares freeze,2028,10,0.0
+rail_fares_freeze,Rail fares freeze,2028,all,0.0
+rail_fares_freeze,Rail fares freeze,2029,1,0.0
+rail_fares_freeze,Rail fares freeze,2029,2,0.0
+rail_fares_freeze,Rail fares freeze,2029,3,0.0
+rail_fares_freeze,Rail fares freeze,2029,4,0.0
+rail_fares_freeze,Rail fares freeze,2029,5,0.0
+rail_fares_freeze,Rail fares freeze,2029,6,0.0
+rail_fares_freeze,Rail fares freeze,2029,7,0.0
+rail_fares_freeze,Rail fares freeze,2029,8,0.0
+rail_fares_freeze,Rail fares freeze,2029,9,0.0
+rail_fares_freeze,Rail fares freeze,2029,10,0.0
+rail_fares_freeze,Rail fares freeze,2029,all,0.0
+rail_fares_freeze,Rail fares freeze,2030,1,0.0
+rail_fares_freeze,Rail fares freeze,2030,2,0.0
+rail_fares_freeze,Rail fares freeze,2030,3,0.0
+rail_fares_freeze,Rail fares freeze,2030,4,0.0
+rail_fares_freeze,Rail fares freeze,2030,5,0.0
+rail_fares_freeze,Rail fares freeze,2030,6,0.0
+rail_fares_freeze,Rail fares freeze,2030,7,0.0
+rail_fares_freeze,Rail fares freeze,2030,8,0.0
+rail_fares_freeze,Rail fares freeze,2030,9,0.0
+rail_fares_freeze,Rail fares freeze,2030,10,0.0
+rail_fares_freeze,Rail fares freeze,2030,all,0.0
 threshold_freeze_extension,Threshold freeze extension,2026,1,0.0
 threshold_freeze_extension,Threshold freeze extension,2026,2,0.0
 threshold_freeze_extension,Threshold freeze extension,2026,3,0.0
@@ -241,39 +241,39 @@ threshold_freeze_extension,Threshold freeze extension,2027,8,0.0
 threshold_freeze_extension,Threshold freeze extension,2027,9,0.0
 threshold_freeze_extension,Threshold freeze extension,2027,10,0.0
 threshold_freeze_extension,Threshold freeze extension,2027,all,0.0
-threshold_freeze_extension,Threshold freeze extension,2028,1,-13.376659
-threshold_freeze_extension,Threshold freeze extension,2028,2,-33.45724
-threshold_freeze_extension,Threshold freeze extension,2028,3,-52.19412
-threshold_freeze_extension,Threshold freeze extension,2028,4,-59.06495
-threshold_freeze_extension,Threshold freeze extension,2028,5,-71.13565
-threshold_freeze_extension,Threshold freeze extension,2028,6,-84.93993
-threshold_freeze_extension,Threshold freeze extension,2028,7,-115.419945
-threshold_freeze_extension,Threshold freeze extension,2028,8,-178.58392
-threshold_freeze_extension,Threshold freeze extension,2028,9,-241.36568
-threshold_freeze_extension,Threshold freeze extension,2028,10,-314.13452
-threshold_freeze_extension,Threshold freeze extension,2028,all,-115.67442
-threshold_freeze_extension,Threshold freeze extension,2029,1,-27.72178
-threshold_freeze_extension,Threshold freeze extension,2029,2,-69.536674
-threshold_freeze_extension,Threshold freeze extension,2029,3,-108.22118
-threshold_freeze_extension,Threshold freeze extension,2029,4,-120.08908
-threshold_freeze_extension,Threshold freeze extension,2029,5,-149.59258
-threshold_freeze_extension,Threshold freeze extension,2029,6,-176.34442
-threshold_freeze_extension,Threshold freeze extension,2029,7,-239.87387
-threshold_freeze_extension,Threshold freeze extension,2029,8,-372.13293
-threshold_freeze_extension,Threshold freeze extension,2029,9,-506.72775
-threshold_freeze_extension,Threshold freeze extension,2029,10,-644.59735
-threshold_freeze_extension,Threshold freeze extension,2029,all,-240.08592
-threshold_freeze_extension,Threshold freeze extension,2030,1,-42.625214
-threshold_freeze_extension,Threshold freeze extension,2030,2,-109.172485
-threshold_freeze_extension,Threshold freeze extension,2030,3,-161.32874
-threshold_freeze_extension,Threshold freeze extension,2030,4,-187.7994
-threshold_freeze_extension,Threshold freeze extension,2030,5,-233.94508
-threshold_freeze_extension,Threshold freeze extension,2030,6,-273.7651
-threshold_freeze_extension,Threshold freeze extension,2030,7,-375.86594
-threshold_freeze_extension,Threshold freeze extension,2030,8,-590.09735
-threshold_freeze_extension,Threshold freeze extension,2030,9,-781.33826
-threshold_freeze_extension,Threshold freeze extension,2030,10,-993.70374
-threshold_freeze_extension,Threshold freeze extension,2030,all,-372.8853
+threshold_freeze_extension,Threshold freeze extension,2028,1,-13.635204
+threshold_freeze_extension,Threshold freeze extension,2028,2,-34.55656
+threshold_freeze_extension,Threshold freeze extension,2028,3,-51.081287
+threshold_freeze_extension,Threshold freeze extension,2028,4,-59.849957
+threshold_freeze_extension,Threshold freeze extension,2028,5,-70.77677
+threshold_freeze_extension,Threshold freeze extension,2028,6,-84.68196
+threshold_freeze_extension,Threshold freeze extension,2028,7,-115.48466
+threshold_freeze_extension,Threshold freeze extension,2028,8,-178.756
+threshold_freeze_extension,Threshold freeze extension,2028,9,-241.36534
+threshold_freeze_extension,Threshold freeze extension,2028,10,-314.13464
+threshold_freeze_extension,Threshold freeze extension,2028,all,-115.626434
+threshold_freeze_extension,Threshold freeze extension,2029,1,-28.455786
+threshold_freeze_extension,Threshold freeze extension,2029,2,-70.97121
+threshold_freeze_extension,Threshold freeze extension,2029,3,-106.88271
+threshold_freeze_extension,Threshold freeze extension,2029,4,-121.96643
+threshold_freeze_extension,Threshold freeze extension,2029,5,-146.90341
+threshold_freeze_extension,Threshold freeze extension,2029,6,-176.2886
+threshold_freeze_extension,Threshold freeze extension,2029,7,-240.17741
+threshold_freeze_extension,Threshold freeze extension,2029,8,-371.9292
+threshold_freeze_extension,Threshold freeze extension,2029,9,-506.7128
+threshold_freeze_extension,Threshold freeze extension,2029,10,-644.60583
+threshold_freeze_extension,Threshold freeze extension,2029,all,-239.98103
+threshold_freeze_extension,Threshold freeze extension,2030,1,-42.984444
+threshold_freeze_extension,Threshold freeze extension,2030,2,-113.857025
+threshold_freeze_extension,Threshold freeze extension,2030,3,-162.18156
+threshold_freeze_extension,Threshold freeze extension,2030,4,-190.07024
+threshold_freeze_extension,Threshold freeze extension,2030,5,-236.64381
+threshold_freeze_extension,Threshold freeze extension,2030,6,-277.20157
+threshold_freeze_extension,Threshold freeze extension,2030,7,-380.1681
+threshold_freeze_extension,Threshold freeze extension,2030,8,-589.3589
+threshold_freeze_extension,Threshold freeze extension,2030,9,-783.77075
+threshold_freeze_extension,Threshold freeze extension,2030,10,-999.67584
+threshold_freeze_extension,Threshold freeze extension,2030,all,-374.51028
 dividend_tax_increase_2pp,Dividend tax increase (+2pp),2026,1,0.0
 dividend_tax_increase_2pp,Dividend tax increase (+2pp),2026,2,0.0
 dividend_tax_increase_2pp,Dividend tax increase (+2pp),2026,3,0.0
@@ -285,50 +285,50 @@ dividend_tax_increase_2pp,Dividend tax increase (+2pp),2026,8,0.0
 dividend_tax_increase_2pp,Dividend tax increase (+2pp),2026,9,0.0
 dividend_tax_increase_2pp,Dividend tax increase (+2pp),2026,10,0.0
 dividend_tax_increase_2pp,Dividend tax increase (+2pp),2026,all,0.0
-dividend_tax_increase_2pp,Dividend tax increase (+2pp),2027,1,-0.30479085
-dividend_tax_increase_2pp,Dividend tax increase (+2pp),2027,2,-1.4160956
-dividend_tax_increase_2pp,Dividend tax increase (+2pp),2027,3,-2.7753782
-dividend_tax_increase_2pp,Dividend tax increase (+2pp),2027,4,-5.3163095
-dividend_tax_increase_2pp,Dividend tax increase (+2pp),2027,5,-14.113129
-dividend_tax_increase_2pp,Dividend tax increase (+2pp),2027,6,-22.3521
-dividend_tax_increase_2pp,Dividend tax increase (+2pp),2027,7,-33.035805
-dividend_tax_increase_2pp,Dividend tax increase (+2pp),2027,8,-53.49342
-dividend_tax_increase_2pp,Dividend tax increase (+2pp),2027,9,-111.57314
+dividend_tax_increase_2pp,Dividend tax increase (+2pp),2027,1,-0.3040518
+dividend_tax_increase_2pp,Dividend tax increase (+2pp),2027,2,-1.367108
+dividend_tax_increase_2pp,Dividend tax increase (+2pp),2027,3,-2.7824118
+dividend_tax_increase_2pp,Dividend tax increase (+2pp),2027,4,-5.308316
+dividend_tax_increase_2pp,Dividend tax increase (+2pp),2027,5,-14.391967
+dividend_tax_increase_2pp,Dividend tax increase (+2pp),2027,6,-22.418457
+dividend_tax_increase_2pp,Dividend tax increase (+2pp),2027,7,-32.987747
+dividend_tax_increase_2pp,Dividend tax increase (+2pp),2027,8,-53.576527
+dividend_tax_increase_2pp,Dividend tax increase (+2pp),2027,9,-111.568375
 dividend_tax_increase_2pp,Dividend tax increase (+2pp),2027,10,-203.31577
-dividend_tax_increase_2pp,Dividend tax increase (+2pp),2027,all,-44.22421
-dividend_tax_increase_2pp,Dividend tax increase (+2pp),2028,1,-0.28013557
-dividend_tax_increase_2pp,Dividend tax increase (+2pp),2028,2,-1.568105
-dividend_tax_increase_2pp,Dividend tax increase (+2pp),2028,3,-2.2477493
-dividend_tax_increase_2pp,Dividend tax increase (+2pp),2028,4,-5.7474055
-dividend_tax_increase_2pp,Dividend tax increase (+2pp),2028,5,-14.701657
-dividend_tax_increase_2pp,Dividend tax increase (+2pp),2028,6,-19.295343
-dividend_tax_increase_2pp,Dividend tax increase (+2pp),2028,7,-38.086674
-dividend_tax_increase_2pp,Dividend tax increase (+2pp),2028,8,-50.308292
-dividend_tax_increase_2pp,Dividend tax increase (+2pp),2028,9,-119.53396
-dividend_tax_increase_2pp,Dividend tax increase (+2pp),2028,10,-209.03525
-dividend_tax_increase_2pp,Dividend tax increase (+2pp),2028,all,-45.48873
-dividend_tax_increase_2pp,Dividend tax increase (+2pp),2029,1,-0.30950567
-dividend_tax_increase_2pp,Dividend tax increase (+2pp),2029,2,-1.5824515
-dividend_tax_increase_2pp,Dividend tax increase (+2pp),2029,3,-2.2698326
-dividend_tax_increase_2pp,Dividend tax increase (+2pp),2029,4,-6.10925
-dividend_tax_increase_2pp,Dividend tax increase (+2pp),2029,5,-15.255513
-dividend_tax_increase_2pp,Dividend tax increase (+2pp),2029,6,-19.92415
-dividend_tax_increase_2pp,Dividend tax increase (+2pp),2029,7,-39.376568
-dividend_tax_increase_2pp,Dividend tax increase (+2pp),2029,8,-52.020473
-dividend_tax_increase_2pp,Dividend tax increase (+2pp),2029,9,-123.052704
-dividend_tax_increase_2pp,Dividend tax increase (+2pp),2029,10,-213.52396
-dividend_tax_increase_2pp,Dividend tax increase (+2pp),2029,all,-46.72871
-dividend_tax_increase_2pp,Dividend tax increase (+2pp),2030,1,-0.3389371
-dividend_tax_increase_2pp,Dividend tax increase (+2pp),2030,2,-1.6590476
-dividend_tax_increase_2pp,Dividend tax increase (+2pp),2030,3,-2.344958
-dividend_tax_increase_2pp,Dividend tax increase (+2pp),2030,4,-6.3455153
-dividend_tax_increase_2pp,Dividend tax increase (+2pp),2030,5,-16.102085
-dividend_tax_increase_2pp,Dividend tax increase (+2pp),2030,6,-20.717232
-dividend_tax_increase_2pp,Dividend tax increase (+2pp),2030,7,-40.518436
-dividend_tax_increase_2pp,Dividend tax increase (+2pp),2030,8,-54.283268
-dividend_tax_increase_2pp,Dividend tax increase (+2pp),2030,9,-125.41373
-dividend_tax_increase_2pp,Dividend tax increase (+2pp),2030,10,-218.58467
-dividend_tax_increase_2pp,Dividend tax increase (+2pp),2030,all,-48.036934
+dividend_tax_increase_2pp,Dividend tax increase (+2pp),2027,all,-44.2241
+dividend_tax_increase_2pp,Dividend tax increase (+2pp),2028,1,-0.3326245
+dividend_tax_increase_2pp,Dividend tax increase (+2pp),2028,2,-1.3400067
+dividend_tax_increase_2pp,Dividend tax increase (+2pp),2028,3,-3.0049596
+dividend_tax_increase_2pp,Dividend tax increase (+2pp),2028,4,-5.4096246
+dividend_tax_increase_2pp,Dividend tax increase (+2pp),2028,5,-14.718113
+dividend_tax_increase_2pp,Dividend tax increase (+2pp),2028,6,-19.252962
+dividend_tax_increase_2pp,Dividend tax increase (+2pp),2028,7,-38.070637
+dividend_tax_increase_2pp,Dividend tax increase (+2pp),2028,8,-50.330036
+dividend_tax_increase_2pp,Dividend tax increase (+2pp),2028,9,-119.536095
+dividend_tax_increase_2pp,Dividend tax increase (+2pp),2028,10,-209.03166
+dividend_tax_increase_2pp,Dividend tax increase (+2pp),2028,all,-45.48487
+dividend_tax_increase_2pp,Dividend tax increase (+2pp),2029,1,-0.35818508
+dividend_tax_increase_2pp,Dividend tax increase (+2pp),2029,2,-1.3854182
+dividend_tax_increase_2pp,Dividend tax increase (+2pp),2029,3,-2.4624932
+dividend_tax_increase_2pp,Dividend tax increase (+2pp),2029,4,-6.2308016
+dividend_tax_increase_2pp,Dividend tax increase (+2pp),2029,5,-15.343575
+dividend_tax_increase_2pp,Dividend tax increase (+2pp),2029,6,-19.923096
+dividend_tax_increase_2pp,Dividend tax increase (+2pp),2029,7,-39.30472
+dividend_tax_increase_2pp,Dividend tax increase (+2pp),2029,8,-52.118126
+dividend_tax_increase_2pp,Dividend tax increase (+2pp),2029,9,-123.05141
+dividend_tax_increase_2pp,Dividend tax increase (+2pp),2029,10,-213.52614
+dividend_tax_increase_2pp,Dividend tax increase (+2pp),2029,all,-46.72474
+dividend_tax_increase_2pp,Dividend tax increase (+2pp),2030,1,-0.33027896
+dividend_tax_increase_2pp,Dividend tax increase (+2pp),2030,2,-1.5677412
+dividend_tax_increase_2pp,Dividend tax increase (+2pp),2030,3,-2.4984958
+dividend_tax_increase_2pp,Dividend tax increase (+2pp),2030,4,-6.3295307
+dividend_tax_increase_2pp,Dividend tax increase (+2pp),2030,5,-16.983057
+dividend_tax_increase_2pp,Dividend tax increase (+2pp),2030,6,-21.523252
+dividend_tax_increase_2pp,Dividend tax increase (+2pp),2030,7,-39.64323
+dividend_tax_increase_2pp,Dividend tax increase (+2pp),2030,8,-68.547676
+dividend_tax_increase_2pp,Dividend tax increase (+2pp),2030,9,-113.27735
+dividend_tax_increase_2pp,Dividend tax increase (+2pp),2030,10,-216.23317
+dividend_tax_increase_2pp,Dividend tax increase (+2pp),2030,all,-48.033016
 savings_tax_increase_2pp,Savings income tax increase (+2pp),2026,1,0.0
 savings_tax_increase_2pp,Savings income tax increase (+2pp),2026,2,0.0
 savings_tax_increase_2pp,Savings income tax increase (+2pp),2026,3,0.0
@@ -351,39 +351,39 @@ savings_tax_increase_2pp,Savings income tax increase (+2pp),2027,8,0.0
 savings_tax_increase_2pp,Savings income tax increase (+2pp),2027,9,0.0
 savings_tax_increase_2pp,Savings income tax increase (+2pp),2027,10,0.0
 savings_tax_increase_2pp,Savings income tax increase (+2pp),2027,all,0.0
-savings_tax_increase_2pp,Savings income tax increase (+2pp),2028,1,-0.030181604
-savings_tax_increase_2pp,Savings income tax increase (+2pp),2028,2,-0.046095114
-savings_tax_increase_2pp,Savings income tax increase (+2pp),2028,3,-0.017034268
-savings_tax_increase_2pp,Savings income tax increase (+2pp),2028,4,-0.038126126
-savings_tax_increase_2pp,Savings income tax increase (+2pp),2028,5,-0.65683657
-savings_tax_increase_2pp,Savings income tax increase (+2pp),2028,6,-1.660266
-savings_tax_increase_2pp,Savings income tax increase (+2pp),2028,7,-4.415225
-savings_tax_increase_2pp,Savings income tax increase (+2pp),2028,8,-10.244575
-savings_tax_increase_2pp,Savings income tax increase (+2pp),2028,9,-46.206387
-savings_tax_increase_2pp,Savings income tax increase (+2pp),2028,10,-94.69555
-savings_tax_increase_2pp,Savings income tax increase (+2pp),2028,all,-15.48932
-savings_tax_increase_2pp,Savings income tax increase (+2pp),2029,1,-0.033725895
-savings_tax_increase_2pp,Savings income tax increase (+2pp),2029,2,-0.05627306
-savings_tax_increase_2pp,Savings income tax increase (+2pp),2029,3,-0.029725667
-savings_tax_increase_2pp,Savings income tax increase (+2pp),2029,4,-0.044903345
-savings_tax_increase_2pp,Savings income tax increase (+2pp),2029,5,-0.7113647
-savings_tax_increase_2pp,Savings income tax increase (+2pp),2029,6,-1.8286512
-savings_tax_increase_2pp,Savings income tax increase (+2pp),2029,7,-4.718951
-savings_tax_increase_2pp,Savings income tax increase (+2pp),2029,8,-10.731765
+savings_tax_increase_2pp,Savings income tax increase (+2pp),2028,1,-0.029223232
+savings_tax_increase_2pp,Savings income tax increase (+2pp),2028,2,-0.04554683
+savings_tax_increase_2pp,Savings income tax increase (+2pp),2028,3,-0.01717928
+savings_tax_increase_2pp,Savings income tax increase (+2pp),2028,4,-0.04148094
+savings_tax_increase_2pp,Savings income tax increase (+2pp),2028,5,-0.66024244
+savings_tax_increase_2pp,Savings income tax increase (+2pp),2028,6,-1.664314
+savings_tax_increase_2pp,Savings income tax increase (+2pp),2028,7,-4.409255
+savings_tax_increase_2pp,Savings income tax increase (+2pp),2028,8,-10.259557
+savings_tax_increase_2pp,Savings income tax increase (+2pp),2028,9,-46.203644
+savings_tax_increase_2pp,Savings income tax increase (+2pp),2028,10,-94.693474
+savings_tax_increase_2pp,Savings income tax increase (+2pp),2028,all,-15.488127
+savings_tax_increase_2pp,Savings income tax increase (+2pp),2029,1,-0.032856524
+savings_tax_increase_2pp,Savings income tax increase (+2pp),2029,2,-0.054269172
+savings_tax_increase_2pp,Savings income tax increase (+2pp),2029,3,-0.030700916
+savings_tax_increase_2pp,Savings income tax increase (+2pp),2029,4,-0.048202872
+savings_tax_increase_2pp,Savings income tax increase (+2pp),2029,5,-0.7182934
+savings_tax_increase_2pp,Savings income tax increase (+2pp),2029,6,-1.8287721
+savings_tax_increase_2pp,Savings income tax increase (+2pp),2029,7,-4.712235
+savings_tax_increase_2pp,Savings income tax increase (+2pp),2029,8,-10.747537
 savings_tax_increase_2pp,Savings income tax increase (+2pp),2029,9,-48.80794
 savings_tax_increase_2pp,Savings income tax increase (+2pp),2029,10,-99.273636
-savings_tax_increase_2pp,Savings income tax increase (+2pp),2029,all,-16.337578
-savings_tax_increase_2pp,Savings income tax increase (+2pp),2030,1,-0.038469475
-savings_tax_increase_2pp,Savings income tax increase (+2pp),2030,2,-0.07171796
-savings_tax_increase_2pp,Savings income tax increase (+2pp),2030,3,-0.039038926
-savings_tax_increase_2pp,Savings income tax increase (+2pp),2030,4,-0.057679113
-savings_tax_increase_2pp,Savings income tax increase (+2pp),2030,5,-0.75562525
-savings_tax_increase_2pp,Savings income tax increase (+2pp),2030,6,-2.0585067
-savings_tax_increase_2pp,Savings income tax increase (+2pp),2030,7,-5.0312467
-savings_tax_increase_2pp,Savings income tax increase (+2pp),2030,8,-11.091915
-savings_tax_increase_2pp,Savings income tax increase (+2pp),2030,9,-52.125217
-savings_tax_increase_2pp,Savings income tax increase (+2pp),2030,10,-104.88803
-savings_tax_increase_2pp,Savings income tax increase (+2pp),2030,all,-17.307486
+savings_tax_increase_2pp,Savings income tax increase (+2pp),2029,all,-16.3363
+savings_tax_increase_2pp,Savings income tax increase (+2pp),2030,1,-0.03769131
+savings_tax_increase_2pp,Savings income tax increase (+2pp),2030,2,-0.07528049
+savings_tax_increase_2pp,Savings income tax increase (+2pp),2030,3,-0.0335443
+savings_tax_increase_2pp,Savings income tax increase (+2pp),2030,4,-0.053662892
+savings_tax_increase_2pp,Savings income tax increase (+2pp),2030,5,-0.8100145
+savings_tax_increase_2pp,Savings income tax increase (+2pp),2030,6,-2.0780885
+savings_tax_increase_2pp,Savings income tax increase (+2pp),2030,7,-4.932286
+savings_tax_increase_2pp,Savings income tax increase (+2pp),2030,8,-11.289019
+savings_tax_increase_2pp,Savings income tax increase (+2pp),2030,9,-49.211292
+savings_tax_increase_2pp,Savings income tax increase (+2pp),2030,10,-108.11358
+savings_tax_increase_2pp,Savings income tax increase (+2pp),2030,all,-17.310429
 property_tax_increase_2pp,Property income tax increase (+2pp),2026,1,0.0
 property_tax_increase_2pp,Property income tax increase (+2pp),2026,2,0.0
 property_tax_increase_2pp,Property income tax increase (+2pp),2026,3,0.0
@@ -406,39 +406,39 @@ property_tax_increase_2pp,Property income tax increase (+2pp),2027,8,0.0
 property_tax_increase_2pp,Property income tax increase (+2pp),2027,9,0.0
 property_tax_increase_2pp,Property income tax increase (+2pp),2027,10,0.0
 property_tax_increase_2pp,Property income tax increase (+2pp),2027,all,0.0
-property_tax_increase_2pp,Property income tax increase (+2pp),2028,1,-9.255803
-property_tax_increase_2pp,Property income tax increase (+2pp),2028,2,-13.130823
-property_tax_increase_2pp,Property income tax increase (+2pp),2028,3,-2.90084
-property_tax_increase_2pp,Property income tax increase (+2pp),2028,4,-7.259306
-property_tax_increase_2pp,Property income tax increase (+2pp),2028,5,-7.4212084
-property_tax_increase_2pp,Property income tax increase (+2pp),2028,6,-13.341055
-property_tax_increase_2pp,Property income tax increase (+2pp),2028,7,-31.72205
-property_tax_increase_2pp,Property income tax increase (+2pp),2028,8,-15.549572
-property_tax_increase_2pp,Property income tax increase (+2pp),2028,9,-37.322052
-property_tax_increase_2pp,Property income tax increase (+2pp),2028,10,-97.89885
-property_tax_increase_2pp,Property income tax increase (+2pp),2028,all,-23.268377
-property_tax_increase_2pp,Property income tax increase (+2pp),2029,1,-9.474628
-property_tax_increase_2pp,Property income tax increase (+2pp),2029,2,-13.803606
-property_tax_increase_2pp,Property income tax increase (+2pp),2029,3,-2.9754841
-property_tax_increase_2pp,Property income tax increase (+2pp),2029,4,-4.0785522
-property_tax_increase_2pp,Property income tax increase (+2pp),2029,5,-10.9030075
-property_tax_increase_2pp,Property income tax increase (+2pp),2029,6,-13.287984
-property_tax_increase_2pp,Property income tax increase (+2pp),2029,7,-33.071686
-property_tax_increase_2pp,Property income tax increase (+2pp),2029,8,-16.02768
-property_tax_increase_2pp,Property income tax increase (+2pp),2029,9,-38.366707
+property_tax_increase_2pp,Property income tax increase (+2pp),2028,1,-8.962418
+property_tax_increase_2pp,Property income tax increase (+2pp),2028,2,-12.982342
+property_tax_increase_2pp,Property income tax increase (+2pp),2028,3,-3.1505637
+property_tax_increase_2pp,Property income tax increase (+2pp),2028,4,-7.262188
+property_tax_increase_2pp,Property income tax increase (+2pp),2028,5,-7.3801947
+property_tax_increase_2pp,Property income tax increase (+2pp),2028,6,-13.38275
+property_tax_increase_2pp,Property income tax increase (+2pp),2028,7,-31.693985
+property_tax_increase_2pp,Property income tax increase (+2pp),2028,8,-15.563359
+property_tax_increase_2pp,Property income tax increase (+2pp),2028,9,-37.32114
+property_tax_increase_2pp,Property income tax increase (+2pp),2028,10,-97.90112
+property_tax_increase_2pp,Property income tax increase (+2pp),2028,all,-23.266502
+property_tax_increase_2pp,Property income tax increase (+2pp),2029,1,-9.230559
+property_tax_increase_2pp,Property income tax increase (+2pp),2029,2,-13.326416
+property_tax_increase_2pp,Property income tax increase (+2pp),2029,3,-3.188491
+property_tax_increase_2pp,Property income tax increase (+2pp),2029,4,-7.520502
+property_tax_increase_2pp,Property income tax increase (+2pp),2029,5,-7.7673497
+property_tax_increase_2pp,Property income tax increase (+2pp),2029,6,-13.287664
+property_tax_increase_2pp,Property income tax increase (+2pp),2029,7,-33.035896
+property_tax_increase_2pp,Property income tax increase (+2pp),2029,8,-16.043905
+property_tax_increase_2pp,Property income tax increase (+2pp),2029,9,-38.36988
 property_tax_increase_2pp,Property income tax increase (+2pp),2029,10,-100.92673
-property_tax_increase_2pp,Property income tax increase (+2pp),2029,all,-23.9976
-property_tax_increase_2pp,Property income tax increase (+2pp),2030,1,-9.52058
-property_tax_increase_2pp,Property income tax increase (+2pp),2030,2,-14.546125
-property_tax_increase_2pp,Property income tax increase (+2pp),2030,3,-3.0843263
-property_tax_increase_2pp,Property income tax increase (+2pp),2030,4,-4.2412024
-property_tax_increase_2pp,Property income tax increase (+2pp),2030,5,-12.0729685
-property_tax_increase_2pp,Property income tax increase (+2pp),2030,6,-13.261826
-property_tax_increase_2pp,Property income tax increase (+2pp),2030,7,-32.61037
-property_tax_increase_2pp,Property income tax increase (+2pp),2030,8,-18.03361
-property_tax_increase_2pp,Property income tax increase (+2pp),2030,9,-40.42378
-property_tax_increase_2pp,Property income tax increase (+2pp),2030,10,-104.33189
-property_tax_increase_2pp,Property income tax increase (+2pp),2030,all,-24.889563
+property_tax_increase_2pp,Property income tax increase (+2pp),2029,all,-23.995714
+property_tax_increase_2pp,Property income tax increase (+2pp),2030,1,-9.602006
+property_tax_increase_2pp,Property income tax increase (+2pp),2030,2,-13.610634
+property_tax_increase_2pp,Property income tax increase (+2pp),2030,3,-3.1296618
+property_tax_increase_2pp,Property income tax increase (+2pp),2030,4,-4.338077
+property_tax_increase_2pp,Property income tax increase (+2pp),2030,5,-12.520479
+property_tax_increase_2pp,Property income tax increase (+2pp),2030,6,-9.988386
+property_tax_increase_2pp,Property income tax increase (+2pp),2030,7,-35.671707
+property_tax_increase_2pp,Property income tax increase (+2pp),2030,8,-19.725159
+property_tax_increase_2pp,Property income tax increase (+2pp),2030,9,-38.13779
+property_tax_increase_2pp,Property income tax increase (+2pp),2030,10,-104.972694
+property_tax_increase_2pp,Property income tax increase (+2pp),2030,all,-24.890587
 freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2026,1,0.0
 freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2026,2,0.0
 freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2026,3,0.0
@@ -450,105 +450,50 @@ freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2026,8,0
 freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2026,9,0.0
 freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2026,10,0.0
 freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2026,all,0.0
-freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2027,1,-8.0694e-05
-freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2027,2,-0.23855798
-freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2027,3,-0.18250105
-freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2027,4,-0.72287714
-freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2027,5,-1.1564919
-freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2027,6,-6.2385936
-freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2027,7,-7.063959
-freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2027,8,-9.364357
-freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2027,9,-9.52354
-freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2027,10,-7.3041954
+freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2027,1,-7.858317e-05
+freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2027,2,-0.23064196
+freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2027,3,-0.19026074
+freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2027,4,-0.7241661
+freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2027,5,-1.1802849
+freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2027,6,-6.2597523
+freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2027,7,-7.0708346
+freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2027,8,-9.355098
+freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2027,9,-9.523231
+freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2027,10,-7.304425
 freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2027,all,-4.124521
-freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2028,1,-0.00013743679
-freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2028,2,-0.48425418
-freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2028,3,-0.3552914
-freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2028,4,-1.9455856
-freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2028,5,-2.481444
-freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2028,6,-11.85973
-freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2028,7,-13.743906
-freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2028,8,-17.816776
-freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2028,9,-18.850319
+freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2028,1,-0.00013265747
+freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2028,2,-0.47553915
+freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2028,3,-0.37756675
+freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2028,4,-1.9845058
+freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2028,5,-2.5266292
+freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2028,6,-11.823349
+freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2028,7,-13.746964
+freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2028,8,-17.81096
+freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2028,9,-18.848736
 freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2028,10,-14.199173
-freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2028,all,-8.108674
-freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2029,1,-0.0001955844
-freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2029,2,-0.783893
-freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2029,3,-0.56056046
-freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2029,4,-3.4389634
-freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2029,5,-3.7398748
-freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2029,6,-17.937016
-freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2029,7,-25.996134
-freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2029,8,-21.979504
+freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2028,all,-8.108039
+freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2029,1,-0.00019120969
+freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2029,2,-0.7523578
+freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2029,3,-0.57876587
+freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2029,4,-3.4202893
+freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2029,5,-3.8408008
+freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2029,6,-17.9327
+freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2029,7,-25.984028
+freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2029,8,-21.994694
 freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2029,9,-28.107613
 freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2029,10,-21.4058
-freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2029,all,-12.303007
-freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2030,1,-0.00020151224
-freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2030,2,-0.8029256
-freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2030,3,-0.5329652
-freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2030,4,-3.4949188
-freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2030,5,-3.9741297
-freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2030,6,-18.262497
-freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2030,7,-26.920782
-freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2030,8,-21.625528
-freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2030,9,-29.037148
-freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2030,10,-21.907118
-freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2030,all,-12.59354
-zero_vat_energy,Zero-rate VAT on energy,2026,1,84.26659
-zero_vat_energy,Zero-rate VAT on energy,2026,2,87.34643
-zero_vat_energy,Zero-rate VAT on energy,2026,3,78.230255
-zero_vat_energy,Zero-rate VAT on energy,2026,4,85.47403
-zero_vat_energy,Zero-rate VAT on energy,2026,5,94.191795
-zero_vat_energy,Zero-rate VAT on energy,2026,6,90.53912
-zero_vat_energy,Zero-rate VAT on energy,2026,7,101.781815
-zero_vat_energy,Zero-rate VAT on energy,2026,8,117.955986
-zero_vat_energy,Zero-rate VAT on energy,2026,9,122.19408
-zero_vat_energy,Zero-rate VAT on energy,2026,10,130.68488
-zero_vat_energy,Zero-rate VAT on energy,2026,all,99.041374
-zero_vat_energy,Zero-rate VAT on energy,2027,1,85.929436
-zero_vat_energy,Zero-rate VAT on energy,2027,2,89.300255
-zero_vat_energy,Zero-rate VAT on energy,2027,3,77.567726
-zero_vat_energy,Zero-rate VAT on energy,2027,4,89.03893
-zero_vat_energy,Zero-rate VAT on energy,2027,5,96.29704
-zero_vat_energy,Zero-rate VAT on energy,2027,6,91.68456
-zero_vat_energy,Zero-rate VAT on energy,2027,7,105.36514
-zero_vat_energy,Zero-rate VAT on energy,2027,8,120.099174
-zero_vat_energy,Zero-rate VAT on energy,2027,9,123.7099
-zero_vat_energy,Zero-rate VAT on energy,2027,10,133.68546
-zero_vat_energy,Zero-rate VAT on energy,2027,all,101.02721
-zero_vat_energy,Zero-rate VAT on energy,2028,1,87.82838
-zero_vat_energy,Zero-rate VAT on energy,2028,2,91.63174
-zero_vat_energy,Zero-rate VAT on energy,2028,3,79.22043
-zero_vat_energy,Zero-rate VAT on energy,2028,4,90.451256
-zero_vat_energy,Zero-rate VAT on energy,2028,5,98.8546
-zero_vat_energy,Zero-rate VAT on energy,2028,6,95.47068
-zero_vat_energy,Zero-rate VAT on energy,2028,7,105.78135
-zero_vat_energy,Zero-rate VAT on energy,2028,8,120.368324
-zero_vat_energy,Zero-rate VAT on energy,2028,9,127.969666
-zero_vat_energy,Zero-rate VAT on energy,2028,10,136.17627
-zero_vat_energy,Zero-rate VAT on energy,2028,all,103.10647
-zero_vat_energy,Zero-rate VAT on energy,2029,1,89.44148
-zero_vat_energy,Zero-rate VAT on energy,2029,2,93.26991
-zero_vat_energy,Zero-rate VAT on energy,2029,3,80.52217
-zero_vat_energy,Zero-rate VAT on energy,2029,4,93.03155
-zero_vat_energy,Zero-rate VAT on energy,2029,5,101.00885
-zero_vat_energy,Zero-rate VAT on energy,2029,6,96.695465
-zero_vat_energy,Zero-rate VAT on energy,2029,7,108.6785
-zero_vat_energy,Zero-rate VAT on energy,2029,8,122.55135
-zero_vat_energy,Zero-rate VAT on energy,2029,9,130.28775
-zero_vat_energy,Zero-rate VAT on energy,2029,10,139.38918
-zero_vat_energy,Zero-rate VAT on energy,2029,all,105.20117
-zero_vat_energy,Zero-rate VAT on energy,2030,1,91.80022
-zero_vat_energy,Zero-rate VAT on energy,2030,2,95.17028
-zero_vat_energy,Zero-rate VAT on energy,2030,3,81.14792
-zero_vat_energy,Zero-rate VAT on energy,2030,4,95.936905
-zero_vat_energy,Zero-rate VAT on energy,2030,5,101.6349
-zero_vat_energy,Zero-rate VAT on energy,2030,6,100.564285
-zero_vat_energy,Zero-rate VAT on energy,2030,7,110.63814
-zero_vat_energy,Zero-rate VAT on energy,2030,8,124.324684
-zero_vat_energy,Zero-rate VAT on energy,2030,9,132.91623
-zero_vat_energy,Zero-rate VAT on energy,2030,10,142.15587
-zero_vat_energy,Zero-rate VAT on energy,2030,all,107.31521
+freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2029,all,-12.302044
+freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2030,1,-0.00023398022
+freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2030,2,-0.7577241
+freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2030,3,-0.5921919
+freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2030,4,-3.8050199
+freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2030,5,-3.7583747
+freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2030,6,-18.44878
+freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2030,7,-21.996897
+freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2030,8,-27.691235
+freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2030,9,-27.74147
+freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2030,10,-22.005587
+freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2030,all,-12.591944
 salary_sacrifice_cap,Salary sacrifice cap,2026,1,0.0
 salary_sacrifice_cap,Salary sacrifice cap,2026,2,0.0
 salary_sacrifice_cap,Salary sacrifice cap,2026,3,0.0
@@ -582,25 +527,25 @@ salary_sacrifice_cap,Salary sacrifice cap,2028,8,0.0
 salary_sacrifice_cap,Salary sacrifice cap,2028,9,0.0
 salary_sacrifice_cap,Salary sacrifice cap,2028,10,0.0
 salary_sacrifice_cap,Salary sacrifice cap,2028,all,0.0
-salary_sacrifice_cap,Salary sacrifice cap,2029,1,-0.26328555
-salary_sacrifice_cap,Salary sacrifice cap,2029,2,-0.36335596
-salary_sacrifice_cap,Salary sacrifice cap,2029,3,-45.44491
-salary_sacrifice_cap,Salary sacrifice cap,2029,4,-8.917149
-salary_sacrifice_cap,Salary sacrifice cap,2029,5,-4.886096
-salary_sacrifice_cap,Salary sacrifice cap,2029,6,-7.0702744
-salary_sacrifice_cap,Salary sacrifice cap,2029,7,-13.381022
-salary_sacrifice_cap,Salary sacrifice cap,2029,8,-18.01991
-salary_sacrifice_cap,Salary sacrifice cap,2029,9,-181.49117
-salary_sacrifice_cap,Salary sacrifice cap,2029,10,-318.94025
-salary_sacrifice_cap,Salary sacrifice cap,2029,all,-59.335026
-salary_sacrifice_cap,Salary sacrifice cap,2030,1,-0.26870295
-salary_sacrifice_cap,Salary sacrifice cap,2030,2,-0.37257996
-salary_sacrifice_cap,Salary sacrifice cap,2030,3,-44.993107
-salary_sacrifice_cap,Salary sacrifice cap,2030,4,-8.807659
-salary_sacrifice_cap,Salary sacrifice cap,2030,5,-4.8762016
-salary_sacrifice_cap,Salary sacrifice cap,2030,6,-7.0377035
-salary_sacrifice_cap,Salary sacrifice cap,2030,7,-13.333295
-salary_sacrifice_cap,Salary sacrifice cap,2030,8,-14.193223
-salary_sacrifice_cap,Salary sacrifice cap,2030,9,-187.83467
-salary_sacrifice_cap,Salary sacrifice cap,2030,10,-354.94882
-salary_sacrifice_cap,Salary sacrifice cap,2030,all,-63.090424
+salary_sacrifice_cap,Salary sacrifice cap,2029,1,0.0
+salary_sacrifice_cap,Salary sacrifice cap,2029,2,0.0
+salary_sacrifice_cap,Salary sacrifice cap,2029,3,0.0
+salary_sacrifice_cap,Salary sacrifice cap,2029,4,0.0
+salary_sacrifice_cap,Salary sacrifice cap,2029,5,0.0
+salary_sacrifice_cap,Salary sacrifice cap,2029,6,0.0
+salary_sacrifice_cap,Salary sacrifice cap,2029,7,0.0
+salary_sacrifice_cap,Salary sacrifice cap,2029,8,0.0
+salary_sacrifice_cap,Salary sacrifice cap,2029,9,0.0
+salary_sacrifice_cap,Salary sacrifice cap,2029,10,0.0
+salary_sacrifice_cap,Salary sacrifice cap,2029,all,0.0
+salary_sacrifice_cap,Salary sacrifice cap,2030,1,3.1386738
+salary_sacrifice_cap,Salary sacrifice cap,2030,2,508.32083
+salary_sacrifice_cap,Salary sacrifice cap,2030,3,58.269268
+salary_sacrifice_cap,Salary sacrifice cap,2030,4,57.103203
+salary_sacrifice_cap,Salary sacrifice cap,2030,5,78.80073
+salary_sacrifice_cap,Salary sacrifice cap,2030,6,86.463394
+salary_sacrifice_cap,Salary sacrifice cap,2030,7,160.45393
+salary_sacrifice_cap,Salary sacrifice cap,2030,8,350.1978
+salary_sacrifice_cap,Salary sacrifice cap,2030,9,261.19955
+salary_sacrifice_cap,Salary sacrifice cap,2030,10,746.7593
+salary_sacrifice_cap,Salary sacrifice cap,2030,all,224.42076
