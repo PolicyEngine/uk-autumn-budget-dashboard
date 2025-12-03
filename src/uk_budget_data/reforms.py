@@ -8,8 +8,10 @@ Reforms are organised into:
 - Tax measures (revenue raisers)
 - Structural reforms (using simulation modifiers)
 
-Since policyengine-uk v2.59.0 includes the Autumn Budget parameter updates,
-we use a pre-Autumn Budget baseline to show the impact of budget policies.
+Since policyengine-uk v2.63.0+ includes the Autumn Budget parameter updates
+(including two-child limit repeal from April 2026 and salary sacrifice pension
+cap of £2,000 from April 2029), we use a pre-Autumn Budget baseline to show
+the impact of budget policies.
 """
 
 from typing import Optional
@@ -133,12 +135,9 @@ def _get_pre_ab_baseline_key(key: str) -> dict:
 def _create_two_child_limit_repeal() -> Reform:
     """Create the two-child limit repeal reform.
 
-    policyengine-uk (post PR #1432) has the two-child limit repeal baked in
-    as current law from April 2026. This reform compares:
-    - Baseline: Pre-budget policy (limit of 2 children)
-    - Reform: policyengine-uk defaults (limit removed, infinity from Apr 2026)
-
-    OBR costing: £2.1-2.8bn annually (static)
+    Since policyengine-uk v2.63.0+, the two-child limit repeal is in baseline
+    (child_count = infinity from April 2026). This reform compares against
+    the pre-budget baseline where the limit was 2.
     """
     return Reform(
         id="two_child_limit",
@@ -149,7 +148,7 @@ def _create_two_child_limit_repeal() -> Reform:
             "to the first two children in a family. Compares Autumn Budget policy "
             "(limit removed) against pre-budget baseline (limit of 2)."
         ),
-        # Baseline: Pre-budget policy (limit of 2 children)
+        # Baseline: Pre-budget (limit of 2)
         baseline_parameter_changes={
             "gov.dwp.tax_credits.child_tax_credit.limit.child_count": (
                 _years_dict(2)
@@ -158,7 +157,7 @@ def _create_two_child_limit_repeal() -> Reform:
                 _years_dict(2)
             ),
         },
-        # Reform: Use policyengine-uk defaults (infinity from April 2026)
+        # Reform: Current law (policyengine-uk v2.63.0+ has infinity from 2026)
         parameter_changes={},
     )
 
@@ -597,81 +596,40 @@ def _create_rail_fares_freeze() -> Reform:
 
 def create_salary_sacrifice_cap_reform(
     cap_amount: float = 2000,
-    employer_response_haircut: float = 0.13,
 ) -> Reform:
     """Create a salary sacrifice cap reform with configurable parameters.
 
-    policyengine-uk (post PR #1432) has the salary sacrifice cap baked in
-    as current law from April 2029. This reform compares:
-    - Baseline: Pre-budget policy (no cap, infinity)
-    - Reform: policyengine-uk defaults (£2,000 cap from April 2029)
-
-    The simulation_modifier applies behavioural responses:
-    - Employees redirect excess contributions to regular pension
-    - Employers spread increased NI costs across workers (haircut)
+    Since policyengine-uk v2.63.0+, the salary sacrifice pension cap of £2,000
+    from April 2029 is in baseline. This reform compares against the pre-budget
+    baseline where there was no cap (infinity).
 
     Args:
-        cap_amount: Annual cap on NI-free salary sacrifice in GBP.
-        employer_response_haircut: Proportion of excess that employers retain.
+        cap_amount: Annual cap on NI-free salary sacrifice in GBP (for display).
 
     Returns:
         Reform object configured with the specified parameters.
 
     OBR costing: £4.9bn in 2029-30 (static)
     """
-
-    def modifier(sim: Simulation) -> Simulation:
-        # Policy takes effect from April 2029 (fiscal year 2029-30)
-        for year in range(2029, 2031):
-            ss_contrib = sim.calculate(
-                "pension_contributions_via_salary_sacrifice", period=year
-            )
-            excess_ss_contrib = np.maximum(ss_contrib - cap_amount, 0)
-            emp_income = sim.calculate("employment_income", period=year)
-            new_employment_income = emp_income + excess_ss_contrib * (
-                1 - employer_response_haircut
-            )
-            sim.set_input("employment_income", year, new_employment_income)
-
-            employee_pension = sim.calculate(
-                "employee_pension_contributions", period=year
-            )
-            new_employee_pension = employee_pension + excess_ss_contrib * (
-                1 - employer_response_haircut
-            )
-            sim.set_input(
-                "employee_pension_contributions", year, new_employee_pension
-            )
-
-            new_ss = ss_contrib - excess_ss_contrib
-            sim.set_input(
-                "pension_contributions_via_salary_sacrifice", year, new_ss
-            )
-
-        return sim
-
     return Reform(
         id="salary_sacrifice_cap",
         name="Salary sacrifice cap",
         description=(
             f"Caps salary sacrifice pension contributions at £{cap_amount:,.0f} "
             f"per year from April 2029. Contributions above the cap become "
-            f"subject to employee and employer NICs. Compares Autumn Budget "
-            f"policy (£2,000 cap) against pre-budget baseline (no cap). "
-            f"Assumes employees redirect excess to regular pension contributions "
-            f"and employers spread increased NI costs ({employer_response_haircut:.0%} haircut)."
+            f"subject to employee and employer NICs. policyengine-uk v2.63.0+ "
+            f"includes this in baseline via the salary_sacrifice_pension_cap "
+            f"parameter."
         ),
-        # Baseline: Pre-budget policy (no cap)
+        # Baseline: Pre-budget (no cap, infinity)
         baseline_parameter_changes={
             "gov.hmrc.national_insurance.salary_sacrifice_pension_cap": {
                 "2029": np.inf,
                 "2030": np.inf,
-            }
+            },
         },
-        # Reform: Use policyengine-uk defaults (£2,000 cap from April 2029)
-        # plus behavioural response modifier
+        # Reform: Current law (policyengine-uk v2.63.0+ has £2,000 cap from 2029)
         parameter_changes={},
-        simulation_modifier=modifier,
     )
 
 
@@ -689,13 +647,16 @@ def _create_combined_autumn_budget_reform() -> Reform:
 
     This reform combines all Autumn Budget provisions:
     - Two-child limit repeal (spending)
-    - Salary sacrifice cap (revenue)
+    - Salary sacrifice pension cap (revenue)
     - Fuel duty freeze extension (spending)
     - Threshold freeze extension (revenue)
     - Student loan threshold freeze (revenue)
     - Dividend tax increase +2pp (revenue)
     - Savings tax increase +2pp (revenue)
     - Property tax increase +2pp (revenue)
+
+    Since policyengine-uk v2.63.0+, two-child limit repeal and salary sacrifice
+    cap are in baseline. This reform compares against pre-budget baseline.
 
     Note: Zero-rate VAT on energy is NOT included as it was not in the budget.
     """
@@ -734,6 +695,18 @@ def _create_combined_autumn_budget_reform() -> Reform:
         "gov.hmrc.income_tax.rates.uk[1].threshold": baseline[
             "gov.hmrc.income_tax.rates.uk[1].threshold"
         ],
+        # Two-child limit baseline (pre-budget: limit of 2)
+        "gov.dwp.tax_credits.child_tax_credit.limit.child_count": (
+            _years_dict(2)
+        ),
+        "gov.dwp.universal_credit.elements.child.limit.child_count": (
+            _years_dict(2)
+        ),
+        # Salary sacrifice pension cap baseline (pre-budget: no cap)
+        "gov.hmrc.national_insurance.salary_sacrifice_pension_cap": {
+            "2029": np.inf,
+            "2030": np.inf,
+        },
         # Savings tax baseline (pre-budget rates)
         "gov.hmrc.income_tax.rates.savings.basic": {
             "2027": 0.20,
@@ -791,15 +764,12 @@ def _create_combined_autumn_budget_reform() -> Reform:
     slr_baseline = _calculate_pre_freeze_thresholds()
     combined_baseline_params.update(slr_baseline)
 
-    # Reform: Use policyengine-uk defaults (all budget policies baked in)
-    reform_params = {}
-
     return Reform(
         id="autumn_budget_2025_combined",
         name="Autumn Budget 2025 (combined)",
         description=(
             "All Autumn Budget 2025 provisions combined: two-child limit "
-            "repeal, salary sacrifice cap, fuel duty freeze extension, "
+            "repeal, salary sacrifice pension cap, fuel duty freeze extension, "
             "threshold freeze extension, student loan threshold freeze, and "
             "tax rate increases on dividends (+2pp), savings (+2pp), and "
             "property income (+2pp). Shows full budget impact with interactions."
@@ -807,7 +777,8 @@ def _create_combined_autumn_budget_reform() -> Reform:
         baseline_parameter_changes=combined_baseline_params,
         baseline_simulation_modifier=combined_baseline_modifier,
         simulation_modifier=combined_reform_modifier,
-        parameter_changes=reform_params,
+        # Reform uses current law (policyengine-uk v2.63.0+ baseline)
+        parameter_changes={},
     )
 
 
