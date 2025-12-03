@@ -134,7 +134,6 @@ class TestTwoChildLimitRepeal:
         set both baseline (limit=2) and reform (limit=infinity) parameters
         to capture the impact.
         """
-        import numpy as np
 
         from uk_budget_data.reforms import get_reform
 

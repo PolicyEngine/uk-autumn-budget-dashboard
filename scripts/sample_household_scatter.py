@@ -13,9 +13,10 @@ Usage:
     python scripts/sample_household_scatter.py
 """
 
-import pandas as pd
-import numpy as np
 from pathlib import Path
+
+import numpy as np
+import pandas as pd
 
 SAMPLE_SIZE = 500  # Households (same across all reforms AND all years)
 SEED = 42  # For reproducibility
