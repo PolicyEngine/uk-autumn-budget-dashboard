@@ -695,18 +695,6 @@ def _create_combined_autumn_budget_reform() -> Reform:
         "gov.hmrc.income_tax.rates.uk[1].threshold": baseline[
             "gov.hmrc.income_tax.rates.uk[1].threshold"
         ],
-        # Two-child limit baseline (pre-budget: limit of 2)
-        "gov.dwp.tax_credits.child_tax_credit.limit.child_count": (
-            _years_dict(2)
-        ),
-        "gov.dwp.universal_credit.elements.child.limit.child_count": (
-            _years_dict(2)
-        ),
-        # Salary sacrifice pension cap baseline (pre-budget: no cap)
-        "gov.hmrc.national_insurance.salary_sacrifice_pension_cap": {
-            "2029": np.inf,
-            "2030": np.inf,
-        },
         # Savings tax baseline (pre-budget rates)
         "gov.hmrc.income_tax.rates.savings.basic": {
             "2027": 0.20,

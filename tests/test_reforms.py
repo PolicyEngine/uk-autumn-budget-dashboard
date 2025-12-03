@@ -2,6 +2,7 @@
 
 import os
 
+import numpy as np
 import pytest
 from policyengine_uk.system import system
 
@@ -401,8 +402,9 @@ class TestRailFaresFreeze:
 
     def test_baseline_fare_shows_increase_without_freeze(self):
         """Baseline fare index should show what would happen without freeze."""
-        from uk_budget_data.reforms import get_reform
         from policyengine_uk.system import system
+
+        from uk_budget_data.reforms import get_reform
 
         reform = get_reform("rail_fares_freeze")
         baseline = reform.baseline_parameter_changes["gov.dft.rail.fare_index"]
