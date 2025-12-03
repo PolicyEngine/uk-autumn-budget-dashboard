@@ -7,9 +7,9 @@ def test_lifecycle_url_configured():
         content = f.read()
 
     # The component should embed the lifecycle calculator iframe
-    assert (
-        "uk-autumn-budget-lifecycle.vercel.app" in content
-    ), "Should embed the lifecycle calculator from vercel.app"
+    assert "uk-autumn-budget-lifecycle.vercel.app" in content, (
+        "Should embed the lifecycle calculator from vercel.app"
+    )
 
     # Should use an iframe element
     assert "<iframe" in content, "Should use an iframe to embed the calculator"
