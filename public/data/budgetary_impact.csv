@@ -14,11 +14,11 @@ fuel_duty_freeze,Fuel duty freeze extension,2027,-1.570257213820224
 fuel_duty_freeze,Fuel duty freeze extension,2028,-1.535575143351017
 fuel_duty_freeze,Fuel duty freeze extension,2029,-0.9159599844552899
 fuel_duty_freeze,Fuel duty freeze extension,2030,-1.4051238161101545
-rail_fares_freeze,Rail fares freeze,2026,0.0
-rail_fares_freeze,Rail fares freeze,2027,0.0
-rail_fares_freeze,Rail fares freeze,2028,0.0
-rail_fares_freeze,Rail fares freeze,2029,0.0
-rail_fares_freeze,Rail fares freeze,2030,0.0
+rail_fares_freeze,Rail fares freeze,2026,-0.1450004419127318
+rail_fares_freeze,Rail fares freeze,2027,-0.15500005739846073
+rail_fares_freeze,Rail fares freeze,2028,-0.15999912843033784
+rail_fares_freeze,Rail fares freeze,2029,-0.16500053193959982
+rail_fares_freeze,Rail fares freeze,2030,-0.15000178080360974
 threshold_freeze_extension,Threshold freeze extension,2026,0.0
 threshold_freeze_extension,Threshold freeze extension,2027,0.0
 threshold_freeze_extension,Threshold freeze extension,2028,3.753323085658883
