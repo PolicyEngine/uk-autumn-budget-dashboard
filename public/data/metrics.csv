@@ -47,5 +47,5 @@ freeze_student_loan_thresholds,Freeze student loan repayment thresholds,2030,4.7
 salary_sacrifice_cap,Salary sacrifice cap,2026,0.0,0.0,0.0,0.0
 salary_sacrifice_cap,Salary sacrifice cap,2027,0.0,0.0,0.0,0.0
 salary_sacrifice_cap,Salary sacrifice cap,2028,0.0,0.0,0.0,0.0
-salary_sacrifice_cap,Salary sacrifice cap,2029,0.0,0.0,0.0,0.0
-salary_sacrifice_cap,Salary sacrifice cap,2030,10.089569098096796,-0.0012688706663145474,-0.00013160706,-0.001165941
+salary_sacrifice_cap,Salary sacrifice cap,2029,9.491041599682458,-0.0009960339379027935,0.0039892197,0.035507705
+salary_sacrifice_cap,Salary sacrifice cap,2030,8.917920400943137,-0.0007851509582073264,4.863739e-05,0.00043089627
