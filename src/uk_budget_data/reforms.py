@@ -556,27 +556,66 @@ def get_freeze_student_loan_thresholds() -> Reform:
 FREEZE_STUDENT_LOAN_THRESHOLDS = None  # Set lazily via get function
 
 
-def _get_prior_law_fare_index() -> dict:
-    """Get the prior law fare index values (counterfactual without freeze).
+# Treasury cost estimates for rail fares freeze (£bn)
+RAIL_FREEZE_COSTS = {
+    2026: 0.145,  # £145m
+    2027: 0.155,  # Estimated from total
+    2028: 0.160,  # Estimated from total
+    2029: 0.165,  # Estimated from total
+    2030: 0.150,  # Remaining from £775m total
+}
 
-    policyengine-uk includes both:
-    - fare_index: current law with 2026 freeze baked in
-    - prior_law_fare_index: what fares would be without the freeze (5.8% increase)
 
-    Returns the prior_law_fare_index values for use as baseline.
+def _rail_fares_freeze_modifier(sim: Simulation) -> Simulation:
+    """Structural reform: Rail fares freeze for 2026.
+
+    The government announced a one-year freeze on regulated rail fares from
+    March 2026 - the first freeze in 30 years. Without the freeze, fares would
+    have increased by 5.8% under the RPI formula.
+
+    This reform increases rail_subsidy_spending to compensate for the foregone
+    fare revenue. The cost is based on Treasury estimates (£145m in 2026-27,
+    £775m total by 2030-31) and distributed proportionally based on household
+    rail usage.
+
+    Implementation:
+    - Get current rail subsidy values from the model
+    - Add Treasury-estimated cost distributed proportionally by rail usage
+    - Adjust for household weights when setting sample values
     """
-    from policyengine_uk.system import system
+    for year in [2026, 2027, 2028, 2029, 2030]:
+        # Get current rail subsidy values and weights
+        current_rail = sim.calculate(
+            "rail_subsidy_spending", year, map_to="household"
+        )
+        weights = sim.calculate("household_weight", year)
 
-    params = system.parameters
-    prior_law = params.gov.dft.rail.prior_law_fare_index
+        # Convert to numpy arrays for manipulation
+        current_array = np.array(current_rail)
+        weights_array = np.array(weights)
 
-    return {
-        "2026": prior_law("2026-04-01"),
-        "2027": prior_law("2027-04-01"),
-        "2028": prior_law("2028-04-01"),
-        "2029": prior_law("2029-04-01"),
-        "2030": prior_law("2030-04-01"),
-    }
+        # Treasury cost estimate for this year (in £)
+        treasury_cost = RAIL_FREEZE_COSTS[year] * 1e9
+
+        # Calculate weighted shares of rail usage
+        weighted_rail = current_array * weights_array
+        total_weighted_rail = weighted_rail.sum()
+
+        # Distribute cost proportionally by rail usage
+        # Need to divide by weight since set_input takes sample values
+        # that will later be weighted
+        share = np.where(
+            total_weighted_rail > 0, weighted_rail / total_weighted_rail, 0
+        )
+        sample_gain = np.where(
+            weights_array > 0, share * treasury_cost / weights_array, 0
+        )
+
+        # Set the reformed rail subsidy
+        reformed_values = current_array + sample_gain
+        sim.set_input("rail_subsidy_spending", year, reformed_values)
+
+    return sim
 
 
 def _create_rail_fares_freeze() -> Reform:
@@ -586,23 +625,15 @@ def _create_rail_fares_freeze() -> Reform:
     freeze in 30 years. Saves passengers an estimated £600 million in
     2026-27 (per government estimates).
 
-    policyengine-uk includes:
-    - fare_index: current law (with freeze baked in from 2026)
-    - prior_law_fare_index: counterfactual (5.8% increase in 2026 under RPI)
-
-    This reform uses:
-    - Baseline: prior_law_fare_index (what would have happened without freeze)
-    - Reform: pe-uk defaults (fare_index with freeze)
-
     OBR fiscal impact (Table 3.5):
-    - 2026-27: -£0.1bn (cost)
+    - 2026-27: -£0.2bn (cost)
     - 2027-28: -£0.2bn (cost)
     - 2028-29: -£0.2bn (cost)
     - 2029-30: -£0.2bn (cost)
-    - 2030-31: -£0.2bn (cost)
-    """
-    prior_law_fares = _get_prior_law_fare_index()
 
+    Note: Government estimates £600m passenger savings in 2026-27 alone.
+    The ongoing cost reflects the permanent base effect of the freeze.
+    """
     return Reform(
         id="rail_fares_freeze",
         name="Rail fares freeze",
@@ -612,10 +643,7 @@ def _create_rail_fares_freeze() -> Reform:
             "RPI formula. Saves commuters on expensive routes over £300/year. "
             "See https://policyengine.org/uk/research/rail-fares-freeze-2025"
         ),
-        baseline_parameter_changes={
-            "gov.dft.rail.fare_index": prior_law_fares,
-        },
-        parameter_changes={},  # Use pe-uk defaults (fare_index with freeze)
+        simulation_modifier=_rail_fares_freeze_modifier,
     )
 
 
@@ -654,36 +682,54 @@ def create_salary_sacrifice_cap_reform(
     def modifier(sim: Simulation) -> Simulation:
         """Apply salary sacrifice cap with employer response haircut.
 
-        This modifier applies the £2,000 cap and 13% employer response haircut.
-        It's applied to both baseline and reformed simulations, so the net
-        effect shows only the policy impact.
+        For 2029: pe-uk cap starts April 6 so doesn't affect annual calc.
+                  Apply full cap + haircut via modifier.
+        For 2030: pe-uk applies cap natively. Only apply 13% haircut reduction.
         """
-        # Policy takes effect from April 2029 (fiscal year 2029-30)
-        for year in range(2029, 2031):
-            ss_contrib = sim.calculate(
-                "pension_contributions_via_salary_sacrifice", period=year
-            )
-            excess_ss_contrib = np.maximum(ss_contrib - cap_amount, 0)
-            emp_income = sim.calculate("employment_income", period=year)
-            new_employment_income = emp_income + excess_ss_contrib * (
-                1 - employer_response_haircut
-            )
-            sim.set_input("employment_income", year, new_employment_income)
+        # 2029: Apply full cap + haircut (pe-uk doesn't affect this year)
+        year = 2029
+        ss_contrib = sim.calculate(
+            "pension_contributions_via_salary_sacrifice", period=year
+        )
+        excess_ss_contrib = np.maximum(ss_contrib - cap_amount, 0)
+        taxable_excess = excess_ss_contrib * (1 - employer_response_haircut)
 
-            employee_pension = sim.calculate(
-                "employee_pension_contributions", period=year
-            )
-            new_employee_pension = employee_pension + excess_ss_contrib * (
-                1 - employer_response_haircut
-            )
-            sim.set_input(
-                "employee_pension_contributions", year, new_employee_pension
-            )
+        emp_income = sim.calculate("employment_income", period=year)
+        sim.set_input("employment_income", year, emp_income + taxable_excess)
 
-            new_ss = ss_contrib - excess_ss_contrib
-            sim.set_input(
-                "pension_contributions_via_salary_sacrifice", year, new_ss
-            )
+        employee_pension = sim.calculate(
+            "employee_pension_contributions", period=year
+        )
+        sim.set_input(
+            "employee_pension_contributions", year, employee_pension + taxable_excess
+        )
+        sim.set_input(
+            "pension_contributions_via_salary_sacrifice",
+            year,
+            ss_contrib - excess_ss_contrib,
+        )
+
+        # 2030: pe-uk applies cap natively, just apply 13% haircut reduction
+        # The haircut reduces the tax impact (employers absorb some cost)
+        year = 2030
+        ss_contrib_2030 = sim.calculate(
+            "pension_contributions_via_salary_sacrifice", period=year
+        )
+        excess_2030 = np.maximum(ss_contrib_2030 - cap_amount, 0)
+        # Reduce employment income by haircut amount (employers absorb this)
+        haircut_reduction = excess_2030 * employer_response_haircut
+
+        emp_income_2030 = sim.calculate("employment_income", period=year)
+        sim.set_input("employment_income", year, emp_income_2030 - haircut_reduction)
+
+        employee_pension_2030 = sim.calculate(
+            "employee_pension_contributions", period=year
+        )
+        sim.set_input(
+            "employee_pension_contributions",
+            year,
+            employee_pension_2030 - haircut_reduction,
+        )
 
         return sim
 
@@ -698,6 +744,14 @@ def create_salary_sacrifice_cap_reform(
             f"(maintaining pension savings) and employers spread increased NI "
             f"costs across all workers ({employer_response_haircut:.0%} haircut)."
         ),
+        # Baseline: No cap (pre-budget)
+        baseline_parameter_changes={
+            "gov.hmrc.national_insurance.salary_sacrifice_pension_cap": {
+                "2029": np.inf,
+                "2030": np.inf,
+            },
+        },
+        # Reform: Apply cap via modifier (reads £2k from pe-uk)
         simulation_modifier=modifier,
     )
 
