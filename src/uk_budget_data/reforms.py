@@ -140,9 +140,13 @@ def _get_pre_ab_baseline_key(key: str) -> dict:
 def _create_two_child_limit_repeal() -> Reform:
     """Create the two-child limit repeal reform.
 
-    Since policyengine-uk v2.63.0+, the two-child limit repeal is in baseline
-    (child_count = infinity from April 2026). This reform compares against
-    the pre-budget baseline where the limit was 2.
+    Removes the two-child limit on benefits from April 2026. Since simulations
+    use January 1 as the reference date for annual periods, we need to
+    explicitly set both baseline and reform parameters to capture the impact.
+
+    Note: policyengine-uk v2.63.0+ has the repeal in baseline (infinity from
+    April 6, 2026), but annual calculations use Jan 1 reference. We override
+    both to ensure the comparison captures the policy impact.
     """
     return Reform(
         id="two_child_limit",
@@ -161,8 +165,15 @@ def _create_two_child_limit_repeal() -> Reform:
                 _years_dict(2)
             ),
         },
-        # Reform: Current law (policyengine-uk v2.63.0+ has infinity from 2026)
-        parameter_changes={},
+        # Reform: Repeal (no limit = infinity)
+        parameter_changes={
+            "gov.dwp.tax_credits.child_tax_credit.limit.child_count": (
+                _years_dict(np.inf)
+            ),
+            "gov.dwp.universal_credit.elements.child.limit.child_count": (
+                _years_dict(np.inf)
+            ),
+        },
     )
 
 
@@ -716,14 +727,20 @@ def create_salary_sacrifice_cap_reform(
             f"parameter."
         ),
         # Baseline: Pre-budget (no cap, infinity)
+        # Use year keys to ensure Jan 1 reference dates are captured
         baseline_parameter_changes={
             "gov.hmrc.national_insurance.salary_sacrifice_pension_cap": {
                 "2029": np.inf,
                 "2030": np.inf,
             },
         },
-        # Reform: Current law (policyengine-uk v2.63.0+ has £2,000 cap from 2029)
-        parameter_changes={},
+        # Reform: Explicitly set cap for consistency with Jan 1 reference dates
+        parameter_changes={
+            "gov.hmrc.national_insurance.salary_sacrifice_pension_cap": {
+                "2029": 2000,
+                "2030": 2000,
+            },
+        },
     )
 
 
@@ -773,13 +790,15 @@ def _create_combined_autumn_budget_reform() -> Reform:
             "gov.hmrc.income_tax.rates.uk[1].threshold"
         ],
         # Two-child limit baseline (pre-budget: limit of 2)
-        "gov.dwp.tax_credits.child_tax_credit.limit.child_count": (
-            _years_dict(2)
+        # Must use _years_dict() to set all years including 2026 at Jan 1
+        "gov.dwp.tax_credits.child_tax_credit.limit.child_count": _years_dict(
+            2
         ),
-        "gov.dwp.universal_credit.elements.child.limit.child_count": (
-            _years_dict(2)
+        "gov.dwp.universal_credit.elements.child.limit.child_count": _years_dict(
+            2
         ),
         # Salary sacrifice pension cap baseline (pre-budget: no cap)
+        # Use year keys to ensure Jan 1 reference dates are captured
         "gov.hmrc.national_insurance.salary_sacrifice_pension_cap": {
             "2029": np.inf,
             "2030": np.inf,
@@ -854,8 +873,22 @@ def _create_combined_autumn_budget_reform() -> Reform:
         baseline_parameter_changes=combined_baseline_params,
         baseline_simulation_modifier=combined_baseline_modifier,
         simulation_modifier=combined_reform_modifier,
-        # Reform uses current law (policyengine-uk v2.63.0+ baseline)
-        parameter_changes={},
+        # Reform: explicitly set post-budget values to capture impacts
+        # (since annual calculations use Jan 1 reference date)
+        parameter_changes={
+            # Two-child limit repeal (no limit = infinity)
+            "gov.dwp.tax_credits.child_tax_credit.limit.child_count": (
+                _years_dict(np.inf)
+            ),
+            "gov.dwp.universal_credit.elements.child.limit.child_count": (
+                _years_dict(np.inf)
+            ),
+            # Salary sacrifice pension cap (£2000 from 2029)
+            "gov.hmrc.national_insurance.salary_sacrifice_pension_cap": {
+                "2029": 2000,
+                "2030": 2000,
+            },
+        },
     )
 
 

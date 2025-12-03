@@ -899,8 +899,8 @@ wheels = [
 
 [[package]]
 name = "policyengine-uk"
-version = "2.61.2"
-source = { git = "https://github.com/PolicyEngine/policyengine-uk.git?rev=master#394bb90e53ee2c31d9d13f5622f4651ef41b585b" }
+version = "2.63.0"
+source = { git = "https://github.com/PolicyEngine/policyengine-uk.git?rev=master#a18241330f014dca78db119f4aa1753f4bf13b15" }
 dependencies = [
     { name = "microdf-python" },
     { name = "policyengine-core" },

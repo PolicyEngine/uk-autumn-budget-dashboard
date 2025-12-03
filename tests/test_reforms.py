@@ -111,9 +111,9 @@ class TestReformDefinitions:
 
         for reform in get_autumn_budget_2025_reforms():
             scenario = reform.to_scenario()
-            assert (
-                scenario is not None
-            ), f"Reform {reform.id} failed to_scenario"
+            assert scenario is not None, (
+                f"Reform {reform.id} failed to_scenario"
+            )
 
 
 class TestTwoChildLimitRepeal:
@@ -128,15 +128,19 @@ class TestTwoChildLimitRepeal:
         assert reform.id == "two_child_limit"
 
     def test_reform_removes_child_limit(self):
-        """Reform uses baseline with limit of 2, current law has infinity.
+        """Reform uses baseline with limit of 2, reform with infinity.
 
-        Since policyengine-uk v2.63.0+, the two-child limit repeal is in
-        baseline. The reform compares against pre-budget baseline (limit=2).
+        Since annual calculations use Jan 1 reference dates, we explicitly
+        set both baseline (limit=2) and reform (limit=infinity) parameters
+        to capture the impact.
         """
+        import numpy as np
+
         from uk_budget_data.reforms import get_reform
 
         reform = get_reform("two_child_limit")
         assert reform.baseline_parameter_changes is not None
+        assert reform.parameter_changes is not None
 
         # Check that both UC and tax credits limits are set to 2 in baseline
         tc_key = "gov.dwp.tax_credits.child_tax_credit.limit.child_count"
@@ -151,8 +155,13 @@ class TestTwoChildLimitRepeal:
         for year_val in reform.baseline_parameter_changes[uc_key].values():
             assert year_val == 2
 
-        # Reform parameter_changes should be empty (uses current law)
-        assert reform.parameter_changes == {}
+        # Reform parameter_changes should set infinity (no limit)
+        assert tc_key in reform.parameter_changes
+        assert uc_key in reform.parameter_changes
+        for year_val in reform.parameter_changes[tc_key].values():
+            assert year_val == np.inf
+        for year_val in reform.parameter_changes[uc_key].values():
+            assert year_val == np.inf
 
 
 class TestFuelDutyFreeze:
@@ -387,12 +396,12 @@ class TestRailFaresFreeze:
         expected_years = [2026, 2027, 2028, 2029, 2030]
         for year in expected_years:
             assert year in RAIL_FARE_INCREASES, f"Missing rate for {year}"
-            assert (
-                RAIL_FARE_INCREASES[year] > 0
-            ), f"Rate for {year} should be positive"
-            assert (
-                RAIL_FARE_INCREASES[year] < 0.10
-            ), f"Rate for {year} seems too high"
+            assert RAIL_FARE_INCREASES[year] > 0, (
+                f"Rate for {year} should be positive"
+            )
+            assert RAIL_FARE_INCREASES[year] < 0.10, (
+                f"Rate for {year} seems too high"
+            )
 
         # 2026 rate should be 5.8% (the rate that was frozen)
         assert RAIL_FARE_INCREASES[2026] == 0.058
@@ -404,9 +413,9 @@ class TestRailFaresFreeze:
         expected_years = [2026, 2027, 2028, 2029, 2030]
         for year in expected_years:
             assert year in RAIL_FREEZE_COSTS, f"Missing cost for {year}"
-            assert (
-                RAIL_FREEZE_COSTS[year] > 0
-            ), f"Cost for {year} should be positive"
+            assert RAIL_FREEZE_COSTS[year] > 0, (
+                f"Cost for {year} should be positive"
+            )
 
         # 2026 cost should be £0.145bn (Treasury estimate)
         assert RAIL_FREEZE_COSTS[2026] == 0.145
@@ -426,17 +435,28 @@ class TestStructuralReforms:
     def test_salary_sacrifice_cap_factory(self):
         """Salary sacrifice cap reform factory works.
 
-        Since policyengine-uk v2.63.0+, the salary sacrifice cap is in
-        baseline. The reform uses baseline_parameter_changes (no cap).
+        Since annual calculations use Jan 1 reference dates, we explicitly
+        set both baseline (no cap=infinity) and reform (cap=2000) parameters
+        to capture the impact.
         """
+        import numpy as np
+
         from uk_budget_data.reforms import create_salary_sacrifice_cap_reform
 
         reform = create_salary_sacrifice_cap_reform(cap_amount=2000)
         assert reform is not None
         assert reform.id == "salary_sacrifice_cap"
-        # Now uses baseline_parameter_changes instead of simulation_modifier
+        # Uses both baseline_parameter_changes and parameter_changes
         assert reform.baseline_parameter_changes is not None
-        assert reform.parameter_changes == {}
+        assert reform.parameter_changes is not None
+
+        cap_key = "gov.hmrc.national_insurance.salary_sacrifice_pension_cap"
+        # Baseline has infinity (no cap)
+        assert reform.baseline_parameter_changes[cap_key]["2029"] == np.inf
+        assert reform.baseline_parameter_changes[cap_key]["2030"] == np.inf
+        # Reform has £2000 cap
+        assert reform.parameter_changes[cap_key]["2029"] == 2000
+        assert reform.parameter_changes[cap_key]["2030"] == 2000
 
 
 class TestGetReform:
@@ -543,8 +563,8 @@ class TestForecastYearRange:
     def test_two_child_limit_applies_to_2030(self):
         """Two child limit reform baseline should apply to 2030.
 
-        Since policyengine-uk v2.63.0+, the reform uses baseline_parameter_changes
-        to set pre-budget values (limit=2) through 2030.
+        Since annual calculations use Jan 1 reference dates, we use year keys
+        like "2026" instead of dated entries like "2026-04-06".
         """
         from uk_budget_data.reforms import get_reform
 
@@ -553,7 +573,9 @@ class TestForecastYearRange:
         tc_key = "gov.dwp.tax_credits.child_tax_credit.limit.child_count"
         uc_key = "gov.dwp.universal_credit.elements.child.limit.child_count"
 
+        # Should have all years 2026-2030 in baseline with limit=2
         assert "2030" in reform.baseline_parameter_changes[tc_key]
         assert "2030" in reform.baseline_parameter_changes[uc_key]
+        assert "2026" in reform.baseline_parameter_changes[tc_key]
         assert reform.baseline_parameter_changes[tc_key]["2030"] == 2
         assert reform.baseline_parameter_changes[uc_key]["2030"] == 2
