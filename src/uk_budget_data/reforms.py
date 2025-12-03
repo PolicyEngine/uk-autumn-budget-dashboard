@@ -692,10 +692,14 @@ def create_salary_sacrifice_cap_reform(
                 "pension_contributions_via_salary_sacrifice", period=year
             )
             excess_ss_contrib = np.maximum(ss_contrib - year_cap, 0)
-            taxable_excess = excess_ss_contrib * (1 - employer_response_haircut)
+            taxable_excess = excess_ss_contrib * (
+                1 - employer_response_haircut
+            )
 
             emp_income = sim.calculate("employment_income", period=year)
-            sim.set_input("employment_income", year, emp_income + taxable_excess)
+            sim.set_input(
+                "employment_income", year, emp_income + taxable_excess
+            )
 
             employee_pension = sim.calculate(
                 "employee_pension_contributions", period=year

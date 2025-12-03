@@ -379,50 +379,32 @@ class TestRailFaresFreeze:
         assert reform is not None
         assert reform.id == "rail_fares_freeze"
 
-    def test_reform_uses_baseline_parameter_changes(self):
-        """Reform uses baseline parameter changes for fare index."""
+    def test_reform_uses_simulation_modifier(self):
+        """Reform uses simulation modifier for rail subsidy distribution."""
         from uk_budget_data.reforms import get_reform
 
         reform = get_reform("rail_fares_freeze")
-        assert reform.baseline_parameter_changes is not None
-        assert "gov.dft.rail.fare_index" in reform.baseline_parameter_changes
+        assert reform.simulation_modifier is not None
 
-    def test_baseline_uses_prior_law_fare_index(self):
-        """Baseline should use prior_law_fare_index values from pe-uk."""
-        from uk_budget_data.reforms import get_reform
+    def test_rail_freeze_costs_defined(self):
+        """Rail freeze costs should be defined for all years."""
+        from uk_budget_data.reforms import RAIL_FREEZE_COSTS
 
-        reform = get_reform("rail_fares_freeze")
-        baseline = reform.baseline_parameter_changes["gov.dft.rail.fare_index"]
-
-        expected_years = ["2026", "2027", "2028", "2029", "2030"]
+        expected_years = [2026, 2027, 2028, 2029, 2030]
         for year in expected_years:
-            assert year in baseline, f"Missing fare index for {year}"
+            assert year in RAIL_FREEZE_COSTS, f"Missing cost for {year}"
             assert (
-                baseline[year] > 1.0
-            ), f"Fare index for {year} should be > 1.0"
+                RAIL_FREEZE_COSTS[year] > 0
+            ), f"Cost for {year} should be > 0"
 
-        # 2026 baseline should be higher than current law (freeze)
-        # prior_law_fare_index = 1.288 vs fare_index = 1.217
-        assert baseline["2026"] > 1.25  # Should be ~1.288
-
-    def test_baseline_fare_shows_increase_without_freeze(self):
-        """Baseline fare index should show what would happen without freeze."""
-        from policyengine_uk.system import system
-
+    def test_rail_freeze_distributes_subsidy(self):
+        """Rail fares freeze should distribute subsidy to households."""
         from uk_budget_data.reforms import get_reform
 
         reform = get_reform("rail_fares_freeze")
-        baseline = reform.baseline_parameter_changes["gov.dft.rail.fare_index"]
-
-        # Get current law fare index (with freeze)
-        params = system.parameters
-        current_2026 = params.gov.dft.rail.fare_index("2026-04-01")
-
-        # Baseline (without freeze) should be higher than current law
-        assert baseline["2026"] > current_2026
-        # The difference should be ~5.8% (the RPI increase that was frozen)
-        pct_diff = (baseline["2026"] - current_2026) / current_2026
-        assert 0.05 < pct_diff < 0.07  # Should be ~5.8%
+        # Uses simulation_modifier to distribute rail_subsidy_spending
+        assert reform.simulation_modifier is not None
+        assert reform.baseline_parameter_changes is None  # No baseline params
 
 
 class TestStructuralReforms:
@@ -431,40 +413,33 @@ class TestStructuralReforms:
     def test_salary_sacrifice_cap_factory(self):
         """Salary sacrifice cap reform factory works.
 
-        Since policyengine-uk v2.63.0+, the salary sacrifice cap is in
-        baseline. The reform uses baseline_parameter_changes (no cap).
+        The reform uses a simulation_modifier to apply the cap manually
+        (since pe-uk's parameter doesn't affect calculations).
         """
         from uk_budget_data.reforms import create_salary_sacrifice_cap_reform
 
-        reform = create_salary_sacrifice_cap_reform(cap_amount=2000)
+        reform = create_salary_sacrifice_cap_reform()
         assert reform is not None
         assert reform.id == "salary_sacrifice_cap"
-        # Uses baseline_parameter_changes and simulation_modifier
-        assert reform.baseline_parameter_changes is not None
+        # Uses simulation_modifier to apply cap + haircut
         assert reform.simulation_modifier is not None
 
-    def test_salary_sacrifice_cap_uses_baseline(self):
-        """Salary sacrifice cap uses baseline (no cap) vs reform (pe-uk + modifier).
+    def test_salary_sacrifice_cap_uses_modifier(self):
+        """Salary sacrifice cap uses simulation modifier to apply cap.
 
-        policyengine-uk (post PR #1432) has the salary sacrifice cap baked in
-        as current law from April 2029. The reform compares:
-        - Baseline: Pre-budget policy (no cap, infinity)
-        - Reform: pe-uk defaults (£2,000 cap) + behavioural modifier (13% haircut)
+        The reform uses a simulation_modifier to manually apply the cap
+        (since pe-uk's parameter doesn't affect the calculation) and
+        includes a 13% employer response haircut.
         """
         from uk_budget_data.reforms import create_salary_sacrifice_cap_reform
 
         reform = create_salary_sacrifice_cap_reform()
 
-        # Baseline should have no cap (infinity)
-        cap_key = "gov.hmrc.national_insurance.salary_sacrifice_pension_cap"
-        assert reform.baseline_parameter_changes is not None
-        assert cap_key in reform.baseline_parameter_changes
-        assert reform.baseline_parameter_changes[cap_key]["2029"] == np.inf
-        assert reform.baseline_parameter_changes[cap_key]["2030"] == np.inf
-
-        # Reform uses pe-uk defaults (empty) + simulation_modifier
-        assert reform.parameter_changes == {}
+        # Uses simulation_modifier to apply cap + haircut
         assert reform.simulation_modifier is not None
+
+        # Cap value should be read from pe-uk (£2,000)
+        assert "£2,000" in reform.description
 
 
 class TestGetReform:
@@ -547,15 +522,12 @@ class TestForecastYearRange:
         assert "2030" in baseline[basic_key]
         assert baseline[basic_key]["2030"] == 0.20  # Pre-budget rate
 
-    def test_rail_fare_baseline_includes_2030(self):
-        """Rail fare freeze baseline should include 2030."""
-        from uk_budget_data.reforms import get_reform
+    def test_rail_fare_costs_include_2030(self):
+        """Rail fare freeze costs should include 2030."""
+        from uk_budget_data.reforms import RAIL_FREEZE_COSTS
 
-        reform = get_reform("rail_fares_freeze")
-        baseline = reform.baseline_parameter_changes["gov.dft.rail.fare_index"]
-
-        assert "2030" in baseline
-        assert baseline["2030"] > 1.0
+        assert 2030 in RAIL_FREEZE_COSTS
+        assert RAIL_FREEZE_COSTS[2030] > 0
 
     def test_student_loan_baseline_includes_2030(self):
         """Student loan threshold baseline should include 2030."""
