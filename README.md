@@ -172,7 +172,6 @@ The dashboard analyses these November 2025 Autumn Budget policies:
 | `dividend_tax_increase_2pp` | +2pp on dividend tax rates |
 | `savings_tax_increase_2pp` | +2pp on savings income tax |
 | `property_tax_increase_2pp` | +2pp on property income tax |
-| `zero_vat_energy` | Zero-rate VAT on domestic energy |
 
 ## Technology stack
 

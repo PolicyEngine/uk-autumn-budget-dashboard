@@ -10,10 +10,9 @@ const mockData = [
     "Threshold freeze extension": 5,
     "Salary sacrifice cap": 1,
     "National Insurance rate reduction": -12,
-    "Zero-rate VAT on domestic energy": -3,
     "2 child limit repeal": -3,
     "Fuel duty freeze": -1.5,
-    netImpact: 6.5,
+    netImpact: 9.5,
   },
 ];
 

@@ -27,7 +27,6 @@ const REFORM_NAMES = {
   property_tax_increase_2pp: "Property tax increase (+2pp)",
   freeze_student_loan_thresholds: "Student loan threshold freeze",
   salary_sacrifice_cap: "Salary sacrifice NICs cap",
-  zero_vat_energy: "Zero VAT on energy",
   autumn_budget_2025_combined: "Autumn Budget 2025 (combined)",
 };
 

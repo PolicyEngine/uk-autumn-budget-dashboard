@@ -394,7 +394,6 @@ function HouseholdChart({ rawData, selectedPolicies }) {
     savings_tax_increase_2pp: "Savings tax +2pp",
     property_tax_increase_2pp: "Property tax +2pp",
     freeze_student_loan_thresholds: "Student loan freeze",
-    zero_vat_energy: "Zero VAT on energy",
     salary_sacrifice_cap: "Salary sacrifice cap",
     autumn_budget_2025_combined: "Autumn Budget (combined)",
   };

@@ -16,11 +16,6 @@ from typing import Optional
 
 import numpy as np
 from policyengine_uk import Simulation
-from policyengine_uk.model_api import (
-    YEAR,
-    Household,
-    Variable,
-)
 
 from uk_budget_data.models import Reform
 
@@ -136,23 +131,35 @@ def _get_pre_ab_baseline_key(key: str) -> dict:
 
 
 def _create_two_child_limit_repeal() -> Reform:
-    """Create the two-child limit repeal reform."""
+    """Create the two-child limit repeal reform.
+
+    policyengine-uk (post PR #1432) has the two-child limit repeal baked in
+    as current law from April 2026. This reform compares:
+    - Baseline: Pre-budget policy (limit of 2 children)
+    - Reform: policyengine-uk defaults (limit removed, infinity from Apr 2026)
+
+    OBR costing: £2.1-2.8bn annually (static)
+    """
     return Reform(
         id="two_child_limit",
         name="2 child limit repeal",
         description=(
-            "Removes the two-child limit on benefits. The limit restricts "
-            "child-related payments in Universal Credit and Tax Credits to "
-            "the first two children in a family."
+            "Removes the two-child limit on benefits from April 2026. The limit "
+            "restricts child-related payments in Universal Credit and Tax Credits "
+            "to the first two children in a family. Compares Autumn Budget policy "
+            "(limit removed) against pre-budget baseline (limit of 2)."
         ),
-        parameter_changes={
+        # Baseline: Pre-budget policy (limit of 2 children)
+        baseline_parameter_changes={
             "gov.dwp.tax_credits.child_tax_credit.limit.child_count": (
-                _years_dict(np.inf)
+                _years_dict(2)
             ),
             "gov.dwp.universal_credit.elements.child.limit.child_count": (
-                _years_dict(np.inf)
+                _years_dict(2)
             ),
         },
+        # Reform: Use policyengine-uk defaults (infinity from April 2026)
+        parameter_changes={},
     )
 
 
@@ -391,47 +398,6 @@ def _create_property_tax_increase() -> Reform:
 # =============================================================================
 
 
-def _zero_rate_energy_vat_modifier(sim: Simulation) -> Simulation:
-    """Structural reform: Zero-rate VAT on domestic energy consumption.
-
-    This reform removes the 5% VAT on domestic energy bills by:
-    1. Calculating baseline VAT using the standard formula
-    2. Extracting VAT embedded in energy spending: energy × (0.05/1.05)
-    3. Subtracting energy VAT from total VAT
-    """
-
-    class vat(Variable):
-        label = "VAT (reformed to zero-rate energy)"
-        entity = Household
-        definition_period = YEAR
-        value_type = float
-        unit = "currency-GBP"
-
-        def formula(household, period, parameters):
-            full_rate_consumption = household(
-                "full_rate_vat_consumption", period
-            )
-            reduced_rate_consumption = household(
-                "reduced_rate_vat_consumption", period
-            )
-            p = parameters(period).gov
-
-            baseline_vat = (
-                full_rate_consumption * p.hmrc.vat.standard_rate
-                + reduced_rate_consumption * p.hmrc.vat.reduced_rate
-            ) / p.simulation.microdata_vat_coverage
-
-            domestic_energy = household("domestic_energy_consumption", period)
-            energy_vat = domestic_energy * (
-                p.hmrc.vat.reduced_rate / (1 + p.hmrc.vat.reduced_rate)
-            )
-
-            return baseline_vat - energy_vat
-
-    sim.tax_benefit_system.update_variable(vat)
-    return sim
-
-
 def _connect_student_loan_variables(sim: Simulation) -> Simulation:
     """Connect policyengine-uk's modelled student loan repayments to revenue.
 
@@ -566,89 +532,27 @@ def get_freeze_student_loan_thresholds() -> Reform:
 FREEZE_STUDENT_LOAN_THRESHOLDS = None  # Set lazily via get function
 
 
-ZERO_VAT_ENERGY = Reform(
-    id="zero_vat_energy",
-    name="Zero-rate VAT on energy",
-    description=(
-        "Removes the 5% VAT on domestic energy bills. "
-        "Estimated cost: £2.5-3.0 billion per year. "
-        "Average household saving: £86-95 per year."
-    ),
-    simulation_modifier=_zero_rate_energy_vat_modifier,
-)
+def _get_prior_law_fare_index() -> dict:
+    """Get the prior law fare index values (counterfactual without freeze).
 
+    policyengine-uk includes both:
+    - fare_index: current law with 2026 freeze baked in
+    - prior_law_fare_index: what fares would be without the freeze (5.8% increase)
 
-# Rail fare increase rates (per OBR forecasts)
-# Baseline: fares increase by RPI formula each year
-RAIL_FARE_INCREASES = {
-    2026: 0.058,  # 5.8% baseline increase
-    2027: 0.042,  # 4.2%
-    2028: 0.039,  # 3.9%
-    2029: 0.039,  # 3.9%
-    2030: 0.039,  # Assumed same as 2029
-}
-
-# Treasury cost estimates for rail fare freeze (£bn)
-# Source: Treasury estimate of £145m in 2026-27, £775m total by 2030-31
-RAIL_FREEZE_COSTS = {
-    2026: 0.145,  # £145m
-    2027: 0.155,  # Estimated from total
-    2028: 0.160,  # Estimated from total
-    2029: 0.165,  # Estimated from total
-    2030: 0.150,  # Remaining from £775m total
-}
-
-
-def _rail_fares_freeze_modifier(sim: Simulation) -> Simulation:
-    """Structural reform: Rail fares freeze for 2026.
-
-    The government announced a one-year freeze on regulated rail fares from
-    March 2026 - the first freeze in 30 years. Without the freeze, fares would
-    have increased by 5.8% under the RPI formula.
-
-    This reform increases rail_subsidy_spending to compensate for the foregone
-    fare revenue. The cost is based on Treasury estimates (£145m in 2026-27,
-    £775m total by 2030-31) and distributed proportionally based on household
-    rail usage.
-
-    Implementation:
-    - Get current rail subsidy values from the model
-    - Add Treasury-estimated cost distributed proportionally by rail usage
-    - Adjust for household weights when setting sample values
+    Returns the prior_law_fare_index values for use as baseline.
     """
-    for year in [2026, 2027, 2028, 2029, 2030]:
-        # Get current rail subsidy values and weights
-        current_rail = sim.calculate(
-            "rail_subsidy_spending", year, map_to="household"
-        )
-        weights = sim.calculate("household_weight", year)
+    from policyengine_uk.system import system
 
-        # Convert to numpy arrays for manipulation
-        current_array = np.array(current_rail)
-        weights_array = np.array(weights)
+    params = system.parameters
+    prior_law = params.gov.dft.rail.prior_law_fare_index
 
-        # Treasury cost estimate for this year (in £)
-        treasury_cost = RAIL_FREEZE_COSTS[year] * 1e9
-
-        # Calculate weighted shares of rail usage
-        weighted_rail = current_array * weights_array
-        total_weighted_rail = weighted_rail.sum()
-
-        # Distribute cost proportionally by rail usage
-        # Need to divide by weight since set_input takes sample values
-        # that will later be weighted
-        share = np.where(
-            total_weighted_rail > 0, weighted_rail / total_weighted_rail, 0
-        )
-        sample_gain = np.where(
-            weights_array > 0, share * treasury_cost / weights_array, 0
-        )
-
-        # Set the reformed rail subsidy
-        reformed_values = current_array + sample_gain
-        sim.set_input("rail_subsidy_spending", year, reformed_values)
-
-    return sim
+    return {
+        "2026": prior_law("2026-04-01"),
+        "2027": prior_law("2027-04-01"),
+        "2028": prior_law("2028-04-01"),
+        "2029": prior_law("2029-04-01"),
+        "2030": prior_law("2030-04-01"),
+    }
 
 
 def _create_rail_fares_freeze() -> Reform:
@@ -658,15 +562,23 @@ def _create_rail_fares_freeze() -> Reform:
     freeze in 30 years. Saves passengers an estimated £600 million in
     2026-27 (per government estimates).
 
+    policyengine-uk includes:
+    - fare_index: current law (with freeze baked in from 2026)
+    - prior_law_fare_index: counterfactual (5.8% increase in 2026 under RPI)
+
+    This reform uses:
+    - Baseline: prior_law_fare_index (what would have happened without freeze)
+    - Reform: pe-uk defaults (fare_index with freeze)
+
     OBR fiscal impact (Table 3.5):
-    - 2026-27: -£0.2bn (cost)
+    - 2026-27: -£0.1bn (cost)
     - 2027-28: -£0.2bn (cost)
     - 2028-29: -£0.2bn (cost)
     - 2029-30: -£0.2bn (cost)
-
-    Note: Government estimates £600m passenger savings in 2026-27 alone.
-    The ongoing cost reflects the permanent base effect of the freeze.
+    - 2030-31: -£0.2bn (cost)
     """
+    prior_law_fares = _get_prior_law_fare_index()
+
     return Reform(
         id="rail_fares_freeze",
         name="Rail fares freeze",
@@ -676,7 +588,10 @@ def _create_rail_fares_freeze() -> Reform:
             "RPI formula. Saves commuters on expensive routes over £300/year. "
             "See https://policyengine.org/uk/research/rail-fares-freeze-2025"
         ),
-        simulation_modifier=_rail_fares_freeze_modifier,
+        baseline_parameter_changes={
+            "gov.dft.rail.fare_index": prior_law_fares,
+        },
+        parameter_changes={},  # Use pe-uk defaults (fare_index with freeze)
     )
 
 
@@ -686,9 +601,14 @@ def create_salary_sacrifice_cap_reform(
 ) -> Reform:
     """Create a salary sacrifice cap reform with configurable parameters.
 
-    This reform caps salary sacrifice pension contributions, after which
-    national insurance applies to the excess. Takes effect from April 2029
-    per the OBR's November 2025 Economic and Fiscal Outlook.
+    policyengine-uk (post PR #1432) has the salary sacrifice cap baked in
+    as current law from April 2029. This reform compares:
+    - Baseline: Pre-budget policy (no cap, infinity)
+    - Reform: policyengine-uk defaults (£2,000 cap from April 2029)
+
+    The simulation_modifier applies behavioural responses:
+    - Employees redirect excess contributions to regular pension
+    - Employers spread increased NI costs across workers (haircut)
 
     Args:
         cap_amount: Annual cap on NI-free salary sacrifice in GBP.
@@ -696,6 +616,8 @@ def create_salary_sacrifice_cap_reform(
 
     Returns:
         Reform object configured with the specified parameters.
+
+    OBR costing: £4.9bn in 2029-30 (static)
     """
 
     def modifier(sim: Simulation) -> Simulation:
@@ -734,11 +656,21 @@ def create_salary_sacrifice_cap_reform(
         description=(
             f"Caps salary sacrifice pension contributions at £{cap_amount:,.0f} "
             f"per year from April 2029. Contributions above the cap become "
-            f"employment income subject to income tax and NICs. Assumes "
-            f"employees redirect excess to regular pension contributions "
-            f"(maintaining pension savings) and employers spread increased NI "
-            f"costs across all workers ({employer_response_haircut:.0%} haircut)."
+            f"subject to employee and employer NICs. Compares Autumn Budget "
+            f"policy (£2,000 cap) against pre-budget baseline (no cap). "
+            f"Assumes employees redirect excess to regular pension contributions "
+            f"and employers spread increased NI costs ({employer_response_haircut:.0%} haircut)."
         ),
+        # Baseline: Pre-budget policy (no cap)
+        baseline_parameter_changes={
+            "gov.hmrc.national_insurance.salary_sacrifice_pension_cap": {
+                "2029": np.inf,
+                "2030": np.inf,
+            }
+        },
+        # Reform: Use policyengine-uk defaults (£2,000 cap from April 2029)
+        # plus behavioural response modifier
+        parameter_changes={},
         simulation_modifier=modifier,
     )
 
@@ -751,10 +683,16 @@ def create_salary_sacrifice_cap_reform(
 def _create_combined_autumn_budget_reform() -> Reform:
     """Create a combined reform with all Autumn Budget 2025 provisions.
 
-    This reform combines:
+    policyengine-uk (post PR #1432) has the following baked in as current law:
+    - Two-child limit repeal (from April 2026)
+    - Salary sacrifice cap £2,000 (from April 2029)
+
+    This reform combines all Autumn Budget provisions:
     - Two-child limit repeal (spending)
+    - Salary sacrifice cap (revenue)
     - Fuel duty freeze extension (spending)
     - Threshold freeze extension (revenue)
+    - Student loan threshold freeze (revenue)
     - Dividend tax increase +2pp (revenue)
     - Savings tax increase +2pp (revenue)
     - Property tax increase +2pp (revenue)
@@ -775,6 +713,18 @@ def _create_combined_autumn_budget_reform() -> Reform:
 
     # Combine all baseline parameter changes
     combined_baseline_params = {
+        # Two-child limit baseline (pre-budget: limit of 2)
+        "gov.dwp.tax_credits.child_tax_credit.limit.child_count": (
+            _years_dict(2)
+        ),
+        "gov.dwp.universal_credit.elements.child.limit.child_count": (
+            _years_dict(2)
+        ),
+        # Salary sacrifice cap baseline (pre-budget: no cap)
+        "gov.hmrc.national_insurance.salary_sacrifice_pension_cap": {
+            "2029": np.inf,
+            "2030": np.inf,
+        },
         # Fuel duty baseline (pre-budget rates - hardcoded)
         "gov.hmrc.fuel_duty.petrol_and_diesel": fuel_duty_baseline,
         # Threshold baseline (CPI-indexed from 2028)
@@ -841,25 +791,18 @@ def _create_combined_autumn_budget_reform() -> Reform:
     slr_baseline = _calculate_pre_freeze_thresholds()
     combined_baseline_params.update(slr_baseline)
 
-    # Reform parameter changes (two-child limit repeal)
-    reform_params = {
-        "gov.dwp.tax_credits.child_tax_credit.limit.child_count": _years_dict(
-            np.inf
-        ),
-        "gov.dwp.universal_credit.elements.child.limit.child_count": (
-            _years_dict(np.inf)
-        ),
-    }
+    # Reform: Use policyengine-uk defaults (all budget policies baked in)
+    reform_params = {}
 
     return Reform(
         id="autumn_budget_2025_combined",
         name="Autumn Budget 2025 (combined)",
         description=(
             "All Autumn Budget 2025 provisions combined: two-child limit "
-            "repeal, fuel duty freeze extension, threshold freeze extension, "
-            "student loan threshold freeze, and tax rate increases on "
-            "dividends (+2pp), savings (+2pp), and property income (+2pp). "
-            "Shows full budget impact with interactions."
+            "repeal, salary sacrifice cap, fuel duty freeze extension, "
+            "threshold freeze extension, student loan threshold freeze, and "
+            "tax rate increases on dividends (+2pp), savings (+2pp), and "
+            "property income (+2pp). Shows full budget impact with interactions."
         ),
         baseline_parameter_changes=combined_baseline_params,
         baseline_simulation_modifier=combined_baseline_modifier,
@@ -892,7 +835,6 @@ def _get_autumn_budget_2025_reforms() -> list[Reform]:
             _create_savings_tax_increase(),
             _create_property_tax_increase(),
             get_freeze_student_loan_thresholds(),
-            ZERO_VAT_ENERGY,
             create_salary_sacrifice_cap_reform(),
         ]
     return _AUTUMN_BUDGET_2025_REFORMS_CACHE

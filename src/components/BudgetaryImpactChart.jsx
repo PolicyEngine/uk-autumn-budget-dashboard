@@ -23,7 +23,6 @@ const POLICY_COLORS = {
   "2 child limit repeal": "#0D9488", // Teal
   "Fuel duty freeze extension": "#5EEAD4", // Light teal
   "Rail fares freeze": "#10B981", // Emerald
-  "Zero-rate VAT on energy": "#14B8A6", // Teal 500
 
   // REVENUE raisers (bad for households - amber/orange spectrum)
   "Threshold freeze extension": "#D97706", // Amber
@@ -48,7 +47,6 @@ const ALL_POLICY_NAMES = [
   "2 child limit repeal",
   "Fuel duty freeze extension",
   "Rail fares freeze",
-  "Zero-rate VAT on energy",
 ];
 
 // Custom label component for net impact values
