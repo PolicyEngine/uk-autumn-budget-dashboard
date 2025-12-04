@@ -701,46 +701,38 @@ def _create_rail_fares_freeze() -> Reform:
 
 def create_salary_sacrifice_cap_reform(
     cap_amount: float = 2000,
-    employer_response_haircut: float = 0.13,
 ) -> Reform:
     """Create a salary sacrifice cap reform with configurable parameters.
 
-    This reform caps salary sacrifice pension contributions, after which
-    national insurance applies to the excess. Takes effect from April 2029
-    per the OBR's November 2025 Economic and Fiscal Outlook.
-
-    Uses policyengine-uk's built-in salary sacrifice cap implementation.
-    The baseline sets the cap to infinity (no cap), and the reformed
-    simulation uses the default parameters (£2000 cap from April 2029).
+    policyengine-uk v2.65.0+ has the salary sacrifice pension cap of £2,000
+    from April 2029 baked in, and fiscal year conversion ensures annual queries
+    return the April 30 value. We only need to set the pre-budget baseline.
 
     Args:
-        cap_amount: Annual cap on NI-free salary sacrifice in GBP.
-        employer_response_haircut: Proportion of excess that employers retain.
+        cap_amount: Annual cap on NI-free salary sacrifice in GBP (for display).
 
     Returns:
         Reform object configured with the specified parameters.
     """
-    # Baseline: no cap (infinity) - pre-policy state
-    # Reformed: uses policyengine-uk defaults (£2000 cap from April 2029)
-    baseline_changes = {
-        "gov.hmrc.national_insurance.salary_sacrifice_pension_cap": {
-            "2029": float("inf"),
-            "2030": float("inf"),
-        },
-    }
-
     return Reform(
         id="salary_sacrifice_cap",
         name="Salary sacrifice cap",
         description=(
             f"Caps salary sacrifice pension contributions at £{cap_amount:,.0f} "
             f"per year from April 2029. Contributions above the cap become "
-            f"subject to employee and employer NICs. Assumes "
-            f"employees redirect excess to regular pension contributions "
-            f"(maintaining pension savings) and employers spread increased NI "
-            f"costs across all workers ({employer_response_haircut:.0%} haircut)."
+            f"subject to employee and employer NICs. policyengine-uk v2.65.0+ "
+            f"includes this in baseline via the salary_sacrifice_pension_cap "
+            f"parameter."
         ),
-        baseline_parameter_changes=baseline_changes,
+        # Baseline: Pre-budget (no cap, infinity)
+        baseline_parameter_changes={
+            "gov.hmrc.national_insurance.salary_sacrifice_pension_cap": {
+                "2029": np.inf,
+                "2030": np.inf,
+            },
+        },
+        # Reform: Use current law (policyengine-uk v2.65.0+ with cap)
+        parameter_changes={},
     )
 
 
