@@ -552,7 +552,7 @@ class TestForecastYearRange:
         baseline = reform.baseline_parameter_changes
 
         slr_key = "gov.hmrc.student_loans.thresholds.plan_2"
-        assert "2030-01-01" in baseline[slr_key]
+        assert "2030" in baseline[slr_key]
 
     def test_two_child_limit_applies_to_2030(self):
         """Two child limit reform baseline should apply to 2030.
