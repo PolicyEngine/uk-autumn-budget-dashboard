@@ -144,6 +144,19 @@ function EmploymentIncomeDiffChart({ selectedPolicies, selectedYear = 2026 }) {
   const maxAbs = Math.max(...data.map((d) => Math.abs(d.difference)));
   const yMax = Math.ceil(maxAbs / 1000) * 1000 || 1000;
 
+  // Check if there are any non-null positive or negative values
+  const hasPositive = data.some((d) => d.positive !== null && d.positive > 0);
+  const hasNegative = data.some((d) => d.negative !== null && d.negative < 0);
+
+  // Build dynamic legend based on actual data
+  const legendPayload = [];
+  if (hasPositive) {
+    legendPayload.push({ value: "Gain", type: "square", color: "#319795" });
+  }
+  if (hasNegative) {
+    legendPayload.push({ value: "Loss", type: "square", color: "#E53E3E" });
+  }
+
   return (
     <div className="employment-income-diff-chart">
       <div className="chart-header">
@@ -241,57 +254,60 @@ function EmploymentIncomeDiffChart({ selectedPolicies, selectedYear = 2026 }) {
               }}
               labelStyle={{ fontWeight: 600, marginBottom: "4px" }}
             />
-            <Legend
-              wrapperStyle={{
-                paddingTop: "15px",
-                paddingBottom: "0px",
-                paddingRight: "140px",
-              }}
-              iconType="square"
-              iconSize={14}
-              formatter={(value) => (
-                <span
-                  style={{
-                    fontSize: "13px",
-                    fontWeight: 500,
-                    color: "#374151",
-                  }}
-                >
-                  {value}
-                </span>
-              )}
-              verticalAlign="bottom"
-              align="center"
-              payload={[
-                { value: "Gain", type: "square", color: "#319795" },
-                { value: "Loss", type: "square", color: "#E53E3E" },
-              ]}
-            />
+            {legendPayload.length > 0 && (
+              <Legend
+                wrapperStyle={{
+                  paddingTop: "15px",
+                  paddingBottom: "0px",
+                  paddingRight: "140px",
+                }}
+                iconType="square"
+                iconSize={14}
+                formatter={(value) => (
+                  <span
+                    style={{
+                      fontSize: "13px",
+                      fontWeight: 500,
+                      color: "#374151",
+                    }}
+                  >
+                    {value}
+                  </span>
+                )}
+                verticalAlign="bottom"
+                align="center"
+                payload={legendPayload}
+              />
+            )}
             <ReferenceLine y={0} stroke="#374151" strokeWidth={1} />
-            <Area
-              type="monotone"
-              dataKey="positive"
-              stroke="#319795"
-              strokeWidth={2}
-              fill="#319795"
-              fillOpacity={0.6}
-              baseValue={0}
-              connectNulls={false}
-              animationDuration={500}
-              animationBegin={0}
-            />
-            <Area
-              type="monotone"
-              dataKey="negative"
-              stroke="#E53E3E"
-              strokeWidth={2}
-              fill="#E53E3E"
-              fillOpacity={0.6}
-              baseValue={0}
-              connectNulls={false}
-              animationDuration={500}
-              animationBegin={0}
-            />
+            {hasPositive && (
+              <Area
+                type="monotone"
+                dataKey="positive"
+                stroke="#319795"
+                strokeWidth={2}
+                fill="#319795"
+                fillOpacity={0.6}
+                baseValue={0}
+                connectNulls={false}
+                animationDuration={500}
+                animationBegin={0}
+              />
+            )}
+            {hasNegative && (
+              <Area
+                type="monotone"
+                dataKey="negative"
+                stroke="#E53E3E"
+                strokeWidth={2}
+                fill="#E53E3E"
+                fillOpacity={0.6}
+                baseValue={0}
+                connectNulls={false}
+                animationDuration={500}
+                animationBegin={0}
+              />
+            )}
             <Customized component={PolicyEngineLogo} />
           </AreaChart>
         </ResponsiveContainer>
