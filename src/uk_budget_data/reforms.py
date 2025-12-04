@@ -709,6 +709,10 @@ def create_salary_sacrifice_cap_reform(
     national insurance applies to the excess. Takes effect from April 2029
     per the OBR's November 2025 Economic and Fiscal Outlook.
 
+    Uses policyengine-uk's built-in salary sacrifice cap implementation.
+    The baseline sets the cap to infinity (no cap), and the reformed
+    simulation uses the default parameters (£2000 cap from April 2029).
+
     Args:
         cap_amount: Annual cap on NI-free salary sacrifice in GBP.
         employer_response_haircut: Proportion of excess that employers retain.
@@ -716,36 +720,14 @@ def create_salary_sacrifice_cap_reform(
     Returns:
         Reform object configured with the specified parameters.
     """
-
-    def modifier(sim: Simulation) -> Simulation:
-        # Policy takes effect from April 2029 (fiscal year 2029-30)
-        for year in range(2029, 2031):
-            ss_contrib = sim.calculate(
-                "pension_contributions_via_salary_sacrifice", period=year
-            )
-            excess_ss_contrib = np.maximum(ss_contrib - cap_amount, 0)
-            emp_income = sim.calculate("employment_income", period=year)
-            new_employment_income = emp_income + excess_ss_contrib * (
-                1 - employer_response_haircut
-            )
-            sim.set_input("employment_income", year, new_employment_income)
-
-            employee_pension = sim.calculate(
-                "employee_pension_contributions", period=year
-            )
-            new_employee_pension = employee_pension + excess_ss_contrib * (
-                1 - employer_response_haircut
-            )
-            sim.set_input(
-                "employee_pension_contributions", year, new_employee_pension
-            )
-
-            new_ss = ss_contrib - excess_ss_contrib
-            sim.set_input(
-                "pension_contributions_via_salary_sacrifice", year, new_ss
-            )
-
-        return sim
+    # Baseline: no cap (infinity) - pre-policy state
+    # Reformed: uses policyengine-uk defaults (£2000 cap from April 2029)
+    baseline_changes = {
+        "gov.hmrc.national_insurance.salary_sacrifice_pension_cap": {
+            "2029": float("inf"),
+            "2030": float("inf"),
+        },
+    }
 
     return Reform(
         id="salary_sacrifice_cap",
@@ -753,12 +735,12 @@ def create_salary_sacrifice_cap_reform(
         description=(
             f"Caps salary sacrifice pension contributions at £{cap_amount:,.0f} "
             f"per year from April 2029. Contributions above the cap become "
-            f"employment income subject to income tax and NICs. Assumes "
+            f"subject to employee and employer NICs. Assumes "
             f"employees redirect excess to regular pension contributions "
             f"(maintaining pension savings) and employers spread increased NI "
             f"costs across all workers ({employer_response_haircut:.0%} haircut)."
         ),
-        simulation_modifier=modifier,
+        baseline_parameter_changes=baseline_changes,
     )
 
 
