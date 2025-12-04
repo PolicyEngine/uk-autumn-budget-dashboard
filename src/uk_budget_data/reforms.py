@@ -518,12 +518,12 @@ def _calculate_pre_freeze_thresholds() -> dict:
 
     return {
         # Baseline: Continue RPI uprating from 2027 (no freeze)
-        # Use January 1 dates since calculations use period.start.year
+        # Use year-only format for Scenario compatibility
         "gov.hmrc.student_loans.thresholds.plan_2": {
-            "2027-01-01": round(base_2026 * rpi_2027 / rpi_2026),
-            "2028-01-01": round(base_2026 * rpi_2028 / rpi_2026),
-            "2029-01-01": round(base_2026 * rpi_2029 / rpi_2026),
-            "2030-01-01": round(base_2026 * rpi_2030 / rpi_2026),
+            "2027": round(base_2026 * rpi_2027 / rpi_2026),
+            "2028": round(base_2026 * rpi_2028 / rpi_2026),
+            "2029": round(base_2026 * rpi_2029 / rpi_2026),
+            "2030": round(base_2026 * rpi_2030 / rpi_2026),
         },
     }
 
