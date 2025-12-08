@@ -18,7 +18,7 @@ const POLICIES = [
     name: "2 child limit repeal",
     description: "Repeal the two-child limit on benefits",
     explanation:
-      "The two-child limit restricts Universal Credit and Child Tax Credit payments to a maximum number of children per family. Removing this limit allows families to claim child-related benefit payments for all children without a cap. The Government estimates this will reduce child poverty by 450,000 by 2029-30.",
+      'The two-child limit restricts Universal Credit and Child Tax Credit payments to a maximum number of children per family. Removing this limit allows families to claim child-related benefit payments for all children without a cap. The Government estimates this will reduce child poverty by 450,000 by 2029-30. See our <a href="https://policyengine.org/uk/research/uk-two-child-limit" target="_blank" rel="noopener noreferrer">research report</a> for details.',
   },
   {
     id: "fuel_duty_freeze",
@@ -464,9 +464,12 @@ function App() {
                   onClick={(e) => {
                     e.preventDefault();
                     setShowPolicyDetails(true);
-                    document
-                      .getElementById("policy-details")
-                      ?.scrollIntoView({ behavior: "smooth" });
+                    // Delay scroll to allow accordion to expand first
+                    setTimeout(() => {
+                      document
+                        .getElementById("policy-details")
+                        ?.scrollIntoView({ behavior: "smooth" });
+                    }, 50);
                   }}
                 >
                   See policy descriptions below.

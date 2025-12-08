@@ -12,13 +12,17 @@ import {
 } from "recharts";
 import { PolicyEngineLogo, CHART_LOGO } from "../utils/chartLogo";
 import { exportChartAsSvg } from "../utils/exportChartAsSvg";
+import YearSlider from "./YearSlider";
 import "./EmploymentIncomeChart.css";
 import "./ChartExport.css";
 
+// Format year for display (e.g., 2026 -> "2026-27")
+const formatYearRange = (year) => `${year}-${(year + 1).toString().slice(-2)}`;
+
 // Chart metadata for export
 const CHART_TITLE = "Household net income analysis";
-const CHART_DESCRIPTION =
-  "This chart models a household with 2 adults (both age 40) and 3 children (ages 7, 5, and 3) in 2026-27. The primary earner contributes £10,000 annually to their pension. Baseline shows current policy, reform shows impact after selected changes.";
+const getChartDescription = (year) =>
+  `This chart models a household with 2 adults (both age 40) and 3 children (ages 7, 5, and 3) in ${formatYearRange(year)}. The primary earner contributes £10,000 annually to their pension. Baseline shows current policy, reform shows impact after selected changes.`;
 
 // Legend items for export
 const LEGEND_ITEMS = [
@@ -26,15 +30,18 @@ const LEGEND_ITEMS = [
   { color: "#319795", label: "Reform", type: "line" },
 ];
 
-function EmploymentIncomeChart({ selectedPolicies, selectedYear = 2026 }) {
+function EmploymentIncomeChart({ selectedPolicies }) {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [internalYear, setInternalYear] = useState(2029);
   const chartRef = useRef(null);
+
+  const chartTitle = `Household net income analysis, ${formatYearRange(internalYear)}`;
 
   const handleExportSvg = async () => {
     await exportChartAsSvg(chartRef, "household-net-income", {
-      title: CHART_TITLE,
-      description: CHART_DESCRIPTION,
+      title: chartTitle,
+      description: getChartDescription(internalYear),
       legendItems: LEGEND_ITEMS,
       logo: CHART_LOGO,
     });
@@ -61,7 +68,7 @@ function EmploymentIncomeChart({ selectedPolicies, selectedYear = 2026 }) {
 
         // Filter by selected year
         const yearFilteredData = allData.filter(
-          (row) => parseInt(row.year) === selectedYear,
+          (row) => parseInt(row.year) === internalYear,
         );
 
         // Get unique employment income values (up to 100k)
@@ -112,7 +119,7 @@ function EmploymentIncomeChart({ selectedPolicies, selectedYear = 2026 }) {
         console.error("Error loading income curve data:", error);
         setLoading(false);
       });
-  }, [selectedPolicies, selectedYear]);
+  }, [selectedPolicies, internalYear]);
 
   const formatCurrency = (value) => {
     if (value >= 1000) {
@@ -124,10 +131,10 @@ function EmploymentIncomeChart({ selectedPolicies, selectedYear = 2026 }) {
   if (loading) {
     return (
       <div className="employment-income-chart">
-        <h2>Household net income analysis</h2>
+        <h2>{chartTitle}</h2>
         <p className="chart-description">
           This chart shows the relationship between household head employment
-          income and total household net income in 2026-27.
+          income and total household net income in {formatYearRange(internalYear)}.
         </p>
         <div style={{ textAlign: "center", padding: "40px", color: "#666" }}>
           Loading income curve data...
@@ -140,10 +147,10 @@ function EmploymentIncomeChart({ selectedPolicies, selectedYear = 2026 }) {
     <div className="employment-income-chart">
       <div className="chart-header">
         <div>
-          <h2>Household net income analysis</h2>
+          <h2>{chartTitle}</h2>
           <p className="chart-description">
             This chart models a household with 2 adults (both age 40) and 3
-            children (ages 7, 5, and 3) in 2026-27. The primary earner
+            children (ages 7, 5, and 3) in {formatYearRange(internalYear)}. The primary earner
             contributes £10,000 annually to their pension. Baseline shows
             current policy, reform shows impact after selected changes.
           </p>
@@ -279,6 +286,8 @@ function EmploymentIncomeChart({ selectedPolicies, selectedYear = 2026 }) {
           </LineChart>
         </ResponsiveContainer>
       </div>
+
+      <YearSlider selectedYear={internalYear} onYearChange={setInternalYear} />
     </div>
   );
 }

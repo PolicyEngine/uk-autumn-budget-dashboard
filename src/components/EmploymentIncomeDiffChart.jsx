@@ -13,13 +13,17 @@ import {
 } from "recharts";
 import { PolicyEngineLogo, CHART_LOGO } from "../utils/chartLogo";
 import { exportChartAsSvg } from "../utils/exportChartAsSvg";
+import YearSlider from "./YearSlider";
 import "./EmploymentIncomeDiffChart.css";
 import "./ChartExport.css";
 
+// Format year for display (e.g., 2026 -> "2026-27")
+const formatYearRange = (year) => `${year}-${(year + 1).toString().slice(-2)}`;
+
 // Chart metadata for export
 const CHART_TITLE = "Net income change";
-const CHART_DESCRIPTION =
-  "This chart shows the change in household net income (reform minus baseline) for the same household scenario. Green indicates gains, red indicates losses.";
+const getChartDescription = () =>
+  `This chart shows the change in household net income for a household with 2 adults (both age 40) and 3 children (ages 7, 5, and 3). The primary earner contributes £10,000 annually to their pension.`;
 
 // Legend items for export
 const LEGEND_ITEMS = [
@@ -27,15 +31,18 @@ const LEGEND_ITEMS = [
   { color: "#E53E3E", label: "Loss", type: "rect" },
 ];
 
-function EmploymentIncomeDiffChart({ selectedPolicies, selectedYear = 2026 }) {
+function EmploymentIncomeDiffChart({ selectedPolicies }) {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [internalYear, setInternalYear] = useState(2029);
   const chartRef = useRef(null);
+
+  const chartTitle = `Net income change, ${formatYearRange(internalYear)}`;
 
   const handleExportSvg = async () => {
     await exportChartAsSvg(chartRef, "net-income-change", {
-      title: CHART_TITLE,
-      description: CHART_DESCRIPTION,
+      title: chartTitle,
+      description: getChartDescription(),
       legendItems: LEGEND_ITEMS,
       logo: CHART_LOGO,
     });
@@ -62,7 +69,7 @@ function EmploymentIncomeDiffChart({ selectedPolicies, selectedYear = 2026 }) {
 
         // Filter by selected year
         const yearFilteredData = allData.filter(
-          (row) => parseInt(row.year) === selectedYear,
+          (row) => parseInt(row.year) === internalYear,
         );
 
         // Get unique employment income values (up to 100k)
@@ -114,7 +121,7 @@ function EmploymentIncomeDiffChart({ selectedPolicies, selectedYear = 2026 }) {
         console.error("Error loading income curve data:", error);
         setLoading(false);
       });
-  }, [selectedPolicies, selectedYear]);
+  }, [selectedPolicies, internalYear]);
 
   const formatCurrency = (value) => {
     const absVal = Math.abs(value);
@@ -129,9 +136,11 @@ function EmploymentIncomeDiffChart({ selectedPolicies, selectedYear = 2026 }) {
   if (loading) {
     return (
       <div className="employment-income-diff-chart">
-        <h2>Net income change</h2>
+        <h2>{chartTitle}</h2>
         <p className="chart-description">
-          This chart shows the change in household net income under the reform.
+          This chart shows the change in household net income for a household
+          with 2 adults (both age 40) and 3 children (ages 7, 5, and 3). The
+          primary earner contributes £10,000 annually to their pension.
         </p>
         <div style={{ textAlign: "center", padding: "40px", color: "#666" }}>
           Loading income curve data...
@@ -148,24 +157,21 @@ function EmploymentIncomeDiffChart({ selectedPolicies, selectedYear = 2026 }) {
   const hasPositive = data.some((d) => d.positive !== null && d.positive > 0);
   const hasNegative = data.some((d) => d.negative !== null && d.negative < 0);
 
-  // Build dynamic legend based on actual data
-  const legendPayload = [];
-  if (hasPositive) {
-    legendPayload.push({ value: "Gain", type: "square", color: "#319795" });
-  }
-  if (hasNegative) {
-    legendPayload.push({ value: "Loss", type: "square", color: "#E53E3E" });
-  }
+  // Always show both Gain and Loss in legend for consistency
+  const legendPayload = [
+    { value: "Gain", type: "square", color: "#319795" },
+    { value: "Loss", type: "square", color: "#E53E3E" },
+  ];
 
   return (
     <div className="employment-income-diff-chart">
       <div className="chart-header">
         <div>
-          <h2>Net income change</h2>
+          <h2>{chartTitle}</h2>
           <p className="chart-description">
-            This chart shows the change in household net income (reform minus
-            baseline) for the same household scenario. Green indicates gains,
-            red indicates losses.
+            This chart shows the change in household net income for a household
+            with 2 adults (both age 40) and 3 children (ages 7, 5, and 3). The
+            primary earner contributes £10,000 annually to their pension.
           </p>
         </div>
         <button
@@ -312,6 +318,8 @@ function EmploymentIncomeDiffChart({ selectedPolicies, selectedYear = 2026 }) {
           </AreaChart>
         </ResponsiveContainer>
       </div>
+
+      <YearSlider selectedYear={internalYear} onYearChange={setInternalYear} />
     </div>
   );
 }
