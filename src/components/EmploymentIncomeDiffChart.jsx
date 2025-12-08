@@ -148,14 +148,11 @@ function EmploymentIncomeDiffChart({ selectedPolicies, selectedYear = 2026 }) {
   const hasPositive = data.some((d) => d.positive !== null && d.positive > 0);
   const hasNegative = data.some((d) => d.negative !== null && d.negative < 0);
 
-  // Build dynamic legend based on actual data
-  const legendPayload = [];
-  if (hasPositive) {
-    legendPayload.push({ value: "Gain", type: "square", color: "#319795" });
-  }
-  if (hasNegative) {
-    legendPayload.push({ value: "Loss", type: "square", color: "#E53E3E" });
-  }
+  // Always show both Gain and Loss in legend for consistency
+  const legendPayload = [
+    { value: "Gain", type: "square", color: "#319795" },
+    { value: "Loss", type: "square", color: "#E53E3E" },
+  ];
 
   return (
     <div className="employment-income-diff-chart">
