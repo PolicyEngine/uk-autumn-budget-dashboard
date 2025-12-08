@@ -85,12 +85,26 @@ function HouseholdChart({ rawData, selectedPolicies }) {
       };
     });
 
-    // Collect ALL unique household IDs from all selected policies for this year
-    const allHouseholdIds = new Set();
+    // Find household IDs that exist in ALL years (for consistent animation)
+    const years = [2026, 2027, 2028, 2029, 2030];
+    let householdIdsInAllYears = null;
+
     selectedPolicies.forEach((reformId) => {
-      const yearData = dataByReformYearHousehold[reformId]?.[internalYear] || {};
-      Object.keys(yearData).forEach((id) => allHouseholdIds.add(id));
+      years.forEach((year) => {
+        const yearData = dataByReformYearHousehold[reformId]?.[year] || {};
+        const idsThisYear = new Set(Object.keys(yearData));
+        if (householdIdsInAllYears === null) {
+          householdIdsInAllYears = idsThisYear;
+        } else {
+          // Intersect: keep only IDs present in all years
+          householdIdsInAllYears = new Set(
+            [...householdIdsInAllYears].filter((id) => idsThisYear.has(id))
+          );
+        }
+      });
     });
+
+    const allHouseholdIds = householdIdsInAllYears || new Set();
 
     if (allHouseholdIds.size === 0) return [];
 
@@ -706,9 +720,9 @@ function HouseholdChart({ rawData, selectedPolicies }) {
                 animationDuration={800}
                 animationEasing="ease-out"
               >
-                {chartData.map((entry, index) => (
+                {chartData.map((entry) => (
                   <Cell
-                    key={`cell-${index}`}
+                    key={`cell-${entry.householdId}`}
                     fill={getColor(entry.category)}
                     fillOpacity={entry.opacity}
                     strokeWidth={0}

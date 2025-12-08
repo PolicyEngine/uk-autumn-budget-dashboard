@@ -424,15 +424,14 @@ class TestStructuralReforms:
     def test_salary_sacrifice_cap_factory(self):
         """Salary sacrifice cap reform factory works.
 
-        Since annual calculations use Jan 1 reference dates, we explicitly
-        set both baseline (no cap=infinity) and reform (cap=2000) parameters
-        to capture the impact.
+        Reads cap and haircut values from policyengine-uk. Baseline has no cap
+        (infinity), reform uses pe-uk current law (£2,000 cap from April 2029).
         """
-        import numpy as np
+        import math
 
         from uk_budget_data.reforms import create_salary_sacrifice_cap_reform
 
-        reform = create_salary_sacrifice_cap_reform(cap_amount=2000)
+        reform = create_salary_sacrifice_cap_reform()
         assert reform is not None
         assert reform.id == "salary_sacrifice_cap"
         # Uses baseline_parameter_changes only; reform uses policyengine-uk default
@@ -440,10 +439,9 @@ class TestStructuralReforms:
 
         cap_key = "gov.hmrc.national_insurance.salary_sacrifice_pension_cap"
         # Baseline has infinity (no cap)
-        assert reform.baseline_parameter_changes[cap_key]["2029"] == np.inf
-        assert reform.baseline_parameter_changes[cap_key]["2030"] == np.inf
-        # Reform uses current law (policyengine-uk v2.65.0+ has cap baked in)
-        # With fiscal year conversion, annual queries return April 30 value (2000)
+        assert math.isinf(reform.baseline_parameter_changes[cap_key]["2029"])
+        assert math.isinf(reform.baseline_parameter_changes[cap_key]["2030"])
+        # Reform uses current law (pe-uk with cap baked in)
         assert reform.parameter_changes == {}
 
 
