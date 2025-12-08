@@ -530,9 +530,8 @@ class IncomeCurveCalculator(BaseCalculator):
             scenario=reform_scenario, situation=base_situation
         )
 
-        employment_incomes = baseline_sim.calculate(
-            "employment_income", year, map_to="household"
-        )
+        # Use fixed income range for consistent x-axis across all reforms
+        employment_incomes = self.get_income_range()
         baseline_hnet = baseline_sim.calculate("household_net_income", year)
         reform_hnet = reform_sim.calculate("household_net_income", year)
 
