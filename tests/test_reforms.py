@@ -315,10 +315,11 @@ class TestSavingsTaxIncrease:
         assert additional_key in reform.baseline_parameter_changes
 
         # Pre-budget rates: 20% basic, 40% higher, 45% additional
-        assert reform.baseline_parameter_changes[basic_key]["2027"] == 0.20
-        assert reform.baseline_parameter_changes[higher_key]["2027"] == 0.40
+        # Starts from 2028 to match OBR fiscal year timing (policy starts April 2027)
+        assert reform.baseline_parameter_changes[basic_key]["2028"] == 0.20
+        assert reform.baseline_parameter_changes[higher_key]["2028"] == 0.40
         assert (
-            reform.baseline_parameter_changes[additional_key]["2027"] == 0.45
+            reform.baseline_parameter_changes[additional_key]["2028"] == 0.45
         )
 
         # Reform parameter_changes is empty (uses new rates from policyengine-uk)
@@ -356,10 +357,11 @@ class TestPropertyTaxIncrease:
         assert additional_key in reform.baseline_parameter_changes
 
         # Pre-budget rates: 20% basic, 40% higher, 45% additional
-        assert reform.baseline_parameter_changes[basic_key]["2027"] == 0.20
-        assert reform.baseline_parameter_changes[higher_key]["2027"] == 0.40
+        # Starts from 2028 to match OBR fiscal year timing (policy starts April 2027)
+        assert reform.baseline_parameter_changes[basic_key]["2028"] == 0.20
+        assert reform.baseline_parameter_changes[higher_key]["2028"] == 0.40
         assert (
-            reform.baseline_parameter_changes[additional_key]["2027"] == 0.45
+            reform.baseline_parameter_changes[additional_key]["2028"] == 0.45
         )
 
         # Reform parameter_changes is empty (uses new rates from policyengine-uk)

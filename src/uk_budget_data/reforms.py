@@ -271,14 +271,15 @@ def _set_pre_budget_dividend_rates(sim):
     """
     div = sim.tax_benefit_system.parameters.gov.hmrc.income_tax.rates.dividends
 
-    # Find and modify all entries from 2026 onwards to pre-budget rates
+    # Find and modify all entries from 2027 onwards to pre-budget rates
     # values_list is ordered most recent first, so iterate through all
+    # OBR fiscal year timing: 2026-27 starts April 2026, so first full year is 2027
     for val_entry in div.brackets[0].rate.values_list:
-        if val_entry.instant_str >= "2026":
+        if val_entry.instant_str >= "2027":
             val_entry.value = 0.0875  # Pre-budget basic rate
 
     for val_entry in div.brackets[1].rate.values_list:
-        if val_entry.instant_str >= "2026":
+        if val_entry.instant_str >= "2027":
             val_entry.value = 0.3375  # Pre-budget higher rate
 
     return sim
@@ -336,20 +337,18 @@ def _create_savings_tax_increase() -> Reform:
         ),
         baseline_parameter_changes={
             # Pre-budget rates (20% basic, 40% higher, 45% additional)
+            # Start from 2028 to match OBR fiscal year timing (policy starts April 2027)
             "gov.hmrc.income_tax.rates.savings.basic": {
-                "2027": 0.20,
                 "2028": 0.20,
                 "2029": 0.20,
                 "2030": 0.20,
             },
             "gov.hmrc.income_tax.rates.savings.higher": {
-                "2027": 0.40,
                 "2028": 0.40,
                 "2029": 0.40,
                 "2030": 0.40,
             },
             "gov.hmrc.income_tax.rates.savings.additional": {
-                "2027": 0.45,
                 "2028": 0.45,
                 "2029": 0.45,
                 "2030": 0.45,
@@ -382,20 +381,18 @@ def _create_property_tax_increase() -> Reform:
         ),
         baseline_parameter_changes={
             # Pre-budget rates (20% basic, 40% higher, 45% additional)
+            # Start from 2028 to match OBR fiscal year timing (policy starts April 2027)
             "gov.hmrc.income_tax.rates.property.basic": {
-                "2027": 0.20,
                 "2028": 0.20,
                 "2029": 0.20,
                 "2030": 0.20,
             },
             "gov.hmrc.income_tax.rates.property.higher": {
-                "2027": 0.40,
                 "2028": 0.40,
                 "2029": 0.40,
                 "2030": 0.40,
             },
             "gov.hmrc.income_tax.rates.property.additional": {
-                "2027": 0.45,
                 "2028": 0.45,
                 "2029": 0.45,
                 "2030": 0.45,
@@ -518,7 +515,7 @@ def _calculate_pre_freeze_thresholds() -> dict:
 
     return {
         # Baseline: Continue RPI uprating from 2027 (no freeze)
-        # Use year-only format for Scenario compatibility
+        # Use year-only format for parameter changes
         "gov.hmrc.student_loans.thresholds.plan_2": {
             "2027": round(base_2026 * rpi_2027 / rpi_2026),
             "2028": round(base_2026 * rpi_2028 / rpi_2026),
@@ -795,39 +792,35 @@ def _create_combined_autumn_budget_reform() -> Reform:
             "2030": np.inf,
         },
         # Savings tax baseline (pre-budget rates)
+        # Start from 2028 to match OBR fiscal year timing (policy starts April 2027)
         "gov.hmrc.income_tax.rates.savings.basic": {
-            "2027": 0.20,
             "2028": 0.20,
             "2029": 0.20,
             "2030": 0.20,
         },
         "gov.hmrc.income_tax.rates.savings.higher": {
-            "2027": 0.40,
             "2028": 0.40,
             "2029": 0.40,
             "2030": 0.40,
         },
         "gov.hmrc.income_tax.rates.savings.additional": {
-            "2027": 0.45,
             "2028": 0.45,
             "2029": 0.45,
             "2030": 0.45,
         },
         # Property tax baseline (pre-budget rates)
+        # Start from 2028 to match OBR fiscal year timing (policy starts April 2027)
         "gov.hmrc.income_tax.rates.property.basic": {
-            "2027": 0.20,
             "2028": 0.20,
             "2029": 0.20,
             "2030": 0.20,
         },
         "gov.hmrc.income_tax.rates.property.higher": {
-            "2027": 0.40,
             "2028": 0.40,
             "2029": 0.40,
             "2030": 0.40,
         },
         "gov.hmrc.income_tax.rates.property.additional": {
-            "2027": 0.45,
             "2028": 0.45,
             "2029": 0.45,
             "2030": 0.45,
