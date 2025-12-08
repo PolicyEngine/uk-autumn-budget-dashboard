@@ -151,9 +151,13 @@ def _create_two_child_limit_repeal() -> Reform:
         id="two_child_limit",
         name="2 child limit repeal",
         description=(
-            "Removes the two-child limit on benefits. The limit restricts "
-            "child-related payments in Universal Credit and Tax Credits to "
-            "the first two children in a family."
+            "The two-child limit restricts Universal Credit and Child Tax "
+            "Credit payments to a maximum number of children per family. "
+            "Removing this limit allows families to claim child-related "
+            "benefit payments for all children without a cap. The Government "
+            "estimates this will reduce child poverty by 450,000 by 2029-30. "
+            "See our research report for details: "
+            "https://policyengine.org/uk/research/uk-two-child-limit"
         ),
         # Baseline: Pre-budget (limit of 2)
         baseline_parameter_changes={

@@ -494,18 +494,39 @@ class IncomeCurveCalculator(BaseCalculator):
 
     def calculate(
         self,
-        scenario,
+        baseline_scenario,
+        reform_scenario,
         reform_id: str,
         reform_name: str,
         year: int,
     ) -> list[dict]:
-        """Calculate income curve from a PolicyEngine scenario."""
+        """Calculate income curve from PolicyEngine scenarios.
+
+        Args:
+            baseline_scenario: Scenario for baseline (pre-budget policy).
+            reform_scenario: Scenario for reform (post-budget policy).
+            reform_id: Unique identifier for the reform.
+            reform_name: Human-readable reform name.
+            year: Year to calculate for.
+
+        Returns:
+            List of dicts with employment_income, baseline_net_income,
+            reform_net_income.
+        """
         from policyengine_uk import Simulation
 
         base_situation = self.get_base_situation(year)
 
-        baseline_sim = Simulation(situation=base_situation)
-        reform_sim = Simulation(scenario=scenario, situation=base_situation)
+        # Apply baseline scenario (pre-budget) if provided
+        if baseline_scenario is not None:
+            baseline_sim = Simulation(
+                scenario=baseline_scenario, situation=base_situation
+            )
+        else:
+            baseline_sim = Simulation(situation=base_situation)
+
+        # Apply reform scenario (post-budget)
+        reform_sim = Simulation(scenario=reform_scenario, situation=base_situation)
 
         employment_incomes = baseline_sim.calculate(
             "employment_income", year, map_to="household"

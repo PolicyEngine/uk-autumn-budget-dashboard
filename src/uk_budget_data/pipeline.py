@@ -147,9 +147,10 @@ class ReformProcessor:
             )
             all_metrics.extend(metrics)
 
-            # Income curve
+            # Income curve - pass both baseline and reform scenarios
+            baseline_scenario = self.reform.to_baseline_scenario()
             income_curve = self.income_curve_calc.calculate(
-                scenario, reform_id, reform_name, year
+                baseline_scenario, scenario, reform_id, reform_name, year
             )
             all_income_curve.extend(income_curve)
 
