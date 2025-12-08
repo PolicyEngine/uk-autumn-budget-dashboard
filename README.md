@@ -172,7 +172,9 @@ The dashboard analyses these November 2025 Autumn Budget policies:
 | `dividend_tax_increase_2pp` | +2pp on dividend tax rates |
 | `savings_tax_increase_2pp` | +2pp on savings income tax |
 | `property_tax_increase_2pp` | +2pp on property income tax |
-| `zero_vat_energy` | Zero-rate VAT on domestic energy |
+| `rail_fares_freeze` | One-year freeze on regulated rail fares |
+| `freeze_student_loan_thresholds` | Freeze Plan 2 repayment thresholds |
+| `salary_sacrifice_cap` | Cap NI-free salary sacrifice at £2,000 |
 
 ## Technology stack
 

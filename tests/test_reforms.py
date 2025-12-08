@@ -421,14 +421,6 @@ class TestRailFaresFreeze:
 class TestStructuralReforms:
     """Tests for structural reforms using simulation modifiers."""
 
-    def test_zero_vat_energy_reform_exists(self):
-        """Zero VAT energy reform is defined."""
-        from uk_budget_data.reforms import get_reform
-
-        reform = get_reform("zero_vat_energy")
-        assert reform is not None
-        assert reform.simulation_modifier is not None
-
     def test_salary_sacrifice_cap_factory(self):
         """Salary sacrifice cap reform factory works.
 

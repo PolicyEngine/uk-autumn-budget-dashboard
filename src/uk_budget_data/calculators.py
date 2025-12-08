@@ -526,7 +526,9 @@ class IncomeCurveCalculator(BaseCalculator):
             baseline_sim = Simulation(situation=base_situation)
 
         # Apply reform scenario (post-budget)
-        reform_sim = Simulation(scenario=reform_scenario, situation=base_situation)
+        reform_sim = Simulation(
+            scenario=reform_scenario, situation=base_situation
+        )
 
         employment_incomes = baseline_sim.calculate(
             "employment_income", year, map_to="household"
