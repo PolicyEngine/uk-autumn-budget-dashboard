@@ -18,7 +18,7 @@ import "./ChartExport.css";
 
 // Chart metadata for export
 const CHART_DESCRIPTION =
-  "This chart plots net income change against baseline income for 500 sampled households. Green dots indicate gains, red shows losses, and grey shows minimal change. Dot opacity represents household weight in the population.";
+  "This chart plots net income change against baseline income for 500 sampled households. Green dots indicate gains, amber shows losses, and grey shows minimal change. Dot opacity represents household weight in the population.";
 
 // Format year for display (e.g., 2026 -> "2026-27")
 const formatYearRange = (year) => `${year}-${(year + 1).toString().slice(-2)}`;
@@ -26,14 +26,12 @@ const formatYearRange = (year) => `${year}-${(year + 1).toString().slice(-2)}`;
 // Legend items for export
 const LEGEND_ITEMS = [
   { color: "#319795", label: "Gains", type: "rect" },
-  { color: "#E53E3E", label: "Losses", type: "rect" },
+  { color: "#D97706", label: "Losses", type: "rect" },
   { color: "#9CA3AF", label: "No change", type: "rect" },
 ];
 
-function HouseholdChart({ rawData, selectedPolicies }) {
-  // Default to 2029 so more policies have visible impact
-  // (threshold_freeze starts 2028, salary_sacrifice_cap starts 2029)
-  const [internalYear, setInternalYear] = useState(2029);
+function HouseholdChart({ rawData, selectedPolicies, selectedYear = 2029 }) {
+  // Use prop for year selection (shared slider in parent)
 
   // Zoom state
   const [zoomDomain, setZoomDomain] = useState(null);
@@ -43,7 +41,7 @@ function HouseholdChart({ rawData, selectedPolicies }) {
   const exportRef = useRef(null);
   const startPoint = useRef(null);
 
-  const chartTitle = `Household income impacts, ${formatYearRange(internalYear)}`;
+  const chartTitle = `Household income impacts, ${formatYearRange(selectedYear)}`;
 
   const handleExportSvg = async () => {
     await exportChartAsSvg(exportRef, "household-impacts", {
@@ -119,7 +117,7 @@ function HouseholdChart({ rawData, selectedPolicies }) {
       // Sum income changes from all selected policies for this household
       selectedPolicies.forEach((reformId) => {
         const householdData =
-          dataByReformYearHousehold[reformId]?.[internalYear]?.[householdId];
+          dataByReformYearHousehold[reformId]?.[selectedYear]?.[householdId];
         if (householdData) {
           foundInAnyPolicy = true;
           combinedIncomeChange += householdData.income_change;
@@ -142,14 +140,14 @@ function HouseholdChart({ rawData, selectedPolicies }) {
           income_change: combinedIncomeChange,
           household_weight: householdWeight,
           household_id: householdId,
-          year: internalYear,
+          year: selectedYear,
           policyBreakdown, // Include breakdown for tooltip
         });
       }
     });
 
     return filteredData;
-  }, [rawData, selectedPolicies, internalYear]);
+  }, [rawData, selectedPolicies, selectedYear]);
 
   // Process data for Recharts
   const { chartData, stats, dataExtent } = useMemo(() => {
@@ -452,7 +450,7 @@ function HouseholdChart({ rawData, selectedPolicies }) {
                   key={policyId}
                   style={{
                     margin: "2px 0",
-                    color: change > 0 ? "#319795" : "#E53E3E",
+                    color: change > 0 ? "#319795" : "#D97706",
                     fontSize: "11px",
                   }}
                 >
@@ -473,7 +471,7 @@ function HouseholdChart({ rawData, selectedPolicies }) {
       case "gains":
         return "#319795";
       case "losses":
-        return "#E53E3E";
+        return "#D97706";
       case "noChange":
         return "#9CA3AF";
       default:
@@ -514,7 +512,7 @@ function HouseholdChart({ rawData, selectedPolicies }) {
           <h2>{chartTitle}</h2>
           <p className="chart-description">
             This chart plots net income change against baseline income for 500
-            sampled households. Green dots indicate gains, red shows losses, and
+            sampled households. Green dots indicate gains, amber shows losses, and
             grey shows minimal change. Dot opacity represents household weight
             in the population.
           </p>
@@ -734,56 +732,6 @@ function HouseholdChart({ rawData, selectedPolicies }) {
         </div>
       </div>
 
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          gap: "20px",
-          marginTop: "20px",
-          marginBottom: "16px",
-          fontSize: "0.9rem",
-        }}
-      >
-        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          <div
-            style={{
-              width: "12px",
-              height: "12px",
-              backgroundColor: "#319795",
-              borderRadius: "50%",
-            }}
-          ></div>
-          <span style={{ color: "#374151", fontSize: "13px", fontWeight: 500 }}>
-            Gains
-          </span>
-        </div>
-        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          <div
-            style={{
-              width: "12px",
-              height: "12px",
-              backgroundColor: "#E53E3E",
-              borderRadius: "50%",
-            }}
-          ></div>
-          <span style={{ color: "#374151", fontSize: "13px", fontWeight: 500 }}>
-            Losses
-          </span>
-        </div>
-        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          <div
-            style={{
-              width: "12px",
-              height: "12px",
-              backgroundColor: "#9CA3AF",
-              borderRadius: "50%",
-            }}
-          ></div>
-          <span style={{ color: "#374151", fontSize: "13px", fontWeight: 500 }}>
-            No change
-          </span>
-        </div>
-      </div>
     </div>
   );
 }

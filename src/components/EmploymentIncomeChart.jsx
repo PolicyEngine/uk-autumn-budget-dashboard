@@ -21,26 +21,25 @@ const formatYearRange = (year) => `${year}-${(year + 1).toString().slice(-2)}`;
 // Chart metadata for export
 const CHART_TITLE = "Household net income analysis";
 const getChartDescription = (year) =>
-  `This chart models a household with 2 adults (both age 40) and 3 children (ages 7, 5, and 3) in ${formatYearRange(year)}. The primary earner contributes £10,000 annually to their pension. Baseline shows current policy, reform shows impact after selected changes.`;
+  `This chart models a household with 2 adults (both age 40) and 3 children (ages 7, 5, and 3) in ${formatYearRange(year)}. The primary earner contributes £10,000 annually to their pension. Pre-Autumn Budget shows policy without reforms, Post-Autumn Budget shows impact after selected changes.`;
 
 // Legend items for export
 const LEGEND_ITEMS = [
-  { color: "#9CA3AF", label: "Baseline", type: "line" },
-  { color: "#319795", label: "Reform", type: "line" },
+  { color: "#9CA3AF", label: "Pre-Autumn Budget", type: "line" },
+  { color: "#319795", label: "Post-Autumn Budget", type: "line" },
 ];
 
-function EmploymentIncomeChart({ selectedPolicies }) {
+function EmploymentIncomeChart({ selectedPolicies, selectedYear = 2029 }) {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [internalYear, setInternalYear] = useState(2029);
   const chartRef = useRef(null);
 
-  const chartTitle = `Household net income analysis, ${formatYearRange(internalYear)}`;
+  const chartTitle = `Household net income analysis, ${formatYearRange(selectedYear)}`;
 
   const handleExportSvg = async () => {
     await exportChartAsSvg(chartRef, "household-net-income", {
       title: chartTitle,
-      description: getChartDescription(internalYear),
+      description: getChartDescription(selectedYear),
       legendItems: LEGEND_ITEMS,
       logo: CHART_LOGO,
     });
@@ -67,7 +66,7 @@ function EmploymentIncomeChart({ selectedPolicies }) {
 
         // Filter by selected year
         const yearFilteredData = allData.filter(
-          (row) => parseInt(row.year) === internalYear,
+          (row) => parseInt(row.year) === selectedYear,
         );
 
         // Get unique employment income values (up to 100k)
@@ -118,7 +117,7 @@ function EmploymentIncomeChart({ selectedPolicies }) {
         console.error("Error loading income curve data:", error);
         setLoading(false);
       });
-  }, [selectedPolicies, internalYear]);
+  }, [selectedPolicies, selectedYear]);
 
   const formatCurrency = (value) => {
     if (value >= 1000) {
@@ -133,7 +132,7 @@ function EmploymentIncomeChart({ selectedPolicies }) {
         <h2>{chartTitle}</h2>
         <p className="chart-description">
           This chart shows the relationship between household head employment
-          income and total household net income in {formatYearRange(internalYear)}.
+          income and total household net income in {formatYearRange(selectedYear)}.
         </p>
         <div style={{ textAlign: "center", padding: "40px", color: "#666" }}>
           Loading income curve data...
@@ -149,9 +148,9 @@ function EmploymentIncomeChart({ selectedPolicies }) {
           <h2>{chartTitle}</h2>
           <p className="chart-description">
             This chart models a household with 2 adults (both age 40) and 3
-            children (ages 7, 5, and 3) in {formatYearRange(internalYear)}. The primary earner
-            contributes £10,000 annually to their pension. Baseline shows
-            current policy, reform shows impact after selected changes.
+            children (ages 7, 5, and 3) in {formatYearRange(selectedYear)}. The primary earner
+            contributes £10,000 annually to their pension. Pre-Autumn Budget shows
+            policy without reforms, Post-Autumn Budget shows impact after selected changes.
           </p>
         </div>
         <button
@@ -266,7 +265,7 @@ function EmploymentIncomeChart({ selectedPolicies }) {
               stroke="#9CA3AF"
               strokeWidth={3}
               dot={false}
-              name="Baseline"
+              name="Pre-Autumn Budget"
               animationDuration={500}
               animationBegin={0}
             />
@@ -277,7 +276,7 @@ function EmploymentIncomeChart({ selectedPolicies }) {
               strokeWidth={3}
               strokeDasharray="8 4"
               dot={false}
-              name="Reform"
+              name="Post-Autumn Budget"
               animationDuration={500}
               animationBegin={0}
             />

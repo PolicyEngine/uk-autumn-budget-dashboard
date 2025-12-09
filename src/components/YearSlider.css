@@ -1,6 +1,6 @@
 .year-slider {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 20px;
   padding: 20px 28px;
   margin: 0;
@@ -24,7 +24,6 @@
   white-space: nowrap;
   font-weight: 600;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-  margin-top: 4px;
 }
 
 .play-button:hover {
@@ -43,96 +42,63 @@
 .slider-container {
   flex: 1;
   position: relative;
-  padding-top: 8px;
 }
 
-/* Custom slider track */
-.slider-track {
-  position: relative;
-  height: 6px;
-  background: var(--pe-gray-200);
-  border-radius: 3px;
-  margin: 0 40px;
-}
-
-/* Progress fill */
-.slider-progress {
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 100%;
-  background: linear-gradient(90deg, var(--pe-teal-400), var(--pe-teal-500));
-  border-radius: 3px;
-  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* Draggable thumb */
-.slider-thumb {
-  position: absolute;
-  top: 50%;
-  width: 20px;
-  height: 20px;
-  background: var(--pe-surface);
-  border: 3px solid var(--pe-teal-500);
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-  cursor: pointer;
-  box-shadow:
-    0 2px 8px rgba(0, 0, 0, 0.12),
-    0 1px 2px rgba(0, 0, 0, 0.08);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  z-index: 2;
-}
-
-.slider-thumb:hover {
-  transform: translate(-50%, -50%) scale(1.15);
-  border-color: var(--pe-teal-600);
-  box-shadow:
-    0 4px 12px rgba(15, 118, 110, 0.25),
-    0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-/* Year labels positioned under track */
+/* Year buttons in a row - no separate track */
 .year-labels {
   display: flex;
-  justify-content: space-between;
-  margin-top: 16px;
-  padding: 0;
+  align-items: center;
+  gap: 4px;
+  padding: 4px;
+  background: rgba(0, 0, 0, 0.03);
+  border-radius: 12px;
 }
 
 .year-label {
+  flex: 1;
   font-size: 13px;
   color: var(--pe-gray-500);
   font-weight: 500;
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
-  padding: 6px 12px;
+  padding: 10px 16px;
   border-radius: 8px;
   background: transparent;
   border: none;
   font-family: inherit;
+  text-align: center;
 }
 
 .year-label:hover {
   color: var(--pe-teal-600);
-  background: var(--pe-teal-50);
+  background: rgba(255, 255, 255, 0.6);
 }
 
 .year-label.active {
   color: var(--pe-teal-700);
   font-weight: 700;
-  background: var(--pe-teal-100);
-  box-shadow: 0 1px 3px rgba(15, 118, 110, 0.1);
+  background: var(--pe-surface);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+
+/* Hide the visual track elements - just using buttons now */
+.slider-track {
+  display: none;
+}
+
+.slider-progress {
+  display: none;
+}
+
+.slider-thumb {
+  display: none;
 }
 
 /* Hidden native input for keyboard accessibility */
 .slider-input-hidden {
   position: absolute;
-  top: 0;
-  left: 40px;
-  right: 40px;
-  height: 24px;
+  width: 1px;
+  height: 1px;
   opacity: 0;
-  cursor: pointer;
-  z-index: 3;
+  pointer-events: none;
 }

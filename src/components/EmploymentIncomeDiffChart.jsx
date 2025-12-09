@@ -6,7 +6,6 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  Legend,
   ResponsiveContainer,
   ReferenceLine,
   Customized,
@@ -27,16 +26,15 @@ const getChartDescription = () =>
 // Legend items for export
 const LEGEND_ITEMS = [
   { color: "#319795", label: "Gain", type: "rect" },
-  { color: "#E53E3E", label: "Loss", type: "rect" },
+  { color: "#D97706", label: "Loss", type: "rect" },
 ];
 
-function EmploymentIncomeDiffChart({ selectedPolicies }) {
+function EmploymentIncomeDiffChart({ selectedPolicies, selectedYear = 2029 }) {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [internalYear, setInternalYear] = useState(2029);
   const chartRef = useRef(null);
 
-  const chartTitle = `Net income change, ${formatYearRange(internalYear)}`;
+  const chartTitle = `Net income change, ${formatYearRange(selectedYear)}`;
 
   const handleExportSvg = async () => {
     await exportChartAsSvg(chartRef, "net-income-change", {
@@ -68,7 +66,7 @@ function EmploymentIncomeDiffChart({ selectedPolicies }) {
 
         // Filter by selected year
         const yearFilteredData = allData.filter(
-          (row) => parseInt(row.year) === internalYear,
+          (row) => parseInt(row.year) === selectedYear,
         );
 
         // Get unique employment income values (up to 100k)
@@ -120,7 +118,7 @@ function EmploymentIncomeDiffChart({ selectedPolicies }) {
         console.error("Error loading income curve data:", error);
         setLoading(false);
       });
-  }, [selectedPolicies, internalYear]);
+  }, [selectedPolicies, selectedYear]);
 
   const formatCurrency = (value) => {
     const absVal = Math.abs(value);
@@ -155,12 +153,6 @@ function EmploymentIncomeDiffChart({ selectedPolicies }) {
   // Check if there are any non-null positive or negative values
   const hasPositive = data.some((d) => d.positive !== null && d.positive > 0);
   const hasNegative = data.some((d) => d.negative !== null && d.negative < 0);
-
-  // Always show both Gain and Loss in legend for consistency
-  const legendPayload = [
-    { value: "Gain", type: "square", color: "#319795" },
-    { value: "Loss", type: "square", color: "#E53E3E" },
-  ];
 
   return (
     <div className="employment-income-diff-chart">
@@ -259,31 +251,6 @@ function EmploymentIncomeDiffChart({ selectedPolicies }) {
               }}
               labelStyle={{ fontWeight: 600, marginBottom: "4px" }}
             />
-            {legendPayload.length > 0 && (
-              <Legend
-                wrapperStyle={{
-                  paddingTop: "15px",
-                  paddingBottom: "0px",
-                  paddingRight: "140px",
-                }}
-                iconType="square"
-                iconSize={14}
-                formatter={(value) => (
-                  <span
-                    style={{
-                      fontSize: "13px",
-                      fontWeight: 500,
-                      color: "#374151",
-                    }}
-                  >
-                    {value}
-                  </span>
-                )}
-                verticalAlign="bottom"
-                align="center"
-                payload={legendPayload}
-              />
-            )}
             <ReferenceLine y={0} stroke="#374151" strokeWidth={1} />
             {hasPositive && (
               <Area
@@ -303,9 +270,9 @@ function EmploymentIncomeDiffChart({ selectedPolicies }) {
               <Area
                 type="monotone"
                 dataKey="negative"
-                stroke="#E53E3E"
+                stroke="#D97706"
                 strokeWidth={2}
-                fill="#E53E3E"
+                fill="#D97706"
                 fillOpacity={0.6}
                 baseValue={0}
                 connectNulls={false}

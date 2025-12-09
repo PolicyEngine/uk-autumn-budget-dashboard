@@ -582,11 +582,15 @@ function App() {
 
                     {/* Row 2: Constituency Map and Scatter */}
                     <div className="charts-grid charts-row-2">
-                      <ConstituencyMap selectedPolicies={selectedPolicies} />
+                      <ConstituencyMap
+                        selectedPolicies={selectedPolicies}
+                        selectedYear={distributionalYear}
+                      />
                       {results.rawHouseholdScatter && (
                         <HouseholdChart
                           rawData={results.rawHouseholdScatter}
                           selectedPolicies={selectedPolicies}
+                          selectedYear={distributionalYear}
                         />
                       )}
                     </div>
@@ -595,11 +599,11 @@ function App() {
                     <div className="charts-grid charts-row-3">
                       <EmploymentIncomeChart
                         selectedPolicies={selectedPolicies}
-                        selectedYear={2026}
+                        selectedYear={distributionalYear}
                       />
                       <EmploymentIncomeDiffChart
                         selectedPolicies={selectedPolicies}
-                        selectedYear={2026}
+                        selectedYear={distributionalYear}
                       />
                     </div>
 

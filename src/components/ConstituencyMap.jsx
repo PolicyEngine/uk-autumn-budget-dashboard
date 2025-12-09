@@ -8,7 +8,7 @@ import "./ChartExport.css";
 // Chart metadata for export
 const CHART_TITLE = "Constituency-level impacts";
 const CHART_DESCRIPTION =
-  "This map shows the average annual change in household net income across all 650 UK constituencies. Green shading indicates gains, red indicates losses, measured as a percentage of baseline income.";
+  "This map shows the average annual change in household net income across all 650 UK constituencies. Green shading indicates gains, amber indicates losses, measured as a percentage of baseline income.";
 
 // Fixed color scale extent - consistent across all years
 // Based on actual data range: min -0.80%, max +0.73% across all reforms/years
@@ -32,9 +32,8 @@ const REFORM_NAMES = {
 // Format year for display (e.g., 2026 -> "2026-27")
 const formatYearRange = (year) => `${year}-${(year + 1).toString().slice(-2)}`;
 
-export default function ConstituencyMap({ selectedPolicies = [] }) {
-  // Default to 2029 so more policies have visible impact
-  const [internalYear, setInternalYear] = useState(2029);
+export default function ConstituencyMap({ selectedPolicies = [], selectedYear = 2029 }) {
+  // Use prop for year selection (shared slider in parent)
   const svgRef = useRef(null);
   const tooltipRef = useRef(null);
   const [selectedConstituency, setSelectedConstituency] = useState(null);
@@ -115,7 +114,7 @@ export default function ConstituencyMap({ selectedPolicies = [] }) {
 
     rawData.forEach((row) => {
       if (!selectedPolicies.includes(row.reform_id)) return;
-      if (row.year !== internalYear) return;
+      if (row.year !== selectedYear) return;
 
       const key = row.constituency_code;
       if (!constituencyMap.has(key)) {
@@ -141,7 +140,7 @@ export default function ConstituencyMap({ selectedPolicies = [] }) {
     });
 
     return Array.from(constituencyMap.values());
-  }, [rawData, selectedPolicies, internalYear]);
+  }, [rawData, selectedPolicies, selectedYear]);
 
   // Render map
   useEffect(() => {
@@ -211,20 +210,20 @@ export default function ConstituencyMap({ selectedPolicies = [] }) {
       aggregatedData.map((d) => [d.constituency_code, d]),
     );
 
-    // Color scale - diverging with white at 0, red for losses, green for gains
+    // Color scale - diverging with white at 0, amber for losses, teal for gains
     // Use relative_change (percentage of constituency's average income)
     const getValue = (d) => d.relative_change;
 
-    // Custom interpolator: red -> light grey -> teal (matching chart palette)
+    // Custom interpolator: amber -> light grey -> teal (matching chart palette)
     // Use fixed extent so colors are consistent across all years
     const colorScale = d3
       .scaleDiverging()
       .domain([-FIXED_COLOR_EXTENT, 0, FIXED_COLOR_EXTENT])
       .interpolator((t) => {
         if (t < 0.5) {
-          // Red to grey (losses to zero)
+          // Amber to grey (losses to zero)
           const ratio = t * 2; // 0 to 1
-          return d3.interpolateRgb("#DC2626", "#E5E7EB")(ratio);
+          return d3.interpolateRgb("#D97706", "#E5E7EB")(ratio);
         } else {
           // Grey to teal (zero to gains)
           const ratio = (t - 0.5) * 2; // 0 to 1
@@ -437,8 +436,8 @@ export default function ConstituencyMap({ selectedPolicies = [] }) {
   const handleExportSvg = async () => {
     if (!svgRef.current) return;
 
-    await exportMapAsSvg(svgRef.current, `constituency-map-${internalYear}`, {
-      title: `${CHART_TITLE}, ${formatYearRange(internalYear)}`,
+    await exportMapAsSvg(svgRef.current, `constituency-map-${selectedYear}`, {
+      title: `${CHART_TITLE}, ${formatYearRange(selectedYear)}`,
       description: CHART_DESCRIPTION,
       logo: CHART_LOGO,
       tooltipData,
@@ -460,11 +459,11 @@ export default function ConstituencyMap({ selectedPolicies = [] }) {
       <div className="map-header">
         <div className="chart-header">
           <div>
-            <h2>Constituency-level impacts, {formatYearRange(internalYear)}</h2>
+            <h2>Constituency-level impacts, {formatYearRange(selectedYear)}</h2>
             <p className="chart-description">
               This map shows the average annual change in household net income
               across all 650 UK constituencies. Green shading indicates gains,
-              red indicates losses, measured as a percentage of baseline income.
+              amber indicates losses, measured as a percentage of baseline income.
             </p>
           </div>
           <button
