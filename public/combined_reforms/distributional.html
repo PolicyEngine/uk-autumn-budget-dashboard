@@ -5,30 +5,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Distributional Impact - Combined Autumn Budget 2025</title>
     <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto+Serif:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
-        body { margin: 0; padding: 16px; font-family: 'Roboto Serif', serif; background: white; }
+        body { margin: 0; padding: 16px; font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: white; }
         #chart { width: 100%; height: 500px; }
     </style>
 </head>
 <body>
     <div id="chart"></div>
     <script>
-        const data = {"2026-27": [669.91, 1139.47, 440.08, 363.7, 211.78, 152.68, 140.49, 183.43, 164.73, 169.94], "2027-28": [655.31, 1155.52, 441.83, 309.15, 146.06, 91.15, 54.48, 72.93, 56.04, 59.78], "2028-29": [458.42, 1446.0, 338.39, 283.08, 39.22, -36.66, -156.03, -179.41, -290.87, -504.81], "2029-30": [441.86, 1434.73, 176.43, 216.17, -180.77, -231.89, -416.12, -526.88, -1028.16, -1448.99], "2030-31": [466.71, 1343.23, 235.79, 58.7, -201.97, -350.2, -576.17, -766.52, -1327.66, -1873.95]};
+        const data = {"2026-27": [669.9, 1139.5, 440.1, 363.7, 211.8, 152.7, 140.5, 183.4, 164.7, 170.0], "2027-28": [655.3, 1155.5, 441.8, 309.2, 146.1, 91.2, 54.5, 72.9, 56.0, 59.8], "2028-29": [458.4, 1446.0, 338.4, 283.1, 39.2, -36.7, -156.0, -179.4, -290.9, -504.8], "2029-30": [441.9, 1434.7, 176.4, 216.2, -180.8, -231.9, -416.1, -526.9, -1028.2, -1449.0], "2030-31": [466.7, 1343.2, 235.8, 58.7, -202.0, -350.2, -576.2, -766.5, -1327.7, -1874.0]};
         const years = ["2026-27", "2027-28", "2028-29", "2029-30", "2030-31"];
 
         const traces = years.map((year, i) => {
             const values = data[year];
-            const colors = values.map(v => v >= 0 ? '#2C6496' : '#616161');
+            const colors = values.map(v => v >= 0 ? '#319795' : '#EF4444');
             return {
                 x: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
                 y: values,
                 type: 'bar',
                 marker: { color: colors },
-                text: values.map(v => v >= 0 ? '£' + v.toFixed(2) : '-£' + Math.abs(v).toFixed(2)),
+                text: values.map(v => v >= 0 ? '£' + v.toFixed(1) : '-£' + Math.abs(v).toFixed(1)),
                 textposition: 'outside',
-                textfont: { family: 'Roboto Serif', size: 10 },
-                hovertemplate: 'Decile %{x}<br>Change: £%{y:,.2f}<extra></extra>',
+                textfont: { family: "Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", size: 10 },
+                hovertemplate: 'Decile %{x}<br>Change: £%{y:,.1f}<extra></extra>',
                 visible: i === 0,
                 name: year
             };
@@ -46,21 +46,21 @@
                 tickmode: 'array',
                 tickvals: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
                 showgrid: true,
-                gridcolor: '#e0e0e0'
+                gridcolor: '#E2E8F0'
             },
             yaxis: {
                 title: 'Average change in household income (£/year)',
                 tickprefix: '£',
                 showgrid: true,
-                gridcolor: '#e0e0e0',
+                gridcolor: '#E2E8F0',
                 range: [-2200, 1600],
                 zeroline: true,
-                zerolinecolor: '#333',
+                zerolinecolor: '#344054',
                 zerolinewidth: 2
             },
             height: 500,
             margin: { l: 80, r: 50, b: 100, t: 60 },
-            font: { family: 'Roboto Serif' },
+            font: { family: "Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" },
             showlegend: false,
             sliders: [{
                 active: 0,
@@ -69,7 +69,7 @@
                 len: 0.6,
                 y: 1.1,
                 currentvalue: { visible: false },
-                font: { family: 'Roboto Serif' }
+                font: { family: "Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" }
             }],
             updatemenus: [{
                 type: 'buttons',
@@ -90,8 +90,8 @@
             name: year,
             data: [{
                 y: data[year],
-                text: data[year].map(v => v >= 0 ? '£' + v.toFixed(2) : '-£' + Math.abs(v).toFixed(2)),
-                marker: { color: data[year].map(v => v >= 0 ? '#2C6496' : '#616161') }
+                text: data[year].map(v => v >= 0 ? '£' + v.toFixed(1) : '-£' + Math.abs(v).toFixed(1)),
+                marker: { color: data[year].map(v => v >= 0 ? '#319795' : '#EF4444') }
             }]
         }));
 

@@ -5,25 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Winners and Losers - Combined Autumn Budget 2025</title>
     <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto+Serif:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
-        body { margin: 0; padding: 16px; font-family: 'Roboto Serif', serif; background: white; }
+        body { margin: 0; padding: 16px; font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: white; }
         #chart { width: 100%; height: 650px; }
     </style>
 </head>
 <body>
     <div id="chart"></div>
     <script>
-        const data = {"2026-27": {"gain_more_5": [8.76, null, 4.21, 5.82, 4.86, 3.83, 5.66, 5.66, 11.15, 10.45, 22.95, 13.35], "gain_less_5": [43.68, null, 42.6, 47.48, 53.58, 50.19, 49.12, 50.85, 38.88, 36.49, 33.49, 33.45], "no_change": [47.55, null, 53.19, 46.7, 41.56, 45.98, 45.22, 43.49, 49.98, 53.06, 43.56, 53.2], "lose_less_5": [0.0, null, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "lose_more_5": [0.0, null, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]}, "2027-28": {"gain_more_5": [8.26, null, 3.74, 5.45, 4.74, 3.28, 5.04, 5.83, 9.98, 10.65, 22.07, 12.12], "gain_less_5": [42.5, null, 41.25, 44.35, 51.01, 46.65, 47.8, 47.69, 40.99, 35.67, 34.0, 35.06], "no_change": [45.49, null, 49.55, 41.3, 36.29, 43.56, 41.75, 44.85, 48.33, 53.28, 43.75, 52.83], "lose_less_5": [3.73, null, 5.46, 8.83, 7.95, 6.5, 5.41, 1.64, 0.63, 0.39, 0.18, 0.0], "lose_more_5": [0.02, null, 0.0, 0.07, 0.0, 0.0, 0.0, 0.0, 0.08, 0.0, 0.01, 0.0]}, "2028-29": {"gain_more_5": [6.66, null, 1.81, 0.89, 2.84, 2.17, 3.18, 4.89, 8.53, 8.43, 24.28, 10.24], "gain_less_5": [12.83, null, 2.77, 3.32, 9.15, 10.94, 12.31, 13.29, 16.86, 13.73, 22.07, 24.93], "no_change": [8.71, null, 0.83, 0.38, 1.51, 2.92, 4.36, 5.64, 7.02, 11.36, 14.63, 40.71], "lose_less_5": [69.76, null, 91.94, 90.77, 84.66, 81.87, 78.35, 75.3, 64.66, 64.96, 37.87, 23.38], "lose_more_5": [2.03, null, 2.64, 4.64, 1.83, 2.1, 1.8, 0.88, 2.92, 1.52, 1.15, 0.74]}, "2029-30": {"gain_more_5": [4.68, null, 0.0, 0.01, 0.16, 0.17, 0.65, 1.39, 7.08, 6.95, 22.24, 8.93], "gain_less_5": [6.35, null, 0.16, 0.2, 2.87, 2.66, 6.89, 3.17, 7.41, 5.79, 13.18, 22.42], "no_change": [7.11, null, 0.31, 0.14, 0.93, 1.03, 3.76, 3.84, 5.82, 8.59, 12.06, 36.57], "lose_less_5": [77.09, null, 93.44, 91.74, 90.56, 91.84, 83.98, 87.21, 74.06, 75.09, 48.97, 30.1], "lose_more_5": [4.78, null, 6.09, 7.9, 5.47, 4.29, 4.72, 4.39, 5.63, 3.57, 3.55, 1.97]}, "2030-31": {"gain_more_5": [4.71, null, 0.0, 0.01, 0.09, 0.15, 0.48, 2.52, 5.36, 8.64, 20.86, 9.85], "gain_less_5": [6.32, null, 0.16, 0.26, 3.04, 2.94, 6.44, 2.83, 6.82, 5.95, 13.27, 22.78], "no_change": [6.82, null, 0.32, 0.14, 0.98, 1.04, 3.77, 4.22, 3.65, 8.31, 11.31, 36.37], "lose_less_5": [76.68, null, 91.18, 90.93, 89.29, 91.32, 84.16, 85.14, 78.16, 73.36, 50.4, 29.04], "lose_more_5": [5.47, null, 8.34, 8.66, 6.59, 4.56, 5.15, 5.29, 6.01, 3.74, 4.16, 1.95]}};
+        const data = {"2026-27": {"gain_more_5": [8.8, null, 4.2, 5.8, 4.9, 3.8, 5.7, 5.7, 11.2, 10.5, 23.0, 13.4], "gain_less_5": [43.7, null, 42.6, 47.5, 53.6, 50.2, 49.1, 50.9, 38.9, 36.5, 33.5, 33.5], "no_change": [47.6, null, 53.2, 46.7, 41.6, 46.0, 45.2, 43.5, 50.0, 53.1, 43.6, 53.2], "lose_less_5": [0.0, null, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "lose_more_5": [0.0, null, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]}, "2027-28": {"gain_more_5": [8.3, null, 3.7, 5.5, 4.7, 3.3, 5.0, 5.8, 10.0, 10.7, 22.1, 12.1], "gain_less_5": [42.5, null, 41.3, 44.4, 51.0, 46.7, 47.8, 47.7, 41.0, 35.7, 34.0, 35.1], "no_change": [45.5, null, 49.6, 41.3, 36.3, 43.6, 41.8, 44.9, 48.3, 53.3, 43.8, 52.8], "lose_less_5": [3.7, null, 5.5, 8.8, 8.0, 6.5, 5.4, 1.6, 0.6, 0.4, 0.2, 0.0], "lose_more_5": [0.0, null, 0.0, 0.1, 0.0, 0.0, 0.0, 0.0, 0.1, 0.0, 0.0, 0.0]}, "2028-29": {"gain_more_5": [6.7, null, 1.8, 0.9, 2.8, 2.2, 3.2, 4.9, 8.5, 8.4, 24.3, 10.2], "gain_less_5": [12.8, null, 2.8, 3.3, 9.2, 10.9, 12.3, 13.3, 16.9, 13.7, 22.1, 24.9], "no_change": [8.7, null, 0.8, 0.4, 1.5, 2.9, 4.4, 5.6, 7.0, 11.4, 14.6, 40.7], "lose_less_5": [69.8, null, 91.9, 90.8, 84.7, 81.9, 78.4, 75.3, 64.7, 65.0, 37.9, 23.4], "lose_more_5": [2.0, null, 2.6, 4.6, 1.8, 2.1, 1.8, 0.9, 2.9, 1.5, 1.2, 0.7]}, "2029-30": {"gain_more_5": [4.7, null, 0.0, 0.0, 0.2, 0.2, 0.7, 1.4, 7.1, 7.0, 22.2, 8.9], "gain_less_5": [6.4, null, 0.2, 0.2, 2.9, 2.7, 6.9, 3.2, 7.4, 5.8, 13.2, 22.4], "no_change": [7.1, null, 0.3, 0.1, 0.9, 1.0, 3.8, 3.8, 5.8, 8.6, 12.1, 36.6], "lose_less_5": [77.1, null, 93.4, 91.7, 90.6, 91.8, 84.0, 87.2, 74.1, 75.1, 49.0, 30.1], "lose_more_5": [4.8, null, 6.1, 7.9, 5.5, 4.3, 4.7, 4.4, 5.6, 3.6, 3.6, 2.0]}, "2030-31": {"gain_more_5": [4.7, null, 0.0, 0.0, 0.1, 0.2, 0.5, 2.5, 5.4, 8.6, 20.9, 9.9], "gain_less_5": [6.3, null, 0.2, 0.3, 3.0, 2.9, 6.4, 2.8, 6.8, 6.0, 13.3, 22.8], "no_change": [6.8, null, 0.3, 0.1, 1.0, 1.0, 3.8, 4.2, 3.7, 8.3, 11.3, 36.4], "lose_less_5": [76.7, null, 91.2, 90.9, 89.3, 91.3, 84.2, 85.1, 78.2, 73.4, 50.4, 29.0], "lose_more_5": [5.5, null, 8.3, 8.7, 6.6, 4.6, 5.2, 5.3, 6.0, 3.7, 4.2, 2.0]}};
         const years = ["2026-27", "2027-28", "2028-29", "2029-30", "2030-31"];
         const yLabels = ["All", " ", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"];
 
         const categories = [
-            { key: 'gain_more_5', name: 'Gain more than 5%', color: '#2C6496', textColor: 'white' },
-            { key: 'gain_less_5', name: 'Gain less than 5%', color: '#C5D3E8', textColor: '#333' },
-            { key: 'no_change', name: 'No change', color: '#F0F0F0', textColor: '#333' },
-            { key: 'lose_less_5', name: 'Lose less than 5%', color: '#FACBCB', textColor: '#333' },
-            { key: 'lose_more_5', name: 'Lose more than 5%', color: '#B71C1C', textColor: 'white' }
+            { key: 'gain_more_5', name: 'Gain more than 5%', color: '#319795', textColor: 'white' },
+            { key: 'gain_less_5', name: 'Gain less than 5%', color: '#81E6D9', textColor: '#344054' },
+            { key: 'no_change', name: 'No change', color: '#F2F4F7', textColor: '#344054' },
+            { key: 'lose_less_5', name: 'Lose less than 5%', color: '#FCA5A5', textColor: '#344054' },
+            { key: 'lose_more_5', name: 'Lose more than 5%', color: '#EF4444', textColor: 'white' }
         ];
 
         // Create initial traces for 2026-27
@@ -37,10 +37,10 @@
                 x: values,
                 y: yLabels,
                 marker: { color: cat.color },
-                text: values.map(v => v !== null && v > 0.5 ? v.toFixed(2) + '%' : ''),
+                text: values.map(v => v !== null && v > 0.5 ? v.toFixed(1) + '%' : ''),
                 textposition: 'inside',
-                textfont: { color: cat.textColor, size: 11 },
-                hovertemplate: '%{y}<br>' + cat.name + ': %{x:.2f}%<extra></extra>',
+                textfont: { color: cat.textColor, size: 11, family: "Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" },
+                hovertemplate: '%{y}<br>' + cat.name + ': %{x:.1f}%<extra></extra>',
                 showlegend: true
             };
         });
@@ -54,17 +54,17 @@
         const layout = {
             barmode: 'stack',
             xaxis: {
-                title: { text: 'Population share', font: { family: 'Roboto Serif', size: 14 } },
-                tickfont: { family: 'Roboto Serif', size: 12 },
+                title: { text: 'Population share', font: { family: "Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", size: 14 } },
+                tickfont: { family: "Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", size: 12 },
                 showgrid: true,
-                gridcolor: '#e0e0e0',
+                gridcolor: '#E2E8F0',
                 range: [0, 100],
                 tickformat: '.0f',
                 ticksuffix: '%'
             },
             yaxis: {
-                title: { text: 'Income decile', font: { family: 'Roboto Serif', size: 14 } },
-                tickfont: { family: 'Roboto Serif', size: 12 },
+                title: { text: 'Income decile', font: { family: "Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", size: 14 } },
+                tickfont: { family: "Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", size: 12 },
                 categoryorder: 'array',
                 categoryarray: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', ' ', 'All'],
                 type: 'category',
@@ -74,14 +74,14 @@
             margin: { l: 80, r: 50, b: 120, t: 60 },
             plot_bgcolor: 'white',
             paper_bgcolor: 'white',
-            font: { family: 'Roboto Serif' },
+            font: { family: "Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" },
             legend: {
                 orientation: 'h',
                 yanchor: 'top',
                 y: -0.12,
                 xanchor: 'center',
                 x: 0.5,
-                font: { family: 'Roboto Serif', size: 10 },
+                font: { family: "Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", size: 10 },
                 traceorder: 'normal',
                 entrywidth: 100
             },
@@ -121,7 +121,7 @@
                 const values = data[year][cat.key];
                 return {
                     x: values,
-                    text: values.map(v => v !== null && v > 0.5 ? v.toFixed(2) + '%' : '')
+                    text: values.map(v => v !== null && v > 0.5 ? v.toFixed(1) + '%' : '')
                 };
             })
         }));
