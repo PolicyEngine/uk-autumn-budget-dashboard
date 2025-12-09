@@ -21,27 +21,32 @@ Output:
 import json
 from pathlib import Path
 
-# PolicyEngine design system colors (from app-v2/designTokens/colors.ts)
+# PolicyEngine design system colors (from app-v2/designTokens/colors.ts and dashboard)
 COLORS = {
     # Primary teal from design system
     "primary": "#319795",  # teal/500
     "primary_dark": "#2C7A7B",  # teal/600
+    "primary_700": "#285E61",  # teal/700 - darkest teal for "gain more than 5%"
     "primary_light": "#81E6D9",  # teal/200
-    "primary_alpha": "#31979566",  # 40% opacity
+    "primary_alpha_60": "#31979599",  # 60% opacity for "gain less than 5%"
     # Secondary/gray colors
     "gray_50": "#F9FAFB",
     "gray_100": "#F2F4F7",
-    "gray_200": "#E2E8F0",
-    "gray_400": "#9CA3AF",
+    "gray_200": "#E2E8F0",  # No change category
+    "gray_400": "#9CA3AF",  # Lose less than 5%
     "gray_500": "#6B7280",
+    "gray_600": "#4B5563",  # Lose more than 5%
     "gray_700": "#344054",
     "gray_900": "#101828",
+    # Amber colors for losses (from dashboard policyConfig.js)
+    "amber_600": "#D97706",  # Primary loss color
+    "amber_500": "#F59E0B",
+    "amber_400": "#FBBF24",
     # Semantic colors
     "success": "#22C55E",
     "error": "#EF4444",
     "error_light": "#FCA5A5",
     # Chart-specific
-    "neutral": "#F2F4F7",  # No change category
     "background": "#FFFFFF",
     "text": "#000000",
 }
@@ -163,16 +168,16 @@ def create_distributional_html(output_path: Path) -> None:
 
         const traces = years.map((year, i) => {{
             const values = data[year];
-            const colors = values.map(v => v >= 0 ? '{COLORS["primary"]}' : '{COLORS["error"]}');
+            const colors = values.map(v => v >= 0 ? '{COLORS["primary"]}' : '{COLORS["amber_600"]}');
             return {{
                 x: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
                 y: values,
                 type: 'bar',
                 marker: {{ color: colors }},
-                text: values.map(v => v >= 0 ? '£' + v.toFixed(1) : '-£' + Math.abs(v).toFixed(1)),
+                text: values.map(v => v >= 0 ? '+£' + Math.round(v).toLocaleString() : '-£' + Math.round(Math.abs(v)).toLocaleString()),
                 textposition: 'outside',
                 textfont: {{ family: "{FONT_FAMILY}", size: 10 }},
-                hovertemplate: 'Decile %{{x}}<br>Change: £%{{y:,.1f}}<extra></extra>',
+                hovertemplate: 'Decile %{{x}}<br>Change: £%{{y:,.0f}}<extra></extra>',
                 visible: i === 0,
                 name: year
             }};
@@ -197,7 +202,7 @@ def create_distributional_html(output_path: Path) -> None:
                 tickprefix: '£',
                 showgrid: true,
                 gridcolor: '{COLORS["gray_200"]}',
-                range: [-2200, 1600],
+                range: [-2000, 2000],
                 zeroline: true,
                 zerolinecolor: '{COLORS["gray_700"]}',
                 zerolinewidth: 2
@@ -234,8 +239,8 @@ def create_distributional_html(output_path: Path) -> None:
             name: year,
             data: [{{
                 y: data[year],
-                text: data[year].map(v => v >= 0 ? '£' + v.toFixed(1) : '-£' + Math.abs(v).toFixed(1)),
-                marker: {{ color: data[year].map(v => v >= 0 ? '{COLORS["primary"]}' : '{COLORS["error"]}') }}
+                text: data[year].map(v => v >= 0 ? '+£' + Math.round(v).toLocaleString() : '-£' + Math.round(Math.abs(v)).toLocaleString()),
+                marker: {{ color: data[year].map(v => v >= 0 ? '{COLORS["primary"]}' : '{COLORS["amber_600"]}') }}
             }}]
         }}));
 
@@ -276,11 +281,11 @@ def create_winners_losers_html(output_path: Path) -> None:
         const yLabels = {json.dumps(y_labels)};
 
         const categories = [
-            {{ key: 'gain_more_5', name: 'Gain more than 5%', color: '{COLORS["primary"]}', textColor: 'white' }},
-            {{ key: 'gain_less_5', name: 'Gain less than 5%', color: '{COLORS["primary_light"]}', textColor: '{COLORS["gray_700"]}' }},
-            {{ key: 'no_change', name: 'No change', color: '{COLORS["neutral"]}', textColor: '{COLORS["gray_700"]}' }},
-            {{ key: 'lose_less_5', name: 'Lose less than 5%', color: '{COLORS["error_light"]}', textColor: '{COLORS["gray_700"]}' }},
-            {{ key: 'lose_more_5', name: 'Lose more than 5%', color: '{COLORS["error"]}', textColor: 'white' }}
+            {{ key: 'gain_more_5', name: 'Gain more than 5%', color: '{COLORS["primary_700"]}', textColor: 'white' }},
+            {{ key: 'gain_less_5', name: 'Gain less than 5%', color: '{COLORS["primary_alpha_60"]}', textColor: '{COLORS["gray_700"]}' }},
+            {{ key: 'no_change', name: 'No change', color: '{COLORS["gray_200"]}', textColor: '{COLORS["gray_700"]}' }},
+            {{ key: 'lose_less_5', name: 'Lose less than 5%', color: '{COLORS["gray_400"]}', textColor: '{COLORS["gray_700"]}' }},
+            {{ key: 'lose_more_5', name: 'Lose more than 5%', color: '{COLORS["gray_600"]}', textColor: 'white' }}
         ];
 
         // Create initial traces for 2026-27
@@ -611,7 +616,7 @@ def create_constituency_map_html(output_path: Path) -> None:
         .tooltip strong {{ display: block; margin-bottom: 4px; }}
         .tooltip .value {{ font-weight: 600; }}
         .gain {{ color: {COLORS["primary"]}; }}
-        .loss {{ color: {COLORS["error"]}; }}
+        .loss {{ color: {COLORS["amber_600"]}; }}
         .controls {{
             position: absolute;
             top: 10px;
@@ -729,6 +734,18 @@ def create_constituency_map_html(output_path: Path) -> None:
         const dataByYear = {json.dumps(data_by_year)};
         const years = {json.dumps(YEAR_LABELS)};
         let currentYearIndex = 0;
+
+        // Calculate global absMax across all years for consistent legend
+        let globalAbsMax = 0;
+        years.forEach(year => {{
+            const yearData = dataByYear[year] || {{}};
+            Object.values(yearData).forEach(d => {{
+                if (d && !isNaN(d.value)) {{
+                    globalAbsMax = Math.max(globalAbsMax, Math.abs(d.value));
+                }}
+            }});
+        }});
+        globalAbsMax = Math.ceil(globalAbsMax / 50) * 50; // Round up to nearest 50
         let isPlaying = false;
         let playInterval;
 
@@ -748,28 +765,28 @@ def create_constituency_map_html(output_path: Path) -> None:
         svg.call(zoom);
 
         // Load GeoJSON - using GSScode property for matching
+        // Note: GeoJSON uses British National Grid (EPSG:27700) coordinates, not WGS84
+        // Use geoIdentity with fitSize since coordinates are already projected
         d3.json("../data/uk_constituencies_2024.geojson").then(geojson => {{
-            const projection = d3.geoMercator()
+            const projection = d3.geoIdentity()
+                .reflectY(true)  // BNG y-axis is inverted relative to SVG
                 .fitSize([width - 100, height - 150], geojson);
 
             const path = d3.geoPath().projection(projection);
 
+            // Set up fixed legend (consistent across all years)
+            document.getElementById("legend-min").textContent = "-£" + globalAbsMax;
+            document.getElementById("legend-max").textContent = "+£" + globalAbsMax;
+            document.getElementById("legend-bar").style.background =
+                `linear-gradient(to right, {COLORS["amber_600"]}, white, {COLORS["primary"]})`;
+
+            const colorScale = d3.scaleLinear()
+                .domain([-globalAbsMax, 0, globalAbsMax])
+                .range(["{COLORS["amber_600"]}", "white", "{COLORS["primary"]}"]);
+
             function updateMap() {{
                 const yearLabel = years[currentYearIndex];
                 const yearData = dataByYear[yearLabel] || {{}};
-
-                const values = Object.values(yearData).map(d => d.value).filter(v => !isNaN(v));
-                const minVal = Math.min(...values);
-                const maxVal = Math.max(...values);
-
-                const colorScale = d3.scaleLinear()
-                    .domain([minVal, 0, maxVal])
-                    .range(["{COLORS["error"]}", "{COLORS["gray_100"]}", "{COLORS["primary"]}"]);
-
-                document.getElementById("legend-min").textContent = "£" + Math.round(minVal);
-                document.getElementById("legend-max").textContent = "£" + Math.round(maxVal);
-                document.getElementById("legend-bar").style.background =
-                    `linear-gradient(to right, {COLORS["error"]}, {COLORS["gray_100"]}, {COLORS["primary"]})`;
 
                 const paths = g.selectAll("path")
                     .data(geojson.features, d => d.properties.GSScode);
@@ -790,10 +807,10 @@ def create_constituency_map_html(output_path: Path) -> None:
                         const data = yearData[code];
                         if (data) {{
                             const tooltip = document.getElementById("tooltip");
-                            const sign = data.value >= 0 ? '+' : '';
+                            const sign = data.value >= 0 ? '+' : '-';
                             tooltip.innerHTML = `<strong>${{data.name}}</strong>` +
                                 `<span class="${{data.value >= 0 ? 'gain' : 'loss'}} value">` +
-                                `£${{sign}}${{data.value.toFixed(1)}}/year</span>`;
+                                `${{sign}}£${{Math.round(Math.abs(data.value)).toLocaleString()}}/year</span>`;
                             tooltip.style.opacity = 1;
                             tooltip.style.left = (event.clientX + 15) + "px";
                             tooltip.style.top = (event.clientY + 15) + "px";
