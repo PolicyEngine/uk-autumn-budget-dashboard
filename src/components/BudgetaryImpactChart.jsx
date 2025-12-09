@@ -24,7 +24,7 @@ const NetImpactLabel = (props) => {
   const { x, y, value } = props;
 
   const formattedValue =
-    value < 0 ? `-£${Math.abs(value).toFixed(1)}bn` : `£${value.toFixed(1)}bn`;
+    value < 0 ? `-£${Math.abs(value).toFixed(1)}bn` : `+£${value.toFixed(1)}bn`;
   const yOffset = value >= 0 ? -20 : 28;
 
   return (
@@ -32,22 +32,23 @@ const NetImpactLabel = (props) => {
       {/* White background for readability */}
       <rect
         x={x - 32}
-        y={y + yOffset - 12}
+        y={y + yOffset - 10}
         width={64}
         height={18}
         fill="white"
         rx={3}
         ry={3}
-        stroke="#92400E"
+        stroke="#000000"
         strokeWidth={1}
       />
       <text
         x={x}
         y={y + yOffset}
-        fill="#92400E"
+        fill="#000000"
         fontSize={13}
         fontWeight={700}
         textAnchor="middle"
+        dominantBaseline="middle"
       >
         {formattedValue}
       </text>

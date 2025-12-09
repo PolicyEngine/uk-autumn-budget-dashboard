@@ -50,6 +50,11 @@ function YearSlider({ selectedYear, onYearChange }) {
 
   const currentIndex = YEARS.indexOf(selectedYear);
 
+  const handleYearClick = (index) => {
+    onYearChange(YEARS[index]);
+    setIsPlaying(false);
+  };
+
   return (
     <div className="year-slider">
       <button
@@ -60,25 +65,39 @@ function YearSlider({ selectedYear, onYearChange }) {
         {isPlaying ? "⏸" : "▶"} {isPlaying ? "Pause" : "Play"}
       </button>
       <div className="slider-container">
+        <div className="slider-track">
+          <div
+            className="slider-progress"
+            style={{ width: `${(currentIndex / (YEARS.length - 1)) * 100}%` }}
+          />
+          <div
+            className="slider-thumb"
+            style={{ left: `${(currentIndex / (YEARS.length - 1)) * 100}%` }}
+          />
+        </div>
+        <div className="year-labels">
+          {YEARS.map((year, index) => (
+            <button
+              key={year}
+              type="button"
+              className={`year-label ${index === currentIndex ? "active" : ""}`}
+              onClick={() => handleYearClick(index)}
+            >
+              {year}-{(year + 1).toString().slice(-2)}
+            </button>
+          ))}
+        </div>
+        {/* Hidden range input for keyboard accessibility */}
         <input
           type="range"
           min="0"
           max={YEARS.length - 1}
           value={currentIndex}
           onChange={handleSliderChange}
-          className="slider"
+          className="slider-input-hidden"
           step="1"
+          aria-label="Select year"
         />
-        <div className="year-labels">
-          {YEARS.map((year, index) => (
-            <span
-              key={year}
-              className={`year-label ${index === currentIndex ? "active" : ""}`}
-            >
-              {year}-{(year + 1).toString().slice(-2)}
-            </span>
-          ))}
-        </div>
       </div>
     </div>
   );

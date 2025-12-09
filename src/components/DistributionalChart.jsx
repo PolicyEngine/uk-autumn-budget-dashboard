@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useRef } from "react";
 import {
   ComposedChart,
   Bar,
@@ -12,7 +12,6 @@ import {
   ReferenceLine,
   Customized,
 } from "recharts";
-import YearSlider from "./YearSlider";
 import { PolicyEngineLogo, CHART_LOGO } from "../utils/chartLogo";
 import { exportChartAsSvg } from "../utils/exportChartAsSvg";
 import { POLICY_COLORS } from "../utils/policyConfig";
@@ -41,9 +40,7 @@ const CHART_DESCRIPTION =
 // Format year for display (e.g., 2026 -> "2026-27")
 const formatYearRange = (year) => `${year}-${(year + 1).toString().slice(-2)}`;
 
-function DistributionalChart({ rawData, selectedPolicies }) {
-  // Default to 2029 so more policies have visible impact
-  const [internalYear, setInternalYear] = useState(2029);
+function DistributionalChart({ rawData, selectedPolicies, selectedYear = 2029 }) {
   const chartRef = useRef(null);
 
   const formatPercent = (value) => `${value.toFixed(1)}%`;
@@ -90,7 +87,7 @@ function DistributionalChart({ rawData, selectedPolicies }) {
   const distributionalSelectedYear = rawData
     ? rawData.filter(
         (row) =>
-          parseInt(row.year) === internalYear &&
+          parseInt(row.year) === selectedYear &&
           selectedPolicies.includes(row.reform_id),
       )
     : [];
@@ -215,7 +212,7 @@ function DistributionalChart({ rawData, selectedPolicies }) {
       : []),
   ];
 
-  const chartTitle = `Relative impact by income decile, ${formatYearRange(internalYear)}`;
+  const chartTitle = `Relative impact by income decile, ${formatYearRange(selectedYear)}`;
 
   const handleExportSvg = async () => {
     await exportChartAsSvg(chartRef, "distributional-impact", {
@@ -386,8 +383,6 @@ function DistributionalChart({ rawData, selectedPolicies }) {
           </ComposedChart>
         </ResponsiveContainer>
       </div>
-
-      <YearSlider selectedYear={internalYear} onYearChange={setInternalYear} />
     </div>
   );
 }

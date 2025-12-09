@@ -3,12 +3,12 @@
  * Used for embedding the logo in Recharts charts and SVG exports.
  */
 
-// Logo configuration
+// Logo configuration - smaller, consistent size across all charts
 export const CHART_LOGO = {
   href: "/assets/logos/policyengine-teal.png",
-  width: 120,
-  height: 25, // Maintains aspect ratio (996:207 ≈ 4.8:1)
-  padding: 12,
+  width: 80,
+  height: 17, // Maintains aspect ratio (996:207 ≈ 4.8:1)
+  padding: 8,
 };
 
 /**
