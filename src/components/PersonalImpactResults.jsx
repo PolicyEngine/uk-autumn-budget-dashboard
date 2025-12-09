@@ -12,30 +12,15 @@ import {
   Line,
   ReferenceLine,
 } from "recharts";
+import {
+  POLICY_COLORS_BY_KEY,
+  PERSONAL_IMPACT_POLICY_ORDER,
+} from "../utils/policyConfig";
 import "./PersonalImpactResults.css";
 
-// Policy colours matching the main dashboard
-const POLICY_COLOURS = {
-  two_child_limit: "#5A8FB8",
-  fuel_duty_freeze: "#B8875A",
-  rail_fares_freeze: "#5FB88A",
-  threshold_freeze_extension: "#4A7BA7",
-  dividend_tax_increase_2pp: "#C59A5A",
-  savings_tax_increase_2pp: "#7B68A7",
-  property_tax_increase_2pp: "#A75F5F",
-  salary_sacrifice_cap: "#5A9B8F",
-};
-
-const POLICY_ORDER = [
-  "two_child_limit",
-  "fuel_duty_freeze",
-  "rail_fares_freeze",
-  "threshold_freeze_extension",
-  "dividend_tax_increase_2pp",
-  "savings_tax_increase_2pp",
-  "property_tax_increase_2pp",
-  "salary_sacrifice_cap",
-];
+// Use shared policy colours
+const POLICY_COLOURS = POLICY_COLORS_BY_KEY;
+const POLICY_ORDER = PERSONAL_IMPACT_POLICY_ORDER;
 
 function formatCurrency(value, decimals = 0) {
   const sign = value >= 0 ? "+" : "";
