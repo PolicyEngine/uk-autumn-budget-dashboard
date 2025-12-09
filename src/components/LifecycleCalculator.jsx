@@ -8,7 +8,9 @@ const getApiUrl = () => {
   const isLocalhost =
     window.location.hostname === "localhost" ||
     window.location.hostname === "127.0.0.1";
-  return isLocalhost ? "http://localhost:5001" : "";
+  return isLocalhost
+    ? "http://localhost:5001"
+    : "https://uk-autumn-budget-lifecycle-578039519715.europe-west1.run.app";
 };
 
 // Use shared policy configuration
@@ -233,7 +235,7 @@ function LifecycleCalculator() {
         children_ages: parseChildrenAges(inputs.children_ages),
       };
 
-      const response = await fetch(`${getApiUrl()}/api/lifecycle/calculate`, {
+      const response = await fetch(`${getApiUrl()}/calculate`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(apiInputs),
@@ -403,14 +405,21 @@ function LifecycleCalculator() {
       .call(
         d3
           .axisBottom(x)
-          .tickValues(displayData.filter((d) => d.age % 5 === 0).map((d) => d.age)),
+          .tickValues(
+            displayData.filter((d) => d.age % 5 === 0).map((d) => d.age),
+          ),
       );
 
     // Y-axis
     chartG
       .append("g")
       .attr("class", "axis y-axis")
-      .call(d3.axisLeft(y).tickFormat((d) => formatSignedCurrency(d)).ticks(8));
+      .call(
+        d3
+          .axisLeft(y)
+          .tickFormat((d) => formatSignedCurrency(d))
+          .ticks(8),
+      );
 
     // Net impact line
     const line = d3
@@ -504,10 +513,7 @@ function LifecycleCalculator() {
     ];
 
     const rows = data.map((row) => {
-      const netImpact = REFORMS.reduce(
-        (sum, r) => sum + (row[r.key] || 0),
-        0,
-      );
+      const netImpact = REFORMS.reduce((sum, r) => sum + (row[r.key] || 0), 0);
       return [
         row.age,
         row.year,
