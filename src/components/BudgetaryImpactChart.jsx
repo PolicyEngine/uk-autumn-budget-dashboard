@@ -32,7 +32,7 @@ const NetImpactLabel = (props) => {
       {/* White background for readability */}
       <rect
         x={x - 32}
-        y={y + yOffset - 12}
+        y={y + yOffset - 10}
         width={64}
         height={18}
         fill="white"
@@ -48,6 +48,7 @@ const NetImpactLabel = (props) => {
         fontSize={13}
         fontWeight={700}
         textAnchor="middle"
+        dominantBaseline="middle"
       >
         {formattedValue}
       </text>
