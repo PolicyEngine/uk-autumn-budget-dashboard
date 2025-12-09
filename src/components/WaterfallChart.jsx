@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useRef } from "react";
 import {
   ComposedChart,
   Bar,
@@ -12,7 +12,6 @@ import {
   ReferenceLine,
   Customized,
 } from "recharts";
-import YearSlider from "./YearSlider";
 import { PolicyEngineLogo, CHART_LOGO } from "../utils/chartLogo";
 import { exportChartAsSvg } from "../utils/exportChartAsSvg";
 import { POLICY_COLORS } from "../utils/policyConfig";
@@ -41,9 +40,7 @@ const CHART_DESCRIPTION =
 // Format year for display (e.g., 2026 -> "2026-27")
 const formatYearRange = (year) => `${year}-${(year + 1).toString().slice(-2)}`;
 
-function WaterfallChart({ rawData, selectedPolicies }) {
-  // Default to 2029 so more policies have visible impact
-  const [internalYear, setInternalYear] = useState(2029);
+function WaterfallChart({ rawData, selectedPolicies, selectedYear = 2029 }) {
   const chartRef = useRef(null);
 
   // Build chart data for internal year
@@ -72,7 +69,7 @@ function WaterfallChart({ rawData, selectedPolicies }) {
   const waterfallSelectedYear = rawData
     ? rawData.filter(
         (row) =>
-          parseInt(row.year) === internalYear &&
+          parseInt(row.year) === selectedYear &&
           row.decile !== "all" &&
           selectedPolicies.includes(row.reform_id),
       )
@@ -207,7 +204,7 @@ function WaterfallChart({ rawData, selectedPolicies }) {
       : []),
   ];
 
-  const chartTitle = `Absolute impact by income decile, ${formatYearRange(internalYear)}`;
+  const chartTitle = `Absolute impact by income decile, ${formatYearRange(selectedYear)}`;
 
   const handleExportSvg = async () => {
     await exportChartAsSvg(chartRef, "absolute-impact-decile", {
@@ -378,10 +375,6 @@ function WaterfallChart({ rawData, selectedPolicies }) {
             <Customized component={PolicyEngineLogo} />
           </ComposedChart>
         </ResponsiveContainer>
-      </div>
-
-      <div style={{ marginTop: "20px" }}>
-        <YearSlider selectedYear={internalYear} onYearChange={setInternalYear} />
       </div>
     </div>
   );

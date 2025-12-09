@@ -84,14 +84,10 @@ class TestBuildSituation:
         # Use pytest.approx for floating point comparison
         assert situation_2026["people"]["adult"]["employment_income"][
             2026
-        ] == pytest.approx(
-            55000
-        )  # 50000 * 1.10
+        ] == pytest.approx(55000)  # 50000 * 1.10
         assert situation_2027["people"]["adult"]["employment_income"][
             2027
-        ] == pytest.approx(
-            60500
-        )  # 50000 * 1.10^2
+        ] == pytest.approx(60500)  # 50000 * 1.10^2
 
     def test_married_couple(self):
         """Test situation building for married couple."""

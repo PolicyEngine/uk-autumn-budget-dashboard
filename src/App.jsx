@@ -9,6 +9,7 @@ import EmploymentIncomeDiffChart from "./components/EmploymentIncomeDiffChart";
 import HouseholdChart from "./components/HouseholdChart";
 import OBRComparisonTable from "./components/OBRComparisonTable";
 import PersonalImpactTab from "./components/PersonalImpactTab";
+import YearSlider from "./components/YearSlider";
 import "./App.css";
 
 // Autumn Budget 2025 policy provisions
@@ -134,6 +135,8 @@ function App() {
   );
   // Default to 2029 so more policies have visible impact
   const [selectedYear, setSelectedYear] = useState(2030);
+  // Shared year for distributional analysis charts (WaterfallChart and DistributionalChart)
+  const [distributionalYear, setDistributionalYear] = useState(2029);
   const [results, setResults] = useState(null);
   const [showPolicyDetails, setShowPolicyDetails] = useState(false);
   const [activeTab, setActiveTab] = useState("dashboard");
@@ -504,16 +507,26 @@ function App() {
                       <BudgetaryImpactChart data={results.budgetData} />
                     </div>
 
-                    {/* Row 1: Absolute and Relative Impact */}
-                    <div className="charts-grid">
-                      <WaterfallChart
-                        rawData={results.rawWinnersLosers}
-                        selectedPolicies={selectedPolicies}
-                      />
-                      <DistributionalChart
-                        rawData={results.rawDistributional}
-                        selectedPolicies={selectedPolicies}
-                      />
+                    {/* Row 1: Absolute and Relative Impact with shared year slider */}
+                    <div className="distributional-section">
+                      <div className="section-year-slider">
+                        <YearSlider
+                          selectedYear={distributionalYear}
+                          onYearChange={setDistributionalYear}
+                        />
+                      </div>
+                      <div className="charts-grid">
+                        <WaterfallChart
+                          rawData={results.rawWinnersLosers}
+                          selectedPolicies={selectedPolicies}
+                          selectedYear={distributionalYear}
+                        />
+                        <DistributionalChart
+                          rawData={results.rawDistributional}
+                          selectedPolicies={selectedPolicies}
+                          selectedYear={distributionalYear}
+                        />
+                      </div>
                     </div>
 
                     {/* Row 2: Constituency Map and Scatter */}
