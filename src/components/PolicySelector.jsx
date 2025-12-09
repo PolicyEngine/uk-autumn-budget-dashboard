@@ -32,12 +32,15 @@ function PolicySelector({ policies, selectedPolicies, onPolicyToggle }) {
         aria-expanded={isExpanded}
         aria-label="Select policies"
       >
+        <span className="policy-selector-count">{selectedCount}</span>
         <span className="policy-selector-label">
           {selectedCount === 0
             ? "Select policies"
-            : `${selectedCount} ${selectedCount === 1 ? "policy" : "policies"} selected`}
+            : selectedCount === 1
+              ? "policy selected"
+              : "policies selected"}
         </span>
-        <span className="policy-selector-icon">{isExpanded ? "×" : "▼"}</span>
+        <span className="policy-selector-icon">{isExpanded ? "▲" : "▼"}</span>
       </button>
 
       {isExpanded && (
