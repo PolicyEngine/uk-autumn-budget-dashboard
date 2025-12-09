@@ -11,7 +11,6 @@ import {
   Cell,
   Customized,
 } from "recharts";
-import YearSlider from "./YearSlider";
 import { PolicyEngineLogo, CHART_LOGO } from "../utils/chartLogo";
 import { exportChartAsSvg } from "../utils/exportChartAsSvg";
 import "./HouseholdChart.css";
@@ -785,8 +784,6 @@ function HouseholdChart({ rawData, selectedPolicies }) {
           </span>
         </div>
       </div>
-
-      <YearSlider selectedYear={internalYear} onYearChange={setInternalYear} />
     </div>
   );
 }

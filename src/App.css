@@ -246,6 +246,71 @@
   transform: translateY(-2px);
 }
 
+/* OBR Expandable Section */
+.obr-expandable {
+  margin-bottom: 32px;
+  animation: slideUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  opacity: 0;
+  animation-delay: 0.2s;
+}
+
+.obr-toggle-button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 16px 20px;
+  background: var(--pe-surface);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 12px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--pe-gray-700);
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.obr-toggle-button:hover {
+  background: var(--pe-gray-50);
+  border-color: var(--pe-teal-200);
+  color: var(--pe-teal-700);
+}
+
+.obr-toggle-button svg:first-child {
+  color: var(--pe-teal-500);
+}
+
+.obr-content {
+  margin-top: 16px;
+  background: var(--pe-surface);
+  border-radius: 16px;
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+  animation: slideDown 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.obr-content .obr-comparison-section {
+  margin: 0;
+  padding: 24px;
+}
+
+.obr-content .obr-comparison-section h2 {
+  margin-top: 0;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* Key Metrics Row */
 .key-metrics-row {
   display: grid;

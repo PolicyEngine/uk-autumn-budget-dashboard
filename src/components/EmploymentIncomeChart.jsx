@@ -12,7 +12,6 @@ import {
 } from "recharts";
 import { PolicyEngineLogo, CHART_LOGO } from "../utils/chartLogo";
 import { exportChartAsSvg } from "../utils/exportChartAsSvg";
-import YearSlider from "./YearSlider";
 import "./EmploymentIncomeChart.css";
 import "./ChartExport.css";
 
@@ -286,8 +285,6 @@ function EmploymentIncomeChart({ selectedPolicies }) {
           </LineChart>
         </ResponsiveContainer>
       </div>
-
-      <YearSlider selectedYear={internalYear} onYearChange={setInternalYear} />
     </div>
   );
 }

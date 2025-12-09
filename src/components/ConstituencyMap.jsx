@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState, useMemo } from "react";
 import * as d3 from "d3";
-import YearSlider from "./YearSlider";
 import { CHART_LOGO } from "../utils/chartLogo";
 import { exportMapAsSvg } from "../utils/exportMapAsSvg";
 import "./ConstituencyMap.css";
@@ -721,10 +720,6 @@ export default function ConstituencyMap({ selectedPolicies = [] }) {
             </div>
           )}
         </div>
-      </div>
-
-      <div style={{ marginTop: "5px" }}>
-        <YearSlider selectedYear={internalYear} onYearChange={setInternalYear} />
       </div>
     </div>
   );
