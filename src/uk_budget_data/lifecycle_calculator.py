@@ -6,7 +6,6 @@ calculating lifetime impacts of UK Autumn Budget policies.
 
 from pydantic import BaseModel
 
-
 # Inflation forecasts (OBR EFO November 2025)
 CPI_FORECASTS = {
     2024: 0.0233,
@@ -209,7 +208,9 @@ def calculate_uc_child_element_impact(
     else:
         cpi_factor = get_cumulative_inflation(2025, year, use_rpi=False)
         child_element = UC_CHILD_ELEMENT_ANNUAL_2025 * cpi_factor
-        standard_allowance = UC_STANDARD_ALLOWANCE_SINGLE_PARENT_2025 * cpi_factor
+        standard_allowance = (
+            UC_STANDARD_ALLOWANCE_SINGLE_PARENT_2025 * cpi_factor
+        )
         base_allowance = (
             UC_WORK_ALLOWANCE_WITH_HOUSING_2025
             if has_housing_element
@@ -218,8 +219,12 @@ def calculate_uc_child_element_impact(
         work_allowance = base_allowance * cpi_factor
 
     children_with_limit = min(eligible_children, UC_TWO_CHILD_LIMIT)
-    max_uc_with_limit = standard_allowance + (children_with_limit * child_element)
-    max_uc_without_limit = standard_allowance + (eligible_children * child_element)
+    max_uc_with_limit = standard_allowance + (
+        children_with_limit * child_element
+    )
+    max_uc_without_limit = standard_allowance + (
+        eligible_children * child_element
+    )
 
     if net_earnings > work_allowance:
         income_reduction = (net_earnings - work_allowance) * UC_TAPER_RATE
@@ -256,8 +261,12 @@ def get_student_loan_interest_rate(gross_income: float, year: int) -> float:
         upper_threshold = STUDENT_LOAN_INTEREST_UPPER_THRESHOLD_2024
     else:
         rpi_factor = get_cumulative_inflation(2024, year, use_rpi=True)
-        lower_threshold = STUDENT_LOAN_INTEREST_LOWER_THRESHOLD_2024 * rpi_factor
-        upper_threshold = STUDENT_LOAN_INTEREST_UPPER_THRESHOLD_2024 * rpi_factor
+        lower_threshold = (
+            STUDENT_LOAN_INTEREST_LOWER_THRESHOLD_2024 * rpi_factor
+        )
+        upper_threshold = (
+            STUDENT_LOAN_INTEREST_UPPER_THRESHOLD_2024 * rpi_factor
+        )
 
     if gross_income <= lower_threshold:
         return rpi
@@ -267,7 +276,9 @@ def get_student_loan_interest_rate(gross_income: float, year: int) -> float:
         taper_fraction = (gross_income - lower_threshold) / (
             upper_threshold - lower_threshold
         )
-        additional_rate = STUDENT_LOAN_INTEREST_ADDITIONAL_RATE * taper_fraction
+        additional_rate = (
+            STUDENT_LOAN_INTEREST_ADDITIONAL_RATE * taper_fraction
+        )
         return rpi + additional_rate
 
 
@@ -356,7 +367,9 @@ def calculate_salary_sacrifice_impact(
     if excess == 0:
         return 0
     employee_ni_rate = (
-        NI_MAIN_RATE if gross_income <= NI_UPPER_EARNINGS_LIMIT else NI_HIGHER_RATE
+        NI_MAIN_RATE
+        if gross_income <= NI_UPPER_EARNINGS_LIMIT
+        else NI_HIGHER_RATE
     )
     return excess * (employee_ni_rate + EMPLOYER_NI_RATE)
 
@@ -387,7 +400,9 @@ def calculate_unearned_income_tax(
 
     pa_used = 0
 
-    savings_after_pa = max(0, savings_interest - max(0, remaining_pa - pa_used))
+    savings_after_pa = max(
+        0, savings_interest - max(0, remaining_pa - pa_used)
+    )
     pa_used += min(savings_interest, max(0, remaining_pa - pa_used))
     taxable_savings = max(0, savings_after_pa - savings_allowance)
 
@@ -395,7 +410,9 @@ def calculate_unearned_income_tax(
     pa_used += min(dividends, max(0, remaining_pa - pa_used))
     taxable_dividends = max(0, dividends_after_pa - DIVIDEND_ALLOWANCE)
 
-    property_after_pa = max(0, property_income - max(0, remaining_pa - pa_used))
+    property_after_pa = max(
+        0, property_income - max(0, remaining_pa - pa_used)
+    )
     taxable_property = property_after_pa
 
     tax = (
@@ -493,7 +510,9 @@ def run_lifecycle_model(inputs: LifecycleInputs) -> list[dict]:
         current_age, PEAK_EARNINGS_MULTIPLIER
     )
     base_multiplier_22 = EARNINGS_GROWTH_BY_AGE.get(22, 1.0)
-    starting_salary = current_salary / current_age_multiplier * base_multiplier_22
+    starting_salary = (
+        current_salary / current_age_multiplier * base_multiplier_22
+    )
 
     graduation_age = 22
     graduation_year = input_year - (current_age - graduation_age)
@@ -525,7 +544,9 @@ def run_lifecycle_model(inputs: LifecycleInputs) -> list[dict]:
             additional_growth = (
                 1 + inputs.additional_income_growth_rate
             ) ** years_since_graduation
-            employment_income = starting_salary * base_multiplier * additional_growth
+            employment_income = (
+                starting_salary * base_multiplier * additional_growth
+            )
             state_pension = 0
             gross_income = employment_income
 
@@ -551,7 +572,9 @@ def run_lifecycle_model(inputs: LifecycleInputs) -> list[dict]:
 
         unearned_cpi_factor = get_cumulative_inflation(base_year, current_year)
         dividends = inputs.dividends_per_year * unearned_cpi_factor
-        savings_interest = inputs.savings_interest_per_year * unearned_cpi_factor
+        savings_interest = (
+            inputs.savings_interest_per_year * unearned_cpi_factor
+        )
         property_income = inputs.property_income_per_year * unearned_cpi_factor
 
         unearned_tax = calculate_unearned_income_tax(
@@ -642,7 +665,9 @@ def run_lifecycle_model(inputs: LifecycleInputs) -> list[dict]:
                 "impact_fuel_duty_freeze": round(impact_fuel_freeze),
                 "impact_threshold_freeze": round(impact_threshold_freeze),
                 "impact_unearned_income_tax": round(impact_unearned_tax),
-                "impact_salary_sacrifice_cap": round(impact_salary_sacrifice_cap),
+                "impact_salary_sacrifice_cap": round(
+                    impact_salary_sacrifice_cap
+                ),
                 "impact_sl_threshold_freeze": round(impact_sl_freeze),
                 "impact_two_child_limit": round(impact_two_child_limit),
                 "baseline_pa": round(baseline["pa"]),

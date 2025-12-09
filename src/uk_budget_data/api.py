@@ -13,13 +13,13 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field, field_validator
 
-from uk_budget_data.personal_impact import (
-    HouseholdInput,
-    PersonalImpactCalculator,
-)
 from uk_budget_data.lifecycle_calculator import (
     LifecycleInputs,
     run_lifecycle_model,
+)
+from uk_budget_data.personal_impact import (
+    HouseholdInput,
+    PersonalImpactCalculator,
 )
 
 app = FastAPI(
@@ -210,7 +210,9 @@ class APILifecycleInput(BaseModel):
         default=50_000, ge=0, description="Student loan debt at graduation"
     )
     salary_sacrifice_per_year: float = Field(
-        default=5_000, ge=0, description="Annual salary sacrifice pension contribution"
+        default=5_000,
+        ge=0,
+        description="Annual salary sacrifice pension contribution",
     )
     rail_spending_per_year: float = Field(
         default=2_000, ge=0, description="Annual rail spending"

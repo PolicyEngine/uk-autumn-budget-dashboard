@@ -23,6 +23,8 @@ def test_lifecycle_calculator_exists():
         content = f.read()
 
     # Should have key elements of the lifecycle calculator
-    assert "lifecycle-calculator" in content, "Should have lifecycle-calculator class"
+    assert (
+        "lifecycle-calculator" in content
+    ), "Should have lifecycle-calculator class"
     assert "REFORMS" in content, "Should define policy reforms"
     assert "fetchData" in content, "Should have data fetching logic"
