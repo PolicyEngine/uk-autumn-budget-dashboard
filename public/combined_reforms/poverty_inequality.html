@@ -5,224 +5,98 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Poverty Impact - Combined Autumn Budget 2025</title>
     <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Serif:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background: white;
-            padding: 24px;
-        }
-        .controls {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 16px;
-            margin-bottom: 24px;
-            justify-content: center;
-        }
-        .control-group {
-            background: #F9FAFB;
-            padding: 14px 18px;
-            border-radius: 8px;
-            border: 1px solid #E2E8F0;
-        }
-        .control-group h3 {
-            color: #344054;
-            font-size: 0.7rem;
-            margin-bottom: 10px;
-            text-transform: uppercase;
-            letter-spacing: 0.8px;
-            font-weight: 600;
-        }
-        .toggle-buttons {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-        .toggle-btn {
-            padding: 8px 14px;
-            border: 1px solid #CBD5E1;
-            background: white;
-            color: #344054;
-            border-radius: 6px;
-            cursor: pointer;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            font-size: 0.8rem;
-            font-weight: 500;
-            transition: all 0.2s ease;
-        }
-        .toggle-btn:hover {
-            background: #F9FAFB;
-            border-color: #94A3B8;
-        }
-        .toggle-btn.active {
-            background: #319795;
-            color: white;
-            border-color: #319795;
-        }
-        #chart {
-            width: 100%;
-            height: 420px;
-            border-radius: 8px;
-            overflow: hidden;
-        }
-        .chart-title {
-            text-align: center;
-            font-size: 1rem;
-            font-weight: 600;
-            color: #000000;
-            margin-bottom: 4px;
-        }
-        .chart-subtitle {
-            text-align: center;
-            font-size: 0.8rem;
-            color: #6B7280;
-            margin-bottom: 16px;
-        }
-        @media (max-width: 640px) {
-            .controls {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            .control-group {
-                width: 100%;
-            }
-            .toggle-buttons {
-                justify-content: center;
-            }
-        }
+        body { margin: 0; padding: 16px; font-family: 'Roboto Serif', serif; background: white; }
+        #chart { width: 100%; height: 500px; }
     </style>
 </head>
 <body>
-    <div class="chart-title">Change in absolute poverty rate</div>
-    <div class="chart-subtitle">Combined Autumn Budget 2025 reforms</div>
-
-    <div class="controls">
-        <div class="control-group">
-            <h3>Housing Costs</h3>
-            <div class="toggle-buttons">
-                <button class="toggle-btn active" data-housing="ahc" onclick="setHousing('ahc')"><span>After housing costs</span></button>
-                <button class="toggle-btn" data-housing="bhc" onclick="setHousing('bhc')"><span>Before housing costs</span></button>
-            </div>
-        </div>
-    </div>
-
     <div id="chart"></div>
-
     <script>
-        const povertyData = {"child": {"label": "Child", "color": "#319795", "bhc": [-2.3, -2.31, -2.5, -2.47, -2.88], "ahc": [-3.51, -3.59, -3.46, -3.35, -3.77]}, "overall": {"label": "Overall", "color": "#0284C7", "bhc": [-0.69, -0.69, -0.74, -0.73, -0.81], "ahc": [-1.02, -1.05, -0.99, -0.94, -1.02]}, "working_age": {"label": "Working-age", "color": "#4B5563", "bhc": [-0.34, -0.33, -0.37, -0.36, -0.37], "ahc": null}, "pensioner": {"label": "Pensioner", "color": "#9CA3AF", "bhc": [0.0, 0.0, 0.08, 0.05, 0.14], "ahc": null}};
+        const data = {"2026-27": [-0.69, -1.02, -2.3, -3.51, -0.34, 0.0], "2027-28": [-0.69, -1.05, -2.31, -3.59, -0.33, 0.0], "2028-29": [-0.74, -0.99, -2.5, -3.46, -0.37, 0.08], "2029-30": [-0.73, -0.94, -2.47, -3.35, -0.36, 0.05], "2030-31": [-0.81, -1.02, -2.88, -3.77, -0.37, 0.14]};
         const years = ["2026-27", "2027-28", "2028-29", "2029-30", "2030-31"];
+        const labels = ["Overall<br>(BHC)", "Overall<br>(AHC)", "Child<br>(BHC)", "Child<br>(AHC)", "Working-age<br>(BHC)", "Pensioner<br>(BHC)"];
 
-        let currentHousing = 'ahc';
+        const traces = years.map((year, i) => {
+            const values = data[year];
+            const colors = values.map(v => v < 0 ? '#2C6496' : '#616161');
+            return {
+                x: labels,
+                y: values,
+                type: 'bar',
+                marker: { color: colors },
+                text: values.map(v => (v >= 0 ? '+' : '') + v.toFixed(2) + 'pp'),
+                textposition: 'outside',
+                textfont: { family: 'Roboto Serif', size: 11 },
+                hovertemplate: '%{x}<br>Change: %{y:+.2f}pp<extra></extra>',
+                visible: i === 0,
+                name: year
+            };
+        });
 
-        function setHousing(housing) {
-            currentHousing = housing;
-            document.querySelectorAll('[data-housing]').forEach(btn => {
-                btn.classList.toggle('active', btn.dataset.housing === housing);
-            });
-            updateChart();
-        }
+        const steps = years.map((year, i) => ({
+            method: 'animate',
+            args: [[year], { frame: { duration: 0, redraw: true }, mode: 'immediate' }],
+            label: year
+        }));
 
-        function updateChart() {
-            let traces = [];
-            const housingLabel = currentHousing === 'ahc' ? 'after housing costs' : 'before housing costs';
-
-            const groups = ['child', 'overall', 'working_age', 'pensioner'];
-            groups.forEach(group => {
-                const data = povertyData[group];
-
-                // Use AHC if available and selected, otherwise use BHC
-                let values;
-                let label = data.label;
-                if (data[currentHousing]) {
-                    values = data[currentHousing];
-                } else {
-                    values = data.bhc;
-                    label = data.label + ' (BHC only)';
-                }
-
-                traces.push({
-                    x: years,
-                    y: values,
-                    type: 'scatter',
-                    mode: 'lines+markers',
-                    name: label,
-                    line: {
-                        color: data.color,
-                        width: 3
-                    },
-                    marker: {
-                        size: 8,
-                        color: data.color,
-                        line: { color: 'white', width: 2 }
-                    },
-                    hovertemplate: '<b>' + data.label + '</b><br>%{x}: %{y:+.2f}pp<extra></extra>'
-                });
-            });
-
-            // Calculate y-axis range across all traces
-            let allValues = [];
-            traces.forEach(t => allValues = allValues.concat(t.y));
-            const minVal = Math.min(...allValues);
-            const maxVal = Math.max(...allValues);
-            const padding = Math.max(Math.abs(minVal), Math.abs(maxVal)) * 0.15;
-
-            const layout = {
-                xaxis: {
-                    title: { text: 'Fiscal year', font: { size: 12, color: '#000000' } },
-                    tickfont: { family: 'Inter', size: 11, color: '#000000' },
-                    showgrid: true,
-                    gridcolor: '#E2E8F0',
-                    gridwidth: 1
-                },
-                yaxis: {
-                    title: { text: 'Change (percentage points)', font: { size: 12, color: '#000000' } },
-                    tickfont: { family: 'Inter', size: 11, color: '#000000' },
-                    ticksuffix: 'pp',
-                    range: [minVal - padding, maxVal + padding],
-                    zeroline: true,
-                    zerolinewidth: 2,
-                    zerolinecolor: '#000000',
-                    showgrid: true,
-                    gridcolor: '#E2E8F0',
-                    gridwidth: 1
-                },
-                margin: { t: 20, r: 40, b: 80, l: 70 },
-                font: { family: 'Inter, -apple-system, BlinkMacSystemFont, sans-serif', color: '#000000' },
-                plot_bgcolor: 'white',
-                paper_bgcolor: 'white',
-                legend: {
-                    orientation: 'h',
-                    yanchor: 'top',
-                    y: -0.2,
-                    xanchor: 'center',
-                    x: 0.5,
-                    font: { size: 11, color: '#000000' }
-                },
-                shapes: [{
-                    type: 'line',
-                    x0: years[0],
-                    x1: years[years.length - 1],
-                    y0: 0,
-                    y1: 0,
-                    line: { color: '#9CA3AF', width: 1, dash: 'dot' }
+        const layout = {
+            xaxis: {
+                title: 'Poverty measure',
+                tickfont: { family: 'Roboto Serif', size: 10 },
+                showgrid: false
+            },
+            yaxis: {
+                title: 'Change in poverty headcount rate (pp)',
+                ticksuffix: 'pp',
+                showgrid: true,
+                gridcolor: '#e0e0e0',
+                range: [-5, 1],
+                zeroline: true,
+                zerolinecolor: '#333',
+                zerolinewidth: 2
+            },
+            height: 500,
+            margin: { l: 80, r: 50, b: 120, t: 60 },
+            font: { family: 'Roboto Serif' },
+            showlegend: false,
+            sliders: [{
+                active: 0,
+                steps: steps,
+                x: 0.2,
+                len: 0.6,
+                y: 1.1,
+                currentvalue: { visible: false },
+                font: { family: 'Roboto Serif' }
+            }],
+            updatemenus: [{
+                type: 'buttons',
+                showactive: false,
+                x: 0.1,
+                y: 1.15,
+                xanchor: 'right',
+                buttons: [{
+                    label: 'Play',
+                    method: 'animate',
+                    args: [null, { frame: { duration: 1000, redraw: true }, fromcurrent: true, mode: 'afterall' }]
                 }]
-            };
+            }]
+        };
 
-            const config = {
-                responsive: true,
-                displayModeBar: false
-            };
+        // Create frames for animation
+        const frames = years.map(year => ({
+            name: year,
+            data: [{
+                y: data[year],
+                text: data[year].map(v => (v >= 0 ? '+' : '') + v.toFixed(2) + 'pp'),
+                marker: { color: data[year].map(v => v < 0 ? '#2C6496' : '#616161') }
+            }]
+        }));
 
-            Plotly.react('chart', traces, layout, config);
-        }
-
-        // Initial render
-        updateChart();
+        Plotly.newPlot('chart', traces, layout).then(() => {
+            Plotly.addFrames('chart', frames);
+        });
     </script>
 </body>
 </html>
