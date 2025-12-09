@@ -15,25 +15,11 @@ import {
 import YearSlider from "./YearSlider";
 import { PolicyEngineLogo, CHART_LOGO } from "../utils/chartLogo";
 import { exportChartAsSvg } from "../utils/exportChartAsSvg";
+import { POLICY_COLORS } from "../utils/policyConfig";
 import "./DistributionalChart.css";
 import "./ChartExport.css";
 
-const POLICY_COLORS = {
-  // GOOD for households (teal/green spectrum) - spending/cost items
-  "2 child limit repeal": "#0D9488", // Teal
-  "Fuel duty freeze extension": "#5EEAD4", // Light teal
-  "Rail fares freeze": "#10B981", // Emerald
-
-  // BAD for households (amber spectrum) - revenue raisers
-  "Threshold freeze extension": "#D97706", // Amber
-  "Dividend tax increase (+2pp)": "#F59E0B", // Yellow-amber
-  "Savings income tax increase (+2pp)": "#FBBF24", // Yellow
-  "Property income tax increase (+2pp)": "#FCD34D", // Light yellow
-  "Freeze student loan repayment thresholds": "#EA580C", // Orange
-  "NICs on salary sacrifice (>£2k)": "#B45309", // Dark amber
-};
-
-// Order: good for households first, then bad for households
+// Order for distributional chart: good for households first, then bad
 const ALL_POLICY_NAMES = [
   // Good for households (positive, teal/green)
   "2 child limit repeal",

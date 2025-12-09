@@ -15,41 +15,9 @@ import {
 } from "recharts";
 import { PolicyEngineLogo, CHART_LOGO } from "../utils/chartLogo";
 import { exportChartAsSvg } from "../utils/exportChartAsSvg";
+import { POLICY_COLORS, ALL_POLICY_NAMES } from "../utils/policyConfig";
 import "./BudgetaryImpactChart.css";
 import "./ChartExport.css";
-
-const POLICY_COLORS = {
-  // COSTS to treasury (good for households - teal/green spectrum)
-  "2 child limit repeal": "#0D9488", // Teal
-  "Fuel duty freeze extension": "#5EEAD4", // Light teal
-  "Rail fares freeze": "#10B981", // Emerald
-  "Zero-rate VAT on energy": "#14B8A6", // Teal 500
-
-  // REVENUE raisers (bad for households - amber/orange spectrum)
-  "Threshold freeze extension": "#D97706", // Amber
-  "Dividend tax increase (+2pp)": "#F59E0B", // Yellow-amber
-  "Savings income tax increase (+2pp)": "#FBBF24", // Yellow
-  "Property income tax increase (+2pp)": "#FCD34D", // Light yellow
-  "Salary sacrifice cap": "#B45309", // Dark amber
-  "Freeze student loan repayment thresholds": "#92400E", // Amber 800
-};
-
-// Order: revenue raisers first (positive), then costs (negative)
-// Within each group, ordered by typical magnitude
-const ALL_POLICY_NAMES = [
-  // Revenue raisers (positive for gov)
-  "Threshold freeze extension",
-  "Dividend tax increase (+2pp)",
-  "Savings income tax increase (+2pp)",
-  "Property income tax increase (+2pp)",
-  "Salary sacrifice cap",
-  "Freeze student loan repayment thresholds",
-  // Costs to treasury (negative for gov)
-  "2 child limit repeal",
-  "Fuel duty freeze extension",
-  "Rail fares freeze",
-  "Zero-rate VAT on energy",
-];
 
 // Custom label component for net impact values
 const NetImpactLabel = (props) => {
