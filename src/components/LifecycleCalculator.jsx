@@ -5,9 +5,12 @@ import "./LifecycleCalculator.css";
 
 // API URL - detect local vs production
 const getApiUrl = () => {
-  // Always use production API (Cloud Run) for now
-  // For local backend testing, change to "http://localhost:5001"
-  return "https://uk-autumn-budget-lifecycle-578039519715.europe-west1.run.app";
+  const isLocalhost =
+    window.location.hostname === "localhost" ||
+    window.location.hostname === "127.0.0.1";
+  return isLocalhost
+    ? "http://localhost:5001"
+    : "https://uk-autumn-budget-lifecycle-578039519715.europe-west1.run.app";
 };
 
 // Use shared policy configuration
