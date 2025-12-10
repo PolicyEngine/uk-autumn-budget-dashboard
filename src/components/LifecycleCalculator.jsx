@@ -5,12 +5,8 @@ import "./LifecycleCalculator.css";
 
 // API URL - detect local vs production
 const getApiUrl = () => {
-  const isLocalhost =
-    window.location.hostname === "localhost" ||
-    window.location.hostname === "127.0.0.1";
-  return isLocalhost
-    ? "http://localhost:5001"
-    : "https://uk-autumn-budget-lifecycle-578039519715.europe-west1.run.app";
+  // Use production API for now - change to localhost:5001 for local backend testing
+  return "https://uk-autumn-budget-lifecycle-578039519715.europe-west1.run.app";
 };
 
 // Use shared policy configuration
@@ -381,17 +377,20 @@ function LifecycleCalculator() {
     return displayData.find((d) => d.age === modalAge);
   }, [modalAge, displayData]);
 
-  // Render D3 chart
+  // Animation duration for smooth transitions
+  const ANIMATION_DURATION = 400;
+
+  // Render D3 chart with smooth transitions on update
   useEffect(() => {
     if (!displayData.length || !chartRef.current) return;
 
     const container = chartRef.current;
+    const existingSvg = d3.select(container).select("svg");
+    const isUpdate = existingSvg.size() > 0;
+
     const margin = { top: 20, right: 20, bottom: 40, left: 60 };
     const width = container.clientWidth - margin.left - margin.right;
     const height = 400 - margin.top - margin.bottom;
-
-    // Clear previous chart
-    d3.select(container).selectAll("*").remove();
 
     // Prepare stacked data
     const stackedData = displayData.map((d) => {
@@ -430,7 +429,7 @@ function LifecycleCalculator() {
 
     const yMax = d3.max(stackedData, (d) => d.posTotal);
     const yMin = d3.min(stackedData, (d) => d.negTotal);
-    const yExtent = Math.max(Math.abs(yMax), Math.abs(yMin)) * 1.1;
+    const yExtent = Math.max(Math.abs(yMax || 0), Math.abs(yMin || 0)) * 1.1 || 1000;
 
     const x = d3
       .scaleBand()
@@ -440,169 +439,308 @@ function LifecycleCalculator() {
 
     const y = d3.scaleLinear().domain([-yExtent, yExtent]).range([height, 0]);
 
-    const svg = d3
-      .select(container)
-      .append("svg")
-      .attr("width", width + margin.left + margin.right)
-      .attr("height", height + margin.top + margin.bottom);
-
-    const chartG = svg
-      .append("g")
-      .attr("transform", `translate(${margin.left},${margin.top})`);
-
-    // Grid
-    chartG
-      .append("g")
-      .attr("class", "grid")
-      .call(d3.axisLeft(y).tickSize(-width).tickFormat("").ticks(8));
-
-    // Zero line
-    chartG
-      .append("line")
-      .attr("class", "zero-line")
-      .attr("x1", 0)
-      .attr("x2", width)
-      .attr("y1", y(0))
-      .attr("y2", y(0))
-      .attr("stroke", "#333")
-      .attr("stroke-width", 2);
-
-    // Age groups
-    const ageGroups = chartG
-      .selectAll(".age-group")
-      .data(stackedData, (d) => d.age)
-      .enter()
-      .append("g")
-      .attr("class", "age-group")
-      .attr("transform", (d) => `translate(${x(d.age)},0)`);
-
-    // Bars
-    ageGroups
-      .selectAll("rect")
-      .data((d) => d.bars)
-      .enter()
-      .append("rect")
-      .attr("x", 0)
-      .attr("y", y(0))
-      .attr("width", x.bandwidth())
-      .attr("height", 0)
-      .attr("fill", (d) => REFORMS.find((r) => r.key === d.key).color)
-      .attr("rx", 1)
-      .transition()
-      .duration(400)
-      .attr("y", (d) => y(Math.max(d.y0, d.y1)))
-      .attr("height", (d) => Math.abs(y(d.y0) - y(d.y1)));
-
-    // X-axis
-    chartG
-      .append("g")
-      .attr("class", "axis x-axis")
-      .attr("transform", `translate(0,${height})`)
-      .call(
-        d3
-          .axisBottom(x)
-          .tickValues(
-            displayData.filter((d) => d.age % 5 === 0).map((d) => d.age),
-          ),
-      );
-
-    // Y-axis
-    chartG
-      .append("g")
-      .attr("class", "axis y-axis")
-      .call(
-        d3
-          .axisLeft(y)
-          .tickFormat((d) => formatSignedCurrency(d))
-          .ticks(8),
-      );
-
-    // Net impact line
+    // Line generator for net impact
     const line = d3
       .line()
       .x((d) => x(d.age) + x.bandwidth() / 2)
       .y((d) => y(d.netImpact))
       .curve(d3.curveMonotoneX);
 
-    chartG
-      .append("path")
-      .datum(stackedData)
-      .attr("class", "net-line")
-      .attr("fill", "none")
-      .attr("stroke", "#000000")
-      .attr("stroke-width", 2.5)
-      .attr("d", line);
-
-    // Tooltip interactions
     const tooltip = d3.select(tooltipRef.current);
 
-    ageGroups
-      .on("mouseover", function (event, d) {
-        tooltip.style("opacity", 1);
-        let html = `<div class="tooltip-title">Age ${d.age} (${d.year})</div>`;
+    // Tooltip event handlers
+    const handleMouseover = function (event, d) {
+      tooltip.style("opacity", 1);
+      let html = `<div class="tooltip-title">Age ${d.age} (${d.year})</div>`;
 
-        html += `<div class="tooltip-section">`;
-        html += `<div class="tooltip-row"><span class="tooltip-label">Gross income</span><span class="tooltip-value">£${d3.format(",.0f")(d.gross_income)}</span></div>`;
-        if (d.income_tax > 0) {
-          html += `<div class="tooltip-row"><span class="tooltip-label">Income tax</span><span class="tooltip-value">-£${d3.format(",.0f")(d.income_tax)}</span></div>`;
-        }
-        if (d.national_insurance > 0) {
-          html += `<div class="tooltip-row"><span class="tooltip-label">National insurance</span><span class="tooltip-value">-£${d3.format(",.0f")(d.national_insurance)}</span></div>`;
-        }
-        if (d.student_loan_payment > 0) {
-          html += `<div class="tooltip-row"><span class="tooltip-label">Student loan</span><span class="tooltip-value">-£${d3.format(",.0f")(d.student_loan_payment)}</span></div>`;
-        }
+      html += `<div class="tooltip-section">`;
+      html += `<div class="tooltip-row"><span class="tooltip-label">Gross income</span><span class="tooltip-value">£${d3.format(",.0f")(d.gross_income)}</span></div>`;
+      if (d.income_tax > 0) {
+        html += `<div class="tooltip-row"><span class="tooltip-label">Income tax</span><span class="tooltip-value">-£${d3.format(",.0f")(d.income_tax)}</span></div>`;
+      }
+      if (d.national_insurance > 0) {
+        html += `<div class="tooltip-row"><span class="tooltip-label">National insurance</span><span class="tooltip-value">-£${d3.format(",.0f")(d.national_insurance)}</span></div>`;
+      }
+      if (d.student_loan_payment > 0) {
+        html += `<div class="tooltip-row"><span class="tooltip-label">Student loan</span><span class="tooltip-value">-£${d3.format(",.0f")(d.student_loan_payment)}</span></div>`;
+      }
+      html += `</div>`;
+
+      const activeReforms = d.bars.filter((b) => b.value !== 0);
+      if (activeReforms.length > 0) {
+        html += `<div class="tooltip-section tooltip-reforms">`;
+        activeReforms.forEach((bar) => {
+          const reform = REFORMS.find((r) => r.key === bar.key);
+          html += `<div class="tooltip-row">
+            <span class="tooltip-label">${reform.label}</span>
+            <span class="tooltip-value ${bar.value >= 0 ? "positive" : "negative"}">${formatSignedCurrency(bar.value)}</span>
+          </div>`;
+        });
         html += `</div>`;
+      }
 
-        const activeReforms = d.bars.filter((b) => b.value !== 0);
-        if (activeReforms.length > 0) {
-          html += `<div class="tooltip-section tooltip-reforms">`;
-          activeReforms.forEach((bar) => {
-            const reform = REFORMS.find((r) => r.key === bar.key);
-            html += `<div class="tooltip-row">
-              <span class="tooltip-label">${reform.label}</span>
-              <span class="tooltip-value ${bar.value >= 0 ? "positive" : "negative"}">${formatSignedCurrency(bar.value)}</span>
-            </div>`;
-          });
-          html += `</div>`;
+      const total = d3.sum(d.bars, (b) => b.value);
+      html += `<div class="tooltip-row tooltip-total">
+        <span>Net policy impact</span>
+        <span class="tooltip-value ${total >= 0 ? "positive" : "negative"}">${formatSignedCurrency(total)}</span>
+      </div>`;
+      html += `<div style="margin-top: 8px; font-size: 0.75rem; color: #94a3b8; text-align: center;">Click for details</div>`;
+
+      tooltip.html(html);
+    };
+
+    const handleMousemove = function (event) {
+      tooltip
+        .style("left", event.clientX + 10 + "px")
+        .style("top", event.clientY - 10 + "px");
+    };
+
+    const handleMouseout = function () {
+      tooltip.style("opacity", 0);
+    };
+
+    const handleClick = function (event, d) {
+      const mouseY = d3.pointer(event, this)[1];
+      let clickedTab = "summary";
+
+      for (const bar of d.bars) {
+        if (bar.value === 0) continue;
+        const barTop = y(Math.max(bar.y0, bar.y1));
+        const barBottom = y(Math.min(bar.y0, bar.y1));
+        if (mouseY >= barTop && mouseY <= barBottom) {
+          clickedTab = REFORM_KEY_TO_TAB[bar.key] || "summary";
+          break;
         }
+      }
 
-        const total = d3.sum(d.bars, (b) => b.value);
-        html += `<div class="tooltip-row tooltip-total">
-          <span>Net policy impact</span>
-          <span class="tooltip-value ${total >= 0 ? "positive" : "negative"}">${formatSignedCurrency(total)}</span>
-        </div>`;
-        html += `<div style="margin-top: 8px; font-size: 0.75rem; color: #94a3b8; text-align: center;">Click for details</div>`;
+      tooltip.style("opacity", 0);
+      showModal(d.age, clickedTab);
+    };
 
-        tooltip.html(html);
-      })
-      .on("mousemove", function (event) {
-        tooltip
-          .style("left", event.clientX + 10 + "px")
-          .style("top", event.clientY - 10 + "px");
-      })
-      .on("mouseout", function () {
-        tooltip.style("opacity", 0);
-      })
-      .on("click", function (event, d) {
-        // Determine which bar segment was clicked based on mouse Y position
-        const mouseY = d3.pointer(event, this)[1];
-        let clickedTab = "summary";
+    let svg, chartG;
 
-        // Find which bar segment was clicked
-        for (const bar of d.bars) {
-          if (bar.value === 0) continue;
-          const barTop = y(Math.max(bar.y0, bar.y1));
-          const barBottom = y(Math.min(bar.y0, bar.y1));
-          if (mouseY >= barTop && mouseY <= barBottom) {
-            clickedTab = REFORM_KEY_TO_TAB[bar.key] || "summary";
-            break;
-          }
-        }
+    if (isUpdate) {
+      // UPDATE existing chart with smooth transitions
+      svg = existingSvg;
+      chartG = svg.select("g");
 
-        tooltip.style("opacity", 0);
-        showModal(d.age, clickedTab);
+      // Update y-axis with transition
+      chartG
+        .select(".axis.y-axis")
+        .transition()
+        .duration(ANIMATION_DURATION)
+        .call(
+          d3
+            .axisLeft(y)
+            .tickFormat((d) => formatSignedCurrency(d))
+            .ticks(8),
+        );
+
+      // Update grid
+      chartG
+        .select(".grid")
+        .transition()
+        .duration(ANIMATION_DURATION)
+        .call(d3.axisLeft(y).tickSize(-width).tickFormat("").ticks(8));
+
+      // Update zero line
+      chartG
+        .select(".zero-line")
+        .transition()
+        .duration(ANIMATION_DURATION)
+        .attr("y1", y(0))
+        .attr("y2", y(0));
+
+      // Update bars with animation using data join
+      const ageGroups = chartG
+        .selectAll(".age-group")
+        .data(stackedData, (d) => d.age);
+
+      // Handle entering age groups (new ages)
+      const enterGroups = ageGroups
+        .enter()
+        .append("g")
+        .attr("class", "age-group")
+        .attr("transform", (d) => `translate(${x(d.age)},0)`);
+
+      enterGroups
+        .selectAll("rect")
+        .data((d) => d.bars)
+        .enter()
+        .append("rect")
+        .attr("x", 0)
+        .attr("y", y(0))
+        .attr("width", x.bandwidth())
+        .attr("height", 0)
+        .attr("fill", (d) => REFORMS.find((r) => r.key === d.key).color)
+        .attr("rx", 1);
+
+      // Handle exiting age groups (removed ages)
+      ageGroups
+        .exit()
+        .transition()
+        .duration(ANIMATION_DURATION)
+        .style("opacity", 0)
+        .remove();
+
+      // Update existing groups position
+      ageGroups
+        .transition()
+        .duration(ANIMATION_DURATION)
+        .attr("transform", (d) => `translate(${x(d.age)},0)`);
+
+      // Update rects in all groups (both existing and new)
+      chartG.selectAll(".age-group").each(function (groupData) {
+        const group = d3.select(this);
+        const rects = group.selectAll("rect").data(groupData.bars);
+
+        rects
+          .enter()
+          .append("rect")
+          .attr("x", 0)
+          .attr("y", y(0))
+          .attr("width", x.bandwidth())
+          .attr("height", 0)
+          .attr("fill", (d) => REFORMS.find((r) => r.key === d.key).color)
+          .attr("rx", 1)
+          .merge(rects)
+          .transition()
+          .duration(ANIMATION_DURATION)
+          .attr("width", x.bandwidth())
+          .attr("y", (d) => y(Math.max(d.y0, d.y1)))
+          .attr("height", (d) => Math.abs(y(d.y0) - y(d.y1)));
       });
+
+      // Update x-axis
+      chartG
+        .select(".axis.x-axis")
+        .transition()
+        .duration(ANIMATION_DURATION)
+        .call(
+          d3
+            .axisBottom(x)
+            .tickValues(
+              displayData.filter((d) => d.age % 5 === 0).map((d) => d.age),
+            ),
+        );
+
+      // Update net impact line
+      chartG
+        .select(".net-line")
+        .datum(stackedData)
+        .transition()
+        .duration(ANIMATION_DURATION)
+        .attr("d", line);
+
+      // Re-apply event handlers to all age groups (including new ones)
+      chartG
+        .selectAll(".age-group")
+        .on("mouseover", handleMouseover)
+        .on("mousemove", handleMousemove)
+        .on("mouseout", handleMouseout)
+        .on("click", handleClick);
+
+    } else {
+      // INITIAL render - create chart from scratch
+      d3.select(container).selectAll("*").remove();
+
+      svg = d3
+        .select(container)
+        .append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom);
+
+      chartG = svg
+        .append("g")
+        .attr("transform", `translate(${margin.left},${margin.top})`);
+
+      // Grid
+      chartG
+        .append("g")
+        .attr("class", "grid")
+        .call(d3.axisLeft(y).tickSize(-width).tickFormat("").ticks(8));
+
+      // Zero line
+      chartG
+        .append("line")
+        .attr("class", "zero-line")
+        .attr("x1", 0)
+        .attr("x2", width)
+        .attr("y1", y(0))
+        .attr("y2", y(0))
+        .attr("stroke", "#333")
+        .attr("stroke-width", 2);
+
+      // Age groups
+      const ageGroups = chartG
+        .selectAll(".age-group")
+        .data(stackedData, (d) => d.age)
+        .enter()
+        .append("g")
+        .attr("class", "age-group")
+        .attr("transform", (d) => `translate(${x(d.age)},0)`);
+
+      // Bars with initial animation
+      ageGroups
+        .selectAll("rect")
+        .data((d) => d.bars)
+        .enter()
+        .append("rect")
+        .attr("x", 0)
+        .attr("y", y(0))
+        .attr("width", x.bandwidth())
+        .attr("height", 0)
+        .attr("fill", (d) => REFORMS.find((r) => r.key === d.key).color)
+        .attr("rx", 1)
+        .transition()
+        .duration(ANIMATION_DURATION)
+        .attr("y", (d) => y(Math.max(d.y0, d.y1)))
+        .attr("height", (d) => Math.abs(y(d.y0) - y(d.y1)));
+
+      // X-axis
+      chartG
+        .append("g")
+        .attr("class", "axis x-axis")
+        .attr("transform", `translate(0,${height})`)
+        .call(
+          d3
+            .axisBottom(x)
+            .tickValues(
+              displayData.filter((d) => d.age % 5 === 0).map((d) => d.age),
+            ),
+        );
+
+      // Y-axis
+      chartG
+        .append("g")
+        .attr("class", "axis y-axis")
+        .call(
+          d3
+            .axisLeft(y)
+            .tickFormat((d) => formatSignedCurrency(d))
+            .ticks(8),
+        );
+
+      // Net impact line
+      chartG
+        .append("path")
+        .datum(stackedData)
+        .attr("class", "net-line")
+        .attr("fill", "none")
+        .attr("stroke", "#000000")
+        .attr("stroke-width", 2.5)
+        .attr("d", line);
+
+      // Apply event handlers
+      ageGroups
+        .on("mouseover", handleMouseover)
+        .on("mousemove", handleMousemove)
+        .on("mouseout", handleMouseout)
+        .on("click", handleClick);
+    }
+
+    // Store current data for next comparison
+    previousDataRef.current = displayData;
   }, [displayData, formatSignedCurrency, showModal]);
 
   // Download CSV
