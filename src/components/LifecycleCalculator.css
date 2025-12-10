@@ -512,3 +512,202 @@
     text-align: left;
   }
 }
+
+/* Modal styles */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 1000;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-overlay.active {
+  display: flex;
+}
+
+.modal {
+  background: #fff;
+  border-radius: 12px;
+  max-width: 900px;
+  width: 95%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+}
+
+.modal-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.modal-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  flex: 1;
+  text-align: center;
+}
+
+.modal-nav {
+  background: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  color: #374151;
+  transition: all 0.15s ease;
+}
+
+.modal-nav:hover:not(:disabled) {
+  background: #e5e7eb;
+}
+
+.modal-nav:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #888;
+  margin-left: 8px;
+}
+
+.modal-close:hover {
+  color: #333;
+}
+
+.modal-body {
+  padding: 24px;
+}
+
+.modal-panel {
+  min-height: 450px;
+  max-height: 450px;
+  overflow-y: auto;
+}
+
+/* Modal tabs */
+.tab-bar {
+  display: flex;
+  border-bottom: 2px solid #e2e8f0;
+  margin: -24px -24px 24px -24px;
+  padding: 0 24px;
+  overflow-x: auto;
+}
+
+.detail-tab {
+  padding: 10px 18px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #64748b;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+  white-space: nowrap;
+}
+
+.detail-tab:hover {
+  color: #0f766e;
+  background: #f0fdfa;
+}
+
+.detail-tab.active {
+  color: #0f766e;
+  font-weight: 600;
+  border-bottom-color: #0f766e;
+  background: transparent;
+}
+
+/* Modal calculation sections */
+.calc-section {
+  margin-bottom: 24px;
+}
+
+.calc-section:last-child {
+  margin-bottom: 0;
+}
+
+.calc-title {
+  font-weight: 600;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.calc-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+}
+
+.calc-table {
+  width: 100%;
+  font-size: 0.85rem;
+  border-collapse: collapse;
+}
+
+.calc-table td {
+  padding: 6px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.calc-table td:last-child {
+  text-align: right;
+  font-family: monospace;
+}
+
+.calc-result {
+  font-weight: 600;
+  border-top: 2px solid #e5e5e5 !important;
+}
+
+.calc-result.positive {
+  color: #16a34a;
+}
+
+.calc-result.negative {
+  color: #dc2626;
+}
+
+/* Modal responsive */
+@media (max-width: 768px) {
+  .modal {
+    width: 100%;
+    max-width: 100%;
+    height: 100%;
+    max-height: 100%;
+    border-radius: 0;
+  }
+
+  .tab-bar {
+    padding: 0 12px;
+  }
+
+  .detail-tab {
+    padding: 8px 12px;
+    font-size: 0.8rem;
+  }
+
+  .modal-panel {
+    max-height: none;
+  }
+}
