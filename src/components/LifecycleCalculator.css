@@ -1,6 +1,6 @@
 .lifecycle-calculator {
   width: 100%;
-  font-family: "Inter", sans-serif;
+  font-family: var(--pe-font-family-primary);
   color: #374151;
 }
 
