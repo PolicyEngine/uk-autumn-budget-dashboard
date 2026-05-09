@@ -1,3 +1,5 @@
+'use client';
+
 import { useState, useEffect } from "react";
 import PolicySelector from "./components/PolicySelector";
 import BudgetaryImpactChart from "./components/BudgetaryImpactChart";
@@ -10,7 +12,6 @@ import HouseholdChart from "./components/HouseholdChart";
 import OBRComparisonTable from "./components/OBRComparisonTable";
 import PersonalImpactTab from "./components/PersonalImpactTab";
 import YearSlider from "./components/YearSlider";
-import "./App.css";
 
 // Autumn Budget 2025 policy provisions
 const POLICIES = [

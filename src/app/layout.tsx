@@ -1,0 +1,44 @@
+import type { Metadata, Viewport } from 'next';
+import './globals.css';
+
+const TITLE = 'UK Autumn Budget 2025 dashboard';
+const DESCRIPTION =
+  'Analyse the impact of UK Autumn Budget 2025 policies on households and public finances using PolicyEngine UK microsimulation.';
+
+export const metadata: Metadata = {
+  title: TITLE,
+  description: DESCRIPTION,
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1.0,
+};
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <html lang="en-GB">
+      <head>
+        <link
+          rel="stylesheet"
+          href="https://unpkg.com/@policyengine/design-system/dist/tokens.css"
+        />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin="anonymous"
+        />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+          rel="stylesheet"
+        />
+      </head>
+      <body>{children}</body>
+    </html>
+  );
+}
