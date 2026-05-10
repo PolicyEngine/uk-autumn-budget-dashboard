@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
+import PolicyEngineHeader from '@/components/PolicyEngineHeader';
 
 const TITLE = 'UK Autumn Budget 2025 dashboard';
 const DESCRIPTION =
@@ -38,7 +39,10 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body>{children}</body>
+      <body>
+        <PolicyEngineHeader />
+        {children}
+      </body>
     </html>
   );
 }
