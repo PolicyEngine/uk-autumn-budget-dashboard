@@ -7,7 +7,7 @@ function FiscalHeadroom() {
 
   useEffect(() => {
     // Load budgetary impact data from CSV
-    fetch("/data/reform-results.csv")
+    fetch(`${process.env.NEXT_PUBLIC_BASE_PATH || ""}/data/reform-results.csv`)
       .then((response) => response.text())
       .then((csvText) => {
         const lines = csvText.trim().split("\n");

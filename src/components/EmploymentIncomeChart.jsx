@@ -47,7 +47,7 @@ function EmploymentIncomeChart({ selectedPolicies, selectedYear = 2029 }) {
 
   useEffect(() => {
     // Load income curve data from CSV
-    fetch("/data/income_curve.csv")
+    fetch(`${process.env.NEXT_PUBLIC_BASE_PATH || ""}/data/income_curve.csv`)
       .then((response) => response.text())
       .then((csvText) => {
         const lines = csvText.trim().split("\n");

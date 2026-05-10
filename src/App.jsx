@@ -215,11 +215,11 @@ function App() {
         metricsRes,
         householdScatterRes,
       ] = await Promise.all([
-        fetch("/data/budgetary_impact.csv"),
-        fetch("/data/distributional_impact.csv"),
-        fetch("/data/winners_losers.csv"),
-        fetch("/data/metrics.csv"),
-        fetch("/data/household_scatter.csv"),
+        fetch(`${process.env.NEXT_PUBLIC_BASE_PATH || ""}/data/budgetary_impact.csv`),
+        fetch(`${process.env.NEXT_PUBLIC_BASE_PATH || ""}/data/distributional_impact.csv`),
+        fetch(`${process.env.NEXT_PUBLIC_BASE_PATH || ""}/data/winners_losers.csv`),
+        fetch(`${process.env.NEXT_PUBLIC_BASE_PATH || ""}/data/metrics.csv`),
+        fetch(`${process.env.NEXT_PUBLIC_BASE_PATH || ""}/data/household_scatter.csv`),
       ]);
 
       const budgetaryData = parseCSV(await budgetaryRes.text());
