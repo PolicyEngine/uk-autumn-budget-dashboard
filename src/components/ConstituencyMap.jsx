@@ -48,8 +48,8 @@ export default function ConstituencyMap({ selectedPolicies = [], selectedYear = 
   // Load data
   useEffect(() => {
     Promise.all([
-      fetch("/data/constituency.csv").then((r) => r.text()),
-      fetch("/data/uk_constituencies_2024.geojson").then((r) => r.json()),
+      fetch(`${process.env.NEXT_PUBLIC_BASE_PATH || ""}/data/constituency.csv`).then((r) => r.text()),
+      fetch(`${process.env.NEXT_PUBLIC_BASE_PATH || ""}/data/uk_constituencies_2024.geojson`).then((r) => r.json()),
     ])
       .then(([csvText, geojson]) => {
         // Parse CSV with proper handling of quoted fields

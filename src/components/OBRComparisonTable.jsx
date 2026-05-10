@@ -8,8 +8,8 @@ function OBRComparisonTable({ selectedPolicies }) {
   useEffect(() => {
     // Fetch both OBR comparison data and PolicyEngine budgetary impact data
     Promise.all([
-      fetch("/data/obr_comparison.csv").then((res) => res.text()),
-      fetch("/data/budgetary_impact.csv").then((res) => res.text()),
+      fetch(`${process.env.NEXT_PUBLIC_BASE_PATH || ""}/data/obr_comparison.csv`).then((res) => res.text()),
+      fetch(`${process.env.NEXT_PUBLIC_BASE_PATH || ""}/data/budgetary_impact.csv`).then((res) => res.text()),
     ])
       .then(([obrCsvText, peCsvText]) => {
         // Parse OBR data
