@@ -28,7 +28,11 @@ function Sidebar({
       <aside className={`sidebar ${isCollapsed ? "collapsed" : ""}`}>
         <div className="sidebar-content">
           <div className="sidebar-logo">
-            <img src="/white.png" alt="PolicyEngine" className="logo" />
+            <img
+              src={`${process.env.NEXT_PUBLIC_BASE_PATH || ""}/white.png`}
+              alt="PolicyEngine"
+              className="logo"
+            />
           </div>
 
           <div className="sidebar-section">
